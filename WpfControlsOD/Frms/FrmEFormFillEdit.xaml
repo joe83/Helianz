@@ -1,0 +1,30 @@
+<local:FrmODBase x:Class="OpenDental.FrmEFormFillEdit"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:OpenDental"
+             xmlns:ui="clr-namespace:WpfControls.UI"
+             mc:Ignorable="d"
+             Width="605" Height="719" 
+             Text="Fill eForm" MinMaxBoxes="False">
+	<Grid Background="#FFFCFDFE" >
+		<local:CtrlEFormFill x:Name="ctrlEFormFill" Margin="8,8,0,44" HorizontalAlignment="Left" Width="450"/>
+		<ui:Button x:Name="butDelete" Width="75" VerticalAlignment="Bottom" Height="24" Margin="10,0,0,10" Text="Delete" Icon="DeleteX" Click="butDelete_Click" />
+		<ui:TextBox x:Name="textDateTime" Height="20" Width="131" Margin="0,29,6,0" HorizontalAlignment="Right"/>
+		<ui:Label Height="18" Margin="0,9,52,0" Text="Date time" Width="88" VAlign="Center" HorizontalContentAlignment="Left" HorizontalAlignment="Right" />
+		<ui:TextBox x:Name="textDescription" Height="20" Width="131" Margin="0,70,6,0" HorizontalAlignment="Right"/>
+		<ui:Label Height="18" Margin="0,50,52,0" Text="Description" Width="88" VAlign="Center" HorizontalContentAlignment="Left" HorizontalAlignment="Right" />
+		<ui:Button x:Name="butUnlockSig" Width="80" Height="24" Margin="0,336,30,0" Text="Unlock Sig" Click="butUnlockSig_Click" HorizontalAlignment="Right" />
+		<ui:Button x:Name="butPrint" Width="80" Height="24" Margin="0,581,30,0" Text="Print" Click="butPrint_Click" HorizontalAlignment="Right" />
+		<ui:Button x:Name="butSave" Width="75" Height="24" Margin="0,0,10,10" Text="Save" Click="butSave_Click" RenderTransformOrigin="0.413,-0.625" HorizontalAlignment="Right" VerticalAlignment="Bottom"   />
+		<ui:Button x:Name="butEClipboard" Width="80" Height="24" Margin="0,615,30,0" Text="To eClipboard" HorizontalAlignment="Right" Click="butEClipboard_Click" />
+		<ui:Button x:Name="butChangePat" Width="80" Height="24" Margin="0,371,30,0" Text="Change Pat" HorizontalAlignment="Right" Click="butChangePat_Click" />
+		<ui:Label x:Name="labelRequired" Width="120" Height="53" Margin="465,97,0,0" Text="Required fields are not enforced here -- only in eClipboard" VAlign="Center" ColorText="Red" />
+		<ui:GroupBox x:Name="groupSaveImages" Height="95" Margin="0,430,5,0" Width="136" Text="Save to Images" HorizontalAlignment="Right">
+			<ui:ComboBox x:Name="comboImageCat" Width="130" Height="21" Margin="0,41,0,0" HorizontalAlignment="Center" />
+			<ui:Label Width="120" Height="18" Margin="0,21,0,0" Text="Category" VAlign="Center" />
+			<ui:Button x:Name="butSaveImage" Width="80" Height="24" Margin="30,66,0,0" Text="Save" Click="butSaveImage_Click"  />
+		</ui:GroupBox>
+	</Grid>
+</local:FrmODBase>
