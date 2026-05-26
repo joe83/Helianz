@@ -43,10 +43,10 @@ namespace OpenDental.Reporting.Allocators.MyAllocator1.SupportingCode
 			////FormQuery2.TablePadding = 2;
 			//FormQuery2.ShowDialog();
 			#region Method needs to be added to FormQuery.cs
-			/// <summary>
-		/// You call the Queries.SubmitCur() first.  This allows you to alter or set
-		/// the report.TableQ first to your liking and not be limited to the query.
-		/// </summary>
+			// <summary>
+			// You call the Queries.SubmitCur() first. This allows you to alter or set
+			// the report.TableQ first to your liking and not be limited to the query.
+			// </summary>
 		//public void SetupReport(bool autosizecols)
 		//{
 		//    //Queries.SubmitCur();
@@ -431,11 +431,11 @@ namespace OpenDental.Reporting.Allocators.MyAllocator1.SupportingCode
 		private static string ProviderRevenueByGuarantor(int Guarantor, DateTime dtFrom, DateTime dtTo)
 		{
 			bool AllDates = false;
-			/// Debugging
+			// Debugging
 			//dtFrom = new DateTime(2007, 12, 31);
 			//dtTo = new DateTime(2007, 12, 31);
 			//AllDates = false;
-			/// end Debugging
+			// end Debugging
 			
 			if (dtFrom  == DateTime.MinValue && dtTo == DateTime.MaxValue)
 				AllDates = true;

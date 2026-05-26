@@ -206,16 +206,16 @@ namespace OpenDentBusiness {
 			}
 		}
 		
-		[XmlIgnore,JsonIgnore]
 		///<summary></summary>
+		[XmlIgnore,JsonIgnore]
 		public List<MatchedBugInfo> ListPendingFixBugInfos {
 			get { 
 				return this.ListMatchedBugInfos.FindAll(x => x.BugId > 0 && x.VersionsFixed.IsNullOrEmpty());
 			}
 		}
 		
-		[XmlIgnore,JsonIgnore]
 		///<summary></summary>
+		[XmlIgnore,JsonIgnore]
 		public List<MatchedBugInfo> ListFixedBugInfos {
 			get { 
 				return this.ListMatchedBugInfos.FindAll(x => !x.VersionsFixed.IsNullOrEmpty());

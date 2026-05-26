@@ -239,15 +239,15 @@ namespace OpenDental.Reporting.Allocators.MyAllocator1 {
 			// See if splits are recorded
 			// Add splits to SPlitsToWrite  
 			// What will be the distinguishing factor between unrecorded and recorded.
-			/// 1. Existence of TableSource-SourceNum.  If exists then it has been written.  If not then has not.
-			/// 2. If Recorded ProvNum = 0 then split is considered unallocated. 
-			/// 3. Need to check if any of the items in payment list have splits = 0;
-			/// 
-			/// Or
-			/// Recreate Payment Items
-			/// Check every one for differences.
-			/// Write every one.
-			/// 
+			// 1. Existence of TableSource-SourceNum. If it exists then it has been written; otherwise it has not.
+			// 2. If recorded ProvNum = 0 then split is considered unallocated.
+			// 3. Need to check if any of the items in payment list have splits = 0.
+			//
+			// Or:
+			// Recreate payment items.
+			// Check every one for differences.
+			// Write every one.
+			//
 			/// I think the final decision is
 			/// 1. Write non existant entries
 			/// 2. Only update entries that have provNum =0

@@ -57,11 +57,11 @@ namespace OpenDentBusiness.AutoComm {
 		public bool IgnoreDoNotSendWithin;
 		///<summary>If this is true, then DtSend will not be changed after this field is set to true.</summary>
 		public bool IsDtSendFinal;
-		[XmlIgnore]
 		///<summary>FK to the appropriate message table.</summary>
-		public long MessageFk;
 		[XmlIgnore]
+		public long MessageFk;
 		///<summary>AutoCommRule used for this message.</summary>
+		[XmlIgnore]
 		public AutoCommRule AutoCommRule;
 		[XmlIgnore]
 		public PatComm PatComm;

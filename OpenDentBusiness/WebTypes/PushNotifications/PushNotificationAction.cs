@@ -4,9 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-/// <summary>
-/// XAMARIN VERSION OF THIS FILE NEEDS TO MATCH ODBUSINESS VERSION OF FILE. IT IS A COPY, NOT THE SAME FILE
-/// </summary>
+// XAMARIN VERSION OF THIS FILE NEEDS TO MATCH ODBUSINESS VERSION OF FILE. IT IS A COPY, NOT THE SAME FILE.
 namespace OpenDentBusiness.WebTypes {
 
 	///<summary>The payload of the push notification. This contains what to do in the case of this type of notification.</summary>

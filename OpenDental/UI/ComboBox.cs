@@ -106,7 +106,7 @@ namespace OpenDental.UI{
 		private FormComboPicker _formComboPicker;
 		///<summary>True if the mouse is over the "combobox", to turn it a blue color.</summary>
 		private bool _isMouseOver;
-		///<summary>This gets set when the user sets an item that is not present in the list. Selected index is also set to -1.
+		///<summary>This gets set when the user sets an item that is not present in the list. Selected index is also set to -1.</summary>
 		private string _overrideText="";
 		///<summary>If selected index is -1, this can be used to store and retrieve the primary key. _overrideText is what shows to the user.</summary>
 		private long _selectedKey=0;//odd note: FormClaimCustomTrackingUpdate sets this to -1 to indicate none, which should be fine.
@@ -956,13 +956,13 @@ namespace OpenDental.UI{
 				AddList(listDefs,funcItemToString);
 			}
 
-			///<summary>Adds the values of an enum to the list of Items.  Does not Clear first.  Descriptions are pulled from DescriptionAttribute or .ToString, then run through translation.  If you want add only some enums, or in a different order, use AddListEnum<T>(IEnumerable<T> items). If you want to display ShortDescriptionAttribute, you have to add the Enums individually with your own text.</summary>
+			///<summary>Adds the values of an enum to the list of Items.  Does not Clear first.  Descriptions are pulled from DescriptionAttribute or .ToString, then run through translation.  If you want add only some enums, or in a different order, use AddListEnum&lt;T&gt;(IEnumerable&lt;T&gt; items). If you want to display ShortDescriptionAttribute, you have to add the Enums individually with your own text.</summary>
 			public void AddEnums<T>() where T : Enum {//struct,IConvertible{
 				AddList(Enum.GetValues(typeof(T)).Cast<T>(),x => GetEnumTranslation<T>(x));
 				_comboBoxOdParent.Invalidate();
 			}
 
-			///<summary>Like AddEnums<T>(), but you can provide a subset of items if needed.</summary>
+			///<summary>Like AddEnums&lt;T&gt;(), but you can provide a subset of items if needed.</summary>
 			public void AddListEnum<T>(IEnumerable<T> items) where T : Enum {
 				AddList(items,x => GetEnumTranslation<T>(x));
 			}

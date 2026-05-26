@@ -165,7 +165,11 @@ namespace OpenDental.UI{
 			if(icon==EnumIcons.None){
 				return;
 			}
-			if(IsVector(icon) && !designMode && !OnlyGDI){
+			bool canUseDirect2dForGraphics=false;
+			#if DEBUG
+			canUseDirect2dForGraphics=true;
+			#endif
+			if(IsVector(icon) && !designMode && !OnlyGDI && canUseDirect2dForGraphics){
 				//This top attempt looked terrible unless using the d.Clear.==========================================================
 				/*
 				g.InterpolationMode=InterpolationMode.HighQualityBicubic;

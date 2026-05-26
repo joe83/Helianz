@@ -152,7 +152,8 @@ namespace OpenDental.Reporting.Allocators.MyAllocator1
         /// Copies arrays from Smallersize to Larger Size
         /// Leaving the last element(s) of the larger array empty
         /// </summary>
-        /// <param name="?"></param>
+		/// <param name="FromSmall"></param>
+		/// <param name="ToLarge"></param>
 		private static void ArrayCopySmalltoLarge(int[] FromSmall, int[] ToLarge)
         {
             if (FromSmall.Length > ToLarge.Length)
@@ -166,7 +167,8 @@ namespace OpenDental.Reporting.Allocators.MyAllocator1
         /// Copies arrays from Smallersize to Larger Size
         /// Dropping the last element(s) of the larger array empty
         /// </summary>
-        /// <param name="?"></param>
+		/// <param name="ToSmall"></param>
+		/// <param name="FromLarge"></param>
         private static void ArrayCopyLargetoSmall( int[] ToSmall,  int[] FromLarge)
         {
             if (ToSmall.Length > FromLarge.Length)

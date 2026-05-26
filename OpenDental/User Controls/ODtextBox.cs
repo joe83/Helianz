@@ -193,20 +193,7 @@ namespace OpenDental {
 			this.DetectUrls=false;
 			if(System.ComponentModel.LicenseManager.UsageMode!=System.ComponentModel.LicenseUsageMode.Designtime
 				&& HunspellGlobal==null) {
-				if(ODBuild.IsDebug()) {
-					try {
-						HunspellGlobal=new Hunspell(WpfControls.Properties.Resources.en_US_aff,WpfControls.Properties.Resources.en_US_dic);
-					}
-					catch(Exception ex) {
-						ex.DoNothing();
-						System.IO.File.Copy(@"..\..\..\Required dlls\Hunspellx64.dll","Hunspellx64.dll");
-						System.IO.File.Copy(@"..\..\..\Required dlls\Hunspellx86.dll","Hunspellx86.dll");
-						HunspellGlobal=new Hunspell(WpfControls.Properties.Resources.en_US_aff,WpfControls.Properties.Resources.en_US_dic);
-					}
-				}
-				else {
-					HunspellGlobal=new Hunspell(WpfControls.Properties.Resources.en_US_aff,WpfControls.Properties.Resources.en_US_dic);
-				}
+				TryInitializeHunspell();
 			}
 			EventHandler onClick=new EventHandler(menuItem_Click);
 			contextMenu.MenuItems.Add("",onClick);//These five menu items will hold the suggested spelling for misspelled words.  If no misspelled words, they will not be visible.
@@ -383,10 +370,40 @@ namespace OpenDental {
 			if(ODBuild.IsDebug() && Environment.MachineName.ToLower().In("jordansgalaxybk","jordanhome","jordancryo")){
 				return false;//for testing without a db
 			}
+			if(HunspellGlobal==null) {
+				return false;
+			}
 			if(!SpellCheckIsEnabled){//for this control, as set in the designer
 				return false;
 			}
 			return PrefC.GetBool(PrefName.SpellCheckIsEnabled);
+		}
+
+		private static void TryInitializeHunspell() {
+			try {
+				HunspellGlobal=new Hunspell(WpfControls.Properties.Resources.en_US_aff,WpfControls.Properties.Resources.en_US_dic);
+				return;
+			}
+			catch(Exception ex) {
+				ex.DoNothing();
+			}
+			if(!ODBuild.IsDebug()) {
+				return;
+			}
+			try {
+				string pathHunspell64=Path.Combine("..","..","..","Required dlls","Hunspellx64.dll");
+				string pathHunspell86=Path.Combine("..","..","..","Required dlls","Hunspellx86.dll");
+				if(File.Exists(pathHunspell64) && !File.Exists("Hunspellx64.dll")) {
+					File.Copy(pathHunspell64,"Hunspellx64.dll");
+				}
+				if(File.Exists(pathHunspell86) && !File.Exists("Hunspellx86.dll")) {
+					File.Copy(pathHunspell86,"Hunspellx86.dll");
+				}
+				HunspellGlobal=new Hunspell(WpfControls.Properties.Resources.en_US_aff,WpfControls.Properties.Resources.en_US_dic);
+			}
+			catch(Exception ex) {
+				ex.DoNothing();
+			}
 		}
 
 		private void contextMenu_Popup(object sender,System.EventArgs e) {

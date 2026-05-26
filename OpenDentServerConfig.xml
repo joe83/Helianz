@@ -5,9 +5,9 @@
 		<ComputerName>localhost</ComputerName>
 		<Database>opendental</Database>
 		<User>root</User>
-		<Password></Password>
+		<Password>j0k0m4r0k3</Password>
 		<UserLow>root</UserLow>
-		<PasswordLow />
+		<PasswordLow>j0k0m4r0k3</PasswordLow>
 	</DatabaseConnection>
 	<DatabaseConnection>
 		<ComputerName>localhost</ComputerName>

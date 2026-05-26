@@ -100,6 +100,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>OpenDental.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Release\OpenDental.xml</DocumentationFile>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AWSSDK.Core">
@@ -10531,6 +10532,14 @@
     <None Include="Resources\CDT Content End User License.txt" />
     <None Include="Resources\gtaicon3.png" />
     <None Include="Resources\NoFigure.png" />
+    <Content Include="..\Required dlls\Hunspellx64.dll">
+      <Link>Hunspellx64.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Required dlls\Hunspellx86.dll">
+      <Link>Hunspellx86.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Resources\raisehanddisabled.png" />
     <None Include="Resources\raisehand.png" />
     <None Include="Resources\ODLogo.gif" />

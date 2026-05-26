@@ -78,7 +78,7 @@ namespace OpenDental.UI {
 		private List<int> _listSelectedOrig=new List<int>();
 		///<summary></summary>
 		private int _mouseDownIndex;
-		///<summary>This gets set when the user sets an item that is not present in the list. Selected index is also set to -1.
+		///<summary>This gets set when the user sets an item that is not present in the list. Selected index is also set to -1.</summary>
 		private string _overrideText="";
 		///<summary>If selected index is -1, this can be used to store and retrieve the primary key. _overrideText is what shows to the user.</summary>
 		private long _selectedKey=0;
@@ -161,9 +161,9 @@ namespace OpenDental.UI {
 		#endregion Properties - Public Browsable
 
 		#region Properties - Public not Browsable
+		///<summary>Sets the background color for the entire listbox.</summary>
 		[Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		///Sets the background color for the entire listbox.
 		public Color ColorBack{
 			get{
 				return _colorBack;
@@ -174,9 +174,9 @@ namespace OpenDental.UI {
 			}
 		}
 
+		///<summary>Sets the highlight color for the selected item in that listbox.</summary>
 		[Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		///Sets the highlight color for the selected item in that listbox.
 		public Color ColorSelectedBack{
 			get{
 				return _colorSelectedBack;

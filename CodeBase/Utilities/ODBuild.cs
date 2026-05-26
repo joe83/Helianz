@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,27 @@ namespace CodeBase {
 #else
 			return false;
 #endif
+		}
+
+		///<summary>Returns true when the current executable is running from a local source checkout instead of an installed deployment. This is used to keep developer builds from trying to self-update against production-style version metadata.</summary>
+		public static bool IsLocalSourceBuild() {
+			string dirCur=AppDomain.CurrentDomain.BaseDirectory;
+			for(int i=0;i<6 && !string.IsNullOrEmpty(dirCur);i++) {
+				if(File.Exists(Path.Combine(dirCur,"OpenDental.sln"))) {
+					return true;
+				}
+				DirectoryInfo directoryInfo=Directory.GetParent(dirCur);
+				if(directoryInfo==null) {
+					break;
+				}
+				dirCur=directoryInfo.FullName;
+			}
+			return false;
+		}
+
+		///<summary>Returns true when local developer builds should be allowed to connect even if the database ProgramVersion differs.</summary>
+		public static bool ShouldBypassVersionChecks() {
+			return IsDebug() || IsLocalSourceBuild();
 		}
 
 		///<summary>Returns true if the current build is alpha. Useful when you want the release code to show up when searching for references.</summary>

@@ -72,7 +72,7 @@ namespace OpenDental.Reporting.Allocators {
 		/// <summary>
 		/// Calls Allocate but first checks for existance of prefences and an indication that The tool has run.
 		/// The reason for the overlaid method is becuase the tool when it runs
-		/// <href = "AllocatorCollection.CallAll_Allocators>  See the AllocatorCollection.CallAll_Allocators </href
+		/// See AllocatorCollection.CallAll_Allocators.
 		/// </summary>
 		/// <param name="iGuarantor"></param>
 		/// <returns></returns>

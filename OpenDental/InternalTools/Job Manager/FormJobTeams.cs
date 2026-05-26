@@ -49,7 +49,7 @@ namespace OpenDental {
 			butAddTeamMember.Enabled=jobTeamSelected==null ? false : true;
 		}
 
-		///<summary>Fills the grid pertaining to teams.<summary>
+		///<summary>Fills the grid pertaining to teams.</summary>
 		private void FillGridTeams(int selectedRow=0) {
 			gridTeams.BeginUpdate();
 			gridTeams.Columns.Clear();
@@ -90,7 +90,7 @@ namespace OpenDental {
 			return;
 		}
 
-		///<summary>Fills the list of team members for the currently selected team.<summary>
+		///<summary>Fills the list of team members for the currently selected team.</summary>
 		private void FillListTeamUsers() {
 			listBoxTeamMembers.Items.Clear();
 			JobTeam jobTeamCur=gridTeams.SelectedTag<JobTeam>();

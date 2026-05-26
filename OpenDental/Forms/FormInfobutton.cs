@@ -1629,7 +1629,7 @@ namespace KnowledgeRequestNotification {
 		}
 
 		///<summary>Set InterpretaionCodes Normal, Abnormal, High, Low, Alert.</summary>
-		/// <param name="code">Allowed values: A, AA, HH, LL, H, L, N.</param>
+		/// <param name="interpretationCode">Allowed values: A, AA, HH, LL, H, L, N.</param>
 		public void SetInterpretation(string interpretationCode){
 			if(interpretationCode==null){
 				Code="";
@@ -1637,25 +1637,25 @@ namespace KnowledgeRequestNotification {
 				return;
 			}
 			switch(interpretationCode){
-				case "A":	///<summary>0 - Abnormal - Abnormal (for nominal observations, all service types) </summary>
+				case "A":	// 0 - Abnormal - Abnormal (for nominal observations, all service types)
 					DisplayName="Abnormal";
 					break;
-				case "AA":///<summary>1 - Abnormal alert - Abnormal alert (for nominal observations and all service types) </summary>
+				case "AA":// 1 - Abnormal alert - Abnormal alert (for nominal observations and all service types)
 					DisplayName="Abnormal alert";
 					break;
-				case "HH":///<summary>2 - High alert - Above upper alert threshold (for quantitative observations) </summary>
+				case "HH":// 2 - High alert - Above upper alert threshold (for quantitative observations)
 					DisplayName="High alert";
 					break;
-				case "LL":///<summary>3 - Low alert - Below lower alert threshold (for quantitative observations) </summary>
+				case "LL":// 3 - Low alert - Below lower alert threshold (for quantitative observations)
 					DisplayName="Low alert";
 					break;
-				case "H":	///<summary>4 - High - Above high normal (for quantitative observations) </summary>
+				case "H":	// 4 - High - Above high normal (for quantitative observations)
 					DisplayName="High";
 					break;
-				case "L":	///<summary>5 - Low - Below low normal (for quantitative observations) </summary>
+				case "L":	// 5 - Low - Below low normal (for quantitative observations)
 					DisplayName="Low";
 					break;
-				case "N":	///<summary>6 - Normal - Normal (for all service types) </summary>
+				case "N":	// 6 - Normal - Normal (for all service types)
 					DisplayName="Normal";
 					break;
 				default:

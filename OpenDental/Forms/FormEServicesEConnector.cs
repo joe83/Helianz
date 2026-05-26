@@ -24,13 +24,13 @@ using OpenDentBusiness.WebTypes.WebSched.TimeSlot;
 namespace OpenDental {
 
 	public partial class FormEServicesEConnector:FormODBase {
-		///<summary>The background color used when the OpenDentalCustListener service is down.  Using Red was deemed too harsh.
+		///<summary>The background color used when the OpenDentalCustListener service is down.  Using Red was deemed too harsh.</summary>
 		private Color _colorCritBackground=Color.OrangeRed;
-		///<summary>The text color used when the OpenDentalCustListener service is down.
+		///<summary>The text color used when the OpenDentalCustListener service is down.</summary>
 		private Color _colorCritText=Color.Yellow;
-		///<summary>The background color used when the OpenDentalCustListener service has an error that has not be processed.
+		///<summary>The background color used when the OpenDentalCustListener service has an error that has not be processed.</summary>
 		private Color _colorErrBackground=Color.LightGoldenrodYellow;
-		///<summary>The text color used when the OpenDentalCustListener service has an error that has not be processed.
+		///<summary>The text color used when the OpenDentalCustListener service has an error that has not be processed.</summary>
 		private Color _colorErrText=Color.OrangeRed;
 		///<summary>Output from HQ initialized in FillForm().</summary>
 		

@@ -233,24 +233,24 @@ namespace OpenDentBusiness {
 			return job;
 		}
 
-		[XmlIgnore,JsonIgnore]
 		///<summary>The actual hours a job has taken so far.</summary>
+		[XmlIgnore,JsonIgnore]
 		public double HoursActual {
 			get {
 				return Math.Round(ListJobTimeLogs.Sum(x => x.TimeReview.TotalHours)+(ListJobReviews.Sum(x => x.TimeReview.TotalHours*(x.IsAsyncReview ? 1 : 2))),2);
 			}
 		}		
 		
-		[XmlIgnore,JsonIgnore]
 		///<summary>The actual hours a job has taken so far. Only counts review time once.</summary>
+		[XmlIgnore,JsonIgnore]
 		public double HoursActualSingleReviewTime {
 			get {
 				return Math.Round(ListJobTimeLogs.Sum(x => x.TimeReview.TotalHours)+(ListJobReviews.Sum(x => x.TimeReview.TotalHours)),2);
 			}
 		}
 		
-		[XmlIgnore,JsonIgnore]
 		///<summary>The estimated hours a job will take.</summary>
+		[XmlIgnore,JsonIgnore]
 		public double HoursEstimateConcept {
 			get {
 				return TimeEstimateConcept.TotalHours;
@@ -260,8 +260,8 @@ namespace OpenDentBusiness {
 			}
 		}
 		
-		[XmlIgnore,JsonIgnore]
 		///<summary>The estimated hours a job will take.</summary>
+		[XmlIgnore,JsonIgnore]
 		public double HoursEstimateWriteup {
 			get {
 				return TimeEstimateWriteup.TotalHours;
@@ -271,8 +271,8 @@ namespace OpenDentBusiness {
 			}
 		}
 		
-		[XmlIgnore,JsonIgnore]
 		///<summary>The estimated hours a job will take.</summary>
+		[XmlIgnore,JsonIgnore]
 		public double HoursEstimateDevelopment {
 			get {
 				return TimeEstimateDevelopment.TotalHours;
@@ -282,8 +282,8 @@ namespace OpenDentBusiness {
 			}
 		}
 		
-		[XmlIgnore,JsonIgnore]
 		///<summary>The estimated hours a job will take.</summary>
+		[XmlIgnore,JsonIgnore]
 		public double HoursEstimateReview {
 			get {
 				return TimeEstimateReview.TotalHours;
@@ -293,24 +293,24 @@ namespace OpenDentBusiness {
 			}
 		}
 		
-		[XmlIgnore,JsonIgnore]
 		///<summary>The estimated hours a job will take.</summary>
+		[XmlIgnore,JsonIgnore]
 		public double HoursEstimate {
 			get {
 				return Math.Round((TimeEstimateConcept+TimeEstimateWriteup+TimeEstimateDevelopment).TotalHours+(TimeEstimateReview.TotalHours*2),2);
 			}
 		}
 		
-		[XmlIgnore,JsonIgnore]
 		///<summary>The estimated hours a job will take. Only counts review time once.</summary>
+		[XmlIgnore,JsonIgnore]
 		public double HoursEstimateSingleReviewTime {
 			get {
 				return Math.Round((TimeEstimateConcept+TimeEstimateWriteup+TimeEstimateDevelopment).TotalHours+(TimeEstimateReview.TotalHours),2);
 			}
 		}		
 
-		[XmlIgnore,JsonIgnore]
 		///<summary>The testing hours a spent on a job.</summary>
+		[XmlIgnore,JsonIgnore]
 		public double HoursTesting {
 				get {
 					return TimeTesting.TotalHours;
@@ -320,8 +320,8 @@ namespace OpenDentBusiness {
 				}
 		}
 		
-		[XmlIgnore,JsonIgnore]
 		///<summary>Returns userNum of the person assigned to the next task for a job, 0 if unnassigned.</summary>
+		[XmlIgnore,JsonIgnore]
 		public long OwnerNum {
 			get {
 				if(UserNumInfo>0) {
@@ -384,8 +384,8 @@ namespace OpenDentBusiness {
 			}
 		}
 
-		[XmlIgnore,JsonIgnore]
 		///<summary>Returns userNum of the person assigned to the next task for a Query-Team job, 0 if unnassigned.</summary>
+		[XmlIgnore,JsonIgnore]
 		public long OwnerNumForQuery {
 			get {
 				if(UserNumInfo>0) {
@@ -411,8 +411,8 @@ namespace OpenDentBusiness {
 			}
 		}
 
-		[XmlIgnore,JsonIgnore]
 		///<summary>Same as GetOwnerAction() but wrapped in a Property for convenience. </summary>
+		[XmlIgnore,JsonIgnore]
 		public JobAction OwnerAction {
 			get {
 				if(this.UserNumInfo>0) {
@@ -474,8 +474,8 @@ namespace OpenDentBusiness {
 			}
 		}
 
-		[XmlIgnore,JsonIgnore]
 		///<summary>Same as GetOwnerAction() but wrapped in a Property for convenience. </summary>
+		[XmlIgnore,JsonIgnore]
 		public JobAction OwnerActionForQuery {
 			get {
 				if(Category!=JobCategory.Query) {

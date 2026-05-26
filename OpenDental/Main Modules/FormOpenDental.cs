@@ -3623,7 +3623,7 @@ namespace OpenDental{
 					//1. there is a mismatch between the current software version and the program version stored in the db (ProgramVersion pref)
 					//2. the UpdateInProgressOnComputerName pref is set (regardless of whether or not the computer name matches this machine name)
 					//3. the CorruptedDatabase flag is set
-					if(!ODBuild.IsDebug() && !IsDbConnectionSafe(out errorMsg)) {//Running version verses ProgramVersion preference can be different in debug.
+					if(!ODBuild.ShouldBypassVersionChecks() && !IsDbConnectionSafe(out errorMsg)) {//Running version verses ProgramVersion preference can be different in development builds.
 						timerSignals.Stop();
 						MessageBox.Show(this,errorMsg);
 						ProcessKillCommand();

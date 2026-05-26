@@ -65,7 +65,7 @@ namespace OpenDental.Reporting.Allocators.MyAllocator1
 		/// 
 		/// Note this Erases the old ledger item and replaces it with a new one for the Specified Guarantor
 		/// </summary>
-		/// <param name="uGuarantor"></param>
+		/// <param name="iGuarantor"></param>
 		/// <returns></returns>
 		public DataTable EqualizeGuarantorPayments(int iGuarantor)
 		{
@@ -171,7 +171,6 @@ namespace OpenDental.Reporting.Allocators.MyAllocator1
 		///			   Charges  Payments  Adjustments  Balances	    Charges  Payments  Adjustments Balances
 		/// [ 0   ][1][   2   ][   3    ][     4     ][    5   ][6][    7  ][    8   ][  etc......  
 		/// </summary>
-		/// <param name="uGuarantor"></param>
 		/// <returns></returns>
 		public DataTable ProviderBalancesDetail()//uint uGuarantor)
 		{
@@ -207,10 +206,10 @@ namespace OpenDental.Reporting.Allocators.MyAllocator1
 						ProviderNums.Add(li.PROVNUM);
 			}
 			// Setup DataTable  
-			/// 
-			/// Date				   Provider #							 	      Provider #
-			///			   Charges  Payments  Adjustments  Balances	    Charges  Payments  Adjustments Balances
-			/// [ 0   ][1][   2   ][   3    ][     4     ][    5   ][6][    7  ][    8   ][  etc......  
+			//
+			// Date                   Provider #                               Provider #
+			//            Charges  Payments  Adjustments  Balances      Charges  Payments  Adjustments Balances
+			// [ 0   ][1][   2   ][   3    ][     4     ][    5   ][6][    7  ][    8   ][  etc......
 			dt.Columns.Add(new DataColumn("Date"));
 			System.Collections.Hashtable ht_dtProvNumOffsets = new System.Collections.Hashtable();
 			for (int i = 0; i < ProviderNums.Count; i++)
@@ -439,9 +438,9 @@ namespace OpenDental.Reporting.Allocators.MyAllocator1
 
 			}
 
-			/// Scenarios:  1:  Partial Ammount was allocated.  But curPayItem not recorded
-			///				2:	No Ammount was allocated so a curPayItem needs recorded
-			///				for 1:  Need to recored  curPayItem and Generate a new CurPayItem with no provider for the remaining
+			// Scenarios: 1: Partial Ammount was allocated, but curPayItem was not recorded.
+			//            2: No Ammount was allocated, so a curPayItem needs recorded.
+			// For 1, record curPayItem and generate a new CurPayItem with no provider for the remaining amount.
 			if (remainingAmmount != AmountToAllocate)
 			{
 				// allocation occurred but not saved
@@ -466,7 +465,7 @@ namespace OpenDental.Reporting.Allocators.MyAllocator1
 			}
 			// last item created was not added.
 
-			/// Generate the returning table.
+			// Generate the returning table.
 			DataColumn dc1 = new DataColumn("Provider", typeof(uint));
 			DataColumn dc2 = new DataColumn("Ammount", typeof(decimal));
 			rVal.Columns.Add(dc1);

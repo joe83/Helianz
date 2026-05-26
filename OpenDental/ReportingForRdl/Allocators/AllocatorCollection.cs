@@ -5,7 +5,7 @@ using OpenDentBusiness;
 
 namespace OpenDental.Reporting.Allocators {
 	/// <summary>
-	/// <seealso cref="IAllocator"/>
+	/// <seealso cref="OpenDental.Reporting.Allocators.IAllocator"/>
 	/// Here is the model.
 	///		Payments arrive.  When they arrive an allocation event is to occur. The payment
 	///		can then be allocated by the set of rules given by the allocator which a programmer

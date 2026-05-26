@@ -625,14 +625,14 @@ namespace OpenDentBusiness {
 		ClaimPaymentPickStatementType,
 		///<summary>When true, procedurecode overrides will send the override's description to insurance instead of the original procedurecode's description.</summary>
 		ClaimPrintProcChartedDesc,
-		[PrefName(ValueType=PrefValueType.BOOL)]
 		///<summary>Receiving a primary claim will automatically recalculate the estimates on any claims that share procedures with the primary claim. 
 		///On by default.</summary>
-		ClaimPrimaryReceivedRecalcSecondary,
 		[PrefName(ValueType=PrefValueType.BOOL)]
+		ClaimPrimaryReceivedRecalcSecondary,
 		///<summary>Recieving a primary claim will make secondary claims with ClaimStatus 'Hold until Pri Recieved' display a popup of actions for those secondary claims.
 		///When true, this preference will remove the 'Do Nothing' option from that popup so the user has to change the status to
 		///'Waiting to Send' or send the secondary claim.</summary>
+		[PrefName(ValueType=PrefValueType.BOOL)]
 		ClaimPrimaryRecievedForceSecondaryStatus,
 		///<summary>Enum:ClaimProcCreditsGreaterThanProcFee.  Allow by default.  0=Allow, 1=Warn, 2=Block.  This preference either allows, warns or blocks the user from 
 		///entering an insurance payment on the Enter Payment screen if (for a procedure) the sum of the Ins Pay + Writeoff + any attached adjustments + and attached 
@@ -871,8 +871,8 @@ namespace OpenDentBusiness {
 		EasyNoClinics,
 		[PrefName(ValueType=PrefValueType.BOOL)]
 		EConfirmExcludeDaysUseHQ,
-		[PrefName(ValueType=PrefValueType.INT)]
 		///<summary>No one should ever have their preference set to include all 7 days. NEVER DO THIS.</summary>
+		[PrefName(ValueType=PrefValueType.INT)]
 		EConfirmExcludeDays,
 		EclaimsSeparateTreatProv,
 		///<summary>Use Optional Patient ID "PatID" in place of SubscriberID if this preference is checked. Both 4010 and 5010. Disabled by default for backward compatibility.</summary>
@@ -1372,11 +1372,11 @@ namespace OpenDentBusiness {
 		InsPlanUseUcrFeeForExclusions,
 		///<summary>Boolean.  False by default.  When true, insurance plans with exclusions are marked as Do Not Bill Ins.</summary>
 		InsPlanExclusionsMarkDoNotBillIns,
-		[PrefName(ValueType=PrefValueType.BOOL)]
 		///<summary>Boolean - Defaults to false. Allows offices to cause processing estimates to zero out write-offs when annual maximum is surpassed entirely.</summary>
-		InsPlansZeroWriteOffsOnAnnualMax,
 		[PrefName(ValueType=PrefValueType.BOOL)]
+		InsPlansZeroWriteOffsOnAnnualMax,
 		///<summary>Boolean - Defaults to false. Allows offices to cause processing estimates to zero out write-offs when aging or frequency limitations are exceeded.</summary>
+		[PrefName(ValueType=PrefValueType.BOOL)]
 		InsPlansZeroWriteOffsOnFreqOrAging,
 		///<summary>Boolean.  False by default.  When enabled, procedure fees will always use the UCR fee.</summary>
 		InsPpoAlwaysUseUcrFee,
@@ -1387,18 +1387,18 @@ namespace OpenDentBusiness {
 		InsurancePlansShared,
 		///<summary>7 by default.  Number of days before displaying insurances that need verified.</summary>
 		InsVerifyAppointmentScheduledDays,
-		[PrefName(ValueType=PrefValueType.INT)]
 		///<summary>Defaults to the value of InsVerifyAppointmentScheduledDays. Number of days before displaying a Medicaid plan that needs to be verified.</summary>
+		[PrefName(ValueType=PrefValueType.INT)]
 		InsVerifyAppointmentScheduledDaysMedicaid,
 		///<summary>90 by default. Number of days before requiring insurance plans to be verified.</summary>
 		InsVerifyBenefitEligibilityDays,
-		[PrefName(ValueType=PrefValueType.INT)]
 		///<summary>Defaults to the value of InsVerifyBenefitEligibilityDays. Number of days before requiring Medicaid insurance plans to be verified.</summary>
+		[PrefName(ValueType=PrefValueType.INT)]
 		InsVerifyBenefitEligibilityDaysMedicaid,
 		///<summary>1 by default.  Number of days that a past appointment will show in the "Past Due" insurance verification grid.</summary>
 		InsVerifyDaysFromPastDueAppt,
-		[PrefName(ValueType=PrefValueType.INT)]
 		///<summary>Defaults to the value of InsVerifyDaysFromPastDueAppt.  Number of days that past appointments will show in the "Past Due" ins verification grid for Medicaid.</summary>
+		[PrefName(ValueType=PrefValueType.INT)]
 		InsVerifyDaysFromPastDueApptMedicaid,
 		///<summary>Boolean, false by default.  When true, defaults a filter to the current user instead of All when opening the InsVerifyList.</summary>
 		InsVerifyDefaultToCurrentUser,
@@ -1410,13 +1410,13 @@ namespace OpenDentBusiness {
 		InsVerifyFutureDateBenefitYear,
 		///<summary>Boolean, false by default.  When true, if an appointment is after the benefit renewal month for the insurance plan, make that PatPlan be reverified and postdate the insverify.DateLastVerified.</summary>
 		InsVerifyFutureDatePatEnrollmentYear,
-		[PrefName(ValueType=PrefValueType.STRING)]
 		///<summary>String, empty by default. Stores a comma delimited list of filing codes that determine which insurance plans use Medicaid verification.</summary>
+		[PrefName(ValueType=PrefValueType.STRING)]
 		InsVerifyMedicaidFilingCodes,
 		///<summary>30 by default.  Number of days before requiring patient plans to be verified.</summary>
 		InsVerifyPatientEnrollmentDays,
-		[PrefName(ValueType=PrefValueType.INT)]
 		///<summary>Defaults to the value of InsVerifyPatientEnrollmentDays.  Number of days before requiring Medicaid patient plans to be verified.</summary>
+		[PrefName(ValueType=PrefValueType.INT)]
 		InsVerifyPatientEnrollmentDaysMedicaid,
 		///<summary>Writeoff description displayed in the Account Module and on statements.  If blank, the default is "Writeoff".
 		///We are using "Writeoff" since "PPO Discount" was only used for a brief time in 15.3 while it was Beta and no customer requested it</summary>
@@ -1730,8 +1730,8 @@ namespace OpenDentBusiness {
 		[PrefName(ValueType=PrefValueType.BOOL)]
 		PayPlanRequireLockForAPR,
 		PayPlansBillInAdvanceDays,
-		[PrefName(ValueType=PrefValueType.BOOL)]
 		///<summary>Boolean. False by default. If true, payment plans will use the date of production as the Date Showing. If false, payment plans use the payplanlink.SecDateTEntry as the date showing. That field is not editable and is the date that the user attached the proc to the pp. In the normal scenario of adding procs at the same time as pp creation, this is effectively the pp date. This also handles the scenario where you have a long-running pp and periodically add procedures to it. If we get complaints, we might add this as a date field that users can control.</summary>
+		[PrefName(ValueType=PrefValueType.BOOL)]
 		PayPlanItemDateShowProc,
 		///<summary>Boolean.  False by default.  If true, payment plan window will exclude past activity in the amortization grid by default.</summary>
 		PayPlansExcludePastActivity,

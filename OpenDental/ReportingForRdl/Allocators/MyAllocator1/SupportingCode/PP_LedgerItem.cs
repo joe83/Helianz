@@ -457,9 +457,9 @@ namespace OpenDental.Reporting.Allocators.MyAllocator1
 		/// <returns>The amount actually allocated</returns>
 		public decimal AddAllocation(ulong LedgerItemNumber, decimal allocatedAmount)
 		{
-			/// Note this.AmtUnallocated and allocatedAmount should normally have opposite signs 
-			/// because you are allocating a payment (-ve) to a charge (+ve) or vice versa
-			/// If a different situation is found you need to figure out why
+			// Note this.AmtUnallocated and allocatedAmount should normally have opposite signs
+			// because you are allocating a payment (-ve) to a charge (+ve) or vice versa.
+			// If a different situation is found you need to figure out why.
 			if (this.AmtUnallocated * allocatedAmount > 0)
 				2.ToString(); // set breakpoint here
 

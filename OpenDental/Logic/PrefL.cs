@@ -402,7 +402,7 @@ namespace OpenDental {
 		///<param name="isSilent">Whether this is a silent update. A silent update will have no UI elements appear.</param>
 		///<param name="chooseDatabaseInfo">May be null. The model for the choose database window. Stores all information entered within the window.</param>
 		public static bool CheckProgramVersion(Form formCurrent,bool isSilent,ChooseDatabaseInfo chooseDatabaseInfo,CommandLineArgs commandLineArgs) {
-			if(ODBuild.IsDebug()) {
+			if(ODBuild.ShouldBypassVersionChecks()) {
 				return true;//Development mode never needs to check versions or copy files to other directories.  Simply return true at this point.
 			}
 			if(PrefC.GetBool(PrefName.UpdateWindowShowsClassicView)) {
@@ -1054,6 +1054,9 @@ namespace OpenDental {
 
 		///<summary></summary>
 		private static bool CheckProgramVersionClassic() {
+			if(ODBuild.ShouldBypassVersionChecks()) {
+				return true;
+			}
 			Version versionStored=new Version(PrefC.GetString(PrefName.ProgramVersion));
 			Version versionCurrent=new Version(Application.ProductVersion);
 			string database=MiscData.GetCurrentDatabase();

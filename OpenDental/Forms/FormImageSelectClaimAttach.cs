@@ -311,7 +311,7 @@ namespace OpenDental{
 			ImportImage(bitmapClipboard);
 		}
 
-		///<summary>100ms. Monitor the list of running processes for Snip & Sketch and Snipping Tool, for a short duration,
+		///<summary>100ms. Monitor the list of running processes for Snip &amp; Sketch and Snipping Tool, for a short duration,
 		///and kill any matching processes.  Doesn't stop trying until the duration is over. </summary>
 		private void timerKillSnipToolProcesses_Tick(object sender,EventArgs e) {
 			if(ODEnvironment.IsCloudServer) {
@@ -342,7 +342,7 @@ namespace OpenDental{
 			return countProcesseskilled>0;
 		}
 
-		/// <summary> Return any running Snipping Tool or Snip & Sketch processes </summary>
+		/// <summary> Return any running Snipping Tool or Snip &amp; Sketch processes </summary>
 		private List<Process> GetProcessesSnipTool() {
 			string snippingToolProcess="SnippingTool";
 			string snipAndSketchProcess="ScreenSketch";
@@ -358,7 +358,7 @@ namespace OpenDental{
 			return listProcesses;
 		}
 
-		///<summary>Returns false if a protocol handler for ms-screensketch does not exist, meaning Snip & Sketch is not installed.</summary>
+		///<summary>Returns false if a protocol handler for ms-screensketch does not exist, meaning Snip &amp; Sketch is not installed.</summary>
 		public static bool DoesSnipAndSketchExist() {
 			try {
 				using Microsoft.Win32.RegistryKey registryKeyScreenSketchProtocol=Microsoft.Win32.Registry.ClassesRoot.OpenSubKey(_snipSketchURI);
@@ -380,7 +380,7 @@ namespace OpenDental{
 			return false;
 		}
 
-		///<summary>Attempts to start Snip & Sketch, then Snipping Tool if that fails. Returns true if either started, false if neither did.</summary>
+		///<summary>Attempts to start Snip &amp; Sketch, then Snipping Tool if that fails. Returns true if either started, false if neither did.</summary>
 		public static bool StartSnipAndSketchOrSnippingTool() {
 			if(ODEnvironment.IsCloudServer) {
 				return ODCloudClient.StartSnipAndSketchOrSnippingTool(_snipSketchURI);

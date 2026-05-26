@@ -81,9 +81,9 @@ namespace OpenDental.UI{
 		#endregion Constructor
 
 		#region Properties
+		///<summary>Color of the cells that represent provider time because Pattern=X</summary>
 		[Browsable(false)]
 		[DefaultValue(typeof(Color),"200,220,255")]
-		///<summary>Color of the cells that represent provider time because Pattern=X</summary>
 		public Color ColorProv{
 			get{
 				return _colorProv;
@@ -96,9 +96,9 @@ namespace OpenDental.UI{
 			}
 		}
 
+		///<summary>Color of the cells that represent provider time because PatternSecondary=X</summary>
 		[Browsable(false)]
 		[DefaultValue(typeof(Color),"220,200,255")]
-		///<summary>Color of the cells that represent provider time because PatternSecondary=X</summary>
 		public Color ColorProv2{
 			get{
 				return _colorProv2;
@@ -117,9 +117,9 @@ namespace OpenDental.UI{
 			}
 		}
 
+		///<summary>Corresponds to appointment.Pattern. 5 min per char, and only allow X or /.</summary>
 		[Browsable(false)]
 		[DefaultValue("//XX////////")]
-		///<summary>Corresponds to appointment.Pattern. 5 min per char, and only allow X or /.</summary>
 		public string Pattern{
 			get{
 				return _pattern;
@@ -149,9 +149,9 @@ namespace OpenDental.UI{
 			}
 		}
 
+		///<summary>Corresponds to appointment.PatternSecondary. 5 min per char, and only allow X or /.</summary>
 		[Browsable(false)]
 		[DefaultValue("////////////")]
-		///<summary>Corresponds to appointment.PatternSecondary. 5 min per char, and only allow X or /.</summary>
 		public string PatternSecondary{
 			get{
 				return _patternSecondary;
@@ -184,9 +184,9 @@ namespace OpenDental.UI{
 			}
 		}
 
+		///<summary>Corresponds to appointment.ProvBarText.  One char per cell. No CR or Tab.  Space represents empty cell. No trailing spaces. Do not use the getter inside this class. This truncates the string to not be longer than will fit, which is desirable externally when saving to db. But this is not the desired behavior inside this class. We never want to truncate internally. Always use the private field internally instead of getter.</summary>
 		[Browsable(false)]
 		[DefaultValue("")]
-		///<summary>Corresponds to appointment.ProvBarText.  One char per cell. No CR or Tab.  Space represents empty cell. No trailing spaces. Do not use the getter inside this class. This truncates the string to not be longer than will fit, which is desirable externally when saving to db. But this is not the desired behavior inside this class. We never want to truncate internally. Always use the private field internally instead of getter.</summary>
 		public string ProvBarText{
 			get{
 				if(_provBarText.Length>SelectedLength){//if longer than what's showing
@@ -726,7 +726,7 @@ namespace OpenDental.UI{
 		#endregion Methods - Event Handlers - OnPaint
 
 		#region Methods - Protected
-		///<summary>This is to prevent the form from closing when the user is typing something into the prov slider. It will require that alt must be pressed in order to use Access Keys (&OK).</summary>
+		///<summary>This is to prevent the form from closing when the user is typing something into the prov slider. It will require that alt must be pressed in order to use Access Keys (&amp;OK).</summary>
 		protected override bool ProcessDialogChar(char charCode) {
 			//Example: o with no modifier will return false at the bottom.  It also doesn't call base, so it doesn't bubble up to parent form.
 			if((Control.ModifierKeys & Keys.Alt) == Keys.Alt) {//But if Alt-char, then it will bubble up
