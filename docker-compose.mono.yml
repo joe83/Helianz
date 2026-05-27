@@ -1,0 +1,62 @@
+# =============================================================================
+# docker-compose.mono.yml
+# =============================================================================
+# Runs OpenDentalServer on Mono 6 + XSP4 alongside a MySQL 8 database.
+#
+# Usage:
+#   docker compose -f docker-compose.mono.yml up --build
+#   docker compose -f docker-compose.mono.yml down -v          # tear down + wipe DB
+#
+# The OpenDentalServer web service will be reachable at:
+#   http://localhost:9390/ServiceMain.asmx
+#
+# Compare with the Windows/IIS deployment that typically serves on:
+#   http://localhost:80/OpenDentalServer/ServiceMain.asmx
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # MySQL 8  –  OpenDental database
+  # ---------------------------------------------------------------------------
+  mysql:
+    image: mysql:8.0
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --sql-mode=ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+    environment:
+      MYSQL_ROOT_PASSWORD: rootrootroot       # change before production use
+      MYSQL_DATABASE:      opendental
+      MYSQL_USER:          oduser
+      MYSQL_PASSWORD:      odpass             # must match docker/OpenDentServerConfig.Docker.xml
+    ports:
+      - "3307:3306"     # mapped to 3307 to avoid collision with a local MySQL instance
+    volumes:
+      - od-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootrootroot"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  # ---------------------------------------------------------------------------
+  # OpenDentalServer  –  .NET 4.8 middle-tier web service on Mono 6 / XSP4
+  # ---------------------------------------------------------------------------
+  opendental-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.mono
+    image: opendental-server-mono:latest
+    ports:
+      - "9390:9390"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      # Live-reload the DB config without rebuilding the image:
+      #   edit docker/OpenDentServerConfig.Docker.xml, then restart the container.
+      - ./docker/OpenDentServerConfig.Docker.xml:/app/OpenDentalServerConfig.xml:ro
+    restart: unless-stopped
+
+volumes:
+  od-mysql-data:

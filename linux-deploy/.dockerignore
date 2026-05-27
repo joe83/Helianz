@@ -1,0 +1,56 @@
+# ── Build artefacts ───────────────────────────────────────────────────────────
+Output/
+*/bin/
+*/obj/
+**/*.user
+
+# ── Projects not needed by OpenDentalServer ───────────────────────────────────
+OpenDental/
+OpenDentalGraph/
+OpenDentalWpf/
+WpfControlsOD/
+SparksToothChart/
+TestToothChart/
+TestCanada/
+UnitTests/
+UnitTestsCore/
+OpenDentHL7/
+RdlDesign/
+RdlViewer/
+RdlEngine/
+DocumentationBuilder/
+JobManagerDashboard/
+MySQLManager/
+QueryExecutor/
+ServiceManager/
+SlowQueryLogTool/
+UpdateFileCopier/
+xCrudGenerator/
+CentralManager/
+DatabaseIntegrityCheck/
+MobileWeb/
+ODR/
+Macros/
+PluginExample/
+WebCamOD/
+Direct2dWrapper/
+PasswordVaultWrapper/
+OpenDentalCloud/
+
+# ── Large / unnecessary files ─────────────────────────────────────────────────
+packages/
+*.nupkg
+*.vsix
+*.zip
+*.tar.gz
+*.msi
+
+# ── Version control ───────────────────────────────────────────────────────────
+.git/
+.gitignore
+
+# ── IDE / OS noise ────────────────────────────────────────────────────────────
+.vs/
+*.suo
+.DS_Store
+Thumbs.db

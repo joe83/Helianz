@@ -1,0 +1,7 @@
+# Place your database dump here before running deploy.sh
+#
+# Generate it using:  .\dump-db.ps1
+# Expected filename:  opendental.sql.gz
+#
+# This file (data/.gitkeep) is a placeholder so git tracks the folder.
+# The actual dump file (*.sql.gz) should NOT be committed to source control.

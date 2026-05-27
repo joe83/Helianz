@@ -1,0 +1,62 @@
+# =============================================================================
+# docker-compose.yml  –  OpenDentalServer on Mono 6 + MySQL 8
+# =============================================================================
+# Usage:
+#   docker compose up --build       # first time or after Dockerfile change
+#   docker compose up -d            # background (uses cached image)
+#   docker compose down             # stop
+#   docker compose down -v          # stop + wipe database volume
+#
+# Service endpoint:
+#   http://SERVER_IP:9390/ServiceMain.asmx
+# =============================================================================
+
+services:
+
+  # ── MySQL 8.0 ────────────────────────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --sql-mode=ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+    # Notes on flags:
+    #   mysql_native_password      : required by old MySqlConnector in OpenDental DLLs
+    #                                (MySQL 8.0 default caching_sha2_password is unsupported)
+    #   sql_mode without NO_ZERO_DATE / NO_ZERO_IN_DATE:
+    #                                OpenDental uses 0000-00-00 sentinel dates everywhere;
+    #                                MySQL 8.0 strict mode rejects these by default
+    environment:
+      MYSQL_ROOT_PASSWORD: rootrootroot   # change before production use
+      MYSQL_DATABASE:      opendental
+      MYSQL_USER:          oduser
+      MYSQL_PASSWORD:      odpass         # must match config/OpenDentServerConfig.xml
+    ports:
+      - "3307:3306"   # mapped to 3307 to avoid collision with a local MySQL instance
+    volumes:
+      - od-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootroot root"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  # ── OpenDentalServer (Mono 6 / XSP4) ─────────────────────────────────────
+  opendental-server:
+    build:
+      context: ..                          # repo root is the build context
+      dockerfile: linux-deploy/Dockerfile
+    image: opendental-server-mono:latest
+    ports:
+      - "9390:9390"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      # Bind-mount the config so the hostname resolves to the "mysql" service.
+      # Edit config/OpenDentServerConfig.xml and restart to change DB settings.
+      - ./config/OpenDentServerConfig.xml:/app/OpenDentalServerConfig.xml:ro
+    restart: unless-stopped
+
+volumes:
+  od-mysql-data:

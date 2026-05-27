@@ -1,0 +1,178 @@
+# =============================================================================
+# Dockerfile.mono  –  Build and run OpenDentalServer on Mono 6 / Linux
+# =============================================================================
+# Build:   docker build -f Dockerfile.mono -t opendental-server-mono .
+# Run:     docker run -p 9390:9390 opendental-server-mono
+#
+# Typical use: docker compose -f docker-compose.mono.yml up --build
+#
+# Architecture notes
+# ------------------
+# • OpenDentalServer is a classic ASP.NET Web Service (.asmx) targeting .NET 4.8.
+#   Mono 6.12 supports the .NET 4.8 API surface and includes MSBuild 16.
+# • XSP4 (mono-xsp4) is Mono's built-in ASP.NET development/lightweight server.
+#   It replaces IIS for the Linux deployment.
+# • Three Windows-specific blockers are patched at build time (no source edits):
+#     1. PasswordVaultWrapper references Windows.winmd (WinRT) → replaced by
+#        docker/PasswordVaultWrapper.Linux.csproj + docker/WindowsPasswordVaultWrapper.Linux.cs
+#     2. System.Web.DynamicData / System.Web.Entity / System.Web.ApplicationServices
+#        are boilerplate references not present in Mono's GAC → stripped with sed.
+#     3. ResGenToolArchitecture=Managed32Bit fails on 64-bit Linux → overridden to ManagedIL.
+# • Windows-only P/Invokes (kernel32.dll in Rs232, WindowsTime, Sirona, Programs)
+#   exist in OpenDentBusiness but are in dental-device/serial-port code paths that
+#   the server never exercises during normal web-service operation. They will throw
+#   DllNotFoundException only if those specific code paths are called.
+# =============================================================================
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 1 – Build
+# ─────────────────────────────────────────────────────────────────────────────
+# mono:6.12 (full image) already ships with msbuild pre-installed — no apt-get needed.
+# The slim variant lacks msbuild; using the full image avoids Debian Buster EOL issues
+# in the build stage (apt repos are gone but pre-installed packages work fine).
+FROM mono:6.12 AS builder
+
+WORKDIR /src
+
+# ---- Copy reference DLLs (HintPath targets, used at compile time) ----
+COPY ["Required dlls/", "Required dlls/"]
+
+# ---- Copy each project in dependency order ----
+COPY ["CodeBase/",              "CodeBase/"]
+COPY ["DataConnectionBase/",    "DataConnectionBase/"]
+COPY ["OpenDentalCloud/",       "OpenDentalCloud/"]
+COPY ["PasswordVaultWrapper/",  "PasswordVaultWrapper/"]
+COPY ["OpenDentBusiness/",      "OpenDentBusiness/"]
+COPY ["OpenDentalServer/",      "OpenDentalServer/"]
+
+# ---- Patch 1: swap in Linux-compatible PasswordVaultWrapper ----
+# Replaces Windows.winmd (WinRT) csproj + source with a no-op stub.
+COPY ["docker/PasswordVaultWrapper.Linux.csproj",        "PasswordVaultWrapper/PasswordVaultWrapper.csproj"]
+COPY ["docker/WindowsPasswordVaultWrapper.Linux.cs",     "PasswordVaultWrapper/WindowsPasswordVaultWrapper.cs"]
+
+# ---- Patch 2: remove assembly refs absent from Mono's GAC ----
+# These are boilerplate Visual Studio references never used in the .asmx code.
+RUN sed -i \
+      '/<Reference Include="System\.Web\.DynamicData"/d; \
+       /<Reference Include="System\.Web\.Entity"/d; \
+       /<Reference Include="System\.Web\.ApplicationServices"/d' \
+    OpenDentalServer/OpenDentalServer.csproj
+
+# ---- Patch 3: stub out System.Windows.Clipboard (WPF/PresentationCore) ----
+# ODClipboard.cs uses System.Windows.Clipboard inside IsCloudServer blocks only.
+# The server never runs as a cloud server, so these calls are dead code.
+# PresentationCore is not available in Mono on Linux; replace with no-ops.
+RUN sed -i \
+      's/System\.Windows\.Clipboard\.SetText([^;]*);/\/\/ no-op on Linux/g' \
+    CodeBase/Utilities/ODClipboard.cs
+
+# ---- Patch 4: remove COM references (ADODB, CDO) from OpenDentBusiness ----
+# COMReference items require AxImp.exe / TlbImp.exe (Windows SDK tools).
+# Neither exists on Linux. Strip the entire COMReference ItemGroup with Perl.
+RUN perl -i -0pe \
+      's|<ItemGroup>\s*<COMReference\b.*?</ItemGroup>||gms' \
+    OpenDentBusiness/OpenDentBusiness.csproj
+
+# ---- Patch 5: lowercase-mirror Resources/ as resources/ for Mono ResXFileRef ----
+# Mono's ResXFileRef resolver lowercases all path components on Linux:
+#   ../Resources/ClaimForms/ClaimFormADA 2019.xml
+#   → ../resources/claimforms/claimformada 2019.xml
+# Create an all-lowercase copy so the resolved path exists.
+RUN mkdir -p OpenDentBusiness/resources \
+ && find OpenDentBusiness/Resources -mindepth 1 -type d | while IFS= read -r d; do \
+      rel=$(printf '%s' "${d#OpenDentBusiness/Resources}" | tr 'A-Z' 'a-z'); \
+      mkdir -p "OpenDentBusiness/resources${rel}"; \
+    done \
+ && find OpenDentBusiness/Resources -type f | while IFS= read -r f; do \
+      rel=$(printf '%s' "${f#OpenDentBusiness/Resources/}" | tr 'A-Z' 'a-z'); \
+      cp -- "$f" "OpenDentBusiness/resources/${rel}"; \
+    done
+
+# ---- Patch 6: compile WPF/CDO stub assembly for missing Mono types ----
+# PresentationCore, PresentationFramework, and CDO COM interop are unavailable
+# in Mono on Linux.  Provide minimal stub types so OpenDentBusiness compiles.
+COPY ["docker/WpfCdoStubs.cs", "docker/WpfCdoStubs.cs"]
+RUN mcs -target:library -r:WindowsBase.dll -out:"Required dlls/WpfCdoStubs.dll" docker/WpfCdoStubs.cs \
+ && sed -i '$s|</Project>|<ItemGroup><Reference Include="WpfCdoStubs"><HintPath>../Required dlls/WpfCdoStubs.dll</HintPath></Reference></ItemGroup></Project>|' \
+    OpenDentBusiness/OpenDentBusiness.csproj
+
+# ---- Patch 7: remove unused Windows-only using directives ----
+# These using statements reference assemblies absent from Mono on Linux.
+# The namespaces are imported but none of their types are actually used in the
+# file body – removing the directive is sufficient to clear the compile error.
+RUN sed -i \
+      's|^using CDO;|// [Linux] using CDO;|g; \
+       s|^using ADODB;|// [Linux] using ADODB;|g; \
+       s|^using System.Windows.Navigation;|// [Linux] using System.Windows.Navigation;|g; \
+       s|^using System.Windows.Media.Imaging;|// [Linux] using System.Windows.Media.Imaging;|g; \
+       s|^using System.Windows.Controls;|// [Linux] using System.Windows.Controls;|g; \
+       s|^using System.Windows.Controls.Primitives;|// [Linux] using System.Windows.Controls.Primitives;|g; \
+       s|^using System.Windows.Media.Media3D;|// [Linux] using System.Windows.Media.Media3D;|g' \
+    "OpenDentBusiness/Data Interface/Accounts.cs" \
+    "OpenDentBusiness/Data Interface/EmailMessages.cs" \
+    "OpenDentBusiness/Eclaims/CanadianOutput.cs" \
+    "OpenDentBusiness/Misc/ConvertDatabases7.cs" \
+    "OpenDentBusiness/Misc/ConvertDatabases8.cs" \
+    "OpenDentBusiness/SheetFramework/ToothChartHelper.cs" \
+    "OpenDentBusiness/WebBridges/PayConnect2.cs"
+
+# ---- Patch 8: replace Dotfuscated ODCrypt.dll with a Mono-compatible build ----
+# The original ODCrypt.dll is obfuscated (Dotfuscator); its generated IL contains
+# control-flow patterns that Mono 6.12's JIT rejects with InvalidProgramException
+# ("Invalid IL code in ODCrypt.Sha3:Hash(byte[])").
+# Compile a clean reimplementation from source and overwrite the binary in-tree.
+COPY ["docker/ODCryptMono.cs", "docker/ODCryptMono.cs"]
+RUN mcs -target:library -out:"Required dlls/ODCrypt.dll" docker/ODCryptMono.cs
+
+# ---- Build (msbuild resolves ProjectReferences automatically) ----
+# /p:ResGenToolArchitecture=ManagedIL  – avoids the "32-bit ResGen" failure on x64 Linux
+# /p:TargetFrameworkVersion=v4.8       – explicit, matches the project setting
+# Building OpenDentalServer alone triggers all transitive project-reference builds.
+RUN msbuild OpenDentalServer/OpenDentalServer.csproj \
+      /p:Configuration=Release \
+      /p:Platform=AnyCPU \
+      /p:ResGenToolArchitecture=ManagedIL \
+      /p:TargetFrameworkVersion=v4.8 \
+      /t:Build \
+      /v:minimal \
+      /nologo
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 2 – Runtime
+# ─────────────────────────────────────────────────────────────────────────────
+FROM mono:6.12-slim AS runtime
+
+# mono-xsp4: Mono's lightweight ASP.NET host (replaces IIS on Linux).
+# Debian Buster EOL: redirect to archive mirrors before installing.
+RUN sed -i \
+      's|http://deb.debian.org/debian|http://archive.debian.org/debian|g; \
+       s|http://security.debian.org/debian-security|http://archive.debian.org/debian-security|g' \
+      /etc/apt/sources.list \
+ && sed -i '/buster-updates/d' /etc/apt/sources.list \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends mono-xsp4 \
+ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Web application root:
+#   /app/ServiceMain.asmx   – ASMX entry point
+#   /app/Web.config          – ASP.NET configuration
+#   /app/bin/                – compiled DLLs (OpenDentalServer + all references)
+COPY --from=builder /src/OpenDentalServer/ServiceMain.asmx  ./
+COPY --from=builder /src/OpenDentalServer/Web.config        ./
+COPY --from=builder /src/OpenDentalServer/bin/              bin/
+
+# Server config: database connection settings.
+# In docker-compose this file is bind-mounted from docker/OpenDentServerConfig.Docker.xml
+# so the MySQL hostname points to the "mysql" compose service instead of "localhost".
+COPY docker/OpenDentServerConfig.Docker.xml  OpenDentalServerConfig.xml
+
+# Port OpenDentalServer listens on (matches ServerPort in the config file).
+EXPOSE 9390
+
+# XSP4 serves the web application in /app on port 9390.
+# "sleep infinity |" keeps stdin open so xsp4's Console.ReadLine() never
+# returns (it reads from the pipe which never produces a newline).
+# Without this, Docker's closed stdin causes immediate EOF → xsp4 stops.
+ENTRYPOINT ["sh", "-c", "sleep infinity | xsp4 --root=/app --address=0.0.0.0 --port=9390"]

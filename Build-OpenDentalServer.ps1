@@ -52,12 +52,48 @@
 .PARAMETER MsBuildPath
 	Full path to MSBuild.exe. Auto-detected from Visual Studio if not provided.
 
+.PARAMETER ConfigureServer
+	Switch: when set, opens an interactive dialog to configure the MySQL database
+	connection and middle-tier port, then writes OpenDentalServerConfig.xml to the
+	output folder. Existing credential values in the source config are shown as
+	defaults; leave a password field blank to keep the existing value.
+
+.PARAMETER MySqlHost
+	MySQL / MariaDB server hostname or IP. Used as the default in the configuration
+	dialog when -ConfigureServer is set. Default: localhost.
+
+.PARAMETER MySqlDatabase
+	MySQL database name. Used as the default in the dialog. Default: opendental.
+
+.PARAMETER MySqlUser
+	MySQL admin (read/write) username. Used as the default in the dialog.
+
+.PARAMETER MySqlUserLow
+	MySQL low-privilege (read-only) username. Leave blank to skip that entry.
+
+.PARAMETER ServerPort
+	Middle-tier ServerPort written into OpenDentalServerConfig.xml. Default: 9390.
+
+.PARAMETER BackupDir
+	Folder where timestamped config backups (and optional output-dir archives)
+	are stored. Default: .\ConfigBackups
+
+.PARAMETER BackupOutputDir
+	Switch: when set, archives the current contents of -OutputDir into -BackupDir
+	before overwriting with the new build.
+
 .EXAMPLE
 	# Build only
 	.\Build-OpenDentalServer.ps1
 
 	# Build + register in IIS (run as Administrator)
 	.\Build-OpenDentalServer.ps1 -RegisterIIS
+
+	# Build + register in IIS + configure DB connection interactively (run as Administrator)
+	.\Build-OpenDentalServer.ps1 -RegisterIIS -ConfigureServer
+
+	# Build + configure DB + backup existing output dir before overwriting
+	.\Build-OpenDentalServer.ps1 -ConfigureServer -BackupOutputDir
 
 	# Build + create a dedicated IIS site on port 8080 (run as Administrator)
 	.\Build-OpenDentalServer.ps1 -RegisterIIS -CreateDedicatedSite -IISPort 8080
@@ -82,6 +118,23 @@ param(
 	[switch]$RegisterIIS,
 
 	[switch]$CreateDedicatedSite,
+
+	# --- Interactive configuration & backup ---
+	[switch]$ConfigureServer,
+
+	[string]$MySqlHost = '',
+
+	[string]$MySqlDatabase = '',
+
+	[string]$MySqlUser = '',
+
+	[string]$MySqlUserLow = '',
+
+	[int]$ServerPort = 9390,
+
+	[string]$BackupDir = "$PSScriptRoot\ConfigBackups",
+
+	[switch]$BackupOutputDir,
 
 	[string]$MsBuildPath = ''
 )
@@ -330,6 +383,188 @@ function Get-SiteBaseUrl {
 }
 
 # ---------------------------------------------------------------------------
+# Helper: Read a password securely (prompt + optional confirmation)
+# ---------------------------------------------------------------------------
+function Read-SecurePassword {
+	param(
+		[string]$Prompt,
+		[switch]$Confirm
+	)
+	while ($true) {
+		$ss = Read-Host -Prompt $Prompt -AsSecureString
+		$plain = [Runtime.InteropServices.Marshal]::PtrToStringBSTR(
+			[Runtime.InteropServices.Marshal]::SecureStringToBSTR($ss))
+		if (-not $Confirm) { return $plain }
+		$ss2  = Read-Host -Prompt "Confirm $Prompt" -AsSecureString
+		$plain2 = [Runtime.InteropServices.Marshal]::PtrToStringBSTR(
+			[Runtime.InteropServices.Marshal]::SecureStringToBSTR($ss2))
+		if ($plain -eq $plain2) { return $plain }
+		Write-Host "  Passwords do not match. Please try again." -ForegroundColor Red
+	}
+}
+
+# ---------------------------------------------------------------------------
+# Helper: Parse an existing OpenDentalServerConfig.xml into a PSCustomObject
+# ---------------------------------------------------------------------------
+function Read-ExistingServerConfig {
+	param([string]$XmlPath)
+	if (-not $XmlPath -or -not (Test-Path $XmlPath)) { return $null }
+	try {
+		[xml]$xml = Get-Content $XmlPath -Encoding UTF8
+		$conn = $xml.SelectSingleNode('//DatabaseConnection')
+		return [PSCustomObject]@{
+			ServerPort  = if ($xml.ConnectionSettings.ServerPort) { [int]$xml.ConnectionSettings.ServerPort } else { 9390 }
+			Host        = if ($conn -and $conn.ComputerName) { $conn.ComputerName.Trim() } else { 'localhost' }
+			Database    = if ($conn -and $conn.Database)      { $conn.Database.Trim() }      else { 'opendental' }
+			User        = if ($conn -and $conn.User)           { $conn.User.Trim() }           else { 'root' }
+			Password    = if ($conn -and $conn.SelectSingleNode('Password'))    { $conn.SelectSingleNode('Password').InnerText.Trim() }    else { '' }
+			UserLow     = if ($conn -and $conn.UserLow)        { $conn.UserLow.Trim() }        else { '' }
+			PasswordLow = if ($conn -and $conn.SelectSingleNode('PasswordLow')) { $conn.SelectSingleNode('PasswordLow').InnerText.Trim() } else { '' }
+		}
+	} catch {
+		Write-Host "  [WARN] Could not parse existing config: $_" -ForegroundColor DarkYellow
+		return $null
+	}
+}
+
+# ---------------------------------------------------------------------------
+# Helper: Interactive dialog - collect server / DB connection settings
+# ---------------------------------------------------------------------------
+function Invoke-ServerConfigDialog {
+	param(
+		[string]$ParamHost,
+		[string]$ParamDatabase,
+		[string]$ParamUser,
+		[string]$ParamUserLow,
+		[int]   $ParamPort,
+		[string]$ExistingConfigPath
+	)
+
+	$existing = Read-ExistingServerConfig -XmlPath $ExistingConfigPath
+
+	Write-Host ""
+	Write-Host "  --------------------------------------------------------" -ForegroundColor Cyan
+	Write-Host "  OpenDentalServer Configuration Setup" -ForegroundColor Cyan
+	Write-Host "  --------------------------------------------------------" -ForegroundColor Cyan
+	Write-Host "  Press Enter to accept the [default] value shown." -ForegroundColor DarkGray
+	Write-Host "  For password fields, press Enter to keep the existing value." -ForegroundColor DarkGray
+	Write-Host ""
+
+	# Inner helper: prompt with default
+	function p {
+		param([string]$Label, [string]$Param, [string]$Existing, [string]$Fallback)
+		$default = if (-not [string]::IsNullOrWhiteSpace($Param))     { $Param }
+		           elseif (-not [string]::IsNullOrWhiteSpace($Existing)) { $Existing }
+		           else                                                    { $Fallback }
+		$displayDefault = if ($default) { " [$default]" } else { '' }
+		$val = Read-Host -Prompt "  $Label$displayDefault"
+		if ([string]::IsNullOrWhiteSpace($val)) { return $default }
+		return $val.Trim()
+	}
+
+	# --- Middle-tier port ---
+	$existingPort = if ($existing) { $existing.ServerPort } else { 9390 }
+	$portStr   = p -Label 'Middle-tier ServerPort' -Param $(if ($ParamPort -gt 0) { "$ParamPort" } else { '' }) -Existing "$existingPort" -Fallback '9390'
+	$resolvedPort = 9390
+	[int]::TryParse($portStr, [ref]$resolvedPort) | Out-Null
+
+	Write-Host ""
+	Write-Host "  --- MySQL / Database Connection ---" -ForegroundColor DarkCyan
+
+	$resolvedHost = p -Label 'MySQL Host'     -Param $ParamHost     -Existing $(if ($existing) { $existing.Host }     else { '' }) -Fallback 'localhost'
+	$resolvedDb   = p -Label 'Database Name'  -Param $ParamDatabase  -Existing $(if ($existing) { $existing.Database } else { '' }) -Fallback 'opendental'
+
+	Write-Host ""
+	Write-Host "  --- Admin (Read/Write) User ---" -ForegroundColor DarkCyan
+
+	$resolvedUser = p -Label 'Admin User' -Param $ParamUser -Existing $(if ($existing) { $existing.User } else { '' }) -Fallback 'root'
+
+	$newPwd = Read-SecurePassword -Prompt '  Admin Password (Enter to keep existing)'
+	$resolvedPwd = if (-not [string]::IsNullOrEmpty($newPwd)) { $newPwd }
+	               elseif ($existing) { $existing.Password; Write-Host "  (admin password unchanged)" -ForegroundColor DarkGray }
+	               else { '' }
+
+	Write-Host ""
+	Write-Host "  --- Low-Privilege (Read-Only) User ---" -ForegroundColor DarkCyan
+	Write-Host "  Leave blank to omit the low-privilege account." -ForegroundColor DarkGray
+
+	$resolvedUserLow = p -Label 'Low-Privilege User' -Param $ParamUserLow -Existing $(if ($existing) { $existing.UserLow } else { '' }) -Fallback ''
+
+	$resolvedPwdLow = ''
+	if (-not [string]::IsNullOrWhiteSpace($resolvedUserLow)) {
+		$newPwdLow = Read-SecurePassword -Prompt '  Low-Privilege Password (Enter to keep existing)'
+		$resolvedPwdLow = if (-not [string]::IsNullOrEmpty($newPwdLow)) { $newPwdLow }
+		                  elseif ($existing) { $existing.PasswordLow; Write-Host "  (low password unchanged)" -ForegroundColor DarkGray }
+		                  else { '' }
+	}
+
+	Write-Host ""
+	return [PSCustomObject]@{
+		ServerPort  = $resolvedPort
+		Host        = $resolvedHost
+		Database    = $resolvedDb
+		User        = $resolvedUser
+		Password    = $resolvedPwd
+		UserLow     = $resolvedUserLow
+		PasswordLow = $resolvedPwdLow
+	}
+}
+
+# ---------------------------------------------------------------------------
+# Helper: Write OpenDentalServerConfig.xml from a config object
+# ---------------------------------------------------------------------------
+function Write-ServerConfigXml {
+	param(
+		[PSCustomObject]$Config,
+		[string]$DestinationPath
+	)
+	$esc = { param($s) [System.Security.SecurityElement]::Escape($s) }
+	$lines = [System.Collections.Generic.List[string]]::new()
+	$lines.Add('<?xml version="1.0"?>')
+	$lines.Add('<ConnectionSettings>')
+	$lines.Add("	<ServerPort>$($Config.ServerPort)</ServerPort>")
+	$lines.Add("	<DatabaseConnection>")
+	$lines.Add("		<ComputerName>$(& $esc $Config.Host)</ComputerName>")
+	$lines.Add("		<Database>$(& $esc $Config.Database)</Database>")
+	$lines.Add("		<User>$(& $esc $Config.User)</User>")
+	$lines.Add("		<Password>$(& $esc $Config.Password)</Password>")
+	$lines.Add("		<UserLow>$(& $esc $Config.UserLow)</UserLow>")
+	$lines.Add("		<PasswordLow>$(& $esc $Config.PasswordLow)</PasswordLow>")
+	$lines.Add("	</DatabaseConnection>")
+	$lines.Add('</ConnectionSettings>')
+	Set-Content -Path $DestinationPath -Value $lines -Encoding UTF8
+}
+
+# ---------------------------------------------------------------------------
+# Helper: Backup a single file with a timestamp suffix
+# ---------------------------------------------------------------------------
+function Invoke-ConfigBackup {
+	param([string]$SourcePath, [string]$BackupDir)
+	if (-not (Test-Path $SourcePath)) { return }
+	if (-not (Test-Path $BackupDir)) { New-Item -ItemType Directory -Path $BackupDir -Force | Out-Null }
+	$ts   = Get-Date -Format 'yyyyMMdd_HHmmss'
+	$base = [System.IO.Path]::GetFileNameWithoutExtension($SourcePath)
+	$ext  = [System.IO.Path]::GetExtension($SourcePath)
+	$dest = Join-Path $BackupDir "${base}_${ts}${ext}"
+	Copy-Item -Path $SourcePath -Destination $dest -Force
+	Write-Host "  [Backup] $SourcePath  ->  $dest" -ForegroundColor DarkGray
+}
+
+# ---------------------------------------------------------------------------
+# Helper: Archive the output directory before overwriting
+# ---------------------------------------------------------------------------
+function Invoke-OutputDirBackup {
+	param([string]$OutputDir, [string]$BackupDir)
+	if (-not (Test-Path $OutputDir)) { return }
+	if (-not (Test-Path $BackupDir)) { New-Item -ItemType Directory -Path $BackupDir -Force | Out-Null }
+	$ts   = Get-Date -Format 'yyyyMMdd_HHmmss'
+	$dest = Join-Path $BackupDir "OpenDentalServer_$ts"
+	Write-Host "  [Backup] Archiving output dir -> $dest" -ForegroundColor DarkGray
+	Copy-Item -Path $OutputDir -Destination $dest -Recurse -Force
+	Write-Host "  [Backup] Archive complete." -ForegroundColor DarkGray
+}
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 $stopwatch = [Diagnostics.Stopwatch]::StartNew()
@@ -344,6 +579,12 @@ if ($RegisterIIS) {
 	Write-Host "  IIS Site      : $IISSiteName" -ForegroundColor Cyan
 	Write-Host "  IIS App       : $IISAppName" -ForegroundColor Cyan
 	Write-Host "  App Pool      : $AppPoolName" -ForegroundColor Cyan
+}
+if ($ConfigureServer) {
+	Write-Host "  Configure DB  : YES (interactive dialog)" -ForegroundColor Cyan
+}
+if ($BackupOutputDir) {
+	Write-Host "  Backup Dir    : $BackupDir" -ForegroundColor Cyan
 }
 Write-Host "========================================================" -ForegroundColor Cyan
 Write-Host ""
@@ -473,13 +714,40 @@ if (-not (Test-Path (Join-Path $sourceDir 'Web.config')) -or -not (Test-Path (Jo
 }
 
 if (Test-Path $OutputDir) {
+	if ($BackupOutputDir) {
+		Write-Host "  Backing up existing output directory..." -ForegroundColor DarkGray
+		Invoke-OutputDirBackup -OutputDir $OutputDir -BackupDir $BackupDir
+	}
 	Get-ChildItem -Path $OutputDir -Force | Remove-Item -Recurse -Force
 }
 
 Copy-Item -Path "$sourceDir\*" -Destination $OutputDir -Recurse -Force
 
 $targetConfigPath = Join-Path $OutputDir 'OpenDentalServerConfig.xml'
-if ($configSourcePath) {
+
+# Back up the existing deployed config (if any) before deciding what to write
+if (Test-Path $targetConfigPath) {
+	Invoke-ConfigBackup -SourcePath $targetConfigPath -BackupDir $BackupDir
+}
+
+if ($ConfigureServer) {
+	# Prefer the source-tree config as the starting point for defaults;
+	# fall back to whatever is already in the output folder.
+	$dialogSeedPath = if ($configSourcePath) { $configSourcePath }
+	                  elseif ($preservedConfigPath -and (Test-Path $preservedConfigPath)) { $preservedConfigPath }
+	                  else { $targetConfigPath }
+
+	$serverCfg = Invoke-ServerConfigDialog `
+		-ParamHost      $MySqlHost `
+		-ParamDatabase  $MySqlDatabase `
+		-ParamUser      $MySqlUser `
+		-ParamUserLow   $MySqlUserLow `
+		-ParamPort      $ServerPort `
+		-ExistingConfigPath $dialogSeedPath
+
+	Write-ServerConfigXml -Config $serverCfg -DestinationPath $targetConfigPath
+	Write-Host "[INFO] OpenDentalServerConfig.xml written with configured settings." -ForegroundColor Green
+} elseif ($configSourcePath) {
 	Copy-Item -Path $configSourcePath -Destination $targetConfigPath -Force
 	Write-Host "[INFO] Copied config file to: $targetConfigPath" -ForegroundColor DarkCyan
 } elseif ($preservedConfigPath -and (Test-Path $preservedConfigPath)) {
@@ -487,6 +755,7 @@ if ($configSourcePath) {
 	Write-Host "[INFO] Preserved existing OpenDentalServerConfig.xml" -ForegroundColor DarkCyan
 } else {
 	Write-Host "[WARN] No OpenDentalServerConfig.xml source found. The middle tier will not connect to MySQL until this file is added." -ForegroundColor DarkYellow
+	Write-Host "[TIP]  Re-run with -ConfigureServer to set up the database connection interactively." -ForegroundColor DarkYellow
 }
 
 # Clean up temp publish directory

@@ -1,0 +1,70 @@
+# .dockerignore  –  limits the Docker build context sent to the daemon.
+# Only the server-side projects and their dependencies are needed.
+
+# ── Build artefacts ──────────────────────────────────────────────────────────
+**/bin/
+**/obj/
+Output/
+
+# ── UI / client-only projects (not part of the server build) ─────────────────
+OpenDental/
+OpenDentalGraph/
+OpenDentalWpf/
+WpfControlsOD/
+SparksToothChart/
+TestToothChart/
+TestCanada/
+Direct2dWrapper/
+OpenDentalServer.Api/
+
+# ── Test / tooling projects ───────────────────────────────────────────────────
+UnitTests/
+UnitTestsCore/
+OpenDentBusiness.Tests/
+DatabaseIntegrityCheck/
+xCrudGenerator/
+QueryExecutor/
+SlowQueryLogTool/
+DocumentationBuilder/
+JobManagerDashboard/
+Macros/
+
+# ── CentralManager (standalone app, not the server service) ──────────────────
+CentralManager/
+
+# ── Other standalone apps not needed for server build ────────────────────────
+ODR/
+MySQLManager/
+ServiceManager/
+MobileWeb/
+WebCamOD/
+PluginExample/
+UpdateFileCopier/
+RdlDesign/
+RdlEngine/
+RdlViewer/
+
+# ── CodeBaseStandard (file-link variant; CodeBase itself is included) ─────────
+CodeBaseStandard/
+
+# ── Old / legacy directories ─────────────────────────────────────────────────
+DataClassesOld/
+packaging/
+
+# ── Legacy NuGet packages folder (only Mono.Cecil; not needed for server) ─────
+packages/
+
+# ── Repo meta / scripts ──────────────────────────────────────────────────────
+.git/
+.gitignore
+*.md
+*.ps1
+*.cmd
+*.htm
+Makefile
+BUILDING.Linux
+LICENSE
+tempCompNames.txt
+UpgradeDb.cs
+UpgradeLog.htm
+FreeDentalConfig.xml
