@@ -23,10 +23,10 @@ namespace UpdateFileCopier {
 				Application.Run(new FormMain(arguments[0],arguments[1],arguments[2],true,true));
 			}
 			else if(arguments.Length==2) {
-				Application.Run(new FormMain(arguments[0],arguments[1],@"C:\Program Files\Open Dental",true,true));
+				Application.Run(new FormMain(arguments[0],arguments[1],@"C:\Program Files\Helianz",true,true));
 			}
 			else {//just for rare debugging situations
-				Application.Run(new FormMain(@"C:\OpenDentImages\UpdateFiles","0",@"C:\Program Files\Open Dental",true,true));
+				Application.Run(new FormMain(@"C:\HelianzImages\UpdateFiles","0",@"C:\Program Files\Helianz",true,true));
 			}
 		}
 	}

@@ -8,7 +8,7 @@ namespace CodeBase {
 	///Also takes care of making sure that this window does not get "stuck" open by spawning a thread that monitors if CloseGracefully has been called.
 	///Extending classes are supposed to take care of the desired UI.  Does not extend ODForm on purpose.</summary>
 	public class FormProgressBase : Form {
-		///<summary>An indicator owned by Open Dental indicating that this progress window needs to close regardless if it is done computing or not.
+		///<summary>An indicator owned by Helianz indicating that this progress window needs to close regardless if it is done computing or not.
 		///Set to true by the entity that instantiated this progress form to gracefully close when the long computation has finished.</summary>
 		public bool ForceClose;
 		///<summary>An indicator if this form has closed itself and no longer needs to monitor the ForceClose boolean.</summary>

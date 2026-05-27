@@ -9,12 +9,12 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using OpenDental.UI;
-using OpenDentBusiness;
+using Helianz.UI;
+using HelianzBusiness;
 
 namespace UnitTests
 {
-	public partial class Form2dDrawingTests : OpenDental.FormODBase{
+	public partial class Form2dDrawingTests : Helianz.FormODBase{
 		Direct2d d;
 
 		public Form2dDrawingTests()

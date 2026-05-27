@@ -32,7 +32,7 @@ namespace WpfControls.UI {
 			Close();
 			return;
 		}
-		webView2.Navigate("https://www.opendental.com/");
+		webView2.Navigate("https://www.helianz.com/");
 	}
 	-WebView2 must be disposed correctly or it will throw a System.InvalidOperationException.
 	-Call the webView2.Dispose() method on FormClosing:
@@ -53,10 +53,10 @@ namespace WpfControls.UI {
 
 		public async Task Init() {
 			//Was like below by default, which didn't work because of file permissions in that folder.
-			//string userDataFolder= "C:\\Program Files (x86)\\OpenDental\\OpenDental.exe.WebView2";
+			//string userDataFolder= "C:\\Program Files (x86)\\Helianz\\Helianz.exe.WebView2";
 			//New location is like this:
-			//C:\\Users\\User\\AppData\\Local\\Temp\\opendental
-			string userDataFolder=OpenDentBusiness.PrefC.GetTempFolderPath();
+			//C:\\Users\\User\\AppData\\Local\\Temp\\helianz
+			string userDataFolder=HelianzBusiness.PrefC.GetTempFolderPath();
 			CoreWebView2Environment webView2Environment=await CoreWebView2Environment.CreateAsync(null,userDataFolder,null);
 			await webView2.EnsureCoreWebView2Async(webView2Environment);
 		}

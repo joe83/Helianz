@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness;
+using HelianzBusiness;
 using UnitTestsCore;
-using OpenDental;
+using Helianz;
 using CodeBase;
 
 namespace UnitTests.ODFileUtils_Tests {
@@ -31,16 +31,16 @@ namespace UnitTests.ODFileUtils_Tests {
 
 		[TestMethod]
 		public void ODFileUtils_FilePath_UNCPath () {
-			string testString=@"This is a test to find the UNC path \\opendental.od\serverfiles\ ";
+			string testString=@"This is a test to find the UNC path \\helianz.od\serverfiles\ ";
 			List<string> returnedString=ODFileUtils.GetFilePathsFromText(testString);
 			Assert.AreEqual(1,returnedString.Count);
-			Assert.AreEqual(@"\\opendental.od\serverfiles",returnedString[0]);
+			Assert.AreEqual(@"\\helianz.od\serverfiles",returnedString[0]);
 		}
 
 		[TestMethod]
 		//Dont find folders with no slash at the end. No way to know if end of file path or not.
 		public void ODFileUtils_FilePath_UNCPath_Without_Ending_Slash() {
-			string testString=@"This is a test to find the UNC path \\opendental.od\serverfiles";
+			string testString=@"This is a test to find the UNC path \\helianz.od\serverfiles";
 			List<string> returnedString=ODFileUtils.GetFilePathsFromText(testString);
 			Assert.AreEqual(0,returnedString.Count);
 		}
@@ -48,18 +48,18 @@ namespace UnitTests.ODFileUtils_Tests {
 		[TestMethod]
 		//Dont find folders with no white space at the end. No way to know if end of file path or not.
 		public void ODFileUtils_FilePath_UNCPath_Without_Ending_Space() {
-			string testString=@"This is a test to find the UNC path \\opendental.od\serverfiles\";
+			string testString=@"This is a test to find the UNC path \\helianz.od\serverfiles\";
 			List<string> returnedString=ODFileUtils.GetFilePathsFromText(testString);
 			Assert.AreEqual(1,returnedString.Count);
 		}
 
 		[TestMethod]
 		public void ODFileUtils_FilePath_UNCPath_Multiple_One_Line() {
-			string testString=@"This is a test to find the UNC path \\opendental.od\serverfiles\ and c:/Test.txt ";
+			string testString=@"This is a test to find the UNC path \\helianz.od\serverfiles\ and c:/Test.txt ";
 			List<string> returnedString=ODFileUtils.GetFilePathsFromText(testString);
 			Assert.AreEqual(2,returnedString.Count);
 			//Two slashes because FileInfo.Directory returns 2
-			Assert.AreEqual("\\\\opendental.od\\serverfiles",returnedString[0]);
+			Assert.AreEqual("\\\\helianz.od\\serverfiles",returnedString[0]);
 			//Rearranges slashes to go correct way
 			Assert.AreEqual("c:\\",returnedString[1]);
 		}
@@ -84,12 +84,12 @@ namespace UnitTests.ODFileUtils_Tests {
 		public void ODFileUtils_FilePath_NewLines() {
 			string testString=@"This is a big block od text 
 			with new lines to show new lines can also be white space
-			\\opendental.od\serverfiles\
+			\\helianz.od\serverfiles\
 			";
 			List<string> returnedString=ODFileUtils.GetFilePathsFromText(testString);
 			Assert.AreEqual(1,returnedString.Count);
 			//Two slashes because FileInfo.Directory returns 2
-			Assert.AreEqual("\\\\opendental.od\\serverfiles",returnedString[0]);
+			Assert.AreEqual("\\\\helianz.od\\serverfiles",returnedString[0]);
 		}
 
 		[TestMethod]

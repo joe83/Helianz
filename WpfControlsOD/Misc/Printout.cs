@@ -9,16 +9,16 @@ using System.ServiceProcess;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using OpenDental;
-using OpenDentBusiness;
+using Helianz;
+using HelianzBusiness;
 using CodeBase;//for PrintoutErrorCode
 
-namespace OpenDental.Drawing {
+namespace Helianz.Drawing {
 //Jordan is the only one allowed to edit this file
 /*
 How to use: 
 See example code in WpfControls.PrinterL and Graphics.
-This is similar to the OpenDental.ODprintout, but adapted for WPF and kept as simple as possible.
+This is similar to the Helianz.ODprintout, but adapted for WPF and kept as simple as possible.
 
 */
 	///<summary>A container class with helpful variables and additional validation and error handling.</summary>

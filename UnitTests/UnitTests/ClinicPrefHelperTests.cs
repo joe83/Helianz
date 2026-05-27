@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDental;
-using OpenDentBusiness;
+using Helianz;
+using HelianzBusiness;
 using UnitTestsCore;
 
 namespace UnitTests.ClinicPrefHelper_Tests {
@@ -59,7 +59,7 @@ namespace UnitTests.ClinicPrefHelper_Tests {
 			ClinicPrefs.InsertPref(PrefName.EClipboardAllowSelfPortraitOnCheckIn,clinicE.ClinicNum,POut.Bool(false));
 			ClinicPrefs.RefreshCache();
 			//Set up the ClinicPrefHelper
-			OpenDental.ClinicPrefHelper clinicPrefHelper=new OpenDental.ClinicPrefHelper(PrefName.EClipboardAllowSelfCheckIn,PrefName.EClipboardAllowSelfPortraitOnCheckIn);
+			Helianz.ClinicPrefHelper clinicPrefHelper=new Helianz.ClinicPrefHelper(PrefName.EClipboardAllowSelfCheckIn,PrefName.EClipboardAllowSelfPortraitOnCheckIn);
 			#endregion Test Setup
 			#region Test Body
 			//Make the changes to the preferences
@@ -119,7 +119,7 @@ namespace UnitTests.ClinicPrefHelper_Tests {
 			}
 			ClinicPrefs.RefreshCache();
 			//Set up the ClinicPrefHelper
-			OpenDental.ClinicPrefHelper clinicPrefHelper=new OpenDental.ClinicPrefHelper(PrefName.EClipboardAllowSelfCheckIn);
+			Helianz.ClinicPrefHelper clinicPrefHelper=new Helianz.ClinicPrefHelper(PrefName.EClipboardAllowSelfCheckIn);
 			#endregion Test Setup
 			#region Test Body
 			//Randomyly change the clinic preferences

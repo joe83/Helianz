@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental{
+namespace Helianz{
 
 	///<summary>Used in public health.  Programming note: There are many extra fields in common with the screen table, but they are only in this struct and not in the database itself, where that data is stored with the individual screen items. The data in this table is irrelevant in reports.  It is just used to help organize the user interface.</summary>
 	public struct ScreenGroup{

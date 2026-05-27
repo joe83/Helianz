@@ -1,7 +1,7 @@
 ﻿﻿using CodeBase;
 using System;
 
-namespace OpenDentalWebCore {
+namespace HelianzWebCore {
 	public static class Environment_ {
 		private static Func<string> _getMachineName=() => Environment.MachineName;
 		public static bool IsMachineNameModified {

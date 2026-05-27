@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System.Reflection;
 
 namespace PluginExample {
@@ -25,7 +25,7 @@ namespace PluginExample {
 			Version versionThisAssMajMin=new Version(versionThisAssembly.Major,versionThisAssembly.Minor);//eg. 6.7
 			if(versionThisAssMajMin > versionMainAppMajMin) {
 				//Prevent the use of a new plugin with an old version of OD. User should upgrade OD.
-				throw new ApplicationException("Version of plug-in may not be newer than version of Open Dental.");
+				throw new ApplicationException("Version of plug-in may not be newer than version of Helianz.");
 			}
 			//In case the developer of a plug-in gets hit by a bus etc, there should be no restriction on using an old plugin with a new version of OD.
 			//If a plug-in is distributed, there should be a separate plugin available for each minor version.

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using UnitTestsCore;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System.Reflection;
 using CodeBase;
 
@@ -373,7 +373,7 @@ namespace UnitTests.PaymentEdit_Tests {
 			Procedure proc1=ProcedureT.CreateProcedure(pat,"SAEIL1",ProcStat.C,"",50,procDate:new DateTime(2020,1,1),provNum:provNum1);
 			//Complete proc2 for provNum2 that comes after proc1.
 			Procedure proc2=ProcedureT.CreateProcedure(pat,"SAEIL2",ProcStat.C,"",100,procDate:new DateTime(2020,2,2),provNum:provNum2);
-			//Create a negative adjustment that is not allocated to anything. Open Dental doesn't know what this adjustment applies to.
+			//Create a negative adjustment that is not allocated to anything. Helianz doesn't know what this adjustment applies to.
 			//FIFO logic will always apply this adjustment to proc1.
 			//However, if the user manually selects proc1 for allocating unearned it should apply to proc2 instead.
 			Adjustment adj1=AdjustmentT.MakeAdjustment(pat.PatNum,-50,adjDate:new DateTime(2020,3,3));
@@ -5930,7 +5930,7 @@ namespace UnitTests.PaymentEdit_Tests {
 		<td>Income Transfer on Payplan without Procedure attached</td>
 	</tr>
 </table>
-This can cause the Dynamic Payment Plan to be considered overpaid since we are Explicitly adding money to it and the attached production but Implicitly removing money from the plan itself. OpenDental should see these splits and calculate that two of them are intended offsets which should net to 0. The resulting Account Entries should look like:
+This can cause the Dynamic Payment Plan to be considered overpaid since we are Explicitly adding money to it and the attached production but Implicitly removing money from the plan itself. Helianz should see these splits and calculate that two of them are intended offsets which should net to 0. The resulting Account Entries should look like:
 <table>
 	<tr>
 		<td><b>Patient</b></td>
@@ -10167,7 +10167,7 @@ This can cause the Dynamic Payment Plan to be considered overpaid since we are E
 		<td>Income Transfer on Payplan without Procedure attached</td>
 	</tr>
 </table>
-This can cause the Dynamic Payment Plan to be considered overpaid since we are Explicitly adding money to it and the attached production but Implicitly removing money from the plan itself. OpenDental should see these splits and calculate that two of them are intended offsets which should net to 0. The resulting Account Entries should look like:
+This can cause the Dynamic Payment Plan to be considered overpaid since we are Explicitly adding money to it and the attached production but Implicitly removing money from the plan itself. Helianz should see these splits and calculate that two of them are intended offsets which should net to 0. The resulting Account Entries should look like:
 <table>
 	<tr>
 		<td><b>Patient</b></td>
@@ -11020,11 +11020,11 @@ This can cause the Dynamic Payment Plan to be considered overpaid since we are E
 
 		[TestMethod]
 		public void PaymentEdit_BalanceAndIncomeTransfer_DoNotTransferInsuranceOverpayment() {
-			//Create a scenario where there are two completed procedures. The first procedure should have insurance pay more than Open Dental estimated.
+			//Create a scenario where there are two completed procedures. The first procedure should have insurance pay more than Helianz estimated.
 			//This specific scenario is where the insurance not only overpaid but they paid so much that the entire procedure is covered by just insurance.
 			//The second procedure wants money transferred to it but the first procedure should only be able to transfer the patient 'overpayment'.
 			//In this scenario: proc1 $100, insurance overpays the entire procedure by $50, patient had already paid $30.
-			//At this point, proc1 has been officially overpaid by $80. However, Open Dental should ONLY be able to transfer $30 away from proc1.
+			//At this point, proc1 has been officially overpaid by $80. However, Helianz should ONLY be able to transfer $30 away from proc1.
 			//A warning message is required to display to the user about the insurance overpayment (which should be handled via claimprocs).
 			/*****************************************************
 				Create Provider: provNum
@@ -11084,11 +11084,11 @@ This can cause the Dynamic Payment Plan to be considered overpaid since we are E
 
 		[TestMethod]
 		public void PaymentEdit_BalanceAndIncomeTransfer_DoNotTransferInsuranceOverpaymentPartial() {
-			//Create a scenario where there are two completed procedures. The first procedure should have insurance pay more than Open Dental estimated.
+			//Create a scenario where there are two completed procedures. The first procedure should have insurance pay more than Helianz estimated.
 			//This specific scenario is where the insurance overpaid by a little more than they estimated but no enough to cover the entire procedure.
 			//The second procedure wants money transferred to it but the first procedure should only be able to transfer the patient 'overpayment'.
 			//In this scenario: proc1 $100, insurance overpays their estimate but not the entire procedure, patient had already paid $30.
-			//At this point, proc1 has been officially overpaid by $10. Open Dental should be able to transfer the $10 away from proc1 like usual.
+			//At this point, proc1 has been officially overpaid by $10. Helianz should be able to transfer the $10 away from proc1 like usual.
 			/*****************************************************
 				Create Provider: provNum
 				Create Patient: pat
@@ -11147,11 +11147,11 @@ This can cause the Dynamic Payment Plan to be considered overpaid since we are E
 
 		[TestMethod]
 		public void PaymentEdit_BalanceAndIncomeTransfer_DoNotTransferInsuranceOverpaymentAdjustment() {
-			//Create a scenario where there are two completed procedures. The first procedure should have insurance pay more than Open Dental estimated.
+			//Create a scenario where there are two completed procedures. The first procedure should have insurance pay more than Helianz estimated.
 			//This specific scenario is where the insurance not only overpaid but they paid so much that the entire procedure is covered by just insurance.
 			//The second procedure wants money transferred to it but the first procedure should only be able to transfer the patient 'overpayment'.
 			//In this scenario: proc1 $100, insurance overpays the entire procedure by $50, the office adjusts the procedure -$30.
-			//At this point, proc1 has been officially overpaid by $80. However, Open Dental should NOT be able to transfer anything away from proc1.
+			//At this point, proc1 has been officially overpaid by $80. However, Helianz should NOT be able to transfer anything away from proc1.
 			//A warning message is required to display to the user about the insurance overpayment.
 			/*****************************************************
 				Create Provider: provNum
@@ -11270,11 +11270,11 @@ This can cause the Dynamic Payment Plan to be considered overpaid since we are E
 
 		[TestMethod]
 		public void PaymentEdit_BalanceAndIncomeTransfer_DoNotTransferInsuranceOverpaymentAdjustmentPartial() {
-			//Create a scenario where there are two completed procedures. The first procedure should have insurance pay more than Open Dental estimated.
+			//Create a scenario where there are two completed procedures. The first procedure should have insurance pay more than Helianz estimated.
 			//This specific scenario is where the insurance not only overpaid but they paid so much that the entire procedure is covered by just insurance.
 			//The second procedure wants money transferred to it but the first procedure should only be able to transfer the patient 'overpayment'.
 			//Scenario: proc1 $100, insurance pays the full $100 but doesn't know that they technically overpaid because the office adjusts the procedure -$30.
-			//At this point, proc1 has been officially overpaid by $30. However, Open Dental should NOT be able to transfer anything away from proc1.
+			//At this point, proc1 has been officially overpaid by $30. However, Helianz should NOT be able to transfer anything away from proc1.
 			//A warning message is required to display to the user about the insurance overpayment.
 			/*****************************************************
 				Create Provider: provNum
@@ -11346,7 +11346,7 @@ This can cause the Dynamic Payment Plan to be considered overpaid since we are E
 		public void PaymentEdit_BalanceAndIncomeTransfer_DoNotTransferUnearnedInsuranceOverpaymentAdjustmentPartial() {
 			//Create a scenario where there is one completed procedure. Have insurance pay nearly the entire procedure.
 			//Scenario: proc1 $60, insurance pays $55 but doesn't know that they technically overpaid because the office adjusts the procedure -$20.
-			//At this point, proc1 has been officially overpaid by $15. Open Dental should NOT be able to transfer anything to proc1.
+			//At this point, proc1 has been officially overpaid by $15. Helianz should NOT be able to transfer anything to proc1.
 			//A warning message is required to display to the user about the insurance overpayment.
 			/*****************************************************
 				Create Provider: provNum
@@ -14185,7 +14185,7 @@ This can cause the Dynamic Payment Plan to be considered overpaid since we are E
 				Create procedure2: Today  provNum  patient   $60
 				Create procedure3: Today  provNum  patient   $100
 				Create payment:    Today  provNum  patient   $20
-					^Attached to procedure1 since Open Dental estimates a $20 deductible for this procedure.
+					^Attached to procedure1 since Helianz estimates a $20 deductible for this procedure.
 				Create claim:      Today  provNum  patient   $150
 					^Only attach procedure1 and procedure3 to this claim which leaves procedure 2 out of the claim along with 50% outstanding value.
 			******************************************************/
@@ -14218,7 +14218,7 @@ This can cause the Dynamic Payment Plan to be considered overpaid since we are E
 			listClaimProcs.First(x => x.ProcNum==procedure3.ProcNum).DedApplied=20;
 			listClaimProcs.First(x => x.ProcNum==procedure3.ProcNum).InsPayAmt=80;
 			ClaimT.ReceiveClaim(claim,listClaimProcs,doSetInsPayAmt:false);
-			//Insurance did NOT do what Open Dental estimated and the dental office has incorrectly taken patient payment and cause procedure1 to be overpaid.
+			//Insurance did NOT do what Helianz estimated and the dental office has incorrectly taken patient payment and cause procedure1 to be overpaid.
 			//Make an income transfer in order to take patient payment away from procedure1 and move it to procedure3 (other procedure on the same claim).
 			//The money should NOT be transferred to procedure2 which is just an outstanding procedure on the account.
 			PayNumPaySplitsGroup payNumPaySplitsGroup=PaymentEdit.MakeIncomeTransferForClaimProcs(patient.PatNum,listClaimProcs);
@@ -14252,7 +14252,7 @@ This can cause the Dynamic Payment Plan to be considered overpaid since we are E
 				Create procedure2: Today  provNum  patient   $60
 				Create procedure3: Today  provNum  patient   $100
 				Create payment:    Today  provNum  patient   $20
-					^Attached to procedure1 since Open Dental estimates a $20 deductible for this procedure.
+					^Attached to procedure1 since Helianz estimates a $20 deductible for this procedure.
 				Create claim:      Today  provNum  patient   $150
 					^Only attach procedure1 and procedure3 to this claim which leaves procedure 2 out of the claim along with 50% outstanding value.
 			******************************************************/
@@ -14285,7 +14285,7 @@ This can cause the Dynamic Payment Plan to be considered overpaid since we are E
 			listClaimProcs.First(x => x.ProcNum==procedure3.ProcNum).InsPayAmt=100;
 			listClaimProcs.First(x => x.ProcNum==procedure3.ProcNum).DedApplied=0;
 			ClaimT.ReceiveClaim(claim,listClaimProcs,doSetInsPayAmt:false);
-			//Insurance did NOT do what Open Dental estimated and the dental office has incorrectly taken patient payment and cause procedure1 to be overpaid.
+			//Insurance did NOT do what Helianz estimated and the dental office has incorrectly taken patient payment and cause procedure1 to be overpaid.
 			//Make an income transfer in order to take patient payment away from procedure1 and move it to unearned (insurance covered everything on the claim).
 			//The money should NOT be transferred to procedure2 since it has nothing to do with the claim.
 			PayNumPaySplitsGroup payNumPaySplitsGroup=PaymentEdit.MakeIncomeTransferForClaimProcs(patient.PatNum,listClaimProcs);
@@ -14313,7 +14313,7 @@ This can cause the Dynamic Payment Plan to be considered overpaid since we are E
 				Create procedure2: Today  provNum  patient   $60
 				Create procedure3: Today  provNum  patient   $100
 				Create payment:    Today  provNum  patient   $20
-					^Attached to procedure1 since Open Dental estimates a $20 deductible for this procedure.
+					^Attached to procedure1 since Helianz estimates a $20 deductible for this procedure.
 				Create claim:      Today  provNum  patient   $150
 					^Only attach procedure1 and procedure3 to this claim which leaves procedure 2 out of the claim along with 50% outstanding value.
 			******************************************************/
@@ -14346,7 +14346,7 @@ This can cause the Dynamic Payment Plan to be considered overpaid since we are E
 			listClaimProcs.First(x => x.ProcNum==procedure1.ProcNum).DedApplied=20;
 			listClaimProcs.First(x => x.ProcNum==procedure3.ProcNum).InsPayAmt=0;
 			ClaimT.ReceiveClaim(claim,listClaimProcs,doSetInsPayAmt:false);
-			//Insurance did NOT do what Open Dental estimated and the dental office has incorrectly associated patient payment to procedure1 causing it to be overpaid.
+			//Insurance did NOT do what Helianz estimated and the dental office has incorrectly associated patient payment to procedure1 causing it to be overpaid.
 			//Make an income transfer in order to take patient payment away from procedure1 and move it to procedure3 (other procedure on the same claim).
 			//The money should NOT be transferred to procedure2 or unearned since procedure3 technically still wants money.
 			PayNumPaySplitsGroup payNumPaySplitsGroup=PaymentEdit.MakeIncomeTransferForClaimProcs(patient.PatNum,listClaimProcs);

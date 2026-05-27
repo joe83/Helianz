@@ -2,16 +2,16 @@
 <#
 .SYNOPSIS
     Silent installer helper executed by the Inno Setup installer.
-    Configures MySQL, IIS, Windows Firewall, and writes the OpenDental
-    Server config. All output captured to %TEMP%\OpenDentalServer-install.log.
+    Configures MySQL, IIS, Windows Firewall, and writes the Helianz
+    Server config. All output captured to %TEMP%\HelianzServer-install.log.
 
 .NOTES
     Hardcoded defaults (MySQL is localhost-only - no network exposure):
       MySQL root user : root
-      MySQL password  : opendental
-      MySQL database  : opendental
+      MySQL password  : helianz
+      MySQL database  : helianz
       Middle-tier port: 9390
-      IIS app name    : OpenDentalServer
+      IIS app name    : HelianzServer
 #>
 param(
     [string]$InstallDir      = $PSScriptRoot,
@@ -27,7 +27,7 @@ $ErrorActionPreference = 'Continue'   # Each step function handles its own error
 # ---------------------------------------------------------------------------
 # Log everything to a file the user can inspect if something goes wrong
 # ---------------------------------------------------------------------------
-$LogFile = Join-Path $env:TEMP 'OpenDentalServer-install.log'
+$LogFile = Join-Path $env:TEMP 'HelianzServer-install.log'
 Start-Transcript -Path $LogFile -Append | Out-Null  # Append so all steps share one log per session
 
 # ---------------------------------------------------------------------------
@@ -36,19 +36,19 @@ Start-Transcript -Path $LogFile -Append | Out-Null  # Append so all steps share 
 # ---------------------------------------------------------------------------
 $MYSQL_HOST     = '127.0.0.1'
 $MYSQL_PORT     = 3306
-$MYSQL_DATABASE = 'opendental'
+$MYSQL_DATABASE = 'helianz'
 $MYSQL_USER     = 'root'
-$MYSQL_PASSWORD = 'opendental'
+$MYSQL_PASSWORD = 'helianz'
 $IIS_SITE       = 'Default Web Site'
-$IIS_APP_NAME   = 'OpenDentalServer'
-$APP_POOL_NAME  = 'OpenDentalServerPool'
+$IIS_APP_NAME   = 'HelianzServer'
+$APP_POOL_NAME  = 'HelianzServerPool'
 $SERVER_PORT    = 9390
 
 $sw = [Diagnostics.Stopwatch]::StartNew()
 
 Write-Host ""
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host "  OpenDentalServer Installer Helper" -ForegroundColor Cyan
+Write-Host "  HelianzServer Installer Helper" -ForegroundColor Cyan
 Write-Host "  Install Dir : $InstallDir" -ForegroundColor Cyan
 Write-Host "  Log File    : $LogFile" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
@@ -287,7 +287,7 @@ function Invoke-StepConfigMySQL {
             $ErrorActionPreference = $savedEAP
             Write-Ok 'Schema loaded.'
         } else {
-            Write-Info 'No schema file — OpenDental will create tables on first launch.'
+            Write-Info 'No schema file — Helianz will create tables on first launch.'
         }
     } else {
         Write-Ok "Database '$MYSQL_DATABASE' already exists."
@@ -303,14 +303,14 @@ function Invoke-StepFirewall {
 
     if (-not $AddFirewallRule) { Write-Info 'Skipped (user opted out).'; return $true }
 
-    $ruleName = 'Block MySQL 3306 (OpenDental)'
+    $ruleName = 'Block MySQL 3306 (Helianz)'
     if (Get-NetFirewallRule -DisplayName $ruleName -ErrorAction SilentlyContinue) {
         Write-Ok "Rule already exists: '$ruleName'"
         return $true
     }
     try {
         New-NetFirewallRule -DisplayName $ruleName `
-            -Description 'Blocks external access to MySQL. OpenDentalServer uses localhost only.' `
+            -Description 'Blocks external access to MySQL. HelianzServer uses localhost only.' `
             -Direction Inbound -Protocol TCP -LocalPort 3306 `
             -Action Block -Profile Any -ErrorAction Stop | Out-Null
         Write-Ok 'Firewall rule added: block inbound TCP:3306.'
@@ -400,12 +400,12 @@ function Invoke-StepIIS {
 }
 
 # ---------------------------------------------------------------------------
-# Step 6: Write OpenDentServerConfig.xml
+# Step 6: Write HelianzServerConfig.xml
 # ---------------------------------------------------------------------------
 function Invoke-StepConfig {
-    Write-StepHeader 'STEP 6 of 6 — Write OpenDentServerConfig.xml'
+    Write-StepHeader 'STEP 6 of 6 — Write HelianzServerConfig.xml'
 
-    $configPath = Join-Path $InstallDir 'OpenDentServerConfig.xml'
+    $configPath = Join-Path $InstallDir 'HelianzServerConfig.xml'
     $esc = { param($s) [System.Security.SecurityElement]::Escape($s) }
     $xml = @"
 <?xml version="1.0"?>
@@ -437,7 +437,7 @@ function Invoke-StepConfig {
 
 Write-Host ''
 Write-Host ('=' * 62) -ForegroundColor Cyan
-Write-Host '  OpenDentalServer Setup Helper' -ForegroundColor Cyan
+Write-Host '  HelianzServer Setup Helper' -ForegroundColor Cyan
 Write-Host "  Step    : $Step" -ForegroundColor Cyan
 Write-Host "  Dir     : $InstallDir" -ForegroundColor Cyan
 Write-Host "  Log     : $LogFile" -ForegroundColor Cyan
@@ -476,7 +476,7 @@ foreach ($k in $results.Keys) {
 }
 if ($Step -eq 'All' -and -not $anyFailed) {
     Write-Host ''
-    Write-Host '  Endpoint: http://localhost/OpenDentalServer/ServiceMain.asmx' -ForegroundColor Cyan
+    Write-Host '  Endpoint: http://localhost/HelianzServer/ServiceMain.asmx' -ForegroundColor Cyan
 }
 Write-Host ('=' * 62) -ForegroundColor $(if ($anyFailed) { 'DarkYellow' } else { 'Green' })
 Write-Host ''

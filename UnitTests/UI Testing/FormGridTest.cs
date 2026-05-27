@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using OpenDental;
-using OpenDental.UI;
-using OpenDentBusiness;
+using Helianz;
+using Helianz.UI;
+using HelianzBusiness;
 
 namespace UnitTests{
 	public partial class FormGridTest : FormODBase{

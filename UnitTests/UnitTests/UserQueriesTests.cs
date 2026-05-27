@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness;
+using HelianzBusiness;
 using UnitTestsCore;
 
 namespace UnitTests.UserQueries_Tests {
@@ -153,7 +153,7 @@ namespace UnitTests.UserQueries_Tests {
 		[TestMethod]
 		public void UserQueries_SplitQuery_IsSQLAllowed_NotAllowed() {
 			SetCurrentUserWOCommandQueryPerm($"usergroup_{MethodBase.GetCurrentMethod()}");
-			string command=$@"SELECT GROUP_CONCAT(p.email SEPARATOR "";""),p.* FROM patient p GROUP BY p.PatNum;UPDATE patient p SET p.Email=""saul@opendental.com""
+			string command=$@"SELECT GROUP_CONCAT(p.email SEPARATOR "";""),p.* FROM patient p GROUP BY p.PatNum;UPDATE patient p SET p.Email=""saul@helianz.com""
 				WHERE p.PatNum=10;";
 			Assert.IsFalse(Db.IsSqlAllowed(command,true));
 		}
@@ -162,7 +162,7 @@ namespace UnitTests.UserQueries_Tests {
 		public void UserQueries_SplitQuery_IsSQLAllowed_NotAllowedSplitWithDashes() {
 			SetCurrentUserWOCommandQueryPerm($"usergroup_{MethodBase.GetCurrentMethod()}");
 			string command=$@"SELECT GROUP_CONCAT(p.email SEPARATOR ""-;-;""),p.* FROM patient p GROUP BY p.PatNum; "+
-				@"UPDATE patient p SET p.Email=""saul@opendental.com"" WHERE p.PatNum=10;";
+				@"UPDATE patient p SET p.Email=""saul@helianz.com"" WHERE p.PatNum=10;";
 			Assert.IsFalse(Db.IsSqlAllowed(command,true));
 		}
 

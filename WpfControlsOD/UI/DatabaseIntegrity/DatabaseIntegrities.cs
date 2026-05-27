@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental {
+namespace Helianz {
 	///<summary>Handles db actions for the HQ bugs.databaseintegrity table.</summary>
 	public class DatabaseIntegrities {
 		///<summary>This is only grabbed once, so the only way to refresh is to restart OD. It's lazy loaded the first time that a WarningIntegrity triangle is encountered or a plugin attempts to load.</summary>
@@ -169,7 +169,7 @@ namespace OpenDental {
 			string registrationKey=PrefC.GetString(PrefName.RegistrationKey);
 			string result="";
 			try {
-				OpenDentBusiness.localhost.Service1 service1=CustomerUpdatesProxy.GetWebServiceInstance();
+				HelianzBusiness.localhost.Service1 service1=CustomerUpdatesProxy.GetWebServiceInstance();
 				result=service1.DatabaseIntegrityGetList2(registrationKey);
 			}
 			catch{

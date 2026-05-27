@@ -20,9 +20,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using CodeBase;
-using OpenDentBusiness;
-using OpenDental.Drawing;
-using OpenDental.UI;//even though they are in this project
+using HelianzBusiness;
+using Helianz.Drawing;
+using Helianz.UI;//even though they are in this project
 
 namespace WpfControls.UI{
 /*

@@ -8,10 +8,10 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 	/// <summary></summary>
 	public partial class FrmPrintPreview : FrmODBase {
 		//Yes, this was a quick and dirty window. Works fine, but we really need to build a custom one.

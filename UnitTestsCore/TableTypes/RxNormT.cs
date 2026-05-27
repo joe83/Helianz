@@ -1,4 +1,4 @@
-﻿using OpenDentBusiness;
+﻿using HelianzBusiness;
 
 namespace UnitTestsCore {
 	public class RxNormT {

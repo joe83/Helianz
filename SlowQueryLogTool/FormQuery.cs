@@ -37,7 +37,7 @@ namespace SlowQueryTool {
 		}
 
 		private string GetThirdPartyScoreText() {
-			return $"Third Party Likelihood: {QueryCur.ThirdPartyScore.IsThirdPartyQueryScore}\r\nOpen Dental Likelihood: {QueryCur.ThirdPartyScore.IsOpenDentalQueryScore}";
+			return $"Third Party Likelihood: {QueryCur.ThirdPartyScore.IsThirdPartyQueryScore}\r\nHelianz Likelihood: {QueryCur.ThirdPartyScore.IsHelianzQueryScore}";
 		}
 
 		private void butClose_Click(object sender,EventArgs e) {

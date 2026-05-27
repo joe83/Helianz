@@ -1,6 +1,6 @@
-﻿using OpenDentBusiness;
-using OpenDentBusiness.AutoComm;
-using OpenDentBusiness.WebTypes.AutoComm;
+﻿using HelianzBusiness;
+using HelianzBusiness.AutoComm;
+using HelianzBusiness.WebTypes.AutoComm;
 
 namespace UnitTestsCore {
 	public class CalendarIcsInfoT {

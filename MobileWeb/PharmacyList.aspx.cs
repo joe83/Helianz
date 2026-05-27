@@ -4,8 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using OpenDentBusiness;
-using OpenDentBusiness.Mobile;
+using HelianzBusiness;
+using HelianzBusiness.Mobile;
 
 namespace MobileWeb {
 	public partial class PharmacyList:System.Web.UI.Page {

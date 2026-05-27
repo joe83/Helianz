@@ -11,11 +11,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
-using OpenDental.Drawing;
+using Helianz.Drawing;
 
-namespace OpenDental {
+namespace Helianz {
 /*
 Jordan is the only one allowed to edit this file.
 

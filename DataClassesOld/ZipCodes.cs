@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental{
+namespace Helianz{
 
 	///<summary>Zipcodes are also known as postal codes.  Zipcodes are always copied to patient records rather than linked.  So items in this list can be freely altered or deleted without harming patient data.</summary>
 	public struct ZipCode{

@@ -1,5 +1,5 @@
-﻿using OpenDental;
-using OpenDentBusiness;
+﻿using Helianz;
+using HelianzBusiness;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +14,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Task = OpenDentBusiness.Task;
+using Task = HelianzBusiness.Task;
 
-namespace OpenDental {
+namespace Helianz {
 	/// <summary></summary>
 	public partial class FrmTaskFilter:FrmODBase {
 		private static bool _wereDefaultsSet;

@@ -1,7 +1,7 @@
 ﻿using System;
 using CodeBase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness;
+using HelianzBusiness;
 using UnitTestsCore;
 
 namespace UnitTests {
@@ -37,7 +37,7 @@ namespace UnitTests {
 		[TestMethod]
 		public void PDMP_TryValidateValues_Fail() {
 			bool didThrow=false;
-			OpenDentBusiness.Program progCur = Programs.GetCur(ProgramName.PDMP);
+			HelianzBusiness.Program progCur = Programs.GetCur(ProgramName.PDMP);
 			long provNum = ProviderT.CreateProvider("invalid-doc");
 			Provider prov = Providers.GetProv(provNum);
 			Patient pat = null;
@@ -116,7 +116,7 @@ namespace UnitTests {
 
 		[TestMethod]
 		public void PDMP_TryValidateValues_HappyPath() {
-			OpenDentBusiness.Program progCur = Programs.GetCur(ProgramName.PDMP);
+			HelianzBusiness.Program progCur = Programs.GetCur(ProgramName.PDMP);
 			string state = "MD";
 			long provNum = ProviderT.CreateProvider("Valid-Prov",fName: "Jerry",lName: "Atric",nationalProvID: "B012");
 			Provider prov = Providers.GetProv(provNum);
@@ -145,7 +145,7 @@ namespace UnitTests {
 		[TestMethod]
 		public void Bamboo_TryValidateValues_Fail() {
 			bool didThrow=false;
-			OpenDentBusiness.Program progCur = Programs.GetCur(ProgramName.Bamboo);
+			HelianzBusiness.Program progCur = Programs.GetCur(ProgramName.Bamboo);
 			long provNum = ProviderT.CreateProvider("invalid-doc");
 			Provider prov = Providers.GetProv(provNum);
 			Patient pat = null;
@@ -231,7 +231,7 @@ namespace UnitTests {
 
 		[TestMethod]
 		public void Bamboo_TryValidateValues_HappyPath() {
-			OpenDentBusiness.Program progCur = Programs.GetCur(ProgramName.Bamboo);
+			HelianzBusiness.Program progCur = Programs.GetCur(ProgramName.Bamboo);
 			string state = "MD";
 			long provNum = ProviderT.CreateProvider("Valid-Prov",fName: "Jerry",lName: "Atric",nationalProvID: "B012");
 			Provider prov = Providers.GetProv(provNum);

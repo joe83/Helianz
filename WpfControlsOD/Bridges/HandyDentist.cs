@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows.Forms;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 	///<summary></summary>
 	public class HandyDentist {
 

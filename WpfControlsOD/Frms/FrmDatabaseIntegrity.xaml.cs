@@ -9,11 +9,11 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
-	///<summary>Message box shown if the database was altered by a third party outside of Open Dental.
+namespace Helianz {
+	///<summary>Message box shown if the database was altered by a third party outside of Helianz.
 	///Set the TextWarningMessage to describe which entries are unsafe. </summary>
 	public partial class FrmDatabaseIntegrity:FrmODBase {
 		///<summary>This can be quite long.</summary>
@@ -30,16 +30,16 @@ namespace OpenDental {
 			Lang.F(this);
 			labelMessage.Text=MessageToShow;
 			if(IsPlugin){
-				linkLabel.Text="https://www.opendental.com/site/plugins.html";
+				linkLabel.Text="https://www.helianz.com/site/plugins.html";
 			}
 		}
 
 		private void linkLabel_LinkClicked(object sender,EventArgs e) {
 			if(IsPlugin){
-				Process.Start("https://www.opendental.com/site/plugins.html");
+				Process.Start("https://www.helianz.com/site/plugins.html");
 			}
 			else{
-				Process.Start("https://www.opendental.com/site/integrity.html");
+				Process.Start("https://www.helianz.com/site/integrity.html");
 			}
 		}
 

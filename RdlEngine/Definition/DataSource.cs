@@ -45,8 +45,8 @@ namespace fyiReporting.RDL
 							// source should be executed in a single transaction.
 		ConnectionProperties _ConnectionProperties;	//Information about how to connect to the data source
 		string _DataSourceReference;	//The full path (e.g.
-							// “/salesreports/salesdatabase”) or relative path
-							// (e.g. “salesdatabase”) to a data source
+							// ï¿½/salesreports/salesdatabaseï¿½) or relative path
+							// (e.g. ï¿½salesdatabaseï¿½) to a data source
 							// reference. Relative paths start in the same
 							// location as the report.		
 	
@@ -148,7 +148,7 @@ namespace fyiReporting.RDL
 						cnSQL = new OleDbConnection(_ConnectionProperties.Connectstring);
 						break;
 				}*/
-				cnSQL=new MySqlConnection(GetOpenDentalConnStr());
+				cnSQL=new MySqlConnection(GetHelianzConnStr());
 				if (cnSQL != null)
 				{
 					cnSQL.Open();
@@ -184,7 +184,7 @@ namespace fyiReporting.RDL
 		}
 
 		///<summary></summary>
-		private static string GetOpenDentalConnStr(){
+		private static string GetHelianzConnStr(){
 			XmlDocument document=new XmlDocument();
 			string path=Application.StartupPath+"\\"+"FreeDentalConfig.xml";
 			//MessageBox.Show(path);

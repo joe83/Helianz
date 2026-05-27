@@ -4,11 +4,11 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using CodeBase;
-using OpenDental.UI;
-using OpenDentBusiness;
+using Helianz.UI;
+using HelianzBusiness;
 using SparksToothChart;
 
-namespace OpenDental{
+namespace Helianz{
 	///<summary>Relays commands to either the old SparksToothChart.ToothChartWrapper or the new Sparks3d.ToothChart.</summary>
 	public class ToothChartRelay{
 		///<summary>This is set when the program starts up.  If true, it will load up the new tooth chart in many places.</summary>

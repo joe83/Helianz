@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace UnitTestsCore {
 	/// <summary>

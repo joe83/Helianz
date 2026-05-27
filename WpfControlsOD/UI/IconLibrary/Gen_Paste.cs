@@ -1,6 +1,6 @@
 using System;
 using System.Windows.Media;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace WpfControls.UI{
 	//---------------This file is generated automatically from the IconOrganizer project.  Do not edit manually.

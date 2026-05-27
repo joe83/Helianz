@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using OpenDental;
-using OpenDental.UI;
-using OpenDentBusiness;
+using Helianz;
+using Helianz.UI;
+using HelianzBusiness;
 
 namespace UnitTests{
 	public partial class Form4kTests : FormODBase{
@@ -206,7 +206,7 @@ namespace UnitTests{
 
 			//List<Procedure> listProcs=new List<Procedure>();
 			//long patNum=293;
-			//Image imgToothChart=OpenDental.SheetPrinting.GetToothChartHelper(patNum,true,null,listProcs,isInPatientDashboard:true);
+			//Image imgToothChart=Helianz.SheetPrinting.GetToothChartHelper(patNum,true,null,listProcs,isInPatientDashboard:true);
 			//_imgToothChart?.Dispose();
 			//_imgToothChart=imgToothChart;
 
@@ -362,7 +362,7 @@ namespace UnitTests{
 
 		private void button5_Click(object sender, EventArgs e){
 			//MsgBox.Show(listBox1.Top.ToString());
-			OpenDental.UI.Button button=new OpenDental.UI.Button();
+			Helianz.UI.Button button=new Helianz.UI.Button();
 			button.Text="New";
 			button.Anchor=AnchorStyles.Right | AnchorStyles.Bottom;
 			button.Location=new Point(button5.Right,button5.Bottom);

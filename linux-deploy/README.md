@@ -1,17 +1,17 @@
-# OpenDental Middle-Tier — Linux Deployment Guide
+# Helianz Middle-Tier — Linux Deployment Guide
 
-Deploys **OpenDentalServer** (the .NET middle-tier web service) on Linux using
+Deploys **HelianzServer** (the .NET middle-tier web service) on Linux using
 Docker + Mono 6. Replaces the Windows/IIS host with XSP4 (Mono's ASP.NET server)
 and a MySQL 8.0 database container.
 
 ```
-Client (OpenDental.exe, Windows)
+Client (Helianz.exe, Windows)
         │  HTTP  port 9390
         ▼
 ┌─────────────────────────┐      ┌───────────────────┐
-│  opendental-server      │─────▶│  mysql            │
+│  helianz-server      │─────▶│  mysql            │
 │  mono:6.12-slim + xsp4  │      │  mysql:8.0        │
-│  /app/ServiceMain.asmx  │      │  db: opendental   │
+│  /app/ServiceMain.asmx  │      │  db: helianz   │
 │  port 9390              │      │  port 3306        │
 └─────────────────────────┘      └───────────────────┘
 ```
@@ -24,12 +24,12 @@ Client (OpenDental.exe, Windows)
 linux-deploy/
 ├── README.md                        ← this file
 ├── deploy.sh                        ← one-command deployment script
-├── dump-db.ps1                      ← (Windows) dump local MariaDB → opendental.sql.gz
+├── dump-db.ps1                      ← (Windows) dump local MariaDB → helianz.sql.gz
 ├── Dockerfile                       ← multi-stage Mono build
-├── docker-compose.yml               ← orchestrates MySQL + OpenDentalServer
+├── docker-compose.yml               ← orchestrates MySQL + HelianzServer
 ├── .dockerignore                    ← keeps image layer small
 ├── config/
-│   └── OpenDentServerConfig.xml     ← DB connection config (edit before deploy)
+│   └── HelianzServerConfig.xml     ← DB connection config (edit before deploy)
 └── src/
     ├── ODCryptMono.cs               ← SHA-3 reimplementation (replaces Dotfuscated DLL)
     ├── WpfCdoStubs.cs               ← WPF/CDO stubs for Mono
@@ -38,8 +38,8 @@ linux-deploy/
     └── grant_oduser.sql             ← MySQL privilege grant
 ```
 
-The **source code** of OpenDentalServer must be present in the **parent directory**
-(i.e. the OpenDentalNew repo root) when building the Docker image, because the
+The **source code** of HelianzServer must be present in the **parent directory**
+(i.e. the HelianzNew repo root) when building the Docker image, because the
 Dockerfile COPYs source from `../`.  Run `deploy.sh` from inside `linux-deploy/`.
 
 ---
@@ -71,26 +71,26 @@ cd linux-deploy
     -Port     3306 `
     -User     root `
     -Password "YourLocalRootPassword" `
-    -Database opendental `
-    -OutFile  data\opendental.sql.gz
+    -Database helianz `
+    -OutFile  data\helianz.sql.gz
 ```
 
-This creates `linux-deploy\data\opendental.sql.gz`.
+This creates `linux-deploy\data\helianz.sql.gz`.
 
 ### Step 2 — Upload the entire repo to the server
 
-The Dockerfile needs the OpenDental source code (`CodeBase/`, `OpenDentBusiness/`,
-`OpenDentalServer/`, etc.) at build time, so the **whole repo** must be on the server —
+The Dockerfile needs the Helianz source code (`CodeBase/`, `HelianzBusiness/`,
+`HelianzServer/`, etc.) at build time, so the **whole repo** must be on the server —
 not just `linux-deploy/`.
 
 ```powershell
 # From Windows (PowerShell) — upload the full repo (this includes linux-deploy/ inside it)
-scp -r "D:\path\to\OpenDentalNew" root@YOUR_SERVER_IP:/opt/opendental-src
+scp -r "D:\path\to\HelianzNew" root@YOUR_SERVER_IP:/opt/helianz-src
 ```
 
 > Tip: if the repo is large, you can upload only the required sub-folders:
-> `CodeBase`, `DataConnectionBase`, `OpenDentalCloud`, `PasswordVaultWrapper`,
-> `OpenDentBusiness`, `OpenDentalServer`, `Required dlls`, and `linux-deploy`.
+> `CodeBase`, `DataConnectionBase`, `HelianzCloud`, `PasswordVaultWrapper`,
+> `HelianzBusiness`, `HelianzServer`, `Required dlls`, and `linux-deploy`.
 
 ### Step 3 — Run the deploy script
 
@@ -98,12 +98,12 @@ scp -r "D:\path\to\OpenDentalNew" root@YOUR_SERVER_IP:/opt/opendental-src
 ssh root@YOUR_SERVER_IP
 
 # deploy.sh is inside the repo; --src defaults to its parent (the repo root)
-cd /opt/opendental-src/linux-deploy
-bash deploy.sh --db data/opendental.sql.gz
+cd /opt/helianz-src/linux-deploy
+bash deploy.sh --db data/helianz.sql.gz
 ```
 
 `deploy.sh` will build the Docker image, start MySQL, import the database,
-start OpenDentalServer, and verify the endpoint.
+start HelianzServer, and verify the endpoint.
 
 ### Step 3 — Verify
 
@@ -112,23 +112,23 @@ curl http://localhost:9390/ServiceMain.asmx
 # Expected: HTTP 200 with an ASMX service description HTML page
 ```
 
-### Step 4 — Configure the OpenDental client (Windows)
+### Step 4 — Configure the Helianz client (Windows)
 
-In the OpenDental client: **Setup → Advanced → Server URL**  
+In the Helianz client: **Setup → Advanced → Server URL**  
 Set to: `http://YOUR_SERVER_IP:9390/ServiceMain.asmx`
 
 ---
 
 ## Configuration
 
-### `config/OpenDentServerConfig.xml`
+### `config/HelianzServerConfig.xml`
 
 ```xml
 <ConnectionSettings>
   <ServerPort>9390</ServerPort>
   <DatabaseConnection>
     <ComputerName>mysql</ComputerName>   <!-- Docker service name, do not change -->
-    <Database>opendental</Database>
+    <Database>helianz</Database>
     <User>oduser</User>
     <Password>odpass</Password>
     <UserLow>oduser</UserLow>
@@ -144,7 +144,7 @@ in `docker-compose.yml`, then run `deploy.sh` again (or `docker compose up -d`).
 
 | Port | Service | Notes |
 |------|---------|-------|
-| 9390 | OpenDentalServer (XSP4) | Exposed to clients |
+| 9390 | HelianzServer (XSP4) | Exposed to clients |
 | 3307 | MySQL (host-side) | Internal; not needed by clients |
 
 Change the host-side MySQL port in `docker-compose.yml` if 3307 is in use.
@@ -153,9 +153,9 @@ Change the host-side MySQL port in `docker-compose.yml` if 3307 is in use.
 
 ## How It Was Built — Technical Notes
 
-### Problem: OpenDentalServer targets .NET 4.8 / Windows
+### Problem: HelianzServer targets .NET 4.8 / Windows
 
-OpenDentalServer is a classic ASP.NET Web Service (.asmx) that was designed to
+HelianzServer is a classic ASP.NET Web Service (.asmx) that was designed to
 run on Windows + IIS. Getting it onto Linux required resolving five categories of
 incompatibility:
 
@@ -168,14 +168,14 @@ interface without any Windows dependency.
 
 #### 2. Missing Mono GAC assemblies
 
-`OpenDentalServer.csproj` references `System.Web.DynamicData`,
+`HelianzServer.csproj` references `System.Web.DynamicData`,
 `System.Web.Entity`, and `System.Web.ApplicationServices` — assemblies that exist
 in the full .NET Framework but not in Mono's GAC.  
 **Fix**: `sed` removes the `<Reference>` items at build time.
 
 #### 3. WPF / CDO assemblies unavailable on Mono
 
-`OpenDentBusiness` imports types from `PresentationCore`, `PresentationFramework`,
+`HelianzBusiness` imports types from `PresentationCore`, `PresentationFramework`,
 and `CDO` (Collaboration Data Objects, a Windows COM library).  
 **Fix**: `src/WpfCdoStubs.cs` compiles a `WpfCdoStubs.dll` with stub types for all
 referenced names. Uses `-r:WindowsBase.dll` (available in Mono's GAC). The stubs
@@ -206,7 +206,7 @@ stdin open indefinitely.
 
 #### 7. MySQL 8.0 strict mode rejects zero-dates
 
-OpenDental stores dates as `0000-00-00 00:00:00` (MariaDB default). MySQL 8.0's
+Helianz stores dates as `0000-00-00 00:00:00` (MariaDB default). MySQL 8.0's
 default `sql_mode` includes `NO_ZERO_DATE` and `NO_ZERO_IN_DATE` which rejects
 these as invalid.  
 **Fix**: MySQL container starts with:
@@ -217,7 +217,7 @@ these as invalid.
 
 #### 8. MySQL 8.0 authentication plugin
 
-Old MySqlConnector (shipped in OpenDental's DLLs) does not support MySQL 8.0's
+Old MySqlConnector (shipped in Helianz's DLLs) does not support MySQL 8.0's
 default `caching_sha2_password` auth plugin.  
 **Fix**: MySQL container starts with `--default-authentication-plugin=mysql_native_password`
 and the user is created/altered to use `mysql_native_password`.
@@ -225,7 +225,7 @@ and the user is created/altered to use `mysql_native_password`.
 #### 9. Mono ResXFileRef lowercases paths
 
 Mono's resource loader lowercases all path components in `.resx` file references.
-`OpenDentBusiness/Resources/ClaimForms/ClaimFormADA 2019.xml` becomes
+`HelianzBusiness/Resources/ClaimForms/ClaimFormADA 2019.xml` becomes
 `../resources/claimforms/claimformada 2019.xml`.  
 **Fix**: At build time a fully-lowercase mirror of `Resources/` is created as
 `resources/` so both casing variants resolve correctly.
@@ -233,9 +233,9 @@ Mono's resource loader lowercases all path components in `.resx` file references
 #### 10. Case-sensitive config filename
 
 The server code in `Userods.LoadDatabaseInfoFromFile()` looks for
-`OpenDentalServerConfig.xml` (with "al"). Original deploy attempts used
-`OpenDentServerConfig.xml` (missing "al").  
-**Fix**: All references use `OpenDentalServerConfig.xml`.
+`HelianzServerConfig.xml` (with "al"). Original deploy attempts used
+`HelianzServerConfig.xml` (missing "al").  
+**Fix**: All references use `HelianzServerConfig.xml`.
 
 ---
 
@@ -243,19 +243,19 @@ The server code in `Userods.LoadDatabaseInfoFromFile()` looks for
 
 ### View logs
 ```bash
-docker compose -f docker-compose.yml logs -f opendental-server
+docker compose -f docker-compose.yml logs -f helianz-server
 docker compose -f docker-compose.yml logs -f mysql
 ```
 
 ### Restart server only (no rebuild)
 ```bash
-docker compose -f docker-compose.yml restart opendental-server
+docker compose -f docker-compose.yml restart helianz-server
 ```
 
 ### Rebuild after source code change
 ```bash
-docker compose -f docker-compose.yml build opendental-server
-docker compose -f docker-compose.yml up -d opendental-server
+docker compose -f docker-compose.yml build helianz-server
+docker compose -f docker-compose.yml up -d helianz-server
 ```
 
 ### Stop everything
@@ -269,7 +269,7 @@ docker compose -f docker-compose.yml down -v   # -v removes the named volume
 ```
 Then re-import the database dump.
 
-### Upgrade the database (new OpenDental version)
+### Upgrade the database (new Helianz version)
 1. Export the new dump with `dump-db.ps1`
 2. Run `deploy.sh --db new-dump.sql.gz --rebuild`  
    Or manually: `docker compose down -v`, import new dump, `docker compose up -d`.
@@ -279,8 +279,8 @@ Then re-import the database dump.
 ## Security Notes
 
 - Change `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` before any public deployment.
-- Port 9390 should be firewalled to known client IPs (OpenDental uses HTTP, not HTTPS).
-- `oduser` is granted `ALL PRIVILEGES` to allow OpenDental to create backup databases
-  (`opendentalbackup_MM_DD_YYYY`) at startup. Scope this down in production if desired.
+- Port 9390 should be firewalled to known client IPs (Helianz uses HTTP, not HTTPS).
+- `oduser` is granted `ALL PRIVILEGES` to allow Helianz to create backup databases
+  (`helianzbackup_MM_DD_YYYY`) at startup. Scope this down in production if desired.
 - The `grant_oduser.sql` file grants `*.* WITH GRANT OPTION` — sufficient for a
   dedicated dental-practice server. For a shared server, scope to the specific databases.

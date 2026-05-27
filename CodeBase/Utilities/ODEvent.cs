@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace CodeBase {
-	///<summary>This was originally designed for use with progressbars, but that use has been deprecated. Now, it seems to just be used for a few oddball things like convertDatabases and dashboard. We're trying to deprecate all of it, so don't add to it. Instead, use GlobalFormOpenDental which is used for user actions for things like switching modules or refreshing screen data. Also see DataValid.EventInvalid which handles all Signalod events.</summary>
+	///<summary>This was originally designed for use with progressbars, but that use has been deprecated. Now, it seems to just be used for a few oddball things like convertDatabases and dashboard. We're trying to deprecate all of it, so don't add to it. Instead, use GlobalFormHelianz which is used for user actions for things like switching modules or refreshing screen data. Also see DataValid.EventInvalid which handles all Signalod events.</summary>
 	public class ODEvent {
 		///<summary>Occurs when any developer calls Fire().  Can happen from anywhere in the program.
 		///Consumers of "global" ODEvents need to subscribe because this will be the event that gets fired.</summary>
@@ -47,7 +47,7 @@ namespace CodeBase {
 		Billing,
 		///<summary></summary>
 		BugSubmission,
-		///<summary>These events will get fired sporadically throughout the FormOpenDental.DataValid_BecameInvalid process.</summary>
+		///<summary>These events will get fired sporadically throughout the FormHelianz.DataValid_BecameInvalid process.</summary>
 		Cache,
 		///<summary></summary>
 		Clearinghouse,

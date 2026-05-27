@@ -1,5 +1,5 @@
 ﻿/*=============================================================================================================
-Copyright (C) 2006  Jordan Sparks, DMD.  http://www.open-dent.com,  http://www.docsparks.com
+Copyright (C) 2006  Jordan Sparks, DMD.  http://www.helianz.com,  http://www.docsparks.com
 
 This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU Db Public License as published by the Free Software Foundation; either version 2 of the License,
@@ -22,7 +22,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("SparksToothChart")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Open Dental Software")]
+[assembly: AssemblyCompany("Helianz Software")]
 [assembly: AssemblyProduct("SparksToothChart")]
 [assembly: AssemblyCopyright("Copyright © Jordan Sparks, DMD, 2006")]
 [assembly: AssemblyTrademark("")]

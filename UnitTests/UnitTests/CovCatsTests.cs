@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Threading;
 using CodeBase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness;
+using HelianzBusiness;
 using UnitTestsCore;
 
 namespace UnitTests.CovCatsTests {

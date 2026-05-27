@@ -5,8 +5,8 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using OpenDentBusiness;
-using OpenDental;
+using HelianzBusiness;
+using Helianz;
 
 namespace PluginExample {
 	public partial class FormPatientEditP:Form {

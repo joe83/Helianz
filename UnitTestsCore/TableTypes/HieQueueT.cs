@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace UnitTestsCore {
 	public class HieQueueT {

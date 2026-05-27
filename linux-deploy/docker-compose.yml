@@ -1,5 +1,5 @@
 # =============================================================================
-# docker-compose.yml  –  OpenDentalServer on Mono 6 + MySQL 8
+# docker-compose.yml  –  HelianzServer on Mono 6 + MySQL 8
 # =============================================================================
 # Usage:
 #   docker compose up --build       # first time or after Dockerfile change
@@ -20,16 +20,16 @@ services:
       --default-authentication-plugin=mysql_native_password
       --sql-mode=ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
     # Notes on flags:
-    #   mysql_native_password      : required by old MySqlConnector in OpenDental DLLs
+    #   mysql_native_password      : required by old MySqlConnector in Helianz DLLs
     #                                (MySQL 8.0 default caching_sha2_password is unsupported)
     #   sql_mode without NO_ZERO_DATE / NO_ZERO_IN_DATE:
-    #                                OpenDental uses 0000-00-00 sentinel dates everywhere;
+    #                                Helianz uses 0000-00-00 sentinel dates everywhere;
     #                                MySQL 8.0 strict mode rejects these by default
     environment:
       MYSQL_ROOT_PASSWORD: rootrootroot   # change before production use
-      MYSQL_DATABASE:      opendental
+      MYSQL_DATABASE:      helianz
       MYSQL_USER:          oduser
-      MYSQL_PASSWORD:      odpass         # must match config/OpenDentServerConfig.xml
+      MYSQL_PASSWORD:      odpass         # must match config/HelianzServerConfig.xml
     ports:
       - "3307:3306"   # mapped to 3307 to avoid collision with a local MySQL instance
     volumes:
@@ -41,12 +41,12 @@ services:
       retries: 12
     restart: unless-stopped
 
-  # ── OpenDentalServer (Mono 6 / XSP4) ─────────────────────────────────────
-  opendental-server:
+  # ── HelianzServer (Mono 6 / XSP4) ─────────────────────────────────────
+  helianz-server:
     build:
       context: ..                          # repo root is the build context
       dockerfile: linux-deploy/Dockerfile
-    image: opendental-server-mono:latest
+    image: helianz-server-mono:latest
     ports:
       - "9390:9390"
     depends_on:
@@ -54,8 +54,8 @@ services:
         condition: service_healthy
     volumes:
       # Bind-mount the config so the hostname resolves to the "mysql" service.
-      # Edit config/OpenDentServerConfig.xml and restart to change DB settings.
-      - ./config/OpenDentServerConfig.xml:/app/OpenDentalServerConfig.xml:ro
+      # Edit config/HelianzServerConfig.xml and restart to change DB settings.
+      - ./config/HelianzServerConfig.xml:/app/HelianzServerConfig.xml:ro
     restart: unless-stopped
 
 volumes:

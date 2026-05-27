@@ -129,7 +129,7 @@ namespace UnitTests {
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(600, 18);
 			this.label4.TabIndex = 11;
-			this.label4.Text = "Set both this project and OpenDentalServer as startup.  Edit OpenDentalServer.Ope" +
+			this.label4.Text = "Set both this project and HelianzServer as startup.  Edit HelianzServer.Ope" +
     "nDentalServerConfig.xml to be valid.";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
@@ -332,7 +332,7 @@ namespace UnitTests {
 			this.label13.Name = "label13";
 			this.label13.Size = new System.Drawing.Size(92, 13);
 			this.label13.TabIndex = 43;
-			this.label13.Text = "Open Dental User";
+			this.label13.Text = "Helianz User";
 			// 
 			// textMiddleTierUser
 			// 
@@ -350,7 +350,7 @@ namespace UnitTests {
 			this.label14.Name = "label14";
 			this.label14.Size = new System.Drawing.Size(116, 13);
 			this.label14.TabIndex = 42;
-			this.label14.Text = "Open Dental Password";
+			this.label14.Text = "Helianz Password";
 			// 
 			// textMiddleTierURI
 			// 

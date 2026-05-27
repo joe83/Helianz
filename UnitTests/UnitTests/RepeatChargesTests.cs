@@ -2,10 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OpenDentBusiness;
+using HelianzBusiness;
 using UnitTestsCore;
 using CodeBase;
-using OpenDental;
+using Helianz;
 
 namespace UnitTests.RepeatCharges_Tests {
 	[TestClass]

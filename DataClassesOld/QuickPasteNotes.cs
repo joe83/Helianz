@@ -3,9 +3,9 @@ using System.Collections;
 using System.Data;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental{
+namespace Helianz{
 	
 	///<summary></summary>
 	public class QuickPasteNote{

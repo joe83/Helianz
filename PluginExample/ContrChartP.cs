@@ -6,9 +6,9 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using OpenDental;
-using OpenDentBusiness;
-using OpenDental.UI;
+using Helianz;
+using HelianzBusiness;
+using Helianz.UI;
 
 namespace PluginExample {
 	//This doesn't really need to be a user control unless we want to stash our own controls here for UI.
@@ -18,10 +18,10 @@ namespace PluginExample {
 			InitializeComponent();
 		}
 
-		public static void FillPtInfo(OpenDental.ControlChart sender,Patient patient) {
+		public static void FillPtInfo(Helianz.ControlChart sender,Patient patient) {
 			//first, get all the objects we need. Because they are by ref, the original gets altered.
 			GridOD gridPtInfo=(GridOD)sender.Controls.Find("gridPtInfo",true)[0];
-			OpenDental.UI.TabControl tabControlImages=(OpenDental.UI.TabControl)sender.Controls.Find("tabControlImages",true)[0];
+			Helianz.UI.TabControl tabControlImages=(Helianz.UI.TabControl)sender.Controls.Find("tabControlImages",true)[0];
 			ODtextBox textTreatmentNotes=(ODtextBox)sender.Controls.Find("textTreatmentNotes",true)[0];
 			//bool TreatmentNoteChanged=sender.TreatmentNoteChanged;//might have to do a by ref here?
 			//Then get some data that we need

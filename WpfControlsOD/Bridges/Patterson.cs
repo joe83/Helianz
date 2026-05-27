@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System.Windows.Forms;
 
 
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 	///<summary>Provides bridging functionality to Patterson Imaging.</summary>
 	class Patterson {
 

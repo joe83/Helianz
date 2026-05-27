@@ -11,9 +11,9 @@ using System.Text;
 using System.Xml;
 using System.Xml.XPath;
 using System.Windows.Forms;
-using OpenDentBusiness;
-using OpenDental.UI;
-using OpenDental;
+using HelianzBusiness;
+using Helianz.UI;
+using Helianz;
 using CodeBase;
 using DataConnectionBase;
 using System.Globalization;
@@ -59,7 +59,7 @@ namespace CentralManager {
 			//CEMT does not support report or read only servers.
 			//Poke something in ConnectionStore.cs to initialize internal static constructor.
 			ConnectionNames connectionName=ConnectionStore.CurrentConnection;
-			//Undo the funcs that OpenDentBusiness.ConnectionStore just hooked up.
+			//Undo the funcs that HelianzBusiness.ConnectionStore just hooked up.
 			ConnectionStoreBase.GetDentalOfficeReportServerFromPrefC=() => { return null; };
 			ConnectionStoreBase.GetDentalOfficeReadOnlyServerFromPrefC=() => { return null; };
 		}
@@ -110,7 +110,7 @@ namespace CentralManager {
 			}
 			FillGridConns(listConnNums);
 			if(!listErrors.IsNullOrEmpty()) {
-				using OpenDental.MsgBoxCopyPaste msgBoxCopyPaste=new OpenDental.MsgBoxCopyPaste(
+				using Helianz.MsgBoxCopyPaste msgBoxCopyPaste=new Helianz.MsgBoxCopyPaste(
 					Lan.g(this,"The following connections had an error and were not filtered correctly:\r\n\r\n")+string.Join("\r\n\r\n",listErrors));
 				msgBoxCopyPaste.ShowDialog();
 			}
@@ -235,7 +235,7 @@ namespace CentralManager {
 			labelFetch.Visible=false;
 			Cursor=Cursors.Default;
 			if(_invalidConnsLog!="") {
-				using OpenDental.MsgBoxCopyPaste msgBoxCopyPaste=new OpenDental.MsgBoxCopyPaste(Lan.g(this,"The following connections had errors occur")
+				using Helianz.MsgBoxCopyPaste msgBoxCopyPaste=new Helianz.MsgBoxCopyPaste(Lan.g(this,"The following connections had errors occur")
 					+":"+_invalidConnsLog);
 				msgBoxCopyPaste.ShowDialog();
 			}
@@ -399,7 +399,7 @@ namespace CentralManager {
 				Security.CurUser=Userods.GetUserNoCache(Security.CurUser.UserNum);//UpdatePassword() changes multiple fields.  Refresh from db.
 			}
 			catch(Exception ex) {
-				OpenDental.MessageBox.Show(ex.Message);
+				Helianz.MessageBox.Show(ex.Message);
 			}
 			Cache.Refresh(InvalidType.Security);
 		}
@@ -860,7 +860,7 @@ namespace CentralManager {
 		private bool GetConfigAndConnect() {
 			string xmlPath=Path.Combine(Application.StartupPath,"CentralManagerConfig.xml");
 			if(!File.Exists(xmlPath)) {
-				OpenDental.MessageBox.Show("Please create CentralManagerConfig.xml according to the manual before using this tool.");
+				Helianz.MessageBox.Show("Please create CentralManagerConfig.xml according to the manual before using this tool.");
 				_hasFatalError=true;
 				Application.Exit();
 				return false;
@@ -879,7 +879,7 @@ namespace CentralManager {
 				//See if there's a DatabaseConnection
 				nav=Navigator.SelectSingleNode("//DatabaseConnection");
 				if(nav==null) {
-					OpenDental.MessageBox.Show("DatabaseConnection element missing from CentralManagerConfig.xml.");
+					Helianz.MessageBox.Show("DatabaseConnection element missing from CentralManagerConfig.xml.");
 					Application.Exit();
 					return false;
 				}
@@ -906,7 +906,7 @@ namespace CentralManager {
 			}
 			catch(Exception ex) {
 				//Common error: root element is missing
-				OpenDental.MessageBox.Show(ex.Message);
+				Helianz.MessageBox.Show(ex.Message);
 				Application.Exit();
 				return false;
 			}
@@ -942,7 +942,7 @@ namespace CentralManager {
 					Version currentVersion=Assembly.GetAssembly(typeof(Db)).GetName().Version;
 					//if(!ODBuild.IsDebug() && storedVersion.CompareTo(currentVersion)!=0) {
 					if(storedVersion.CompareTo(currentVersion)!=0) {
-						OpenDental.MessageBox.Show(Lan.g(this,"Program version")+": "+currentVersion.ToString()+"\r\n"
+						Helianz.MessageBox.Show(Lan.g(this,"Program version")+": "+currentVersion.ToString()+"\r\n"
 							+Lan.g(this,"Database version")+": "+storedVersion.ToString()+"\r\n"
 							+Lan.g(this,"Versions must match.  Please manually connect to the database through the main program in order to update the version."));
 						_hasFatalError=true;
@@ -958,7 +958,7 @@ namespace CentralManager {
 					}
 					else if(dictDomainUsers.Count>1) {
 						//multiple users returned
-						InputBox box=new InputBox(Lan.g(this,"Select an Open Dental user to log in with:"),dictDomainUsers.Values.ToList());
+						InputBox box=new InputBox(Lan.g(this,"Select an Helianz user to log in with:"),dictDomainUsers.Values.ToList());
 						box.ShowDialog();
 						if(box.IsDialogOK) {
 							Security.CurUser=Userods.GetUserNoCache(dictDomainUsers.Keys.ElementAt(box.SelectedIndex));
@@ -975,7 +975,7 @@ namespace CentralManager {
 					return true;
 				}
 				catch(Exception ex) {
-					OpenDental.MessageBox.Show(ex.Message);
+					Helianz.MessageBox.Show(ex.Message);
 					_hasFatalError=true;
 					Application.Exit();
 					return false;
@@ -1059,7 +1059,7 @@ namespace CentralManager {
 				return;
 			}
 			if(string.IsNullOrEmpty(conn.DatabaseName) && string.IsNullOrEmpty(conn.ServiceURI)) {
-				OpenDental.MessageBox.Show("Either a database or a Middle Tier URI must be specified in the connection.");
+				Helianz.MessageBox.Show("Either a database or a Middle Tier URI must be specified in the connection.");
 				return;
 			}
 			ShowState showState=ShowState.SW_SHOW;
@@ -1096,7 +1096,7 @@ namespace CentralManager {
 			if(windowInfo==null){//new, so double clicked on a connection with no previous window.
 				windowInfo=new WindowInfo();
 				windowInfo.CentralConnectionNum=conn.CentralConnectionNum;
-				CentralConnectionHelper.LaunchOpenDental(conn,PrefC.GetBool(PrefName.CentralManagerUseDynamicMode),PrefC.GetBool(PrefName.CentralManagerIsAutoLogon),
+				CentralConnectionHelper.LaunchHelianz(conn,PrefC.GetBool(PrefName.CentralManagerUseDynamicMode),PrefC.GetBool(PrefName.CentralManagerIsAutoLogon),
 					PrefC.GetBool(PrefName.DomainLoginEnabled), patNum,ref windowInfo);
 				//List<IntPtr> listVisibleWindows=NativeHelpers.GetAllVisibleWindows();
 				//can't get hWnd here because we can't test recent popup yet:

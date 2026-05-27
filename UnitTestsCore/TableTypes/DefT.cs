@@ -1,6 +1,6 @@
 ﻿using CodeBase;
-using OpenDentBusiness;
-using OpenDentBusiness.Crud;
+using HelianzBusiness;
+using HelianzBusiness.Crud;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;

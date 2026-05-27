@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace UnitTestsCore {
 	public class ResellerT	{
@@ -29,7 +29,7 @@ namespace UnitTestsCore {
 				List<ProcedureCode> procCodes=ProcedureCodes.GetWhere(x => ProcedureCodes.GetAllEServiceProcCodes().Contains(x.ProcCode));
 				//Create all customers.ResellerService rows for this new reseller.
 				foreach(ProcedureCode procCode in procCodes){
-					OpenDentBusiness.Crud.ResellerServiceCrud.Insert(new ResellerService() {
+					HelianzBusiness.Crud.ResellerServiceCrud.Insert(new ResellerService() {
 						ResellerNum=reseller.ResellerNum,
 						//Every eService should have a corresponding ProcCode. First() will fail here if not.
 						CodeNum=procCode.CodeNum,

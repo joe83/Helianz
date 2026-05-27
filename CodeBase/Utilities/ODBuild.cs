@@ -28,7 +28,7 @@ namespace CodeBase {
 		public static bool IsLocalSourceBuild() {
 			string dirCur=AppDomain.CurrentDomain.BaseDirectory;
 			for(int i=0;i<6 && !string.IsNullOrEmpty(dirCur);i++) {
-				if(File.Exists(Path.Combine(dirCur,"OpenDental.sln"))) {
+				if(File.Exists(Path.Combine(dirCur,"Helianz.sln"))) {
 					return true;
 				}
 				DirectoryInfo directoryInfo=Directory.GetParent(dirCur);

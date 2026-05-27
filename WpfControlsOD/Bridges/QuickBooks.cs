@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Interop.QBFC10;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 	///<summary>Contains all logic for QuickBook connections and requests to the QB company file.</summary>
 	public class QuickBooks {
 		private static QBSessionManager SessionManager;
@@ -26,7 +26,7 @@ namespace OpenDental.Bridges {
 			RequestMsgSet=SessionManager.CreateMsgSetRequest("US",majorVer,minorVer);
 			RequestMsgSet.Attributes.OnError=ENRqOnError.roeContinue;
 			//Connect to QuickBooks and begin a session
-			SessionManager.OpenConnection("","Open Dental");
+			SessionManager.OpenConnection("","Helianz");
 			ConnectionOpen=true;
 			SessionManager.BeginSession(companyPath,ENOpenMode.omDontCare);
 			SessionBegun=true;

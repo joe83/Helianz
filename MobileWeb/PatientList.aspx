@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="PatientList.aspx.cs" Inherits="MobileWeb.PatientList" %>
-<%@ Import namespace="OpenDentBusiness.Mobile" %>
+<%@ Import namespace="HelianzBusiness.Mobile" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
@@ -17,9 +17,9 @@
 				<ItemTemplate>
 					<li class="arrow style1">
 						<div>
-							<a linkattib="PatientDetails.aspx?PatNum=<%#((OpenDentBusiness.Mobile.Patientm)Container.DataItem).PatNum %>"
+							<a linkattib="PatientDetails.aspx?PatNum=<%#((HelianzBusiness.Mobile.Patientm)Container.DataItem).PatNum %>"
 								href="#PatientDetails">
-								<%#GetPatientName(((Patientm)Container.DataItem).PatNum)%> &nbsp;&nbsp;&nbsp;&nbsp;<%#((OpenDentBusiness.Mobile.Patientm)Container.DataItem).Birthdate.ToShortDateString()%>
+								<%#GetPatientName(((Patientm)Container.DataItem).PatNum)%> &nbsp;&nbsp;&nbsp;&nbsp;<%#((HelianzBusiness.Mobile.Patientm)Container.DataItem).Birthdate.ToShortDateString()%>
 								</a>
 						</div>
 					</li>

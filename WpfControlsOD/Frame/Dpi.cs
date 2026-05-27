@@ -9,9 +9,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental{
+namespace Helianz{
 /*
 Some general notes about how dpi works:
 This is a starting point, although they gloss over many details and don't really give any good strategies:

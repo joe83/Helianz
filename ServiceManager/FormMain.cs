@@ -16,7 +16,7 @@ namespace ServiceManager {
 
 		private void FillList(bool isLoad=false) {
 			listMain.Items.Clear();
-			List<ServiceController> listServicesAll=ServicesHelper.GetAllOpenDentServices();
+			List<ServiceController> listServicesAll=ServicesHelper.GetAllHelianzServices();
 			try {
 				listServicesAll.AddRange(ServicesHelper.GetServicesByExe("mysqld.exe"));
 			}
@@ -39,7 +39,7 @@ namespace ServiceManager {
 		}
 
 		private void butAdd_Click(object sender,EventArgs e) {
-			using FormServiceManage FormS=new FormServiceManage("OpenDent",false,true);
+			using FormServiceManage FormS=new FormServiceManage("Helianz",false,true);
 			FormS.ShowDialog();
 			FillList();
 		}

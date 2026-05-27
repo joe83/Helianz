@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace UnitTestsCore {
 	public class SmsFromMobileT {
@@ -30,7 +30,7 @@ namespace UnitTestsCore {
 
 		public static List<SmsFromMobile> GetAll() {
 			string command="SELECT * FROM smsfrommobile";
-			return OpenDentBusiness.Crud.SmsFromMobileCrud.SelectMany(command);
+			return HelianzBusiness.Crud.SmsFromMobileCrud.SelectMany(command);
 		}
 	}
 }

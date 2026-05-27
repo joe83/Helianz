@@ -3,9 +3,9 @@ using System.Collections;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental{
+namespace Helianz{
 	
 	///<summary>Some insurance companies require special provider ID #s, and this table holds them.</summary>
 	public class ProviderIdent{

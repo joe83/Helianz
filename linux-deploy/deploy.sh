@@ -1,32 +1,32 @@
 #!/usr/bin/env bash
 # =============================================================================
-# deploy.sh  –  One-command deployment of OpenDentalServer on Linux
+# deploy.sh  –  One-command deployment of HelianzServer on Linux
 # =============================================================================
 # Usage:
 #   bash deploy.sh [OPTIONS]
 #
 # Options:
-#   --src  <path>   Path to the OpenDentalNew repo (source code).
+#   --src  <path>   Path to the HelianzNew repo (source code).
 #                   Defaults to the parent of this script's directory.
-#   --db   <file>   Path to a gzipped SQL dump (opendental.sql.gz).
+#   --db   <file>   Path to a gzipped SQL dump (helianz.sql.gz).
 #                   If omitted, the existing database volume is kept as-is.
 #   --rebuild       Force a full Docker image rebuild (no cache).
-#   --port <n>      Host port for OpenDentalServer. Default: 9390.
+#   --port <n>      Host port for HelianzServer. Default: 9390.
 #   --help          Show this help.
 #
 # Examples:
 #   # First-time deploy — run from inside linux-deploy/ within the repo:
-#   cd /opt/opendental-src/linux-deploy
-#   bash deploy.sh --db data/opendental.sql.gz
+#   cd /opt/helianz-src/linux-deploy
+#   bash deploy.sh --db data/helianz.sql.gz
 #
 #   # Explicit --src if running from a different location:
-#   bash deploy.sh --src /opt/opendental-src --db data/opendental.sql.gz
+#   bash deploy.sh --src /opt/helianz-src --db data/helianz.sql.gz
 #
 #   # Rebuild image after source code change, keep existing DB:
 #   bash deploy.sh --rebuild
 #
 #   # Re-import database only (no rebuild):
-#   bash deploy.sh --db data/opendental-new.sql.gz
+#   bash deploy.sh --db data/helianz-new.sql.gz
 # =============================================================================
 set -euo pipefail
 
@@ -47,12 +47,12 @@ SERVER_PORT=9390
 
 # MySQL credentials (must match docker-compose.yml)
 MYSQL_ROOT_PASSWORD="rootrootroot"
-MYSQL_DATABASE="opendental"
+MYSQL_DATABASE="helianz"
 MYSQL_USER="oduser"
 MYSQL_PASSWORD="odpass"
 
 COMPOSE_FILE="$SCRIPT_DIR/docker-compose.yml"
-CONTAINER_MYSQL="opendental-mysql-1"
+CONTAINER_MYSQL="helianz-mysql-1"
 
 # ── Argument parsing ──────────────────────────────────────────────────────────
 while [[ $# -gt 0 ]]; do
@@ -74,14 +74,14 @@ command -v docker >/dev/null 2>&1 || die "docker is not installed."
 docker compose version >/dev/null 2>&1 || die "'docker compose' plugin not found. Install Docker Compose v2."
 
 info "Source directory: $SRC_DIR"
-[[ -f "$SRC_DIR/OpenDental.sln" ]] || die "OpenDental.sln not found in $SRC_DIR. Set --src to the repo root."
+[[ -f "$SRC_DIR/Helianz.sln" ]] || die "Helianz.sln not found in $SRC_DIR. Set --src to the repo root."
 
 if [[ -n "$DB_FILE" ]]; then
     [[ -f "$DB_FILE" ]] || die "Database dump not found: $DB_FILE"
 fi
 
 # ── Ensure the config file exists ─────────────────────────────────────────────
-CONFIG_SRC="$SCRIPT_DIR/config/OpenDentServerConfig.xml"
+CONFIG_SRC="$SCRIPT_DIR/config/HelianzServerConfig.xml"
 [[ -f "$CONFIG_SRC" ]] || die "Config file missing: $CONFIG_SRC"
 
 # ── Generate a temporary docker-compose overlay pointing at SRC_DIR ──────────
@@ -107,19 +107,19 @@ done
 # Copy (not link) the docker/ source files so they're available in context
 mkdir -p "$BUILD_CTX/docker"
 cp "$SCRIPT_DIR/src/"*  "$BUILD_CTX/docker/"
-cp "$CONFIG_SRC"        "$BUILD_CTX/docker/OpenDentServerConfig.Docker.xml"
+cp "$CONFIG_SRC"        "$BUILD_CTX/docker/HelianzServerConfig.Docker.xml"
 
 # ── Build the Docker image ─────────────────────────────────────────────────────
 info "Building Docker image..."
 BUILD_ARGS=(
     --file "$SCRIPT_DIR/Dockerfile"
-    --tag  opendental-server-mono:latest
+    --tag  helianz-server-mono:latest
     --build-arg SERVER_PORT="$SERVER_PORT"
 )
 $REBUILD && BUILD_ARGS+=(--no-cache)
 
 docker build "${BUILD_ARGS[@]}" "$BUILD_CTX"
-success "Image built: opendental-server-mono:latest"
+success "Image built: helianz-server-mono:latest"
 
 # ── Start MySQL (first, so it initialises before we import) ───────────────────
 info "Starting MySQL container..."
@@ -170,11 +170,11 @@ if [[ -n "$DB_FILE" ]]; then
     info "Tables in $MYSQL_DATABASE: $TABLE_COUNT"
 fi
 
-# ── Start OpenDentalServer ─────────────────────────────────────────────────────
-info "Starting OpenDentalServer..."
+# ── Start HelianzServer ─────────────────────────────────────────────────────
+info "Starting HelianzServer..."
 SERVER_PORT="$SERVER_PORT" \
-docker compose -f "$COMPOSE_FILE" up -d opendental-server
-success "OpenDentalServer container started."
+docker compose -f "$COMPOSE_FILE" up -d helianz-server
+success "HelianzServer container started."
 
 # ── Verify ────────────────────────────────────────────────────────────────────
 info "Verifying endpoint (waiting up to 30s)..."
@@ -182,11 +182,11 @@ for i in $(seq 1 15); do
     HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:$SERVER_PORT/ServiceMain.asmx" 2>/dev/null || echo "000")
     if [[ "$HTTP_CODE" == "200" ]]; then
         echo ""
-        success "OpenDentalServer is up! HTTP $HTTP_CODE"
+        success "HelianzServer is up! HTTP $HTTP_CODE"
         break
     fi
     [[ $i -eq 15 ]] && { echo ""; warn "Endpoint not responding yet (got HTTP $HTTP_CODE). Check logs:"; \
-        echo "  docker compose -f $COMPOSE_FILE logs opendental-server"; }
+        echo "  docker compose -f $COMPOSE_FILE logs helianz-server"; }
     echo -n "."
     sleep 2
 done
@@ -194,15 +194,15 @@ done
 # ── Summary ───────────────────────────────────────────────────────────────────
 echo ""
 echo -e "${GREEN}═══════════════════════════════════════════════════════════${NC}"
-echo -e "${GREEN}  OpenDentalServer deployed successfully!${NC}"
+echo -e "${GREEN}  HelianzServer deployed successfully!${NC}"
 echo -e "${GREEN}═══════════════════════════════════════════════════════════${NC}"
 echo ""
 echo -e "  Service URL  :  ${CYAN}http://$(hostname -I | awk '{print $1}'):$SERVER_PORT/ServiceMain.asmx${NC}"
 echo ""
 echo "  Useful commands:"
-echo "    View server logs : docker compose -f $COMPOSE_FILE logs -f opendental-server"
+echo "    View server logs : docker compose -f $COMPOSE_FILE logs -f helianz-server"
 echo "    View MySQL logs  : docker compose -f $COMPOSE_FILE logs -f mysql"
-echo "    Restart server   : docker compose -f $COMPOSE_FILE restart opendental-server"
+echo "    Restart server   : docker compose -f $COMPOSE_FILE restart helianz-server"
 echo "    Stop all         : docker compose -f $COMPOSE_FILE down"
 echo "    Wipe DB + restart: docker compose -f $COMPOSE_FILE down -v && bash $0 --src $SRC_DIR --db <dump>"
 echo ""

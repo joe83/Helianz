@@ -1,4 +1,4 @@
-﻿using OpenDentBusiness;
+﻿using HelianzBusiness;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +27,7 @@ namespace UnitTestsCore {
 				MobileAppDevice ret=new MobileAppDevice {
 					DeviceName=deviceName,UniqueID=uniqueID,ClinicNum=clinicNum,IsEclipboardEnabled=isAllowed,EclipboardLastAttempt=DateTime.Now,IsODTouchEnabled=isODTouchEnabled
 				};
-				OpenDentBusiness.Crud.MobileAppDeviceCrud.Insert(ret);
+				HelianzBusiness.Crud.MobileAppDeviceCrud.Insert(ret);
 				return ret;
 			});
 		}

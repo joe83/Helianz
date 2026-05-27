@@ -7,8 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using OpenDentBusiness;
-using OpenDental;
+using HelianzBusiness;
+using Helianz;
 
 namespace TestCanada {
 	public partial class FormTestCanada:Form {

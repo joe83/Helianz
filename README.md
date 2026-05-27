@@ -1,10 +1,10 @@
-# etnguyen03/opendental
+# etnguyen03/helianz
 
-This is a fork of [opendental/opendental](https://github.com/OpenDental/opendental/tree/24_3), version 24.3, [the last GPL version distributed](https://www.opendental.com/site/distributors.html).
+This is a fork of [helianz/helianz](https://github.com/Helianz/helianz/tree/24_3), version 24.3, [the last GPL version distributed](https://www.helianz.com/site/distributors.html).
 
-The eventual goal of this fork is to simply make Open Dental easier to develop on.
-I have had several thoughts regarding the development of Open Dental that I have wanted to make OSS, but simply do not have the time to
-maintain several new versions of whenever a new version of Open Dental is released. Now that Open Dental has gone proprietary, I can more easily
+The eventual goal of this fork is to simply make Helianz easier to develop on.
+I have had several thoughts regarding the development of Helianz that I have wanted to make OSS, but simply do not have the time to
+maintain several new versions of whenever a new version of Helianz is released. Now that Helianz has gone proprietary, I can more easily
 maintain this fork instead of having to rebase my changes on every single new version released.
 
 My goals include:
@@ -21,7 +21,7 @@ My goals include:
 ---
 
 The original code on which this repository is based out of
-is Open Dental, Copyright 2003-2024, Jordan S. Sparks, DMD.
+is Helianz, Copyright 2003-2024, Jordan S. Sparks, DMD.
 It is used in accordance with version 2 of the GNU General Public License,
 as published by the Free Software Foundation.
 

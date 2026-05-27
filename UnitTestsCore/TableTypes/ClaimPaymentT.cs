@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using OpenDentBusiness;
-using OpenDental;
+using HelianzBusiness;
+using Helianz;
 using System.Linq;
 
 namespace UnitTestsCore {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DataConnectionBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 using UnitTestsCore;
 
 namespace UnitTests.DataConnection_Tests {

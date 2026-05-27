@@ -13,10 +13,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 	///<summary></summary>
 	public partial class FrmTestSplitters:FrmODBase {
 		private int _countLoop=60;
@@ -29,7 +29,7 @@ namespace OpenDental {
 		}
 
 		private void FrmFrmTestSplitters_Load(object sender,EventArgs e) {
-			webBrowser.Source=new Uri("https://www.opendental.com/");
+			webBrowser.Source=new Uri("https://www.helianz.com/");
 		}
 
 	}

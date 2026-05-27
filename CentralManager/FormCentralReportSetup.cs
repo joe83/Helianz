@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
-using OpenDentBusiness;
-using OpenDental;
+using HelianzBusiness;
+using Helianz;
 
 namespace CentralManager {
 	public partial class FormCentralReportSetup:FormODBase {

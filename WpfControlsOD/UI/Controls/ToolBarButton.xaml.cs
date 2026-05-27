@@ -266,8 +266,8 @@ namespace WpfControls.UI{
 			textBlock.Foreground=Brushes.Black;
 			polygonTriangle.Fill=Brushes.Black;
 			if(!IsEnabled){
-				textBlock.Foreground=new SolidColorBrush(OpenDental.ColorOD.Gray_Wpf(100));
-				polygonTriangle.Fill=new SolidColorBrush(OpenDental.ColorOD.Gray_Wpf(100));
+				textBlock.Foreground=new SolidColorBrush(Helianz.ColorOD.Gray_Wpf(100));
+				polygonTriangle.Fill=new SolidColorBrush(Helianz.ColorOD.Gray_Wpf(100));
 				return;
 			}
 			if(ToolBarButtonStyle==ToolBarButtonStyle.ToggleButton && IsTogglePushed){

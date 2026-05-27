@@ -8,12 +8,12 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 using CodeBase;
-using OpenDental.Drawing;
+using Helianz.Drawing;
 
-namespace OpenDental {
+namespace Helianz {
 	public partial class FrmMountAndAcquire:FrmODBase {
 		public ImagingDevice ImagingDeviceSelected;
 		public MountDef MountDefSelected;

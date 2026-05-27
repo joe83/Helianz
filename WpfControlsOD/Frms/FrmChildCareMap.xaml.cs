@@ -15,11 +15,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CodeBase;
-using OpenDental.Drawing;
-using OpenDentBusiness;
+using Helianz.Drawing;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 	///<summary></summary>
 	public partial class FrmChildCareMap:FrmODBase {
 		///<summary>Right click options for the classroom grids.</summary>
@@ -127,13 +127,13 @@ namespace OpenDental {
 			butPrint_Grid8.Tag=8;
 			//Call all fillgrids
 			FillAllGrids();
-			GlobalFormOpenDental.EventProcessSignalODs+=GlobalFormOpenDental_EventProcessSignalODs;
+			GlobalFormHelianz.EventProcessSignalODs+=GlobalFormHelianz_EventProcessSignalODs;
 			if(ViewOnly) {
 				SetViewOnly();
 			}
 		}
 
-		private void GlobalFormOpenDental_EventProcessSignalODs(object sender,List<Signalod> listSignalods) {
+		private void GlobalFormHelianz_EventProcessSignalODs(object sender,List<Signalod> listSignalods) {
 			for(int i=0;i<listSignalods.Count;i++) {
 				if(listSignalods[i].IType!=InvalidType.Children) {
 					continue;
@@ -487,7 +487,7 @@ namespace OpenDental {
 				return;
 			}
 			//Begin clock out
-			OpenDental.UI.ProgressWin progressWin=new OpenDental.UI.ProgressWin();
+			Helianz.UI.ProgressWin progressWin=new Helianz.UI.ProgressWin();
 			progressWin.ShowCancelButton=false;
 			progressWin.ActionMain=() => {
 				ClockEvents.ClockOut(employee.EmployeeNum,timeClockStatus);
@@ -540,7 +540,7 @@ namespace OpenDental {
 				return;
 			}
 			//Begin clock in
-			OpenDental.UI.ProgressWin progressWin=new OpenDental.UI.ProgressWin();
+			Helianz.UI.ProgressWin progressWin=new Helianz.UI.ProgressWin();
 			progressWin.ShowCancelButton=false;
 			progressWin.ActionMain=() => {
 				ClockEvents.ClockIn(employee.EmployeeNum,isAtHome:false);
@@ -709,7 +709,7 @@ namespace OpenDental {
 			if(employee.ClockStatus=="Working") {
 				return;//Already clocked in
 			}
-			OpenDental.UI.ProgressWin progressWin=new OpenDental.UI.ProgressWin();
+			Helianz.UI.ProgressWin progressWin=new Helianz.UI.ProgressWin();
 			progressWin.ShowCancelButton=false;
 			progressWin.ActionMain=() => {
 				ClockEvents.ClockIn(employee.EmployeeNum,isAtHome:false);

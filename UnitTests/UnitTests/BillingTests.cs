@@ -3,19 +3,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnitTestsCore;
-using OpenDentBusiness;
+using HelianzBusiness;
 using CodeBase;
 using System.Data;
 using PdfSharp.Pdf;
 using System.IO;
 using PdfSharp.Pdf.IO;
 using PdfSharp.Drawing;
-using OpenDental;
+using Helianz;
 using DataConnectionBase;
 
 namespace UnitTests.Billing_Tests {
 	///<summary>FormBilling was refactored for 24.2 and business logic was extracted to ODBiz\Logic\BillingL.cs.
-	///This allows billing to be shared by OpenDentalService and also allows for unit testing (this file).
+	///This allows billing to be shared by HelianzService and also allows for unit testing (this file).
 	///Scroll to bottom of this file for a writeup on all of the previously unreported bug/behaviors that were fixed through the course of this refactor.</summary>
 	[TestClass]
 	public class BillingTests:TestBase {
@@ -53,7 +53,7 @@ namespace UnitTests.Billing_Tests {
 			EmailAddressT.ClearEmailAddressTable();
 			Ebill ebill=Ebills.GetForClinic(0);
 			ebill.RemitAddress=EbillAddress.PracticeBilling;
-			OpenDentBusiness.Crud.EbillCrud.Update(ebill);
+			HelianzBusiness.Crud.EbillCrud.Update(ebill);
 			PrefT.UpdateString(PrefName.PracticeBillingAddress,"addr1");
 			PrefT.UpdateString(PrefName.PracticeBillingAddress2,"addr2");
 			PrefT.UpdateString(PrefName.PracticeBillingCity,"city");
@@ -805,7 +805,7 @@ namespace UnitTests.Billing_Tests {
 			assert(true,StatementMode.InPerson);
 		}
 
-		#region OpenDentalService	
+		#region HelianzService	
 		///<summary>Assert that AgingData.GetAgingData is called minimally and for groups of clinics according to aging ClinicPref values.</summary>
 		[TestMethod]
 		public void Billing_ODService_LimitAging() {
@@ -935,7 +935,7 @@ namespace UnitTests.Billing_Tests {
 				Assert.AreEqual(useClinics ? 3 : 1,sendStatementsIO.CurStatementBatch.BatchNum);
 				if(eBillingType==BillingUseElectronicEnum.ClaimX) {
 					//ClaimX was never going to work for ODService. It defaults to choosing an invalid path for the xml file. It has been this way since inception.
-					//Not going to fix since ClaimX is sunsetted as of 12/31/22. https://www.opendental.com/manual/eclaimsclaimx.html
+					//Not going to fix since ClaimX is sunsetted as of 12/31/22. https://www.helianz.com/manual/eclaimsclaimx.html
 					//Misc System error is only added once so only 1 error no matter how many clinics/batches.
 					Assert.AreEqual(1,sendStatementsIO.ListSkippedPatients.Count(x => x.Reason==SkipReason.Misc));
 					Assert.IsTrue(sendStatementsIO.ListSkippedPatients.First(x => x.Reason==SkipReason.Misc).Error.Contains("does not have a valid path"));
@@ -1397,11 +1397,11 @@ FIX: I decided not to fix this. The batching code has existed for years and is l
 ClaimX electronic billing prompts user to select an xml file generation full path and starts in C:\StatementX\ (code comment says vendor wants this path).
 But we do not retain the folder after the selection is made. So we end up creating the xml file in the working directory of the program.
 FIX: I decided not to fix this. ClaimX code is very old (> 10 years) and has worked this way for years. Customers may expect it to work like this.
-FURTHER INVESTIGATION: ClaimX is no longer supported and was replaced by DentalXChange (EHG). https://www.opendental.com/manual/eclaimsclaimx.html
+FURTHER INVESTIGATION: ClaimX is no longer supported and was replaced by DentalXChange (EHG). https://www.helianz.com/manual/eclaimsclaimx.html
 I'll still leave this folder selection bug but I'm not going to worry that it's there.
 
 9)
-ClaimX electronic billing was never going to work in OpenDentalService. The pref used to find desired file path pulls from a pref that does not represent a file path: BillingUseElectronic (int).
+ClaimX electronic billing was never going to work in HelianzService. The pref used to find desired file path pulls from a pref that does not represent a file path: BillingUseElectronic (int).
 FIX: Now uses same hard-coded file path as desktop billing: C:\StatementX\. This won't work either per the bug noted above, but at least it is consistent.
 
 10)

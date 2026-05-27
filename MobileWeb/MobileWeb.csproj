@@ -256,9 +256,9 @@
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OpenDentBusiness\OpenDentBusiness.csproj">
+    <ProjectReference Include="..\HelianzBusiness\HelianzBusiness.csproj">
       <Project>{3D0FC76E-803C-4DE2-BDB1-47D63A4E2357}</Project>
-      <Name>OpenDentBusiness</Name>
+      <Name>HelianzBusiness</Name>
     </ProjectReference>
     <ProjectReference Include="..\WebForms\WebForms.csproj">
       <Project>{099AC80B-E862-42F1-8109-87BF450DC3D9}</Project>

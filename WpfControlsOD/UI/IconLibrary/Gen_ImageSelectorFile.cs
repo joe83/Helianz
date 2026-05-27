@@ -1,6 +1,6 @@
 using System;
 using System.Windows.Media;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace WpfControls.UI{
 	//---------------This is one of the rare Gen files that's not generated automatically.

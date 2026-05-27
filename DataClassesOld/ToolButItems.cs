@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental{
+namespace Helianz{
 
 	///<summary>Each row represents one toolbar button to be placed on a toolbar and linked to a program.</summary>
 	public struct ToolButItem{

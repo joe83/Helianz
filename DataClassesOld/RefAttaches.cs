@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental{
+namespace Helianz{
 
 	///<summary>Attaches a referral to a patient.</summary>
 	public class RefAttach{  

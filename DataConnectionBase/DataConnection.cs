@@ -103,7 +103,7 @@ namespace DataConnectionBase {
 				//We need to know if thread variables are being used (SetDbT was called).  Because DBType is an enum we do not have a way to check if _dBtypeT is "null or empty".
 				//Check if _databaseT and _connectionStringT are null or empty which will indicate that we need to return _dBtype (set by the main thread) instead of _dBtypeT (thread specific).
 				if(String.IsNullOrEmpty(_databaseT) && String.IsNullOrEmpty(_connectionStringT)) {
-					//This will often get hit by separate threads that were spawned from the main thread and did not use SetDbT.  E.g. FormOpenDental.ThreadEmailInbox
+					//This will often get hit by separate threads that were spawned from the main thread and did not use SetDbT.  E.g. FormHelianz.ThreadEmailInbox
 					//They need to follow old behavior and use the old static, non-thread safe variables that are assumed to "never change" except on startup.
 					return _dBtype;
 				}
@@ -117,7 +117,7 @@ namespace DataConnectionBase {
 
 		//=====================================================================================================================================================
 		// The following properties MUST first check if the thread static variables are null or empty which will cause the non thread safe static variables
-		// to be returned.  This is because the main thread of Open Dental is written in a way that SetDb is only called once (on startup) and then
+		// to be returned.  This is because the main thread of Helianz is written in a way that SetDb is only called once (on startup) and then
 		// the static connection settings are used afterwards for subsequent connections / database calls.
 		// Individual threads that need to access different databases (CEMT) need to call SetDbT before making db calls.
 		//=====================================================================================================================================================

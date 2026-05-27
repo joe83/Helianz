@@ -8,11 +8,11 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 using CodeBase;
 
-namespace OpenDental {
+namespace Helianz {
 	public partial class FrmChildRooms:FrmODBase {
 
 		///<summary></summary>

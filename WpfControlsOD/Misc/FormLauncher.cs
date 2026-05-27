@@ -6,13 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace OpenDental {
+namespace Helianz {
 	/*
 Jordan is the only one allowed to edit this file.
 
 How to use this class:
-This lets you launch Open Dental forms from the WPFControlsOD project even though you don't have a ref to OD.
-You are only allowed to launch Forms that are in the OpenDental namespace and project.
+This lets you launch Helianz forms from the WPFControlsOD project even though you don't have a ref to OD.
+You are only allowed to launch Forms that are in the Helianz namespace and project.
 Since you won't have a reference to the type, the formName must be passed in using the enum.
 You'll need to add your form to the enum.
 The form you are launching must have a constructor with zero parameters.
@@ -228,7 +228,7 @@ Events:
 	}
 
 	public class FormLauncherEventArgs{
-		///<summary>Example: OpenDental.FormEserviceText</summary>
+		///<summary>Example: Helianz.FormEserviceText</summary>
 		public EnumFormName EnumFormName_;
 		///<summary></summary>
 		public System.Windows.Forms.Form Form;

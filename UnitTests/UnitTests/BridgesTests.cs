@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness;
+using HelianzBusiness;
 using UnitTestsCore;
 
 namespace UnitTests.Bridges_Tests {
@@ -37,8 +37,8 @@ namespace UnitTests.Bridges_Tests {
 			//The old Sirona Sidexis bridge worked for many years due to not needing to write lines longer than 128 characters to the .sdx file.
 			//An arithmetic OverflowException would throw if there were more than 128 characters in a single line (e.g. patients with long names).
 			//This unit test asserts that the new code that replaced the old code works exactly the same up to the point of failure.
-			//The most interesting part about this unit test / bug fix is that IntToByteArrayOld works with integers larger than 128 but Open Dental fails.
-			//There must be something else happening in the core of Open Dental that causes Math.IEEERemainder() to act differently than this Unit Test.
+			//The most interesting part about this unit test / bug fix is that IntToByteArrayOld works with integers larger than 128 but Helianz fails.
+			//There must be something else happening in the core of Helianz that causes Math.IEEERemainder() to act differently than this Unit Test.
 			//Regardless, the new way of converting an integer to a byte array by using BitConverter.GetBytes() works in both projects.
 			for(int i=0;i<126;i++) {//Only need to assert up to 126 because i will always have 2 added to it (thus max value tested will be 128).
 				//The Sirona bridge always adds 2 to the length of the text being passed in

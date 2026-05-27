@@ -6,8 +6,8 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Threading;
 using WebForms;
-using OpenDentBusiness;
-using OpenDentBusiness.Mobile;
+using HelianzBusiness;
+using HelianzBusiness.Mobile;
 
 namespace MobileWeb {
 	public partial class AppointmentDetails:System.Web.UI.Page {

@@ -10,12 +10,12 @@ using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using Microsoft.VisualBasic.Devices;
 using Microsoft.Win32;
-using OpenDental.UI;
+using Helianz.UI;
 using CodeBase;
-using OpenDentBusiness;
-using OpenDentalHelp;
+using HelianzBusiness;
+using HelianzHelp;
 
-namespace OpenDental {
+namespace Helianz {
 	//Jordan is the only one allowed to alter this file.
 	//This code was copied from FormODBase, and then stripped down.
 
@@ -666,7 +666,7 @@ namespace OpenDental {
 			_rectangleButtons.Left-ScaleF(30)-MaxInset()+ScaleF(8),heightFont+2);//The 8 is just so we can get closer to the right
 			g.DrawString(this.Text,font,brushText,rectangleText);
 			//}
-			//else{//this won't be needed until we convert FormOpenDental to WPF, 
+			//else{//this won't be needed until we convert FormHelianz to WPF, 
 			//and then it should be hard coded instead of using _fontTitle.
 			//	//We actually ignore the font size sent in
 			//	RectangleF rectangleText=new RectangleF(
@@ -1183,7 +1183,7 @@ Refresh();
 				}
 				try{
 					bool isKeyValid=ODHelp.IsEncryptedKeyValid();//always true in debug
-					string manualPageURL=OpenDentalHelp.ODHelp.GetManualPage(formName,PrefC.GetString(PrefName.ProgramVersion),isKeyValid);
+					string manualPageURL=HelianzHelp.ODHelp.GetManualPage(formName,PrefC.GetString(PrefName.ProgramVersion),isKeyValid);
 					//GetManualPage is also where form name gets sent to clipboard.
 					if(ODBuild.IsThinfinity()) {
 						Process.Start(manualPageURL);
@@ -1199,7 +1199,7 @@ Refresh();
 					}
 					if(!isKeyValid) {
 						//comes up on top of locked browser.
-						MsgBox.Show("To use the Open Dental Help feature you must be on support.");
+						MsgBox.Show("To use the Helianz Help feature you must be on support.");
 					}
 				}
 				catch{

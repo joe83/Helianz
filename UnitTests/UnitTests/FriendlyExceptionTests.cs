@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using CodeBase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDental;
-using OpenDentBusiness;
+using Helianz;
+using HelianzBusiness;
 using UnitTestsCore;
 
 namespace UnitTests.FriendlyException_Tests {

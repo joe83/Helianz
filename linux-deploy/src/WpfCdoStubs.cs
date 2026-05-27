@@ -1,7 +1,7 @@
 // =============================================================================
 // WpfCdoStubs.cs  –  Minimal stub types for Linux/Mono compilation
 // =============================================================================
-// These stub types exist only to allow OpenDentBusiness to compile on Mono
+// These stub types exist only to allow HelianzBusiness to compile on Mono
 // where PresentationCore, PresentationFramework, and CDO COM assemblies are
 // unavailable.  None of the stub types function at runtime; any code path that
 // invokes them will throw PlatformNotSupportedException.

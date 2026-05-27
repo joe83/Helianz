@@ -1,6 +1,6 @@
 /*=============================================================================================================
-Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
-See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
+Helianz GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.helianz.com,  www.docsparks.com
+See header in FormHelianz.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using MySqlConnector;
 using System;
@@ -55,7 +55,7 @@ namespace DocumentationBuilder{
 		///<summary></summary>
 		private string GetConnectionString(){
 			XmlDocument document=new XmlDocument();
-			string configFile=ODFileUtils.CombinePaths(new string[] {"..","..","..","OpenDental","bin","Release","FreeDentalConfig.xml"} );
+			string configFile=ODFileUtils.CombinePaths(new string[] {"..","..","..","Helianz","bin","Release","FreeDentalConfig.xml"} );
 			if(!File.Exists(configFile)){
 				MessageBox.Show(configFile+" does not exist.");
 				Application.Exit();

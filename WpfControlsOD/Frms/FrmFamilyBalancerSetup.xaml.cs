@@ -1,9 +1,9 @@
-﻿using OpenDentBusiness;
+﻿using HelianzBusiness;
 using System;
 using System.Windows;
 using System.Windows.Input;
 
-namespace OpenDental {
+namespace Helianz {
 	/// <summary>
 	/// Interaction logic for FrmFamilyBalancerAutoSettingsEdit.xaml
 	/// </summary>

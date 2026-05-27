@@ -1,14 +1,14 @@
 using System;
 using DataConnectionBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 /// <summary>Standalone DB upgrade tool. Connects directly to the database and runs ConvertDatabases.InvokeConvertMethods().</summary>
 class UpgradeDb {
 	[STAThread]
 	static int Main(string[] args) {
-		Console.WriteLine("=== OpenDental Database Upgrade Tool ===");
+		Console.WriteLine("=== Helianz Database Upgrade Tool ===");
 		string server   = "localhost";
-		string database = "opendental";
+		string database = "helianz";
 		string user     = "root";
 		string password = "J0k0m4r0k3@";
 		try {

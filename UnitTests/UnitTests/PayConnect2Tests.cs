@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OpenDentBusiness;
+using HelianzBusiness;
 using UnitTestsCore;
 
 namespace UnitTests.PayConnect2_Tests {
@@ -123,7 +123,7 @@ namespace UnitTests.PayConnect2_Tests {
 				""expiry"": ""1223"",
 				""merchid"": ""855000000150"",
 				""orderId"": """",
-				""receipt"": ""{\""dateTime\"":\""20230921153507\"",\""dba\"":\""Open Dental Retail\"",\""address2\"":\""King of Prussia, PA\"",\""phone\"":\""4845817794\"",\""footer\"":\""\"",\""nameOnCard\"":\""asd\"",\""address1\"":\""\"",\""orderNote\"":\""\"",\""header\"":\""\"",\""items\"":\""\""}"",
+				""receipt"": ""{\""dateTime\"":\""20230921153507\"",\""dba\"":\""Helianz Retail\"",\""address2\"":\""King of Prussia, PA\"",\""phone\"":\""4845817794\"",\""footer\"":\""\"",\""nameOnCard\"":\""asd\"",\""address1\"":\""\"",\""orderNote\"":\""\"",\""header\"":\""\"",\""items\"":\""\""}"",
 				""respcode"": ""000"",
 				""respproc"": ""RPCT"",
 				""respstat"": ""A"",

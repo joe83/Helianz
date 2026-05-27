@@ -7,7 +7,7 @@ using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 using CodeBase;
 
 namespace TestToothChart {

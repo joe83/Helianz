@@ -65,7 +65,7 @@ namespace DocumentationBuilder {
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(558, 41);
 			this.label2.TabIndex = 2;
-			this.label2.Text = "Step 1: Build the release of OpenDental and UnitTests. This generates OpenDentBus" +
+			this.label2.Text = "Step 1: Build the release of Helianz and UnitTests. This generates HelianzBus" +
     "iness.xml etc. which contain all the xml Summaries that we will then pull from. " +
     "";
 			// 
@@ -148,7 +148,7 @@ namespace DocumentationBuilder {
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(558, 33);
 			this.label7.TabIndex = 15;
-			this.label7.Text = "The output file is DocumentationBuilder/OpenDentalDocumentation.xml, which will b" +
+			this.label7.Text = "The output file is DocumentationBuilder/HelianzDocumentation.xml, which will b" +
     "e automatically launched when done.  Approximate time to complete is 20 seconds " +
     "on a fast computer.";
 			// 

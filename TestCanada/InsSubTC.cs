@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using OpenDental;
-using OpenDentBusiness;
-using OpenDental.Eclaims;
+using Helianz;
+using HelianzBusiness;
+using Helianz.Eclaims;
 
 namespace TestCanada {
 	public class InsSubTC {

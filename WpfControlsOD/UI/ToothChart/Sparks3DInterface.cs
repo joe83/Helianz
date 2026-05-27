@@ -18,7 +18,7 @@ using System.Windows.Forms;
 //A strategy is used, where the only references to Sparks3D are in this one class/file.  
 //And then, we ensure that this class is never hit unless Sparks3D.dll is present, preventing it from ever crashing.
 
-namespace OpenDental.UI{
+namespace Helianz.UI{
 	///<summary></summary>
 	public class Sparks3DInterface{
 		private ToothChart _toothChart;
@@ -42,8 +42,8 @@ namespace OpenDental.UI{
 
 
 		private void _toothChart_TextMoved(object sender,Sparks3D.TextMovedEventArgs e) {
-			//convert it from Sparks3D.TextMovedEventArgs to OpenDental.TextMovedEventArgs
-			OpenDental.TextMovedEventArgs textMovedEventArgs=new OpenDental.TextMovedEventArgs(){ColorNew=e.ColorNew,LocationNew=e.LocationNew,ToothInitialNum=e.ToothInitialNum };
+			//convert it from Sparks3D.TextMovedEventArgs to Helianz.TextMovedEventArgs
+			Helianz.TextMovedEventArgs textMovedEventArgs=new Helianz.TextMovedEventArgs(){ColorNew=e.ColorNew,LocationNew=e.LocationNew,ToothInitialNum=e.ToothInitialNum };
 			TextMoved?.Invoke(sender,textMovedEventArgs);
 		}
 
@@ -180,27 +180,27 @@ namespace OpenDental.UI{
 			_toothChart.AddOrthoElastic(toothIDstart,toothIDend,color);
 		}
 
-		public void AddPerioMeasure(int intTooth,OpenDentBusiness.PerioSequenceType perioSequenceType,int mb,int b,int db,int ml,int l, int dl){
+		public void AddPerioMeasure(int intTooth,HelianzBusiness.PerioSequenceType perioSequenceType,int mb,int b,int db,int ml,int l, int dl){
 			Sparks3D.PerioSequenceType perioSequenceType3D;
 			switch(perioSequenceType){
 				default:
 					throw new ApplicationException("PerioSequenceType not allowed.");
-				case OpenDentBusiness.PerioSequenceType.Furcation:
+				case HelianzBusiness.PerioSequenceType.Furcation:
 					perioSequenceType3D=Sparks3D.PerioSequenceType.Furcation;
 					break;
-				case OpenDentBusiness.PerioSequenceType.GingMargin:
+				case HelianzBusiness.PerioSequenceType.GingMargin:
 					perioSequenceType3D=Sparks3D.PerioSequenceType.GingMargin;
 					break;
-				case OpenDentBusiness.PerioSequenceType.MGJ:
+				case HelianzBusiness.PerioSequenceType.MGJ:
 					perioSequenceType3D=Sparks3D.PerioSequenceType.MGJ;
 					break;
-				case OpenDentBusiness.PerioSequenceType.Probing:
+				case HelianzBusiness.PerioSequenceType.Probing:
 					perioSequenceType3D=Sparks3D.PerioSequenceType.Probing;
 					break;
-				case OpenDentBusiness.PerioSequenceType.BleedSupPlaqCalc:
+				case HelianzBusiness.PerioSequenceType.BleedSupPlaqCalc:
 					perioSequenceType3D=Sparks3D.PerioSequenceType.Bleeding;
 					break;
-				case OpenDentBusiness.PerioSequenceType.CAL:
+				case HelianzBusiness.PerioSequenceType.CAL:
 					perioSequenceType3D=Sparks3D.PerioSequenceType.CAL;
 					break;
 			}
@@ -327,18 +327,18 @@ namespace OpenDental.UI{
 			_toothChart.SetText(toothID,color,text);
 		}
 
-		public void SetToothNumberingNomenclature(OpenDentBusiness.ToothNumberingNomenclature toothNumberingNomenclature){
+		public void SetToothNumberingNomenclature(HelianzBusiness.ToothNumberingNomenclature toothNumberingNomenclature){
 			switch(toothNumberingNomenclature){
-				case OpenDentBusiness.ToothNumberingNomenclature.FDI:
+				case HelianzBusiness.ToothNumberingNomenclature.FDI:
 					_toothChart.SetToothNumberingNomenclature(ToothNumberingNomenclature.FDI);
 					break;
-				case OpenDentBusiness.ToothNumberingNomenclature.Haderup:
+				case HelianzBusiness.ToothNumberingNomenclature.Haderup:
 					_toothChart.SetToothNumberingNomenclature(ToothNumberingNomenclature.Haderup);
 					break;
-				case OpenDentBusiness.ToothNumberingNomenclature.Palmer:
+				case HelianzBusiness.ToothNumberingNomenclature.Palmer:
 					_toothChart.SetToothNumberingNomenclature(ToothNumberingNomenclature.Palmer);
 					break;
-				case OpenDentBusiness.ToothNumberingNomenclature.Universal:
+				case HelianzBusiness.ToothNumberingNomenclature.Universal:
 					_toothChart.SetToothNumberingNomenclature(ToothNumberingNomenclature.Universal);
 					break;
 			}

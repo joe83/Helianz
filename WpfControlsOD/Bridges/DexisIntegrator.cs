@@ -7,10 +7,10 @@ using System.Text;
 using System.Windows.Forms;
 using CodeBase;
 using NDde;
-using OpenDental.UI;
-using OpenDentBusiness;
+using Helianz.UI;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 
 	///<summary>The Dexis Integrator is used when an office uses Terminal Services or Citrix and want to take X-rays on a client workstation with OD
 	///running on a server viewed through an RDP session.  The Integrator will be installed on the Terminal Server and on the client workstations.
@@ -121,7 +121,7 @@ namespace OpenDental.Bridges {
 		public static void SendDataDDE(Program progCur,Patient pat) {
 			try {
 				if(_client==null || _client.Context==null) {
-					Form formOD=Application.OpenForms.Cast<Form>().FirstOrDefault(x=>x.GetType().FullName=="OpenDental.FormOpenDental");
+					Form formOD=Application.OpenForms.Cast<Form>().FirstOrDefault(x=>x.GetType().FullName=="Helianz.FormHelianz");
 					if(formOD is null){
 						formOD=Application.OpenForms[0];
 					}

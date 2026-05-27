@@ -73,7 +73,7 @@ namespace SlowQueryTool {
 			float totalQueries=ListQueries.Count;
 			float numNonODQueries=ListQueries.Where(x => x.IsLikelyThirdParty).Count();
 			decimal percent=(decimal)Math.Round(numNonODQueries/totalQueries*100,2);
-			testResult.ResultText+="Percent of queries that do not match Open Dental Patterns: "+percent+"%\r\nNote: Some queries may be third party"
+			testResult.ResultText+="Percent of queries that do not match Helianz Patterns: "+percent+"%\r\nNote: Some queries may be third party"
 				+", but are not caught by our pattern check. Use best judgement.";
 			if(percent > 15) {//if over 15% of queries are flagged as likely non-OD
 				testResult.ResultText+="\r\nOut of the "+totalQueries+" queries analyzed, "+numNonODQueries+" queries did not follow our patterns. "
@@ -782,12 +782,12 @@ namespace SlowQueryTool {
 
 	///<summary>A structure to hold ML model prediction scores to determine if a query is third party or not.</summary>
 	public class ThirdPartyScore {
-		private float _isOpenDentalQuery;
+		private float _isHelianzQuery;
 		private float _isThirdPartyQuery;
 
-		public float IsOpenDentalQueryScore {
+		public float IsHelianzQueryScore {
 			get {
-				return (float)Math.Round(_isOpenDentalQuery * 100,2);
+				return (float)Math.Round(_isHelianzQuery * 100,2);
 			}
 		}
 
@@ -797,8 +797,8 @@ namespace SlowQueryTool {
 			}
 		}
 
-		public ThirdPartyScore(float isOpenDentalQuery,float isThirdPartyQuery) {
-			_isOpenDentalQuery=isOpenDentalQuery;
+		public ThirdPartyScore(float isHelianzQuery,float isThirdPartyQuery) {
+			_isHelianzQuery=isHelianzQuery;
 			_isThirdPartyQuery=isThirdPartyQuery;
 		}
 	}

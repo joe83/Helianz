@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using OpenDental;
+using Helianz;
 
 namespace UnitTests {
 	public partial class FormDatePickerTests:FormODBase {

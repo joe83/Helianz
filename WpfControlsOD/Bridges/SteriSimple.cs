@@ -1,8 +1,8 @@
 ﻿using System;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges{
+namespace Helianz.Bridges{
 	/// <summary></summary>
 	public class SteriSimple{
 

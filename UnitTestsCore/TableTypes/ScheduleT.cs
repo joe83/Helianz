@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace UnitTestsCore {
 	public class ScheduleT {

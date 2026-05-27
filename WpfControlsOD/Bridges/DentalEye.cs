@@ -7,11 +7,11 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System.Collections.Generic;
 using CodeBase;
 
-namespace OpenDental.Bridges{
+namespace Helianz.Bridges{
 	/// <summary></summary>
 	public class DentalEye{
 

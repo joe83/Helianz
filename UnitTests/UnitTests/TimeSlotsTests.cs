@@ -1,7 +1,7 @@
 ﻿using CodeBase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness;
-using OpenDentBusiness.WebTypes.WebSched.TimeSlot;
+using HelianzBusiness;
+using HelianzBusiness.WebTypes.WebSched.TimeSlot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1349,11 +1349,11 @@ namespace UnitTests.TimeSlots_Tests {
 		public void TimeSlots_ChooseTimeSlotForNewPatAppt_DuplicateFNameAndPreferredCaughtFR(){
 			Patient pat=PatientT.CreatePatient(fName:"John",preferredName:"Jack",lName:"Doe",email:"Jack@Doe.com",birthDate: new DateTime(1971,6,28),phone:"5555555555");
 			//check that duplicate first name is caught
-			Assert.IsTrue(OpenDentBusiness.Patients.GetHasDuplicateForNameOrPreferredBirthdayEmailAndPhone("Doe","John",new DateTime(1971,6,28),"","5555555555"));
+			Assert.IsTrue(HelianzBusiness.Patients.GetHasDuplicateForNameOrPreferredBirthdayEmailAndPhone("Doe","John",new DateTime(1971,6,28),"","5555555555"));
 			//check using preferred name as first name
-			Assert.IsTrue(OpenDentBusiness.Patients.GetHasDuplicateForNameOrPreferredBirthdayEmailAndPhone("Doe","Jack",new DateTime(1971,6,28),"","5555555555"));
+			Assert.IsTrue(HelianzBusiness.Patients.GetHasDuplicateForNameOrPreferredBirthdayEmailAndPhone("Doe","Jack",new DateTime(1971,6,28),"","5555555555"));
 			//unique first name, everything else equal, no duplicate
-			Assert.IsFalse(OpenDentBusiness.Patients.GetHasDuplicateForNameOrPreferredBirthdayEmailAndPhone("Doe","Jane",new DateTime(1971,6,28),"","5555555555"));
+			Assert.IsFalse(HelianzBusiness.Patients.GetHasDuplicateForNameOrPreferredBirthdayEmailAndPhone("Doe","Jane",new DateTime(1971,6,28),"","5555555555"));
 		}
 	}
 }

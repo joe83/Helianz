@@ -109,7 +109,7 @@ namespace CodeBase {
 			}
 		}
 
-		///<summary>Gets a PrintDocument that has some added functionality.  All printing in Open Dental should use this method (or an ODprintout object) for printing.</summary>
+		///<summary>Gets a PrintDocument that has some added functionality.  All printing in Helianz should use this method (or an ODprintout object) for printing.</summary>
 		///<param name="printPageEventHandler">The handler that will get invoked when printing.  This defines how to draw each page.</param>
 		///<param name="printSit">ODprintout does not do anything with this field. But when ValidationDelegate is invoked we will provide the information if needed.</param>
 		///<param name="auditPatNum">ODprintout does not do anything with this field. But when ValidationDelegate is invoked we will provide the information if needed.</param>

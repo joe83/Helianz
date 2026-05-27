@@ -11,7 +11,7 @@ using System.Windows.Forms;
 using CodeBase;
 using DataConnectionBase;
 using Microsoft.Build.Evaluation;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace xCrudGenerator {
 	public class CrudGenHelper {
@@ -686,12 +686,12 @@ namespace xCrudGenerator {
 			process.WaitForExit();
 		}
 
-		///<summary>Adds these files to the OpenDentBusiness project.  If the file is already a part of OpenDentBusiness, no harm, no foul.</summary>
-		public static void AddToOpenDentBusiness(List<string> listFileNames) {
+		///<summary>Adds these files to the HelianzBusiness project.  If the file is already a part of HelianzBusiness, no harm, no foul.</summary>
+		public static void AddToHelianzBusiness(List<string> listFileNames) {
 			if(listFileNames.Count==0) {
 				return;
 			}
-			Project proj=new Project(Path.Combine(Form1.crudDir,"..","OpenDentBusiness.csproj"));
+			Project proj=new Project(Path.Combine(Form1.crudDir,"..","HelianzBusiness.csproj"));
 			foreach(string file in listFileNames) {
 				if(proj.Items.FirstOrDefault(x => x.EvaluatedInclude==file)==null) {//Check to make sure the file doesn't already exist.
 					proj.AddItem("Compile",file);

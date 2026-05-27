@@ -7,10 +7,10 @@ using System.Linq;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace WpfControls.UI {
-	//=====WARNING! THERE IS A DUPLICATE OF THIS FILE OVER IN OpenDentBusiness.UI.PopupHelper.
+	//=====WARNING! THERE IS A DUPLICATE OF THIS FILE OVER IN HelianzBusiness.UI.PopupHelper.
 	//=====UNTIL THAT FILE IS COMPLETELY DEPRECATED, BOTH FILES MUST BE KEPT IN SYNC.
 	//=====ANY CHANGES TO ONE MUST ALSO BE MADE IN THE OTHER.
 	///<summary>A helper class used add reference links to context menus</summary>
@@ -163,10 +163,10 @@ namespace WpfControls.UI {
 		private static void OpenPatNum(long patNum) {
 			Patient pat=Patients.GetPat(patNum);
 			if(pat==null) {
-				OpenDental.MsgBox.Show(Lans.g("OpenDental","Patient does not exist."));
+				Helianz.MsgBox.Show(Lans.g("Helianz","Patient does not exist."));
 				return;
 			}
-			GlobalFormOpenDental.PatientSelected(pat,true);
+			GlobalFormHelianz.PatientSelected(pat,true);
 		}
 
 		private static void OpenTaskNum(long taskNum) {
@@ -193,7 +193,7 @@ namespace WpfControls.UI {
 				Process.Start(url);
 			}
 			catch {
-				OpenDental.MsgBox.Show(Lans.g("PopupHelper","Failed to open web browser.  Please make sure you have a default browser set and are connected to the internet then try again."),Lans.g("PopupHelper","Attention"));
+				Helianz.MsgBox.Show(Lans.g("PopupHelper","Failed to open web browser.  Please make sure you have a default browser set and are connected to the internet then try again."),Lans.g("PopupHelper","Attention"));
 			}
 		}
 
@@ -206,11 +206,11 @@ namespace WpfControls.UI {
 					Process.Start(folderPath);
 				}
 				catch(Exception e) {
-					OpenDental.MsgBox.Show(e.Message);
+					Helianz.MsgBox.Show(e.Message);
 				}
 			}
 			else {
-				OpenDental.MsgBox.Show(Lans.g("PopupHelper","Failed to open file location. Please make sure file path is valid."));
+				Helianz.MsgBox.Show(Lans.g("PopupHelper","Failed to open file location. Please make sure file path is valid."));
 			}
 		}
 		#endregion Methods - Private

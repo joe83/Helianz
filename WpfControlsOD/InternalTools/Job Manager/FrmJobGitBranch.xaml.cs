@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 /*
 You must implement Alt key for the Access Key on the button.
 */

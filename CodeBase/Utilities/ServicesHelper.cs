@@ -243,9 +243,9 @@ namespace CodeBase {
 			return null;
 		}
 
-		///<summary>Returns all services that start with "OpenDent".</summary>
-		public static List<ServiceController> GetAllOpenDentServices() {
-			return GetServices().FindAll(x => x.ServiceName.StartsWith("OpenDent"));
+		///<summary>Returns all services that start with "Helianz".</summary>
+		public static List<ServiceController> GetAllHelianzServices() {
+			return GetServices().FindAll(x => x.ServiceName.StartsWith("Helianz"));
 		}
 
 		public static string GetMySQLPathToExe(string imagePath) {
@@ -259,7 +259,7 @@ namespace CodeBase {
 		}
 
 		///<summary>Returns all services that their "Path to executeable" contains the passed in executable name.  Throws exceptions.</summary>
-		///<param name="exeName">E.g. OpenDentalCustListener.exe</param>
+		///<param name="exeName">E.g. HelianzCustListener.exe</param>
 		public static List<ServiceController> GetServicesByExe(string exeName) {
 			RegistryKey hklm;
 			List<ServiceController> retVal=new List<ServiceController>();
@@ -279,7 +279,7 @@ namespace CodeBase {
 		}
 
 		///<summary>Returns one service that has "Path to executeable" set to the full path passed in.  Returns null if not found.</summary>
-		///<param name="exeFullPath">E.g. C:\Program Files(x86)\Open Dental\OpenDentalCustListener\OpenDentalCustListener.exe</param>
+		///<param name="exeFullPath">E.g. C:\Program Files(x86)\Helianz\HelianzCustListener\HelianzCustListener.exe</param>
 		public static ServiceController GetServiceByExeFullPath(string exeFullPath) {
 			return GetServicesByExe(exeFullPath).FirstOrDefault();
 		}
@@ -295,7 +295,7 @@ namespace CodeBase {
 				throw new ApplicationException("Error showing security descriptor.  Error code: "+exitCodeShow
 					+"\r\n"+standardOutputShow);
 			}
-			//The security descriptor for all Open Dental services should ALWAYS contain the portion to grant all users permissions to stop and start.
+			//The security descriptor for all Helianz services should ALWAYS contain the portion to grant all users permissions to stop and start.
 			//https://msdn.microsoft.com/en-us/library/aa374928(v=vs.85)
 			//The "ace type" section------------------------------------------------------------------------------------------------------------------------
 			//A: ACCESS_ALLOWED_ACE_TYPE

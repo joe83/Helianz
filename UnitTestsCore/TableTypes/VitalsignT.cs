@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using OpenDentBusiness;
-using OpenDentBusiness.Crud;
+using HelianzBusiness;
+using HelianzBusiness.Crud;
 
 namespace UnitTestsCore {
 	public class VitalsignT {

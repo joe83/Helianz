@@ -5,7 +5,7 @@ using System.Collections.Specialized;
 using System.Drawing;
 using System.Web;
 using Microsoft.Web;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 public class ImageHandler1 : ImageHandler {
     

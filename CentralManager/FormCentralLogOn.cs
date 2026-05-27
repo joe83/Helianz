@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 using CodeBase;
 
 namespace CentralManager{
@@ -13,8 +13,8 @@ namespace CentralManager{
 	/// Summary description for FormBasicTemplate.
 	/// </summary>
 	public class FormCentralLogOn : System.Windows.Forms.Form{
-		private OpenDental.UI.Button butCancel;
-		private OpenDental.UI.Button butOK;
+		private Helianz.UI.Button butCancel;
+		private Helianz.UI.Button butOK;
 		private System.Windows.Forms.ListBox listUser;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
@@ -59,8 +59,8 @@ namespace CentralManager{
 		private void InitializeComponent()
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormCentralLogOn));
-			this.butCancel = new OpenDental.UI.Button();
-			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new Helianz.UI.Button();
+			this.butOK = new Helianz.UI.Button();
 			this.listUser = new System.Windows.Forms.ListBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
@@ -197,7 +197,7 @@ namespace CentralManager{
 			else { 
 				if(PrefC.GetBool(PrefName.UserNameManualEntry)) {
 					for(int i=0;i<listUser.Items.Count;i++) {
-						//Check the user name typed in using ToLower and Trim because Open Dental is case insensitive and does not allow white-space in regards to user names.
+						//Check the user name typed in using ToLower and Trim because Helianz is case insensitive and does not allow white-space in regards to user names.
 						if(textUser.Text.Trim().ToLower()==listUser.Items[i].ToString().Trim().ToLower()) {
 							selectedUsersName=textUser.Text.Trim().ToLower();//Found the typed username
 							break;

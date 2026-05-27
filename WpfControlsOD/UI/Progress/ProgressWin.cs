@@ -6,10 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls;
 
-namespace OpenDental.UI{
+namespace Helianz.UI{
 /*
 How to use ProgressWin:
 Jordan is the only one allowed to edit this file.

@@ -11,10 +11,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 	/// <summary></summary>
 	public partial class FrmAtoZFoldersCreate : FrmODBase {
 
@@ -54,10 +54,10 @@ namespace OpenDental {
 				string rootDir=ODFileUtils.CombinePaths(requestDir,rootFolderName);
 				//Enable file sharing for the A to Z folder.
 				if(Environment.OSVersion.Platform==PlatformID.Unix) {
-					//Process.Start("net","usershare add OpenDentImages \""+rootDir+"\"");//for future use.
+					//Process.Start("net","usershare add HelianzImages \""+rootDir+"\"");//for future use.
 				}
 				else {//Windows
-					Process.Start("NET","SHARE OpenDentImages=\""+rootDir+"\"");
+					Process.Start("NET","SHARE HelianzImages=\""+rootDir+"\"");
 				}
 				//All folder names to be created should be put in this list, so that each folder is created exactly
 				//the same way.

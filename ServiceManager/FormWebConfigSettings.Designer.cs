@@ -382,7 +382,7 @@
 			this.Controls.Add(this.butOk);
 			this.Controls.Add(this.butCancel);
 			this.Name = "FormWebConfigSettings";
-			this.Text = "OpenDentalWebConfig.xml Settings";
+			this.Text = "HelianzWebConfig.xml Settings";
 			this.Load += new System.EventHandler(this.FormWebConfigSettings_Load);
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace UnitTestsCore {
 	public class EServiceBillingT {
 		public static EServiceBilling GetByRegKeyNum(long regKeyNum) {
 			string command="SELECT * FROM eservicebilling WHERE RegistrationKeyNum="+POut.Long(regKeyNum);
-			return OpenDentBusiness.Crud.EServiceBillingCrud.SelectOne(command);
+			return HelianzBusiness.Crud.EServiceBillingCrud.SelectOne(command);
 		}
 
 		public static void UpdateDateEntry(long regKeyNum,DateTime newDateTimeEntry) {

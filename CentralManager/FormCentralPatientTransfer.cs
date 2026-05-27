@@ -1,12 +1,12 @@
 ﻿using CodeBase;
-using OpenDental.UI;
-using OpenDentBusiness;
+using Helianz.UI;
+using HelianzBusiness;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using System.Threading;
-using OpenDental;
+using Helianz;
 using System.Linq;
 
 namespace CentralManager {

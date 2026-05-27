@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
-using OpenDental;
-using OpenDentBusiness;
+using Helianz;
+using HelianzBusiness;
 using System.Windows.Forms;
 
 namespace TestCanada {
@@ -18,9 +18,9 @@ namespace TestCanada {
 		///<summary>This is analogous to FormChooseDatabase.TryToConnect.  Empty string is allowed.</summary>
 		public static bool SetDbConnection(string dbName,string serverName) {
 			try {
-				OpenDentBusiness.DataConnection dcon;
+				HelianzBusiness.DataConnection dcon;
 				DataConnection.DBtype=DatabaseType.MySql;
-				dcon=new OpenDentBusiness.DataConnection(DataConnection.DBtype);
+				dcon=new HelianzBusiness.DataConnection(DataConnection.DBtype);
 				dcon.SetDb("Server="+serverName+";Database="+dbName+";User ID=root;Password=;CharSet=utf8;Treat Tiny As Boolean=false","",DataConnection.DBtype,true);
 				RemotingClient.RemotingRole=RemotingRole.ClientDirect;
 				return true;
@@ -50,7 +50,7 @@ namespace TestCanada {
 			command=Properties.Resources.dumpcanada;
 			DataCore.NonQ(command);
 			Cache.ClearAllCache();
-			string toVersion=Assembly.GetAssembly(typeof(OpenDental.PrefL)).GetName().Version.ToString();
+			string toVersion=Assembly.GetAssembly(typeof(Helianz.PrefL)).GetName().Version.ToString();
 			//MessageBox.Show(Application.ProductVersion+" - "+
 			if(!PrefL.ConvertDB(true,toVersion)) {
 				throw new Exception("Wrong version.");

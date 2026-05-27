@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness;
+using HelianzBusiness;
 using UnitTestsCore;
 
 namespace UnitTests.InsVerify_Tests {
@@ -441,7 +441,7 @@ namespace UnitTests.InsVerify_Tests {
 			InsPlan insPlan=InsPlanT.CreateInsPlan(carrier.CarrierNum);
 			InsSub insSub=InsSubT.CreateInsSub(pat.PatNum,insPlan.PlanNum);
 			long provNum=ProviderT.CreateProvider(suffix);
-			//Create benefits for the patient in Open Dental
+			//Create benefits for the patient in Helianz
 			Benefit indAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Individual,1000);
 			Benefit indGeneralDeduct=BenefitT.CreateDeductibleGeneral(insPlan.PlanNum,BenefitCoverageLevel.Individual,100);
 			Benefit famAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Family,2000);
@@ -471,7 +471,7 @@ namespace UnitTests.InsVerify_Tests {
 			InsPlan insPlan=InsPlanT.CreateInsPlan(carrier.CarrierNum);
 			InsSub insSub=InsSubT.CreateInsSub(pat.PatNum,insPlan.PlanNum);
 			long provNum=ProviderT.CreateProvider(suffix);
-			//Create benefits for the patient in Open Dental
+			//Create benefits for the patient in Helianz
 			Benefit indAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Individual,1000);
 			Benefit indGeneralDeduct=BenefitT.CreateDeductibleGeneral(insPlan.PlanNum,BenefitCoverageLevel.Individual,100);
 			Benefit famAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Family,2000);
@@ -501,7 +501,7 @@ namespace UnitTests.InsVerify_Tests {
 			InsPlan insPlan=InsPlanT.CreateInsPlan(carrier.CarrierNum);
 			InsSub insSub=InsSubT.CreateInsSub(pat.PatNum,insPlan.PlanNum);
 			long provNum=ProviderT.CreateProvider(suffix);
-			//Create benefits for the patient in Open Dental
+			//Create benefits for the patient in Helianz
 			Benefit indAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Individual,1000);
 			Benefit indGeneralDeduct=BenefitT.CreateDeductibleGeneral(insPlan.PlanNum,BenefitCoverageLevel.Individual,100);
 			Benefit famAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Family,2000);
@@ -532,7 +532,7 @@ namespace UnitTests.InsVerify_Tests {
 			InsPlan insPlan=InsPlanT.CreateInsPlan(carrier.CarrierNum);
 			InsSub insSub=InsSubT.CreateInsSub(pat.PatNum,insPlan.PlanNum);
 			long provNum=ProviderT.CreateProvider(suffix);
-			//Create benefits for the patient in Open Dental
+			//Create benefits for the patient in Helianz
 			Benefit indAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Individual,0);
 			Benefit indGeneralDeduct=BenefitT.CreateDeductibleGeneral(insPlan.PlanNum,BenefitCoverageLevel.Individual,100);
 			Benefit famAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Family,2000);
@@ -550,7 +550,7 @@ namespace UnitTests.InsVerify_Tests {
 			Benefit famGeneralDeduct271=null;
 			List<Benefit> listBensFrom271=new List<Benefit>(){indAnnualMax271, indGeneralDeduct271, famAnnualMax271, famGeneralDeduct271};
 			string errorStatus=InsVerifies.ValidateAnnualMaxAndGeneralDeductible(listBensInOd,listBensFrom271);
-			//Open Dental had an individual annual max of 0 but the 271 specified a non-zero amount (500 in this case). Thus an error status should be returned.
+			//Helianz had an individual annual max of 0 but the 271 specified a non-zero amount (500 in this case). Thus an error status should be returned.
 			Assert.AreNotEqual("",errorStatus);
 		}
 
@@ -562,7 +562,7 @@ namespace UnitTests.InsVerify_Tests {
 			InsPlan insPlan=InsPlanT.CreateInsPlan(carrier.CarrierNum);
 			InsSub insSub=InsSubT.CreateInsSub(pat.PatNum,insPlan.PlanNum);
 			long provNum=ProviderT.CreateProvider(suffix);
-			//Create benefits for the patient in Open Dental
+			//Create benefits for the patient in Helianz
 			Benefit indAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Individual,1000);
 			Benefit indGeneralDeduct=BenefitT.CreateDeductibleGeneral(insPlan.PlanNum,BenefitCoverageLevel.Individual,100);
 			Benefit famAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Family,2000);
@@ -593,7 +593,7 @@ namespace UnitTests.InsVerify_Tests {
 			InsPlan insPlan=InsPlanT.CreateInsPlan(carrier.CarrierNum);
 			InsSub insSub=InsSubT.CreateInsSub(pat.PatNum,insPlan.PlanNum);
 			long provNum=ProviderT.CreateProvider(suffix);
-			//Create benefits for the patient in Open Dental
+			//Create benefits for the patient in Helianz
 			Benefit indAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Individual,1000);
 			Benefit indGeneralDeduct=BenefitT.CreateDeductibleGeneral(insPlan.PlanNum,BenefitCoverageLevel.Individual,100);
 			Benefit famAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Family,2000);
@@ -624,7 +624,7 @@ namespace UnitTests.InsVerify_Tests {
 			InsPlan insPlan=InsPlanT.CreateInsPlan(carrier.CarrierNum);
 			InsSub insSub=InsSubT.CreateInsSub(pat.PatNum,insPlan.PlanNum);
 			long provNum=ProviderT.CreateProvider(suffix);
-			//Create benefits for the patient in Open Dental
+			//Create benefits for the patient in Helianz
 			Benefit indAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Individual,1000);
 			Benefit indGeneralDeduct=BenefitT.CreateDeductibleGeneral(insPlan.PlanNum,BenefitCoverageLevel.Individual,100);
 			Benefit famAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Family,0);
@@ -654,7 +654,7 @@ namespace UnitTests.InsVerify_Tests {
 			InsPlan insPlan=InsPlanT.CreateInsPlan(carrier.CarrierNum);
 			InsSub insSub=InsSubT.CreateInsSub(pat.PatNum,insPlan.PlanNum);
 			long provNum=ProviderT.CreateProvider(suffix);
-			//Create benefits for the patient in Open Dental
+			//Create benefits for the patient in Helianz
 			Benefit indAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Individual,1000);
 			Benefit indGeneralDeduct=BenefitT.CreateDeductibleGeneral(insPlan.PlanNum,BenefitCoverageLevel.Individual,100);
 			Benefit famAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Family,2000);
@@ -684,7 +684,7 @@ namespace UnitTests.InsVerify_Tests {
 			InsPlan insPlan=InsPlanT.CreateInsPlan(carrier.CarrierNum);
 			InsSub insSub=InsSubT.CreateInsSub(pat.PatNum,insPlan.PlanNum);
 			long provNum=ProviderT.CreateProvider(suffix);
-			//Create benefits for the patient in Open Dental
+			//Create benefits for the patient in Helianz
 			Benefit indAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Individual,1000);
 			Benefit indGeneralDeduct=BenefitT.CreateDeductibleGeneral(insPlan.PlanNum,BenefitCoverageLevel.Individual,100);
 			Benefit famAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Family,2000);
@@ -715,7 +715,7 @@ namespace UnitTests.InsVerify_Tests {
 			InsPlan insPlan=InsPlanT.CreateInsPlan(carrier.CarrierNum);
 			InsSub insSub=InsSubT.CreateInsSub(pat.PatNum,insPlan.PlanNum);
 			long provNum=ProviderT.CreateProvider(suffix);
-			//Create benefits for the patient in Open Dental
+			//Create benefits for the patient in Helianz
 			Benefit indAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Individual,1000);
 			Benefit indGeneralDeduct=BenefitT.CreateDeductibleGeneral(insPlan.PlanNum,BenefitCoverageLevel.Individual,0);
 			Benefit famAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Family,2000);
@@ -745,7 +745,7 @@ namespace UnitTests.InsVerify_Tests {
 			InsPlan insPlan=InsPlanT.CreateInsPlan(carrier.CarrierNum);
 			InsSub insSub=InsSubT.CreateInsSub(pat.PatNum,insPlan.PlanNum);
 			long provNum=ProviderT.CreateProvider(suffix);
-			//Create benefits for the patient in Open Dental
+			//Create benefits for the patient in Helianz
 			Benefit indAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Individual,1000);
 			Benefit indGeneralDeduct=BenefitT.CreateDeductibleGeneral(insPlan.PlanNum,BenefitCoverageLevel.Individual,100);
 			Benefit famAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Family,2000);
@@ -775,7 +775,7 @@ namespace UnitTests.InsVerify_Tests {
 			InsPlan insPlan=InsPlanT.CreateInsPlan(carrier.CarrierNum);
 			InsSub insSub=InsSubT.CreateInsSub(pat.PatNum,insPlan.PlanNum);
 			long provNum=ProviderT.CreateProvider(suffix);
-			//Create benefits for the patient in Open Dental
+			//Create benefits for the patient in Helianz
 			Benefit indAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Individual,1000);
 			Benefit indGeneralDeduct=BenefitT.CreateDeductibleGeneral(insPlan.PlanNum,BenefitCoverageLevel.Individual,100);
 			Benefit famAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Family,2000);
@@ -806,7 +806,7 @@ namespace UnitTests.InsVerify_Tests {
 			InsPlan insPlan=InsPlanT.CreateInsPlan(carrier.CarrierNum);
 			InsSub insSub=InsSubT.CreateInsSub(pat.PatNum,insPlan.PlanNum);
 			long provNum=ProviderT.CreateProvider(suffix);
-			//Create benefits for the patient in Open Dental
+			//Create benefits for the patient in Helianz
 			Benefit indAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Individual,1000);
 			Benefit indGeneralDeduct=BenefitT.CreateDeductibleGeneral(insPlan.PlanNum,BenefitCoverageLevel.Individual,100);
 			Benefit famAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Family,2000);
@@ -845,7 +845,7 @@ namespace UnitTests.InsVerify_Tests {
 			//For this test there are no individual annual max or general deductible benefits in OD
 			InsVerifies.CreateInsuranceAdjustmentIfNeeded(pat.PatNum,insPlan.PlanNum,insSub.InsSubNum,new List<Benefit>(),listEb271s);
 			List<ClaimProc> listInsAdjs=ClaimProcs.Refresh(pat.PatNum);
-			//Because there is no benefit value in Open Dental no insurance adjustment should have been made.
+			//Because there is no benefit value in Helianz no insurance adjustment should have been made.
 			Assert.IsTrue(listInsAdjs.Count==0);
 		}
 
@@ -858,7 +858,7 @@ namespace UnitTests.InsVerify_Tests {
 			InsPlan insPlan=InsPlanT.CreateInsPlan(carrier.CarrierNum);
 			InsSub insSub=InsSubT.CreateInsSub(pat.PatNum,insPlan.PlanNum);
 			long provNum=ProviderT.CreateProvider(suffix);
-			//Create individual annual max in Open Dental
+			//Create individual annual max in Helianz
 			Benefit indAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Individual,3000);
 			List<Benefit> listBensInOd=new List<Benefit>(){indAnnualMax};
 			//Create EB271 object. The EB271 objects are taken from real 271 reponses using NADG's database.
@@ -890,7 +890,7 @@ namespace UnitTests.InsVerify_Tests {
 			List<EB271> listEb271s=new List<EB271>(){eb271};
 			InsVerifies.CreateInsuranceAdjustmentIfNeeded(pat.PatNum,insPlan.PlanNum,insSub.InsSubNum,new List<Benefit>(),listEb271s);
 			List<ClaimProc> listInsAdjs=ClaimProcs.Refresh(pat.PatNum);
-			//Because there is no benefit value in Open Dental no insurance adjustment should have been made.
+			//Because there is no benefit value in Helianz no insurance adjustment should have been made.
 			Assert.IsTrue(listInsAdjs.Count==0);
 		}
 
@@ -903,7 +903,7 @@ namespace UnitTests.InsVerify_Tests {
 			InsPlan insPlan=InsPlanT.CreateInsPlan(carrier.CarrierNum);
 			InsSub insSub=InsSubT.CreateInsSub(pat.PatNum,insPlan.PlanNum);
 			long provNum=ProviderT.CreateProvider(suffix);
-			//Create Open Dental benefits
+			//Create Helianz benefits
 			Benefit indGeneralDeduct=BenefitT.CreateDeductibleGeneral(insPlan.PlanNum,BenefitCoverageLevel.Individual,200);
 			List<Benefit> listBensInOd=new List<Benefit>(){indGeneralDeduct};
 			//Create EB271 object. The EB271 objects are taken from real 271 reponses using NADG's database.
@@ -929,7 +929,7 @@ namespace UnitTests.InsVerify_Tests {
 			InsPlan insPlan=InsPlanT.CreateInsPlan(carrier.CarrierNum);
 			InsSub insSub=InsSubT.CreateInsSub(pat.PatNum,insPlan.PlanNum);
 			long provNum=ProviderT.CreateProvider(suffix);
-			//Create Open Dental benefits
+			//Create Helianz benefits
 			Benefit indGeneralDeduct=BenefitT.CreateDeductibleGeneral(insPlan.PlanNum,BenefitCoverageLevel.Individual,200);
 			Benefit indAnnualMax=BenefitT.CreateAnnualMax(insPlan.PlanNum,BenefitCoverageLevel.Individual,3000);
 			List<Benefit> listBensInOd=new List<Benefit>(){indGeneralDeduct,indAnnualMax};

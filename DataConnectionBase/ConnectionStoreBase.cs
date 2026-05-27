@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 using CodeBase;
 
 namespace DataConnectionBase {
-	///<summary>Used to retrieve connections from a configuration file. If you have access to OpenDentBusiness, you should call methods in OpenDentBusiness.ConeectionStore because that class contains additional logic relevant to OpenDentBusiness.</summary>
+	///<summary>Used to retrieve connections from a configuration file. If you have access to HelianzBusiness, you should call methods in HelianzBusiness.ConeectionStore because that class contains additional logic relevant to HelianzBusiness.</summary>
 	public class ConnectionStoreBase {
 		public delegate void SetServerURIDelegate(string serverURI);
 		public delegate void SetRemotingTDelegate(string serverURI,bool isReportServer,bool isReadOnlyServer);
@@ -19,7 +19,7 @@ namespace DataConnectionBase {
 		public static Func<CentralConnectionBase> GetDentalOfficeReportServerFromPrefC=() => { return null; };
 		///<summary>Called when getting the DentalOfficeReadOnlyServer settings from PrefC.</summary>
 		public static Func<CentralConnectionBase> GetDentalOfficeReadOnlyServerFromPrefC=() => { return null; };
-		///<summary>Called when getting the TriageHQ settings. This is intentionally set to null and does not return a valid null function like the existing report and read-only patterns. This is so the Triage connection can be explicitly defined later in the initialization process of the parent project. E.g. Open Dental instantiates this within the Shown event handler.</summary>
+		///<summary>Called when getting the TriageHQ settings. This is intentionally set to null and does not return a valid null function like the existing report and read-only patterns. This is so the Triage connection can be explicitly defined later in the initialization process of the parent project. E.g. Helianz instantiates this within the Shown event handler.</summary>
 		public static Func<CentralConnectionBase> GetTriageHQ=null;
 		///<summary>The current database connection.</summary>
 		private static ConnectionNames _currentConnection=ConnectionNames.DentalOffice;
@@ -73,12 +73,12 @@ namespace DataConnectionBase {
 				return InitConnectionStoreXml(path);
 			}));
 			actionTryInit(new Func<Dictionary<ConnectionNames,CentralConnectionBase>>(() => { //Windows forms and service applications.
-				string path=CodeBase.ODFileUtils.CombinePaths(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),"OpenDentalWebConfig.xml");
-				return InitOpenDentalWebConfigXml(path);
+				string path=CodeBase.ODFileUtils.CombinePaths(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),"HelianzWebConfig.xml");
+				return InitHelianzWebConfigXml(path);
 			}));
 			actionTryInit(new Func<Dictionary<ConnectionNames,CentralConnectionBase>>(() => { //Web applications.
-				string path=CodeBase.ODFileUtils.CombinePaths(GetWebAppPath(),"OpenDentalWebConfig.xml");
-				return InitOpenDentalWebConfigXml(path);
+				string path=CodeBase.ODFileUtils.CombinePaths(GetWebAppPath(),"HelianzWebConfig.xml");
+				return InitHelianzWebConfigXml(path);
 			}));
 			actionTryInit(new Func<Dictionary<ConnectionNames,CentralConnectionBase>>(() => { //Dental Office Report Server (via prefs).
 				if(HasSingleEntry(ConnectionNames.DentalOfficeReportServer)) { //Only try to add this value if it doesn't already exist.
@@ -98,7 +98,7 @@ namespace DataConnectionBase {
 			}));
 			actionTryInit(new Func<Dictionary<ConnectionNames,CentralConnectionBase>>(() => { //TriageHQ (if implemented).
 				//GetTriageHQ defaults to null instead of a valid func that returns null so that the parent project can dictate when a TriageHQ connection can be added to the dictionary.
-				//E.g. Open Dental instantiates GetTriageHQ within the Shown event handler instead of a static constructor like the report and read-only funcs.
+				//E.g. Helianz instantiates GetTriageHQ within the Shown event handler instead of a static constructor like the report and read-only funcs.
 				if(GetTriageHQ==null || HasSingleEntry(ConnectionNames.TriageHQ)) {//TriageHQ is not implemented or has already been added.
 					return null;
 				}
@@ -163,8 +163,8 @@ namespace DataConnectionBase {
 			}));
 		}
 
-		///<summary>Initializes central connection store from a given OpenDentalWebConfig file. Throws exceptions if file not found or init fails for any other reason.</summary>
-		private static Dictionary<ConnectionNames,CentralConnectionBase> InitOpenDentalWebConfigXml(string fullPath) {
+		///<summary>Initializes central connection store from a given HelianzWebConfig file. Throws exceptions if file not found or init fails for any other reason.</summary>
+		private static Dictionary<ConnectionNames,CentralConnectionBase> InitHelianzWebConfigXml(string fullPath) {
 			return InitConnectionsFromXmlFile<ConnectionSettings,DatabaseConnection>(fullPath,new Func<DatabaseConnection,CentralConnectionBase>((conn) => {
 				if(!string.IsNullOrEmpty(conn.Password)) {
 					if(!CDT.Class1.Decrypt(conn.Password,out conn.Password)) {

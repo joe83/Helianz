@@ -6,13 +6,13 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using CentralManager;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental {
+namespace Helianz {
 	///<summary></summary>
 	public class FormCentralChooseDatabase:System.Windows.Forms.Form {
-		private OpenDental.UI.Button butOK;
-		private OpenDental.UI.Button butCancel;
+		private Helianz.UI.Button butOK;
+		private Helianz.UI.Button butCancel;
 		private System.ComponentModel.Container components = null;
 		private GroupBox groupServer;
 		private Label label9;
@@ -72,8 +72,8 @@ namespace OpenDental {
 			this.label11 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
-			this.butCancel = new OpenDental.UI.Button();
-			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new Helianz.UI.Button();
+			this.butOK = new Helianz.UI.Button();
 			this.checkAutoLogin = new System.Windows.Forms.CheckBox();
 			this.groupServer.SuspendLayout();
 			this.SuspendLayout();
@@ -132,7 +132,7 @@ namespace OpenDental {
 			this.label11.Name = "label11";
 			this.label11.Size = new System.Drawing.Size(295,18);
 			this.label11.TabIndex = 14;
-			this.label11.Text = "Open Dental User (not MySQL user)";
+			this.label11.Text = "Helianz User (not MySQL user)";
 			this.label11.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// label9
@@ -238,7 +238,7 @@ namespace OpenDental {
 					UsingAutoLogin=true;
 				}
 				catch(Exception) {
-					OpenDental.MessageBox.Show("Unable to enable automatic log in.");
+					Helianz.MessageBox.Show("Unable to enable automatic log in.");
 				}
 			}
 			DialogResult=DialogResult.OK;

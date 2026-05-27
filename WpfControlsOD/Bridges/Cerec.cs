@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 	/// <summary></summary>
 	public class Cerec {
 

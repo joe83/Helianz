@@ -5,9 +5,9 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges{
+namespace Helianz.Bridges{
 	///<summary>This class is just an example template that we use when we build a new bridge.  Start with a copy of this.</summary>
 	public class AaTemplate {
 
@@ -56,7 +56,7 @@ namespace OpenDental.Bridges{
 				str+="M ";
 			}
 			//If SSN is allowed by the bridge software, then it will always be optional, because SSNs are not common enough to require.
-			//Additionally, Open Dental does not require SSN when creating a patient, so we cannot guarantee that the SSN exists.
+			//Additionally, Helianz does not require SSN when creating a patient, so we cannot guarantee that the SSN exists.
 			if(pat.SSN.Replace("0","").Trim()!="") {//An SSN which is all zeros will be treated as a blank SSN.  Needed for eCW, since eCW sets SSN to 000-00-0000 if the patient does not have an SSN.
 				//If dashes are required in the output, then:
 				str+=pat.SSN.Substring(0,3)+"-"+pat.SSN.Substring(3,2)+"-"+pat.SSN.Substring(5,4);

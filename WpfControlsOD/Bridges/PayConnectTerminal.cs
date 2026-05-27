@@ -1,10 +1,10 @@
 ﻿using System;
 using CodeBase;
 using DentalXChange.Dps.Pos;
-using OpenDentBusiness;
-using OpenDentBusiness.PayConnectService;
+using HelianzBusiness;
+using HelianzBusiness.PayConnectService;
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 	///<summary>Methods that can be used when interacting with a PayConnect terminal.</summary>
 	public class PayConnectTerminal {
 
@@ -90,7 +90,7 @@ namespace OpenDental.Bridges {
 			return retStr;
 		}
 
-		///<summary>Turns a PosResponse into an OpenDentBusiness.PayConnectResponse.</summary>
+		///<summary>Turns a PosResponse into an HelianzBusiness.PayConnectResponse.</summary>
 		public static PayConnectResponse ToPayConnectResponse(PosResponse response) {
 			PayConnectResponse pcResponse=new PayConnectResponse();
 			if(response != null) {

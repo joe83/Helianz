@@ -316,7 +316,7 @@
 			this.toothChart.ColorBackground = System.Drawing.Color.FromArgb(((int)(((byte)(150)))),((int)(((byte)(145)))),((int)(((byte)(152)))));
 			this.toothChart.Cursor = System.Windows.Forms.Cursors.Default;
 			this.toothChart.CursorTool = SparksToothChart.CursorTool.Pointer;
-			this.toothChart.DrawMode = OpenDentBusiness.DrawingMode.Simple2D;
+			this.toothChart.DrawMode = HelianzBusiness.DrawingMode.Simple2D;
 			this.toothChart.Location = new System.Drawing.Point(66,12);
 			this.toothChart.Name = "toothChart";
 			this.toothChart.PerioMode = false;

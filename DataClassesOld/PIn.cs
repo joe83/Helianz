@@ -6,7 +6,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
-namespace OpenDental{
+namespace Helianz{
 	
 	/*=========================================================================================
 	=================================== class PIn ===========================================*/

@@ -4,8 +4,8 @@ using System.DirectoryServices;
 using System.Linq;
 using System.Windows.Forms;
 using CodeBase;
-using OpenDental;
-using OpenDentBusiness;
+using Helianz;
+using HelianzBusiness;
 
 namespace CentralManager {
 	public partial class FormCentralSecurity:FormODBase {

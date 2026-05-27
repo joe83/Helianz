@@ -1,6 +1,6 @@
 @echo off
-echo net start OpenDental
+echo net start Helianz
 echo.
-net start OpenDental
+net start Helianz
 echo.
 pause

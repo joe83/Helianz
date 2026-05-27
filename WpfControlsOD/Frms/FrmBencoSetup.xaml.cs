@@ -7,10 +7,10 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 	public partial class FrmBencoSetup:FrmODBase {
 		private Program _program;
 		private List<ToolButItem> _listToolButItems;
@@ -41,12 +41,12 @@ namespace OpenDental {
 			}
 		}
 
-		/// <summary>Updates some preferences in Open Dental according to the enabled state of the Benco bridge</summary>
+		/// <summary>Updates some preferences in Helianz according to the enabled state of the Benco bridge</summary>
 		private void UpdateBencoSettings() {
 			bool hasPrefChanged=false;
-			string odTitle="Open Dental";
-			string odSoftware="Open Dental Software";
-			string bencoTitle="Benco Practice Management powered by Open Dental";
+			string odTitle="Helianz";
+			string odSoftware="Helianz Software";
+			string bencoTitle="Benco Practice Management powered by Helianz";
 			string bencoSoftware="Benco Practice Management";
 			if(_program.Enabled) {
 				if(PrefC.GetString(PrefName.MainWindowTitle)==odTitle) {
@@ -93,7 +93,7 @@ namespace OpenDental {
 			}
 			//Update settings as necessary
 			UpdateBencoSettings();
-			MsgBox.Show(this,"You will need to restart Open Dental for these changes to take effect.");
+			MsgBox.Show(this,"You will need to restart Helianz for these changes to take effect.");
 			IsDialogOK=true;
 		}
 

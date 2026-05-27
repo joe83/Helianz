@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WpfControls.UI;
-using OpenDentBusiness;
-using OpenDental;
-using OpenDental.Bridges;
+using HelianzBusiness;
+using Helianz;
+using Helianz.Bridges;
 using CodeBase;
-using xBridges=Bridges;//Bridges is ambiguous with OpenDental.Bridges
+using xBridges=Bridges;//Bridges is ambiguous with Helianz.Bridges
 
 namespace WpfControls {
 	public class ProgramL {
@@ -37,7 +37,7 @@ namespace WpfControls {
 			}
 			if(ODEnvironment.IsCloudServer) {
 				if(Programs.GetListDisabledForWeb().Contains(program.ProgName)) {
-					MsgBox.Show("ProgramLinks","Bridge is not available while using Open Dental Cloud.");
+					MsgBox.Show("ProgramLinks","Bridge is not available while using Helianz Cloud.");
 					return;//bridge is not available for web users at this time. 
 				}
 				if(!CloudClientL.IsCloudClientRunning()) {
@@ -183,7 +183,7 @@ namespace WpfControls {
 				return;
 			}
 			else if(program.ProgName==ProgramName.DXCPatientCreditScore.ToString()) {
-				OpenDental.Bridges.DentalXChange.SendData(program,patient);
+				Helianz.Bridges.DentalXChange.SendData(program,patient);
 				return;
 			}
 			else if(program.ProgName==ProgramName.Dxis.ToString()) {
@@ -302,7 +302,7 @@ namespace WpfControls {
 			}
 			else if(program.ProgName==ProgramName.PDMP.ToString() || program.ProgName==ProgramName.Bamboo.ToString()) {
 				PDMP pDMP=null;
-				OpenDental.UI.ProgressWin progressWin=new OpenDental.UI.ProgressWin();
+				Helianz.UI.ProgressWin progressWin=new Helianz.UI.ProgressWin();
 				Provider provider = Providers.GetProv(Security.CurUser.ProvNum);
 				progressWin.ActionMain=() => pDMP=PDMP.SendData(program,patient,provider);
 				progressWin.StartingMessage=Lans.g("PDMP","Fetching data...");
@@ -568,7 +568,7 @@ namespace WpfControls {
 		}
 
 
-		///<summary>Any changes here should also be made in OpenDental.ProgramL.LoadToolBar.</summary>
+		///<summary>Any changes here should also be made in Helianz.ProgramL.LoadToolBar.</summary>
 		public static void LoadToolBar(ToolBar toolBar,EnumToolBar toolBarsAvail,EventHandler eventHandlerClick) {
 			List<ToolButItem> listToolButItems=ToolButItems.GetForToolBar(toolBarsAvail);
 			for(int i=0;i<listToolButItems.Count;i++){
@@ -599,7 +599,7 @@ namespace WpfControls {
 					ContextMenu contextMenu=new ContextMenu();
 					MenuItem menuItem=new MenuItem();
 					menuItem.Text=Lans.g("Oryx","User Settings");
-					menuItem.Click+=OpenDental.Bridges.Oryx.menuItemUserSettingsClick;
+					menuItem.Click+=Helianz.Bridges.Oryx.menuItemUserSettingsClick;
 					contextMenu.Add(menuItem);
 					toolBarButton.ToolBarButtonStyle=ToolBarButtonStyle.DropDownButton;
 					toolBarButton.ContextMenuDropDown=contextMenu;

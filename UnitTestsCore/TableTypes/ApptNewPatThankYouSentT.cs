@@ -1,4 +1,4 @@
-﻿using OpenDentBusiness;
+﻿using HelianzBusiness;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +29,7 @@ namespace UnitTestsCore {
 		///<summary></summary>
 		public static List<ApptNewPatThankYouSent> GetAll() {
 			string command="SELECT * FROM apptnewthankyousent";
-			return DataAction.GetPractice(() => OpenDentBusiness.Crud.ApptNewPatThankYouSentCrud.SelectMany(command));
+			return DataAction.GetPractice(() => HelianzBusiness.Crud.ApptNewPatThankYouSentCrud.SelectMany(command));
 		}
 	}
 }

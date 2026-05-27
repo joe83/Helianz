@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using OpenDentBusiness.WebTypes.WebForms;
+using HelianzBusiness.WebTypes.WebForms;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness;
+using HelianzBusiness;
 using UnitTestsCore;
-using OpenDentBusiness.WebTypes;
+using HelianzBusiness.WebTypes;
 using CodeBase;
 
 namespace UnitTests {

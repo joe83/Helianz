@@ -224,7 +224,7 @@ namespace SlowQueryTool {
 				//Test 1
 				PrintTestResults(_queryLog.AnalyzeRowsExamined(),1,"Rows Examined");
 				//Test 2
-				PrintTestResults(_queryLog.AnalyzeThirdPartyQueries(),2,"Non-Open Dental Queries");
+				PrintTestResults(_queryLog.AnalyzeThirdPartyQueries(),2,"Non-Helianz Queries");
 				//Test 3
 				PrintTestResults(_queryLog.AnalyzeVictimQueries(),3,"Victim Queries");
 				//Test 4

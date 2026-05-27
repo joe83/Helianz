@@ -12,11 +12,11 @@ using System.Xml;
 using System.Xml.Serialization;
 using CodeBase;
 using Microsoft.Win32;
-using OpenDental.Thinfinity;
-using OpenDentBusiness;
+using Helianz.Thinfinity;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 	///<summary></summary>
 	public partial class FrmEFormSetup : FrmODBase {
 		///<summary></summary>

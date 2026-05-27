@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace UnitTestsCore {
 	public class EmailAutographT {

@@ -4,7 +4,7 @@
 #
 # Usage (from the linux-deploy directory):
 #   .\dump-db.ps1
-#   .\dump-db.ps1 -Host localhost -Port 3306 -User root -Password "secret" -Database opendental -OutFile data\opendental.sql.gz
+#   .\dump-db.ps1 -Host localhost -Port 3306 -User root -Password "secret" -Database helianz -OutFile data\helianz.sql.gz
 #
 # Prerequisites:
 #   - mysqldump must be on PATH (ships with MariaDB / MySQL installations)
@@ -15,8 +15,8 @@ param(
     [int]   $Port     = 3306,
     [string]$User     = "root",
     [string]$Password = "",        # leave blank to be prompted
-    [string]$Database = "opendental",
-    [string]$OutFile  = "data\opendental.sql.gz"
+    [string]$Database = "helianz",
+    [string]$OutFile  = "data\helianz.sql.gz"
 )
 
 Set-StrictMode -Version Latest
@@ -115,5 +115,5 @@ $gzSize = (Get-Item $OutFile).Length
 Write-Host ("Done. Output: $OutFile  ({0:N0} bytes compressed)" -f $gzSize)
 Write-Host ""
 Write-Host "Next step — upload and deploy:"
-Write-Host "  scp -r . user@YOUR_SERVER:/opt/opendental-deploy"
-Write-Host "  ssh user@YOUR_SERVER 'bash /opt/opendental-deploy/deploy.sh --src /path/to/repo --db /opt/opendental-deploy/data/opendental.sql.gz'"
+Write-Host "  scp -r . user@YOUR_SERVER:/opt/helianz-deploy"
+Write-Host "  ssh user@YOUR_SERVER 'bash /opt/helianz-deploy/deploy.sh --src /path/to/repo --db /opt/helianz-deploy/data/helianz.sql.gz'"

@@ -28,14 +28,14 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.panelSheetPreview = new OpenDental.UI.PanelOD();
+			this.panelSheetPreview = new Helianz.UI.PanelOD();
 			this.elementHost = new System.Windows.Forms.Integration.ElementHost();
-			this.butPrintWPF = new OpenDental.UI.Button();
+			this.butPrintWPF = new Helianz.UI.Button();
 			this.labelTimeOld = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
-			this.butPrintOld = new OpenDental.UI.Button();
-			this.butPreviewOld = new OpenDental.UI.Button();
-			this.butPreviewWPF = new OpenDental.UI.Button();
+			this.butPrintOld = new Helianz.UI.Button();
+			this.butPreviewOld = new Helianz.UI.Button();
+			this.butPreviewWPF = new Helianz.UI.Button();
 			this.SuspendLayout();
 			// 
 			// panelSheetPreview
@@ -142,13 +142,13 @@
 
 		#endregion
 
-		private OpenDental.UI.PanelOD panelSheetPreview;
+		private Helianz.UI.PanelOD panelSheetPreview;
 		private System.Windows.Forms.Integration.ElementHost elementHost;
-		private OpenDental.UI.Button butPrintWPF;
+		private Helianz.UI.Button butPrintWPF;
 		private System.Windows.Forms.Label labelTimeOld;
 		private System.Windows.Forms.Label label1;
-		private OpenDental.UI.Button butPrintOld;
-		private OpenDental.UI.Button butPreviewOld;
-		private OpenDental.UI.Button butPreviewWPF;
+		private Helianz.UI.Button butPrintOld;
+		private Helianz.UI.Button butPreviewOld;
+		private Helianz.UI.Button butPreviewWPF;
 	}
 }

@@ -4,20 +4,20 @@ using System.Reflection;
 using System.Threading;
 using CodeBase;
 using DataConnectionBase;
-using OpenDentBusiness;
-using OpenDentBusiness.WebServices;
+using HelianzBusiness;
+using HelianzBusiness.WebServices;
 using System.Collections.Generic;
 
 namespace UnitTests.Reports_Tests {
 	[TestClass]
 	public class ReportsTests:TestBase {
-		private static OpenDentalServerMockIIS _middleTierMockOld=null;
+		private static HelianzServerMockIIS _middleTierMockOld=null;
 		private const string USER_LOW_NAME="unittestuserlow";
 		private const string USER_LOW_PASS="Password1";
 
 		[ClassInitialize]
 		public static void SetupClass(TestContext testContext) {
-			//Create and set the Open Dental user called UnitTest so that we don't get trolled by failed login attempts from an invalid Security.CurUser.
+			//Create and set the Helianz user called UnitTest so that we don't get trolled by failed login attempts from an invalid Security.CurUser.
 			TestBase.CreateAndSetUnitTestUser();
 			//Drop any users that already exist with this specific name.
 			DbAdminMysql.DropUser(new DataConnection(),USER_LOW_NAME);
@@ -28,9 +28,9 @@ namespace UnitTests.Reports_Tests {
 			//Reload all privileges to make sure the proletariat permission takes effect.
 			DataCore.NonQ("FLUSH PRIVILEGES");
 			//Preserve the old Middle Tier Mock service and replace it with a new one that knows about our new user low.
-			_middleTierMockOld=OpenDentalServerProxy.MockOpenDentalServerCur;
+			_middleTierMockOld=HelianzServerProxy.MockHelianzServerCur;
 			//Pass in new connection settings so that this plebeian is set as our "UserLow" when invoking Reports.GetTable().
-			OpenDentalServerProxy.MockOpenDentalServerCur=new OpenDentalServerMockIIS("localhost"
+			HelianzServerProxy.MockHelianzServerCur=new HelianzServerMockIIS("localhost"
 				,UnitTestDbName
 				,"root"
 				,""
@@ -54,7 +54,7 @@ namespace UnitTests.Reports_Tests {
 			//Drop the user that this unit test class created within SetupClass().
 			DbAdminMysql.DropUser(new DataConnection(),USER_LOW_NAME);
 			//Put the Middle Tier mock server back to the way it was when this test class was initialized.
-			OpenDentalServerProxy.MockOpenDentalServerCur=_middleTierMockOld;
+			HelianzServerProxy.MockHelianzServerCur=_middleTierMockOld;
 		}
 
 		[TestMethod]

@@ -15,7 +15,7 @@ namespace ServiceManager {
 		public FormWebConfigSettings(FileInfo serviceFile) {
 			InitializeComponent();
 			_serviceFile=serviceFile;
-			if(_serviceFile.Name!="OpenDentalReplicationService.exe") {
+			if(_serviceFile.Name!="HelianzReplicationService.exe") {
 				//The replication service controls are shwoing by default. 
 				//Don't show the replciation service controls.
 				Height=375;
@@ -59,7 +59,7 @@ namespace ServiceManager {
 			catch(Exception ex) {//FreeDentalConfig didn't load correctly
 				ex.DoNothing();
 				textServer.Text="localhost";
-				textDatabase.Text="opendental";
+				textDatabase.Text="helianz";
 				textUser.Text="root";
 				textPassword.Text="";
 				textUserLow.Text="";
@@ -245,12 +245,12 @@ namespace ServiceManager {
 		}
 
 		private string GetFileName() {
-			string fileName="OpenDentalWebConfig.xml";
-			if(_serviceFile.Name=="OpenDentalService.exe") {
-				fileName="OpenDentalServiceConfig.xml";
+			string fileName="HelianzWebConfig.xml";
+			if(_serviceFile.Name=="HelianzService.exe") {
+				fileName="HelianzServiceConfig.xml";
 			}
-			else if(_serviceFile.Name=="OpenDentalReplicationService.exe") {
-				fileName="OpenDentalReplicationServiceConfig.xml";
+			else if(_serviceFile.Name=="HelianzReplicationService.exe") {
+				fileName="HelianzReplicationServiceConfig.xml";
 			}
 			return fileName;
 		}

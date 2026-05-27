@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System.Data;
 using UnitTestsCore;
-using OpenDentBusiness.Crud;
+using HelianzBusiness.Crud;
 using System.Reflection;
 using CodeBase;
 

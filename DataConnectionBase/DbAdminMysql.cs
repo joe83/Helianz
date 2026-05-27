@@ -108,7 +108,7 @@ namespace DataConnectionBase {
 			if(SOut.HasInjectionChars(password)) {
 				return("The specified password contains invalid characters.");
 			}
-			//These characters cannot be used when launching the Open Dental program.
+			//These characters cannot be used when launching the Helianz program.
 			if(password.In(";","<",">","&","|","^","(",")","*"," ")){
 				return("The specified password contains invalid characters.");
 			}
@@ -185,7 +185,7 @@ namespace DataConnectionBase {
 			if(SOut.HasInjectionChars(password)) {
 				throw new Exception("The specified password contains invalid characters.");
 			}
-			//These characters cannot be used when launching the Open Dental program.
+			//These characters cannot be used when launching the Helianz program.
 			if(password.In(";","<",">","&","|","^","(",")","*"," ")){
 				throw new Exception("The specified password contains invalid characters.");
 			}

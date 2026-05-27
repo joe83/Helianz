@@ -10,12 +10,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CodeBase;
-using OpenDental.Thinfinity;
-using OpenDental.UI;
-using OpenDentBusiness;
+using Helianz.Thinfinity;
+using Helianz.UI;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 ///<summary></summary>
 	public partial class FrmDocInfo : FrmODBase {
 		private Patient _patient;

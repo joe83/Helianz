@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 	///<summary>This class is just an example template that we use when we build a new bridge.  Start with a copy of this.</summary>
 	public class PandaPerio {
 

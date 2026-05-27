@@ -1,7 +1,7 @@
 ﻿using System;
-using OpenDentBusiness;
+using HelianzBusiness;
 using CodeBase;
-using OpenDental;
+using Helianz;
 
 namespace WpfControls {
 	public class ReferralL {

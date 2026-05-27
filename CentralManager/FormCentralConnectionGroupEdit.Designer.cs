@@ -26,14 +26,14 @@
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormCentralConnectionGroupEdit));
 			this.label1 = new System.Windows.Forms.Label();
 			this.textDescription = new System.Windows.Forms.TextBox();
-			this.butOK = new OpenDental.UI.Button();
-			this.gridMain = new OpenDental.UI.GridOD();
-			this.butDelete = new OpenDental.UI.Button();
-			this.butAdd = new OpenDental.UI.Button();
-			this.butRemove = new OpenDental.UI.Button();
+			this.butOK = new Helianz.UI.Button();
+			this.gridMain = new Helianz.UI.GridOD();
+			this.butDelete = new Helianz.UI.Button();
+			this.butAdd = new Helianz.UI.Button();
+			this.butRemove = new Helianz.UI.Button();
 			this.label2 = new System.Windows.Forms.Label();
-			this.gridAvail = new OpenDental.UI.GridOD();
-			this.butCancel = new OpenDental.UI.Button();
+			this.gridAvail = new Helianz.UI.GridOD();
+			this.butCancel = new Helianz.UI.Button();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -69,7 +69,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
 			this.gridMain.Location = new System.Drawing.Point(12, 47);
 			this.gridMain.Name = "gridMain";
-			this.gridMain.SelectionMode = OpenDental.UI.GridSelectionMode.MultiExtended;
+			this.gridMain.SelectionMode = Helianz.UI.GridSelectionMode.MultiExtended;
 			this.gridMain.Size = new System.Drawing.Size(465, 457);
 			this.gridMain.TabIndex = 2;
 			this.gridMain.Title = "Connections for this Group";
@@ -124,7 +124,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
 			this.gridAvail.Location = new System.Drawing.Point(584, 47);
 			this.gridAvail.Name = "gridAvail";
-			this.gridAvail.SelectionMode = OpenDental.UI.GridSelectionMode.MultiExtended;
+			this.gridAvail.SelectionMode = Helianz.UI.GridSelectionMode.MultiExtended;
 			this.gridAvail.Size = new System.Drawing.Size(465, 457);
 			this.gridAvail.TabIndex = 222;
 			this.gridAvail.Title = "Available Connections";
@@ -174,13 +174,13 @@
 
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox textDescription;
-		private OpenDental.UI.GridOD gridMain;
-		private OpenDental.UI.Button butOK;
-		private OpenDental.UI.Button butDelete;
-		private OpenDental.UI.Button butAdd;
-		private OpenDental.UI.Button butRemove;
+		private Helianz.UI.GridOD gridMain;
+		private Helianz.UI.Button butOK;
+		private Helianz.UI.Button butDelete;
+		private Helianz.UI.Button butAdd;
+		private Helianz.UI.Button butRemove;
 		private System.Windows.Forms.Label label2;
-		private OpenDental.UI.GridOD gridAvail;
-		private OpenDental.UI.Button butCancel;
+		private Helianz.UI.GridOD gridAvail;
+		private Helianz.UI.Button butCancel;
 	}
 }

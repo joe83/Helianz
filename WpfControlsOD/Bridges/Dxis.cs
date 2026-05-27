@@ -5,11 +5,11 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System.Collections.Generic;
 using CodeBase;
 
-namespace OpenDental.Bridges{
+namespace Helianz.Bridges{
 	/// <summary></summary>
 	public class Dxis{
 
@@ -32,7 +32,7 @@ namespace OpenDental.Bridges{
 			try{
 				Process process=ODFileUtils.ProcessStart(path,info);
 				//Don't wait for exit in Thinfinity or AppStream mode.  Since it opens a browser tab and then an unrelated process on the client,
-				//we probably don't have a valid process to wait for, and the resources from Open Dental aren't the same resources from Dxis.
+				//we probably don't have a valid process to wait for, and the resources from Helianz aren't the same resources from Dxis.
 				if(!ODEnvironment.IsCloudServer) {
 					process.WaitForExit();//puts OD in sleep mode because the pano is so resource intensive.
 				}

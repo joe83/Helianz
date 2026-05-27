@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head  runat="server">
-		<title>Open Dental Mobile</title>
+		<title>Helianz Mobile</title>
 		<% if (HttpContext.Current.IsDebuggingEnabled) { %>
 		<link type="text/css" rel="stylesheet" media="screen" href="css/themes/apple/theme.css?v=<%Response.Write(""+random.Next());%>" />
 		<link type="text/css" rel="stylesheet" media="screen" href="css/jqtouch.css?v=<%Response.Write(""+random.Next());%>" />
@@ -39,7 +39,7 @@
 
 	<div id="login">
 	<div class="toolbar">
-				<h1>Open Dental</h1>
+				<h1>Helianz</h1>
 			</div>
 			<br />
 			<span style="margin-left:15px;text-align:center;">For a demo, use the User name:<span style="color:Blue">demo</span></span>
@@ -67,7 +67,7 @@
 
 		<div id="logout">
 			<div class="toolbar">
-			<h1>Open Dental</h1>
+			<h1>Helianz</h1>
 			</div>
 			<div style="height: 100px">
 			</div>

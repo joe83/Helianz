@@ -1,5 +1,5 @@
-﻿using OpenDentBusiness;
-using OpenDentBusiness.Crud;
+﻿using HelianzBusiness;
+using HelianzBusiness.Crud;
 using System.Collections.Generic;
 
 namespace UnitTestsCore {

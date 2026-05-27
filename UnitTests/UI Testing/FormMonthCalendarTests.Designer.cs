@@ -26,12 +26,12 @@
 			this.monthCalendar = new System.Windows.Forms.MonthCalendar();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
-			this.button1 = new OpenDental.UI.Button();
-			this.button2 = new OpenDental.UI.Button();
+			this.button1 = new Helianz.UI.Button();
+			this.button2 = new Helianz.UI.Button();
 			this.label3 = new System.Windows.Forms.Label();
-			this.monthCalendarOD2 = new OpenDental.UI.MonthCalendarOD();
-			this.monthCalendarOD1 = new OpenDental.UI.MonthCalendarOD();
-			this.toggleDayWeek1 = new OpenDental.UI.ToggleDayWeek();
+			this.monthCalendarOD2 = new Helianz.UI.MonthCalendarOD();
+			this.monthCalendarOD1 = new Helianz.UI.MonthCalendarOD();
+			this.toggleDayWeek1 = new Helianz.UI.ToggleDayWeek();
 			this.SuspendLayout();
 			// 
 			// monthCalendar
@@ -138,11 +138,11 @@
 		private System.Windows.Forms.MonthCalendar monthCalendar;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
-		private OpenDental.UI.Button button1;
-		private OpenDental.UI.Button button2;
+		private Helianz.UI.Button button1;
+		private Helianz.UI.Button button2;
 		private System.Windows.Forms.Label label3;
-		private OpenDental.UI.MonthCalendarOD monthCalendarOD2;
-		private OpenDental.UI.MonthCalendarOD monthCalendarOD1;
-		private OpenDental.UI.ToggleDayWeek toggleDayWeek1;
+		private Helianz.UI.MonthCalendarOD monthCalendarOD2;
+		private Helianz.UI.MonthCalendarOD monthCalendarOD1;
+		private Helianz.UI.ToggleDayWeek toggleDayWeek1;
 	}
 }

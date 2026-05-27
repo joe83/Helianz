@@ -6,9 +6,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges{
+namespace Helianz.Bridges{
 	/// <summary></summary>
 	public class Tscan{
 

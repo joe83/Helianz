@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace UnitTestsCore {
 	public class ClinicT {
@@ -14,7 +14,7 @@ namespace UnitTestsCore {
 			Clinic clinic=new Clinic();
 			clinic.Description=description;
 			clinic.Abbr=description;
-			//Texting is off by default. Use OpenDentalWebTests.TableTypes.EServiceAccountT.SetupEServiceAccount() to turn on texting for this clinic.
+			//Texting is off by default. Use HelianzWebTests.TableTypes.EServiceAccountT.SetupEServiceAccount() to turn on texting for this clinic.
 			clinic.SmsContractDate=isTextingEnabled ? DateTime_.Today.AddDays(-1) : DateTime.MinValue;
 			clinic.EmailAddressNum=emailAddressNum;
 			clinic.Address=address;
@@ -80,7 +80,7 @@ namespace UnitTestsCore {
 			Clinic clinicOne=new Clinic();
 			clinicOne.Description="France Regional";
 			clinicOne.Abbr=clinicOne.Description;
-			//Texting is off by default. Use OpenDentalWebTests.TableTypes.EServiceAccountT.SetupEServiceAccount() to turn on texting for this clinic.
+			//Texting is off by default. Use HelianzWebTests.TableTypes.EServiceAccountT.SetupEServiceAccount() to turn on texting for this clinic.
 			clinicOne.SmsContractDate=DateTime.MinValue;
 			clinicOne.EmailAddressNum=1;
 			clinicOne.Address="75004 Boulevard Garibaldi";
@@ -118,7 +118,7 @@ namespace UnitTestsCore {
 			List<Clinic> listClinics=new List<Clinic>();
 			Clinic clinicOne=new Clinic();
 			clinicOne.Description="France Regional";
-			//Texting is off by default. Use OpenDentalWebTests.TableTypes.EServiceAccountT.SetupEServiceAccount() to turn on texting for this clinic.
+			//Texting is off by default. Use HelianzWebTests.TableTypes.EServiceAccountT.SetupEServiceAccount() to turn on texting for this clinic.
 			clinicOne.SmsContractDate=DateTime.MinValue;
 			clinicOne.EmailAddressNum=1;
 			clinicOne.Address="75004 Boulevard Garibaldi";

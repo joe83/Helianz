@@ -1,4 +1,4 @@
-﻿using OpenDentBusiness;
+﻿using HelianzBusiness;
 using System.Linq;
 
 namespace UnitTestsCore {

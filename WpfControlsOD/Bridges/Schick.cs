@@ -1,10 +1,10 @@
 #if !DISABLE_WINDOWS_BRIDGES
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System.Collections.Generic;
 
-namespace OpenDental.Bridges{
+namespace Helianz.Bridges{
 	///<summary>Provides bridging functionality to Schick CDR.
 	///The algorithm provided below was inspired by the Schick example project named CSAutoApp_2008.</summary>
 	public class Schick{

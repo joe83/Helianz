@@ -26,7 +26,7 @@ How to use the Button control:
 	1. Set Icon if EnumIcon has the one you need.
 	2. (will soon be deprecated) If there is no Icon, then add the bitmap (usually a png) to WpfControlsOD/Resources as follows:
 		a. Look in Solution Explorer, Resources folder. If the file you need is there, set the button.BitmapFileName. Example: EditPencil.gif. You are done.
-		b. If you need to add a file, do some research to find the file you need. It's probably in OpenDental/Resources, or Unversioned/Icons is also an option.
+		b. If you need to add a file, do some research to find the file you need. It's probably in Helianz/Resources, or Unversioned/Icons is also an option.
 		c. Right click WpfControlsOD, Properties, Resources.
 		d. On the Add Resource dropdown, Add Existing File. It will make a copy, which is what you want.
 		e. In Solution Explorer, Resources folder, find the new file. Right click, Properties, Build Action: Resource.
@@ -399,8 +399,8 @@ How to use the Button control:
 				textBlock.Foreground=Brushes.Black;
 			}
 			else{
-				accessText.Foreground=new SolidColorBrush(OpenDental.ColorOD.Gray_Wpf(170));
-				textBlock.Foreground=new SolidColorBrush(OpenDental.ColorOD.Gray_Wpf(170));
+				accessText.Foreground=new SolidColorBrush(Helianz.ColorOD.Gray_Wpf(170));
+				textBlock.Foreground=new SolidColorBrush(Helianz.ColorOD.Gray_Wpf(170));
 			}
 		}
 

@@ -7,12 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using OpenDental;
-using OpenDental.UI;
+using Helianz;
+using Helianz.UI;
 
 namespace UnitTests{
 	public partial class FormTabControlTests : FormODBase{
-		private OpenDental.UI.TabPage _tabPage;
+		private Helianz.UI.TabPage _tabPage;
 
 		public FormTabControlTests(){
 			InitializeComponent();
@@ -28,7 +28,7 @@ namespace UnitTests{
 			panel.BorderStyle=BorderStyle.FixedSingle;
 			panel.Location=new Point(71,290);//LayoutManager.Scale(71),LayoutManager.Scale(290));
 			panel.Size=new Size(367,212);//LayoutManager.Scale(367),LayoutManager.Scale(212));
-			OpenDental.UI.TabControl tabControl=new OpenDental.UI.TabControl();
+			Helianz.UI.TabControl tabControl=new Helianz.UI.TabControl();
 			tabControl.Size=new Size(357,202);
 			tabControl.Location=new Point(5,5);
 			//first tab page
@@ -65,7 +65,7 @@ namespace UnitTests{
 		}
 
 		private void button2_Click(object sender,EventArgs e) {
-			_tabPage=new OpenDental.UI.TabPage();
+			_tabPage=new Helianz.UI.TabPage();
 			_tabPage.Name="tabPageMine";
 			_tabPage.Text="MyTab";
 			_tabPage.Size=new Size(100,100);

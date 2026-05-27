@@ -6,9 +6,9 @@ using System.Threading;
 using System.Windows.Forms;
 using CodeBase;
 using DataConnectionBase;
-using OpenDental;
-using OpenDental.UI;
-using OpenDentBusiness;
+using Helianz;
+using Helianz.UI;
+using HelianzBusiness;
 
 namespace CentralManager {
 	public partial class FormCentralPatientSearch:Form {
@@ -236,7 +236,7 @@ namespace CentralManager {
 				labelFetch.Visible=false;
 				if(!_hasWarningShown && _invalidConnsLog!="") {
 					_hasWarningShown=true;//Keeps the message box from showing up for subsequent threads.
-					OpenDental.MessageBox.Show(this,Lan.g(this,"Could not connect to the following servers")+":"+_invalidConnsLog);
+					Helianz.MessageBox.Show(this,Lan.g(this,"Could not connect to the following servers")+":"+_invalidConnsLog);
 				}
 			}
 			else {

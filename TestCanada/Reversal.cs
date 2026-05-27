@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using OpenDentBusiness;
-using OpenDental.Eclaims;
+using HelianzBusiness;
+using Helianz.Eclaims;
 
 namespace TestCanada {
 	public class Reversal {

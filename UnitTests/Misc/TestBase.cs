@@ -1,7 +1,7 @@
 ﻿using System;
 using CodeBase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System.Collections.Generic;
 using UnitTestsCore;
 using System.Reflection;
@@ -13,7 +13,7 @@ namespace UnitTests {
 
 		protected const string UnitTestUserName="UnitTest";
 		protected const string UnitTestPassword="password";
-		public const string TestEmaiAddress="opendentalunittests@gmail.com";
+		public const string TestEmaiAddress="helianzunittests@gmail.com";
 		public const string TestEmaiPwd="welovetesting!";
 		///<summary>This is the OD test department's Google Voice number. See [[eService Regression Test Database Setup]]. 
 		///Linked to email eServices.od.test@gmail.com.</summary>
@@ -81,17 +81,17 @@ namespace UnitTests {
 		}
 
 		protected static void RunTestsAgainstMiddleTier() {
-			RunTestsAgainstMiddleTier(new OpenDentBusiness.WebServices.OpenDentalServerMockIIS());
+			RunTestsAgainstMiddleTier(new HelianzBusiness.WebServices.HelianzServerMockIIS());
 		}
 
-		protected static void RunTestsAgainstMiddleTier(OpenDentBusiness.WebServices.OpenDentalServerMockIIS mockServer) {
+		protected static void RunTestsAgainstMiddleTier(HelianzBusiness.WebServices.HelianzServerMockIIS mockServer) {
 			RemotingClient.MiddleTierRole=MiddleTierRole.ClientMT;
-			OpenDentBusiness.WebServices.OpenDentalServerProxy.MockOpenDentalServerCur=mockServer;
+			HelianzBusiness.WebServices.HelianzServerProxy.MockHelianzServerCur=mockServer;
 		}
 
 		protected static void RunTestsAgainstDirectConnection() {
 			RemotingClient.MiddleTierRole=MiddleTierRole.ClientDirect;
-			OpenDentBusiness.WebServices.OpenDentalServerProxy.MockOpenDentalServerCur=null;
+			HelianzBusiness.WebServices.HelianzServerProxy.MockHelianzServerCur=null;
 		}
 
 		protected static void RevertMiddleTierSettingsIfNeeded() {

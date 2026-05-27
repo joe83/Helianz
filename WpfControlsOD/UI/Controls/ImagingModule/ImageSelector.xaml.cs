@@ -19,8 +19,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using CodeBase;
-using OpenDentBusiness;
-using OpenDental.UI;//even though they are in this project
+using HelianzBusiness;
+using Helianz.UI;//even though they are in this project
 
 namespace WpfControls.UI{
 /*
@@ -624,7 +624,7 @@ Only used once in Imaging module.
 			Rectangle rectangleLineTop=new Rectangle();
 			rectangleLineTop.Height=1;//this is effectively a line, but easier to draw
 			rectangleLineTop.VerticalAlignment=VerticalAlignment.Top;
-			rectangleLineTop.Fill=new SolidColorBrush(OpenDental.ColorOD.Gray_Wpf(110));
+			rectangleLineTop.Fill=new SolidColorBrush(Helianz.ColorOD.Gray_Wpf(110));
 			System.Windows.Controls.Grid.SetColumnSpan(rectangleLineTop,3);
 			grid.Children.Add(rectangleLineTop);
 			//lower line probably isn't needed. Individual images will have the own upper line.
@@ -633,7 +633,7 @@ Only used once in Imaging module.
 			Rectangle rectangleLineBottom=new Rectangle();
 			rectangleLineBottom.Height=1;
 			rectangleLineBottom.VerticalAlignment=VerticalAlignment.Bottom;
-			rectangleLineBottom.Fill=new SolidColorBrush(OpenDental.ColorOD.Gray_Wpf(210));
+			rectangleLineBottom.Fill=new SolidColorBrush(Helianz.ColorOD.Gray_Wpf(210));
 			System.Windows.Controls.Grid.SetColumnSpan(rectangleLineBottom,3);
 			grid.Children.Add(rectangleLineBottom);*/
 			border.Child=grid;
@@ -698,7 +698,7 @@ Only used once in Imaging module.
 				Rectangle rectangleLineTop=new Rectangle();
 				rectangleLineTop.Height=1;
 				rectangleLineTop.VerticalAlignment=VerticalAlignment.Top;
-				rectangleLineTop.Fill=new SolidColorBrush(OpenDental.ColorOD.Gray_Wpf(210));
+				rectangleLineTop.Fill=new SolidColorBrush(Helianz.ColorOD.Gray_Wpf(210));
 				System.Windows.Controls.Grid.SetColumnSpan(rectangleLineTop,2);
 				grid.Children.Add(rectangleLineTop);
 				border.Child=grid;
@@ -856,7 +856,7 @@ Only used once in Imaging module.
 					UserOdPrefs.InsertMany(listUserOdPrefs);
 				}
 			}
-			OpenDental.DataValid.SetInvalid(InvalidType.UserOdPrefs);
+			Helianz.DataValid.SetInvalid(InvalidType.UserOdPrefs);
 		}
 
 		///<summary>Save the Image Category expanded setting as a user preference.</summary>
@@ -870,7 +870,7 @@ Only used once in Imaging module.
 				userPrefCur.FkeyType=UserOdFkeyType.ImageCategoryExpanded;
 				UserOdPrefs.Insert(userPrefCur);
 			}
-			OpenDental.DataValid.SetInvalid(InvalidType.UserOdPrefs);
+			Helianz.DataValid.SetInvalid(InvalidType.UserOdPrefs);
 		}
 
 		///<summary>Sets background colors for all rows, based on selected indices and hover.</summary>
@@ -887,7 +887,7 @@ Only used once in Imaging module.
 						colorBack=Color.FromRgb(229,239,251);
 					}
 					else if(nodeObjTag.NodeType==EnumImageNodeType.Category){
-						colorBack=OpenDental.ColorOD.Gray_Wpf(240);
+						colorBack=Helianz.ColorOD.Gray_Wpf(240);
 					}
 					border.Background=new SolidColorBrush(colorBack);
 				}
@@ -904,7 +904,7 @@ Only used once in Imaging module.
 							colorBack=Color.FromRgb(229,239,251);
 						}
 						else if(nodeObjTag.NodeType==EnumImageNodeType.Category){
-							colorBack=OpenDental.ColorOD.Gray_Wpf(240);
+							colorBack=Helianz.ColorOD.Gray_Wpf(240);
 						}
 						borderW.Background=new SolidColorBrush(colorBack);
 					}
@@ -1021,7 +1021,7 @@ Only used once in Imaging module.
 			if(listFileNames.Count==1){
 				//no dialog
 			}
-			else if(!OpenDental.MsgBox.Show(this,OpenDental.MsgBoxButtons.OKCancel,"Copy files into this folder as new documents?")){
+			else if(!Helianz.MsgBox.Show(this,Helianz.MsgBoxButtons.OKCancel,"Copy files into this folder as new documents?")){
 				return;
 			}
 			DragDropImportEventArgs dragDropImportEventArgs=new DragDropImportEventArgs();
@@ -1190,7 +1190,7 @@ Only used once in Imaging module.
 				return;
 			}
 			_isDragPendingMsgBox=true;
-			if(!OpenDental.MsgBox.Show(this,OpenDental.MsgBoxButtons.YesNo,"Move to different category?")){
+			if(!Helianz.MsgBox.Show(this,Helianz.MsgBoxButtons.YesNo,"Move to different category?")){
 				_isDragPendingMsgBox=false;
 				return;
 			}

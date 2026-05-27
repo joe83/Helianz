@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
-using OpenDental;
+using Helianz;
 
 namespace UnitTests
 {

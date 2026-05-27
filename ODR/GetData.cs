@@ -1,7 +1,7 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace ODR{
 	///<summary></summary>

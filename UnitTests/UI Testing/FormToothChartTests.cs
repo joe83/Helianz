@@ -1,6 +1,6 @@
-﻿using OpenDental;
-using OpenDental.UI;
-using OpenDentBusiness;
+﻿using Helianz;
+using Helianz.UI;
+using HelianzBusiness;
 using System;
 using System.Collections.Generic;
 using System.Data;

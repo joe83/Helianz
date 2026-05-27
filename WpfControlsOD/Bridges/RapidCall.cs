@@ -1,9 +1,9 @@
 using System;
 using System.Windows.Forms;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges{
+namespace Helianz.Bridges{
 	public class RapidCall {
 
 		///<summary></summary>
@@ -29,7 +29,7 @@ namespace OpenDental.Bridges{
 					SendData(Programs.GetCur(ProgramName.RapidCall));
 				}
 				else {
-					ODFileUtils.ProcessStart("http://www.opendental.com/resources/redirects/redirectdentaltekrapidcall.html");
+					ODFileUtils.ProcessStart("http://www.helianz.com/resources/redirects/redirectdentaltekrapidcall.html");
 				}
 			}
 			catch {

@@ -1,6 +1,6 @@
 /*=============================================================================================================
-Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
-See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
+Helianz GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.helianz.com,  www.docsparks.com
+See header in FormHelianz.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using MySql.Data.MySqlClient;
 using System;
@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
-using OpenDentBusiness;
+using HelianzBusiness;
 using CodeBase;
 
 namespace ODR{
@@ -30,7 +30,7 @@ namespace ODR{
 
 		///<summary>Constructor sets the connection values.</summary>
 		public DataConnection(){
-		  con=new MySqlConnection(GetOpenDentalConnStr());
+		  con=new MySqlConnection(GetHelianzConnStr());
 			//dr = null;
 			cmd = new MySqlCommand();
 			cmd.Connection=con;
@@ -38,7 +38,7 @@ namespace ODR{
 		}
 
 		///<summary></summary>
-		private string GetOpenDentalConnStr() {
+		private string GetHelianzConnStr() {
 			XmlDocument document=new XmlDocument();
 			string path=ODFileUtils.CombinePaths(Application.StartupPath,"FreeDentalConfig.xml");
 			if(!File.Exists(path)) {
@@ -88,7 +88,7 @@ namespace ODR{
 				password=decryptedPwd;
 			}
 			//example:
-			//Server=localhost;Database=opendental;User ID=root;Password=;CharSet=utf8
+			//Server=localhost;Database=helianz;User ID=root;Password=;CharSet=utf8
 			return "Server="+computerName
 				+";Database="+database
 				+";User ID="+user
@@ -149,7 +149,7 @@ namespace ODR{
 				password=decryptedPwd;
 			}
 			//example:
-			//Server=localhost;Database=opendental;User ID=root;Password=;CharSet=utf8
+			//Server=localhost;Database=helianz;User ID=root;Password=;CharSet=utf8
 			return "Server="+computerName
 				+";Database="+database
 				+";User ID="+user

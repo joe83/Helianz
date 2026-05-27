@@ -1,5 +1,5 @@
 /*=============================================================================================================
-Copyright (C) 2006  Jordan Sparks, DMD.  http://www.open-dent.com,  http://www.docsparks.com
+Copyright (C) 2006  Jordan Sparks, DMD.  http://www.helianz.com,  http://www.docsparks.com
 
 This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU Db Public License as published by the Free Software Foundation; either version 2 of the License,
@@ -28,7 +28,7 @@ using System.Windows.Forms;
 using CodeBase;
 using Tao.OpenGl;
 using Tao.Platform.Windows;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace SparksToothChart {
 	public partial class ToothChartOpenGL:CodeBase.OpenGLWinFormsControl{//.SimpleOpenGlControl {
@@ -675,8 +675,8 @@ namespace SparksToothChart {
 					return;
 				}
 			}
-			//fix this.  No calls to OpenDentBusiness that require database.
-			//string displayNum=OpenDentBusiness.Tooth.GetToothLabelGraphic(tooth_id);
+			//fix this.  No calls to HelianzBusiness that require database.
+			//string displayNum=HelianzBusiness.Tooth.GetToothLabelGraphic(tooth_id);
 			string displayNum=tooth_id;
 			float toMm=1f/TcData.ScaleMmToPix;
 			Rectangle rec=TcData.GetNumberRecPix(tooth_id,g);
@@ -725,7 +725,7 @@ namespace SparksToothChart {
 					return;
 				}
 			}
-			string displayNum=OpenDentBusiness.Tooth.DisplayGraphic(tooth_id,TcData.ToothNumberingNomenclature);
+			string displayNum=HelianzBusiness.Tooth.DisplayGraphic(tooth_id,TcData.ToothNumberingNomenclature);
 			//string displayNum=tooth_id;
 			float toMm=1f/TcData.ScaleMmToPix;
 			//float toMm=(float)WidthProjection/(float)Width;//mm/pix, a ratio that is used for conversions below. Fix this.

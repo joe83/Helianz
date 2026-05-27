@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 	class MiPACS {
 		///<summary>Launches the program using a combination of command line characters and the patient.Cur data.///</summary>
 /*The command line integration works as follows:

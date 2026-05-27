@@ -11,10 +11,10 @@ using System.Windows.Media.Imaging;
 using CodeBase;
 using DataConnectionBase;
 using Newtonsoft.Json;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 	public partial class FrmSiteLinkEdit:FrmODBase {
 		private SiteLink _siteLink;
 
@@ -75,7 +75,7 @@ namespace OpenDental {
 			Dictionary<ConnectionNames,CentralConnection> dictConnDefaults=null;
 			ODException.SwallowAnyException(() => { dictConnDefaults=DataAction.GetHqConnections(); });
 			if(dictConnDefaults==null) {
-				MsgBox.Show("Error loading default HQ connections.  Please restart Open Dental or log off and log back in.");
+				MsgBox.Show("Error loading default HQ connections.  Please restart Helianz or log off and log back in.");
 				return;
 			}
 			Dictionary<ConnectionNames,CentralConnection> dictConnOverrides=_siteLink.DictConnectionSettingsHQOverrides;

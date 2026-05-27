@@ -12,10 +12,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 	public partial class FrmCommItem : FrmODBase {
 		///<summary>Set to true to not load default selections for Type, Mode_, and SentOrReceived controls.</summary>
 		public bool DoOmitDefaults=false;
@@ -316,7 +316,7 @@ namespace OpenDental {
 					ClearDateTimeEnd();
 				}
 				ODException.SwallowAnyException(() => {
-				GlobalFormOpenDental.RefreshCurrentModule(isClinicRefresh:true);
+				GlobalFormHelianz.RefreshCurrentModule(isClinicRefresh:true);
 				});
 				return true;
 			}

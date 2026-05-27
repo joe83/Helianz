@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Performance benchmark: Linux/Mono vs Windows/IIS OpenDentalServer
+    Performance benchmark: Linux/Mono vs Windows/IIS HelianzServer
 
 .DESCRIPTION
     Measures HTTP GET (WSDL) and SOAP ProcessRequest round-trip times for both
@@ -13,7 +13,7 @@
 
 .PARAMETER WindowsUrl
     Full URL to the Windows/IIS ServiceMain.asmx endpoint.
-    Example: http://localhost/OpenDentalServer/ServiceMain.asmx
+    Example: http://localhost/HelianzServer/ServiceMain.asmx
 
 .PARAMETER Iterations
     Number of requests per test (default 30).
@@ -22,10 +22,10 @@
     Number of warm-up requests to discard before measuring (default 3).
 
 .PARAMETER User
-    OpenDental username for the SOAP Login test (default "admin").
+    Helianz username for the SOAP Login test (default "admin").
 
 .PARAMETER Password
-    OpenDental password for the SOAP Login test (plain text, hashed before send).
+    Helianz password for the SOAP Login test (plain text, hashed before send).
 
 .PARAMETER Computer
     Computer name sent in the SOAP credential header (default $env:COMPUTERNAME).
@@ -36,13 +36,13 @@
 .EXAMPLE
     # HTTP-only test (both endpoints must answer GET)
     .\benchmark.ps1 -LinuxUrl http://65.109.236.36:9390/ServiceMain.asmx `
-                    -WindowsUrl http://localhost/OpenDentalServer/ServiceMain.asmx `
+                    -WindowsUrl http://localhost/HelianzServer/ServiceMain.asmx `
                     -Iterations 20 -WarmupRuns 3 -SkipSoap
 
 .EXAMPLE
     # Full test including SOAP login
     .\benchmark.ps1 -LinuxUrl http://65.109.236.36:9390/ServiceMain.asmx `
-                    -WindowsUrl http://localhost/OpenDentalServer/ServiceMain.asmx `
+                    -WindowsUrl http://localhost/HelianzServer/ServiceMain.asmx `
                     -User admin -Password secret -Iterations 30
 #>
 
@@ -102,7 +102,7 @@ $script:client.Timeout = [System.TimeSpan]::FromSeconds(30)
 # ---------------------------------------------------------------------------
 
 function Get-PasswordHash([string]$plain) {
-    # OpenDental sends SHA-1 of the plain-text password
+    # Helianz sends SHA-1 of the plain-text password
     $sha = [System.Security.Cryptography.SHA1]::Create()
     $bytes = [System.Text.Encoding]::UTF8.GetBytes($plain)
     $hash  = $sha.ComputeHash($bytes)
@@ -282,7 +282,7 @@ $n = $Iterations
 
 Write-Host ""
 Write-Host ("  " + ("=" * 62)) -ForegroundColor Cyan
-Write-Host "  OpenDentalServer -- Middleware Performance Benchmark" -ForegroundColor Cyan
+Write-Host "  HelianzServer -- Middleware Performance Benchmark" -ForegroundColor Cyan
 Write-Host ("  " + ("=" * 62)) -ForegroundColor Cyan
 Write-Host ("  Linux/Mono : " + $LinuxUrl) -ForegroundColor Cyan
 Write-Host ("  Windows/IIS: " + $WindowsUrl) -ForegroundColor Cyan

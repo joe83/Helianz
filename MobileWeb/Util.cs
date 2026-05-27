@@ -6,8 +6,8 @@ using System.Configuration;
 using System.Data;
 using WebForms;
 using WebHostSynch;
-using OpenDentBusiness;
-using OpenDentBusiness.Mobile;
+using HelianzBusiness;
+using HelianzBusiness.Mobile;
 
 namespace MobileWeb {
 	public class Util {
@@ -15,7 +15,7 @@ namespace MobileWeb {
 		
 		public void SetMobileDbConnection() {
 			string connectStr=Properties.Settings.Default.DBMobileWeb;
-			OpenDentBusiness.DataConnection dc=new OpenDentBusiness.DataConnection();
+			HelianzBusiness.DataConnection dc=new HelianzBusiness.DataConnection();
 			dc.SetDb(connectStr,"",DatabaseType.MySql,true);
 		}
 

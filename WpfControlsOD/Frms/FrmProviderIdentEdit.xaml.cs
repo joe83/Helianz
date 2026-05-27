@@ -7,10 +7,10 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 	public partial class FrmProviderIdentEdit : FrmODBase {
 		///<summary>Set this field externally before using this window.</summary>
 		public ProviderIdent ProviderIdentCur;

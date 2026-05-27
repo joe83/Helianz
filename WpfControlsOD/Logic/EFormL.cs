@@ -1,5 +1,5 @@
-﻿using OpenDental;
-using OpenDentBusiness;
+﻿using Helianz;
+using HelianzBusiness;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

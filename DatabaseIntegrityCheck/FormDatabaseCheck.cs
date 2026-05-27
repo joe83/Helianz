@@ -30,7 +30,7 @@ namespace DatabaseIntegrityCheck {
 				#if(TRIALONLY)
 					textDatabase.Text="demo";
 				#else
-					textDatabase.Text="opendental";
+					textDatabase.Text="helianz";
 				#endif
 				textUser.Text="root";
 				return;
@@ -69,7 +69,7 @@ namespace DatabaseIntegrityCheck {
 			catch(Exception) {
 				//MessageBox.Show(e.Message);
 				textComputerName.Text="localhost";
-				textDatabase.Text="opendental";
+				textDatabase.Text="helianz";
 				textUser.Text="root";
 			}
 			string decryptedPwd;

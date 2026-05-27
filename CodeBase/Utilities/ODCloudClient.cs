@@ -21,7 +21,7 @@ namespace CodeBase {
 		private static bool _hasReceivedResponse;
 		private static string _response;
 		public static bool IsApiEnabled=false;
-		///<summary>Controlled by the CloudIsAppStream preference and is set when OpenDental is launched. Used to determine if communication with the CloudClient is done via HTTP or the FileWatcher.</summary>
+		///<summary>Controlled by the CloudIsAppStream preference and is set when Helianz is launched. Used to determine if communication with the CloudClient is done via HTTP or the FileWatcher.</summary>
 		public static bool IsAppStream=false;
 		///<summary>Used to completely shutdown attempts to use the CloudClient if we were unable to locate the FileWatcher Directory.</summary>
 		public static bool DidLocateFileWatcherDirectory=true;
@@ -123,7 +123,7 @@ namespace CodeBase {
 			return retVal.Trim(new char[] {'\\'});
 		}
 
-		/// <summary>Synchronously requests the clipboard files from the client's FileDropList and places them in '.../temp/opendental/ODCloudFileTransfer'.</summary>
+		/// <summary>Synchronously requests the clipboard files from the client's FileDropList and places them in '.../temp/helianz/ODCloudFileTransfer'.</summary>
 		/// <returns>string[] of paths to the files in the temp directory</returns>
 		public static string[] GetClipboardFilesFromODCloudClient() {
 			string resultData;
@@ -137,12 +137,12 @@ namespace CodeBase {
 			if(resultData.IsNullOrEmpty()) {
 				return null;
 			}
-			string tempPathFT=GetFileTransferTempPath();//Path '.../temp/opendental/ODCloudFileTransfer'
+			string tempPathFT=GetFileTransferTempPath();//Path '.../temp/helianz/ODCloudFileTransfer'
 			//Write all files to the temp path using the given filename and return an array of file paths
 			List<CloudImportFile> listCloudImportFiles=JsonConvert.DeserializeObject<List<CloudImportFile>>(resultData);
 			if(listCloudImportFiles.All(x=> x.FileName==null && x.DataString==null)) {
-				//Previous versions of the OpenDentalCloudClient return a serialzed array of tuples. Translate that to list of CloudImportFiles.
-				//Refactored out tuple on OpenDentalCloudClient.
+				//Previous versions of the HelianzCloudClient return a serialzed array of tuples. Translate that to list of CloudImportFiles.
+				//Refactored out tuple on HelianzCloudClient.
 				//This if block preserves backward compatibility until majority of Cloud users have upgraded to ODCC version 2.0.7.
 				//This if block can be removed at that time to fully refactor out the tuple.
 				//Tuple: Item1=base64 filedata    Item2=filename
@@ -214,16 +214,16 @@ namespace CodeBase {
 			}
 		}
 
-		///<summary>Returns '.../temp/opendental' temp path.</summary>
+		///<summary>Returns '.../temp/helianz' temp path.</summary>
 		public static string GetTempFolderPath() {
-			string tempPathOD=ODFileUtils.CombinePaths(Path.GetTempPath(),"opendental");
+			string tempPathOD=ODFileUtils.CombinePaths(Path.GetTempPath(),"helianz");
 			if(!Directory.Exists(tempPathOD)) {
 				Directory.CreateDirectory(tempPathOD);
 			}
 			return tempPathOD;
 		}
 
-		///<summary>Returns '.../temp/opendental/ODCloudFileTransfer' temp path.</summary>
+		///<summary>Returns '.../temp/helianz/ODCloudFileTransfer' temp path.</summary>
 		private static string GetFileTransferTempPath() {
 			string tempPath=ODFileUtils.CombinePaths(GetTempFolderPath(),"ODCloudFileTransfer");
 			if(!Directory.Exists(tempPath)) {
@@ -635,7 +635,7 @@ namespace CodeBase {
 				waitForResponse();
       }
       if(!_hasReceivedResponse) {
-				throw new ODException("Unable to communicate with the OpenDentalCloudClient.",ODException.ErrorCodes.ODCloudClientTimeout);
+				throw new ODException("Unable to communicate with the HelianzCloudClient.",ODException.ErrorCodes.ODCloudClientTimeout);
 			}
 			retval=_response;
 			//These are static so they need to be reset for next time.
@@ -678,7 +678,7 @@ namespace CodeBase {
 			}
 		}
 
-		///<summary>Sends a request to the OpenDentalCloudClient to run the CloudClientAction ODCloudAuthGoogleListener to start
+		///<summary>Sends a request to the HelianzCloudClient to run the CloudClientAction ODCloudAuthGoogleListener to start
 		///an HttpListener that listens for response from google authentication</summary>
 		public static bool ODCloudAuthGoogleListener(string loopBackAddress) {
 			CloudClientAction action = CloudClientAction.ODCloudAuthGoogleListener;
@@ -730,7 +730,7 @@ namespace CodeBase {
 		//	}
   //      }
 
-		///<summary>Sends a request to the OpenDentalCloudClient to run the CloudClientAction GetRedirectUri to get our redirect URI</summary>
+		///<summary>Sends a request to the HelianzCloudClient to run the CloudClientAction GetRedirectUri to get our redirect URI</summary>
 		public static string GetRedirectUri() {
 			CloudClientAction action = CloudClientAction.GetRedirectUri;
 			string redirectUri="";
@@ -743,7 +743,7 @@ namespace CodeBase {
 			return redirectUri;
 		}
 
-		///<summary>Sends a request to the OpenDentalCloudClient to run the CloudClientAction CloseListener, to close the httplistener</summary>
+		///<summary>Sends a request to the HelianzCloudClient to run the CloudClientAction CloseListener, to close the httplistener</summary>
 		public static void CloseListener() {
 			CloudClientAction action = CloudClientAction.CloseListener;
 			try {
@@ -755,7 +755,7 @@ namespace CodeBase {
 			return;
 		}
 
-		///<summary>Sends a request to the OpenDentalCloudClient to run the CloudClientAction CheckIsListening, to check if the httplistener is listening</summary>
+		///<summary>Sends a request to the HelianzCloudClient to run the CloudClientAction CheckIsListening, to check if the httplistener is listening</summary>
 		public static bool CheckIsListening() {
 			CloudClientAction action = CloudClientAction.CheckIsListening;
 			bool isListening;
@@ -806,7 +806,7 @@ namespace CodeBase {
 			string signature="";
 			string publicKey="";
 			if(ODBuild.IsThinfinity()) {
-				//For Thinfinity,we will sign dataStr to prove this request came from an Open Dental server.
+				//For Thinfinity,we will sign dataStr to prove this request came from an Helianz server.
 				byte[] byteArray=Encoding.Unicode.GetBytes(dataStr);
 				CspParameters csp=new CspParameters {
 					KeyContainerName="cloudkey",
@@ -1027,9 +1027,9 @@ namespace CodeBase {
 			}
 			catch(Exception ex) {
 				if(ex.Message.Contains("Unknown Action:")) {
-					//Using an older version of the OpenDentalCloudClient, fall back to single select.
+					//Using an older version of the HelianzCloudClient, fall back to single select.
 					ODMessageBox.Show("File select limited to single select. \r\n"+
-						"Please install the latest version of the OpenDentalCloudClient to enable importing multiple files at once.");
+						"Please install the latest version of the HelianzCloudClient to enable importing multiple files at once.");
 					return ImportFileForCloud(isMulti:false);
 				}
 				ODMessageBox.Show(ex.Message);
@@ -1145,7 +1145,7 @@ namespace CodeBase {
 		public class ODCloudClientArgs {
 			///<summary>This will be a JSON serialized string of <see cref="ODCloudClientData"/>.</summary>
 			public string Data;
-			///<summary>A signature of Data to prove this is from on Open Dental server.</summary>
+			///<summary>A signature of Data to prove this is from on Helianz server.</summary>
 			///<summary>The public key that corresponds to the private key used to sign the Signature.</summary>
 			public string Signature;
 			public string PublicKey;
@@ -1274,13 +1274,13 @@ namespace CodeBase {
 			GetClipboardImage,
 			///<summary> Clear clipboard on cloud users machine</summary>
 			ClearClipboard,
-			///<summary> Sends a request to the OpenDentalCloudClient to copy the System.Windows.DataObject to the clients clipboard</summary>
+			///<summary> Sends a request to the HelianzCloudClient to copy the System.Windows.DataObject to the clients clipboard</summary>
 			CopyToClipboard,
 			///<summary> Used when copying to clipboard. Gets the NodeTypeAndKey for the image to be copied.</summary>
 			GetNodeTypeAndKey,
-			///<summary>Sends a request to the OpenDentalCloudClient to set the client's clipboard to a string value.  Used for AppStream, since there is no browser to use.</summary>
+			///<summary>Sends a request to the HelianzCloudClient to set the client's clipboard to a string value.  Used for AppStream, since there is no browser to use.</summary>
 			SetClipboardText,
-			///<summary>Gets the clipboard text from the OpenDentalCloudClient.  Used for AppStream, since there is no browser to get it from.</summary>
+			///<summary>Gets the clipboard text from the HelianzCloudClient.  Used for AppStream, since there is no browser to get it from.</summary>
 			GetClipboardText,
 			///<summary>Open Scanner UI and start monitering for user input</summary>
 			TwainAcquireBitmapStart,

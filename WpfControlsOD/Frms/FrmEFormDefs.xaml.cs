@@ -12,11 +12,11 @@ using System.Xml;
 using System.Xml.Serialization;
 using CodeBase;
 using Microsoft.Win32;
-using OpenDental.Thinfinity;
-using OpenDentBusiness;
+using Helianz.Thinfinity;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 	///<summary></summary>
 	public partial class FrmEFormDefs : FrmODBase {
 		///<summary>This is the list that shows in the grid.</summary>
@@ -116,7 +116,7 @@ namespace OpenDental {
 			frmEFormSetup.ShowDialog();
 		}
 
-		///<summary>Opens File Explorer and lets the user select a previously exported eFormDef. This should only allow users to import an eFormDef that was exported using Open Dental.</summary>
+		///<summary>Opens File Explorer and lets the user select a previously exported eFormDef. This should only allow users to import an eFormDef that was exported using Helianz.</summary>
 		private void butImport_Click(object sender,EventArgs e) {
 			Cursor=Cursors.Wait;
 			string importFilePath="";
@@ -175,7 +175,7 @@ namespace OpenDental {
 			MsgBox.Show(this,"Imported.");
 		}
 
-		///<summary>Allows users to export custom eFormDefs from Open Dental. This would be useful if they want to move an eFormDef to a different Open Dental database.</summary>
+		///<summary>Allows users to export custom eFormDefs from Helianz. This would be useful if they want to move an eFormDef to a different Helianz database.</summary>
 		private void butExport_Click(object sender,EventArgs e) {
 			int idx=gridMain.GetSelectedIndex();
 			if(idx==-1) {
@@ -211,7 +211,7 @@ namespace OpenDental {
 						saveFileDialog.InitialDirectory="C:\\Users\\ryanr\\Desktop";
 					}
 					if(Environment.MachineName.ToLower()=="jordanhome"){
-						saveFileDialog.InitialDirectory=@"E:\Documents\GIT REPOS\Versioned\OpenDental\OpenDentBusiness\Resources\EForms";
+						saveFileDialog.InitialDirectory=@"E:\Documents\GIT REPOS\Versioned\Helianz\HelianzBusiness\Resources\EForms";
 					}
 				}
 				else { 

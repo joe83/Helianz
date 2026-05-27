@@ -1,5 +1,5 @@
-﻿using OpenDental.UI;
-using OpenDentBusiness;
+﻿using Helianz.UI;
+using HelianzBusiness;
 using System;
 using System.Collections.Generic;
 using System.Linq;

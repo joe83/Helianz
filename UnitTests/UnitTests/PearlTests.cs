@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using CodeBase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness;
-using OpenDentBusiness.Pearl;
+using HelianzBusiness;
+using HelianzBusiness.Pearl;
 using UnitTestsCore;
 
 namespace UnitTests {
@@ -43,7 +43,7 @@ namespace UnitTests {
 				Patient pat=PatientT.CreatePatient(fName: "Jerry");
 				Document document=new Document();
 				long docNum=Documents.Insert(document,pat);
-				OpenDentBusiness.Bridges.Pearl pearl=new OpenDentBusiness.Bridges.Pearl();
+				HelianzBusiness.Bridges.Pearl pearl=new HelianzBusiness.Bridges.Pearl();
 				pearl.Bitmap_=new Bitmap(40,40);
 				pearl.Document_=document;
 				pearl.Patient_=pat;
@@ -77,7 +77,7 @@ namespace UnitTests {
 				Patient pat=PatientT.CreatePatient(fName: "Jerry");
 				Document document=new Document();
 				long docNum=Documents.Insert(document,pat);
-				OpenDentBusiness.Bridges.Pearl pearl=new OpenDentBusiness.Bridges.Pearl();
+				HelianzBusiness.Bridges.Pearl pearl=new HelianzBusiness.Bridges.Pearl();
 				pearl.Bitmap_=new Bitmap(40,40);
 				pearl.Document_=document;
 				pearl.Patient_=pat;
@@ -98,11 +98,11 @@ namespace UnitTests {
 				Assert.IsFalse(threwException);
 			}
 			//Mock each status.
-			assert((a,b) => new ImageRequestIdResponse() { result=new OpenDentBusiness.Pearl.Result() { is_completed=true } },EnumPearlStatus.Received );
-			assert((a,b) => new ImageRequestIdResponse() { result=new OpenDentBusiness.Pearl.Result() { is_rejected=true } },EnumPearlStatus.Error);
-			assert((a,b) => new ImageRequestIdResponse() { result=new OpenDentBusiness.Pearl.Result() { is_deleted=true } },EnumPearlStatus.Error);
+			assert((a,b) => new ImageRequestIdResponse() { result=new HelianzBusiness.Pearl.Result() { is_completed=true } },EnumPearlStatus.Received );
+			assert((a,b) => new ImageRequestIdResponse() { result=new HelianzBusiness.Pearl.Result() { is_rejected=true } },EnumPearlStatus.Error);
+			assert((a,b) => new ImageRequestIdResponse() { result=new HelianzBusiness.Pearl.Result() { is_deleted=true } },EnumPearlStatus.Error);
 			//API returned a result but is not completed and includes no other state. We should still be polling.
-			assert((a,b) => new ImageRequestIdResponse() { result=new OpenDentBusiness.Pearl.Result() {  } },EnumPearlStatus.Polling);
+			assert((a,b) => new ImageRequestIdResponse() { result=new HelianzBusiness.Pearl.Result() {  } },EnumPearlStatus.Polling);
 			//API threw an exception. We should still be polling.
 			assert((a,b) => null,EnumPearlStatus.Polling);
 
@@ -135,7 +135,7 @@ namespace UnitTests {
 		//		List<Bitmap> listBitmaps=new List<Bitmap>();
 		//		listBitmaps.Add(new Bitmap(40,40));
 		//		listBitmaps.Add(new Bitmap(40,40));
-		//		OpenDentBusiness.Bridges.Pearl pearl=new OpenDentBusiness.Bridges.Pearl();
+		//		HelianzBusiness.Bridges.Pearl pearl=new HelianzBusiness.Bridges.Pearl();
 		//		pearl.ListBitmaps=listBitmaps;
 		//		pearl.DocNum=0;
 		//		pearl.MountNum=1;

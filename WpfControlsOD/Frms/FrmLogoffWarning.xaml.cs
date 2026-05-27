@@ -8,10 +8,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 ///<summary></summary>
 	public partial class FrmLogoffWarning:FrmODBase {
 		DispatcherTimer _dispatcherTimer=new DispatcherTimer();

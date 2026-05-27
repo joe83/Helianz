@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace UnitTestsCore {
 	public class UserodT {

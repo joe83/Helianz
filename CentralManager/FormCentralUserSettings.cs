@@ -1,6 +1,6 @@
 ﻿using CodeBase;
-using OpenDental;
-using OpenDentBusiness;
+using Helianz;
+using HelianzBusiness;
 using System;
 using System.IO;
 using System.Windows.Forms;

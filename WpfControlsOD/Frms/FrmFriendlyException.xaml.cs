@@ -9,11 +9,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CodeBase;
-using OpenDental.Drawing;
-using OpenDentBusiness;
+using Helianz.Drawing;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 	public partial class FrmFriendlyException:FrmODBase {
 		private string _friendlyMessage;
 		private Exception _exception;

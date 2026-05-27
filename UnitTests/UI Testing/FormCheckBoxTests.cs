@@ -7,8 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using OpenDental;
-using OpenDental.UI;
+using Helianz;
+using Helianz.UI;
 
 namespace UnitTests{
 	public partial class FormCheckBoxTests : FormODBase{

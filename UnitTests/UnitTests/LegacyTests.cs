@@ -6,9 +6,9 @@ using System.Threading;
 using System.Windows.Forms;
 using CodeBase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDental;
-using OpenDental.UI;
-using OpenDentBusiness;
+using Helianz;
+using Helianz.UI;
+using HelianzBusiness;
 using UnitTestsCore;
 
 //Temp code to be moved elsewhere if we keep it:

@@ -9,8 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using CodeBase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDental;
-using OpenDentBusiness;
+using Helianz;
+using HelianzBusiness;
 using UnitTestsCore;
 
 namespace UnitTests.Procedures_Test {
@@ -1341,11 +1341,11 @@ namespace UnitTests.Procedures_Test {
 			);
 		}
 
-		///<summary>Ins specifies limit of three fillings per year [mouth].  Patient had two fillings three months ago, Estimate for two or more fillings should cover one but no more in the year.</summary>
+		///<summary>Ins specifies limit of three fillings per year [mouth]. ï¿½Patient had two fillings three months ago, Estimate for two or more fillings should cover one but no more in the year.</summary>
 		[TestMethod]
 		[Documentation.Numbering(Documentation.EnumTestNum.Procedures_HasMetFrequencyLimitation_3FillingsPerMouthPerYr)]
 		[Documentation.VersionAdded("23.3.1")]
-		[Documentation.Description(@"Ins specifies limit of three fillings per year [mouth].  Patient had two fillings three months ago, Estimate for two or more fillings should cover one but no more in the year.")]
+		[Documentation.Description(@"Ins specifies limit of three fillings per year [mouth]. ï¿½Patient had two fillings three months ago, Estimate for two or more fillings should cover one but no more in the year.")]
 		public void Procedures_HasMetFrequencyLimitation_3FillingsPerMouthPerYr() {
 			string suffix=MethodBase.GetCurrentMethod().Name;
 			PrefT.UpdateBool(PrefName.ClaimProcsAllowedToBackdate,true);
@@ -1896,7 +1896,7 @@ namespace UnitTests.Procedures_Test {
 				removeCompletedProcs=(doChangeProvOnProcsOverride==YN.Yes?false:true);
 			}
 			else { 
-				removeCompletedProcs=OpenDental.ProcedureL.DoRemoveCompletedProcs(apt,listProcs,true);
+				removeCompletedProcs=Helianz.ProcedureL.DoRemoveCompletedProcs(apt,listProcs,true);
 			}
 			Procedures.UpdateProcsInApptHelper(listProcs,pat,apt,apt.Copy(),ins.ListInsPlans,ins.ListInsSubs,
 				listProcSelectedIndices,removeCompletedProcs,false);//doUpdateProcFee set to false because test do not consider ProcFee.

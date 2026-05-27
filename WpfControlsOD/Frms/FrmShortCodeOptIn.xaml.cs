@@ -10,11 +10,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml;
 using CodeBase;
-using OpenDental.UI;
-using OpenDentBusiness;
+using Helianz.UI;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 	public partial class FrmShortCodeOptIn:FrmODBase {
 		public Patient PatientCur;
 

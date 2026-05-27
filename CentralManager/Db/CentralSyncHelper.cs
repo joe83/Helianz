@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System.Windows.Forms;
 using CodeBase;
 using System.Threading;
-using OpenDental.UI;
+using Helianz.UI;
 
 
 namespace CentralManager {

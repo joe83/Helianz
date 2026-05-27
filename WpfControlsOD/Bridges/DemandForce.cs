@@ -4,14 +4,14 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System.Xml;
 using System.Collections.Generic;
 using System.Threading;
 using CodeBase;
-using OpenDental.UI;
+using Helianz.UI;
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 	///<summary></summary>
 	public class DemandForce {
 		private static string _path;
@@ -82,7 +82,7 @@ namespace OpenDental.Bridges {
 				writer.WriteStartElement("Business");
 				writer.WriteStartElement("Extract");
 				writer.WriteAttributeString("extractDateTime",extractDateTime);
-				writer.WriteAttributeString("managementSystemName","Open Dental");
+				writer.WriteAttributeString("managementSystemName","Helianz");
 				writer.WriteAttributeString("managementSystemVersion",versionCur);
 				writer.WriteEndElement();//Extract
 				for(int i=0;i<arrayPatNums.Length;i++) {

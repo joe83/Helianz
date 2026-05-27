@@ -8,9 +8,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using OpenDental;
-using OpenDental.UI;
-using OpenDentBusiness;
+using Helianz;
+using Helianz.UI;
+using HelianzBusiness;
 using CodeBase;
 
 namespace UnitTests

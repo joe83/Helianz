@@ -28,11 +28,11 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.butSimple = new OpenDental.UI.Button();
-			this.butMultilineString = new OpenDental.UI.Button();
-			this.butComboBox = new OpenDental.UI.Button();
-			this.butComplex = new OpenDental.UI.Button();
-			this.butValids = new OpenDental.UI.Button();
+			this.butSimple = new Helianz.UI.Button();
+			this.butMultilineString = new Helianz.UI.Button();
+			this.butComboBox = new Helianz.UI.Button();
+			this.butComplex = new Helianz.UI.Button();
+			this.butValids = new Helianz.UI.Button();
 			this.SuspendLayout();
 			// 
 			// butSimple
@@ -103,10 +103,10 @@
 
 		#endregion
 
-		private OpenDental.UI.Button butSimple;
-		private OpenDental.UI.Button butMultilineString;
-		private OpenDental.UI.Button butComboBox;
-		private OpenDental.UI.Button butComplex;
-		private OpenDental.UI.Button butValids;
+		private Helianz.UI.Button butSimple;
+		private Helianz.UI.Button butMultilineString;
+		private Helianz.UI.Button butComboBox;
+		private Helianz.UI.Button butComplex;
+		private Helianz.UI.Button butValids;
 	}
 }

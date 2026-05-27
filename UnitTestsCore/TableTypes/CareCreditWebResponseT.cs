@@ -1,6 +1,6 @@
 ﻿using System;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace UnitTestsCore {
 	public class CareCreditWebResponseT {

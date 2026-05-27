@@ -55,8 +55,8 @@ namespace CodeBase {
 		///<summary>Indicates if the current device is a Windows Tablet PC. This means that all of the following are true:
 		///There is an integrated digitizer, either pen or touch, on the system. The Tablet PC optional component is installed. This component contains 
 		///features such as Tablet PC Input Panel and Windows Journal. The computer is licensed to use the optional component. Premium versions of 
-		///Windows Vista—such as Windows Vista Home Premium, Windows Vista Small Business, Windows Vista Professional, Windows Vista Enterprise, and 
-		///Windows Vista Ultimate—are licensed to use the optional component. Tablet PC Input Service is running. Tablet PC Input Service is a new 
+		///Windows Vistaï¿½such as Windows Vista Home Premium, Windows Vista Small Business, Windows Vista Professional, Windows Vista Enterprise, and 
+		///Windows Vista Ultimateï¿½are licensed to use the optional component. Tablet PC Input Service is running. Tablet PC Input Service is a new 
 		///service for Windows Vista that controls Tablet PC input.
 		///See https://docs.microsoft.com/en-us/windows/desktop/tablet/determining-whether-a-pc-is-a-tablet-pc for details.</summary>
 		private static bool IsTabletPC {
@@ -138,7 +138,7 @@ namespace CodeBase {
 			}
 		}
 
-		///<summary>Only called from FormOpenDentalThreads.ODCloudMachineName thread once per minute. Does nothing for regular (not Thinfinity or AppStream) instances. For Thinfinity
+		///<summary>Only called from FormHelianzThreads.ODCloudMachineName thread once per minute. Does nothing for regular (not Thinfinity or AppStream) instances. For Thinfinity
 		///and AppStream, this will attempt to get the local computer name from the ODCloudClient.  If ODCloudClient isn't running or we get an error, machine name will be "UNKNOWN"
 		///and this will try again the next time it's called by the ODCloudMachineName thread.  Once the machine name is retrieved from ODCloudClient successfully
 		///(_machineName!="UNKNOWN") this will not attempt to retrieve the local computer name again while this instance is running.</summary>

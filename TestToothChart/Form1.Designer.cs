@@ -826,7 +826,7 @@
 			this.toothChartDirectX.Cursor = System.Windows.Forms.Cursors.Default;
 			this.toothChartDirectX.CursorTool = SparksToothChart.CursorTool.Pointer;
 			this.toothChartDirectX.DeviceFormat = null;
-			this.toothChartDirectX.DrawMode = OpenDentBusiness.DrawingMode.Simple2D;
+			this.toothChartDirectX.DrawMode = HelianzBusiness.DrawingMode.Simple2D;
 			this.toothChartDirectX.Location = new System.Drawing.Point(840,28);
 			this.toothChartDirectX.Name = "toothChartDirectX";
 			this.toothChartDirectX.PerioMode = false;
@@ -844,7 +844,7 @@
 			this.toothChartOpenGL.Cursor = System.Windows.Forms.Cursors.Default;
 			this.toothChartOpenGL.CursorTool = SparksToothChart.CursorTool.Pointer;
 			this.toothChartOpenGL.DeviceFormat = null;
-			this.toothChartOpenGL.DrawMode = OpenDentBusiness.DrawingMode.Simple2D;
+			this.toothChartOpenGL.DrawMode = HelianzBusiness.DrawingMode.Simple2D;
 			this.toothChartOpenGL.Location = new System.Drawing.Point(424,28);
 			this.toothChartOpenGL.Name = "toothChartOpenGL";
 			this.toothChartOpenGL.PerioMode = false;
@@ -862,7 +862,7 @@
 			this.toothChart2D.Cursor = System.Windows.Forms.Cursors.Default;
 			this.toothChart2D.CursorTool = SparksToothChart.CursorTool.Pointer;
 			this.toothChart2D.DeviceFormat = null;
-			this.toothChart2D.DrawMode = OpenDentBusiness.DrawingMode.Simple2D;
+			this.toothChart2D.DrawMode = HelianzBusiness.DrawingMode.Simple2D;
 			this.toothChart2D.Location = new System.Drawing.Point(8,28);
 			this.toothChart2D.Name = "toothChart2D";
 			this.toothChart2D.PerioMode = false;

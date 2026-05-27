@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OpenDentBusiness.Eclaims;
+using HelianzBusiness.Eclaims;
 using UnitTestsCore;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System.Reflection;
-using OpenDental;
+using Helianz;
 
 namespace UnitTests.IntegrationTests {
 	[TestClass]

@@ -4,11 +4,11 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System.Collections.Generic;
 using CodeBase;
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 	/// <summary></summary>
 	public class MediaDent {
 
@@ -76,7 +76,7 @@ namespace OpenDental.Bridges {
 		private static void SendData4(Program ProgramCur,Patient pat) {
 			string path=Programs.GetProgramPath(ProgramCur);
 			//Usage: mediadent.exe /P<Patient Name> /D<Practitioner> /L<Language> /F<Image folder> /B<Birthdate>
-			//Example: mediadent.exe /PJan Met De Pet /DOtté Gunter /L1 /Fc:\Mediadent\patients\1011 /B27071973
+			//Example: mediadent.exe /PJan Met De Pet /DOttï¿½ Gunter /L1 /Fc:\Mediadent\patients\1011 /B27071973
 			List<ProgramProperty> ForProgram =ProgramProperties.GetForProgram(ProgramCur.ProgramNum); ;
 			if(pat==null) {
 				return;

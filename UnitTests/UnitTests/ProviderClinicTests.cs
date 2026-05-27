@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness;
-using OpenDentBusiness.Crud;
+using HelianzBusiness;
+using HelianzBusiness.Crud;
 using UnitTestsCore;
 
 namespace UnitTests {

@@ -1,6 +1,6 @@
 ﻿using CodeBase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System.Collections.Generic;
 using UnitTestsCore;
 

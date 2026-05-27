@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="PatientDetails.aspx.cs" Inherits="MobileWeb.PatientDetails" %>
-<%@ Import namespace="OpenDentBusiness.Mobile" %>
+<%@ Import namespace="HelianzBusiness.Mobile" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -84,8 +84,8 @@
 			<ItemTemplate>
 				<li class="style1">
 					<div class="elladjust">
-						<%#((OpenDentBusiness.Mobile.RxPatm)Container.DataItem).RxDate.ToString("MM/dd/yyyy")%>&nbsp;&nbsp;&nbsp;
-						<%#((OpenDentBusiness.Mobile.RxPatm)Container.DataItem).Drug%>, <%#((OpenDentBusiness.Mobile.RxPatm)Container.DataItem).Disp%>
+						<%#((HelianzBusiness.Mobile.RxPatm)Container.DataItem).RxDate.ToString("MM/dd/yyyy")%>&nbsp;&nbsp;&nbsp;
+						<%#((HelianzBusiness.Mobile.RxPatm)Container.DataItem).Drug%>, <%#((HelianzBusiness.Mobile.RxPatm)Container.DataItem).Disp%>
 					</div>
 				</li>
 			</ItemTemplate>

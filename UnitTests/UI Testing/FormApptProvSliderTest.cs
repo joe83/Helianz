@@ -9,12 +9,12 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using OpenDental.UI;
-using OpenDentBusiness;
+using Helianz.UI;
+using HelianzBusiness;
 
 namespace UnitTests
 {
-	public partial class FormApptProvSliderTest : OpenDental.FormODBase
+	public partial class FormApptProvSliderTest : Helianz.FormODBase
 	{
 		public FormApptProvSliderTest()
 		{

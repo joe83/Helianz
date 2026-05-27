@@ -33,7 +33,7 @@ namespace UnitTests {
 			//Application.Run(new FormTestAllControls());
 			//Application.Run(new FormToothChartTests());
 			//Application.Run(new FormTextBoxTests());
-			//OpenDental.Dpi.SetUnaware();
+			//Helianz.Dpi.SetUnaware();
 			Application.Run(new FormWpfConverter());
 		}
 	}

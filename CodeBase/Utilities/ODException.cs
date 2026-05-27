@@ -174,10 +174,10 @@ namespace CodeBase {
 			ReceiptEmailAddressInvalid=410,
 			///<summary>The receipt email after a payment portal payment failed to send.</summary>
 			ReceiptEmailFailedToSend=411,
-			//500-599 range. Values used by Open Dental UI.
+			//500-599 range. Values used by Helianz UI.
 			FormClosed = 500,
 			//600-699 range. Values used by RemotingClient/MiddleTier
-			///<summary>After successfully logging in to Open Dental, a middle tier call to Userods.CheckUserAndPassword returned an "Invalid user or password" error.</summary>
+			///<summary>After successfully logging in to Helianz, a middle tier call to Userods.CheckUserAndPassword returned an "Invalid user or password" error.</summary>
 			CheckUserAndPasswordFailed=600,
 			//700-799 range. Values used by failed query exceptions.
 			///<summary>Generic database command failed to execute.</summary>

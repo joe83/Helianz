@@ -1,12 +1,12 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 using CodeBase;
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 	/// <summary>CADI uses their own OLE format for passing data to CADI. 
-	/// See the bridging documents in \\opendental.od\serverfiles\Storage\OPEN DENTAL\Programmers Documents\Bridge Info\CADI for details.</summary>
+	/// See the bridging documents in \\helianz.od\serverfiles\Storage\OPEN DENTAL\Programmers Documents\Bridge Info\CADI for details.</summary>
 	public static class CADI {
 		///<summary>Keep as a static object so it doesn't get garbage collected.</summary>
 		private static CADINativeWindow CADIWindow; 

@@ -1,8 +1,8 @@
 @echo off
 setlocal
 
-set OUT=%TEMP%\opendental-server.tar.gz
-set SRC=D:\Project\PakRevi\opendental\OpenDentalNew
+set OUT=%TEMP%\helianz-server.tar.gz
+set SRC=D:\Project\PakRevi\helianz\HelianzNew
 
 echo Creating archive from %SRC%
 echo Output: %OUT%
@@ -12,15 +12,15 @@ echo Output: %OUT%
   --exclude=./**/bin ^
   --exclude=./**/obj ^
   --exclude=./Output ^
-  --exclude=./OpenDental ^
-  --exclude=./OpenDentalGraph ^
-  --exclude=./OpenDentalWpf ^
+  --exclude=./Helianz ^
+  --exclude=./HelianzGraph ^
+  --exclude=./HelianzWpf ^
   --exclude=./WpfControlsOD ^
   --exclude=./SparksToothChart ^
   --exclude=./Direct2dWrapper ^
   --exclude=./UnitTests ^
   --exclude=./UnitTestsCore ^
-  --exclude=./OpenDentBusiness.Tests ^
+  --exclude=./HelianzBusiness.Tests ^
   --exclude=./DatabaseIntegrityCheck ^
   --exclude=./xCrudGenerator ^
   --exclude=./QueryExecutor ^

@@ -5,9 +5,9 @@ using System.Text;
 //using MigraDoc.DocumentObjectModel;
 //using MigraDoc.DocumentObjectModel.Shapes;
 //using MigraDoc.DocumentObjectModel.Tables;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 	public class ECW {
 		///<summary>AptNum is always passed in by eCW.  It is used in the logic for setting procedures complete within apt edit window.</summary>
 		public static long AptNum;
@@ -17,10 +17,10 @@ namespace OpenDental.Bridges {
 		public static string JSessionIdSSO;
 		public static string LBSessionId;
 
-		//OD accepts commandline arguments from eCW.  That's handled in FormOpenDental.
+		//OD accepts commandline arguments from eCW.  That's handled in FormHelianz.
 
 		//public static void SendHL7(Appointment apt,Patient pat) {
-		//  OpenDentBusiness.HL7.DFT dft=new OpenDentBusiness.HL7.DFT(apt,pat);
+		//  HelianzBusiness.HL7.DFT dft=new HelianzBusiness.HL7.DFT(apt,pat);
 		//  HL7Msg msg=new HL7Msg();
 		//  msg.AptNum=apt.AptNum;
 		//  msg.HL7Status=HL7MessageStatus.OutPending;//it will be marked outSent by the HL7 service.
@@ -29,7 +29,7 @@ namespace OpenDental.Bridges {
 		//}
 
 		public static void SendHL7(long aptNum,long provNum,Patient pat,string pdfDataBase64,string pdfDescription,bool justPDF,List<Procedure> listProcs) {
-			OpenDentBusiness.HL7.EcwDFT dft=new OpenDentBusiness.HL7.EcwDFT();
+			HelianzBusiness.HL7.EcwDFT dft=new HelianzBusiness.HL7.EcwDFT();
 			dft.InitializeEcw(aptNum,provNum,pat,pdfDataBase64,pdfDescription,justPDF,listProcs);
 			HL7Msg msg=new HL7Msg();
 			if(justPDF){

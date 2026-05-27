@@ -8,10 +8,10 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 	public partial class FrmFaqVersionPicker:FrmODBase {
 		///<summary>Holds the user's selections</summary>
 		public List<int> ListSelectedVersions;

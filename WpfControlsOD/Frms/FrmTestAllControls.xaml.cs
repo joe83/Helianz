@@ -15,11 +15,11 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 using Microsoft.Win32;
 
-namespace OpenDental {
+namespace Helianz {
 	/// <summary></summary>
 	public partial class FrmTestAllControls:FrmODBase {
 
@@ -86,7 +86,7 @@ namespace OpenDental {
 			textRich.Text="Line1\r\n Line2\r\nLine3, of additional (text with line) bre-aks and some mispel'd words.\r\n so tht I can text spellcheking and highliting. I need\r\nto add enough text for it to trigger the vertical scrollbar.";
 			FillTree();
 			//textBox5_Copy.Focus();
-			webBrowser.Navigate("https://www.opendental.com/");
+			webBrowser.Navigate("https://www.helianz.com/");
 			//InitializeWebView2Async();
 			Size sizeCanvas=new Size(1000,1000);
 			Size sizeImage=new Size(500,800);
@@ -108,7 +108,7 @@ namespace OpenDental {
 		//		Close();
 		//		return;
 		//	}
-		//	webView2.Navigate("https://www.opendental.com/");
+		//	webView2.Navigate("https://www.helianz.com/");
 		//}
 
 		private void FillTree(){
@@ -528,7 +528,7 @@ Line2\par
 		}
 
 		private void butLaunchWin_Click(object sender,EventArgs e) {
-			//OpenDental.Wui.WindowTest windowTest=new OpenDental.Wui.WindowTest();
+			//Helianz.Wui.WindowTest windowTest=new Helianz.Wui.WindowTest();
 			//windowTest.ShowDialog();
 			//OpenFileDialog openFileDialog=new OpenFileDialog();
 			//openFileDialog.ShowDialog();

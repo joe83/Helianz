@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CodeBase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness;
+using HelianzBusiness;
 using UnitTestsCore;
 
 namespace UnitTests.FeeSchedTools_Tests {
@@ -55,8 +55,8 @@ namespace UnitTests.FeeSchedTools_Tests {
 			Assert.AreEqual(fromFee.Amount,toFee.Amount);
 		}
 
-		///<summary>Mimics two instances of Open Dental being open and copying a fee schedule into the same fee schedule from each instance.
-		///No matter how many instances of Open Dental invoke the same fee schedule action they should never create duplicate fees.</summary>
+		///<summary>Mimics two instances of Helianz being open and copying a fee schedule into the same fee schedule from each instance.
+		///No matter how many instances of Helianz invoke the same fee schedule action they should never create duplicate fees.</summary>
 		[TestMethod]
 		public void FeeSchedTools_CopyFeeSched_Concurrency() {
 			//Make sure there are no duplicate fees already present within the database.
@@ -122,7 +122,7 @@ namespace UnitTests.FeeSchedTools_Tests {
 			long clinicNum=feeArgs.ListClinics[0].ClinicNum;
 			string filename=MethodBase.GetCurrentMethod().Name;
 			FeeScheds.ExportFeeSchedule(exportedSched,clinicNum,feeArgs.ListProvNums[0],filename);
-			OpenDental.FeeL.ImportFees(filename,importedSched,clinicNum,feeArgs.ListProvNums[0]);
+			Helianz.FeeL.ImportFees(filename,importedSched,clinicNum,feeArgs.ListProvNums[0]);
 			foreach(ProcedureCode procCode in _listProcCodes.Where(x => !string.IsNullOrWhiteSpace(x.ProcCode))) { //unable to import without a proccodes
 				Fee expected=Fees.GetFee(procCode.CodeNum,exportedSched,clinicNum,feeArgs.ListProvNums[0]);
 				Fee actual=Fees.GetFee(procCode.CodeNum,importedSched,clinicNum,feeArgs.ListProvNums[0]);

@@ -7,9 +7,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges{
+namespace Helianz.Bridges{
 	/// <summary>PT Dental.  www.gopaperlessnow.com.  This bridge only works on Windows and in English, so some shortcuts were taken.</summary>
 	public class PaperlessTechnology{
 		private static string exportAddCsv="addpatient_OD.csv";
@@ -569,7 +569,7 @@ namespace OpenDental.Bridges{
 				sw.Write(",");//PAT_PTSTUD
 				sw.Write(Tidy(pat.SchoolName)+",");//PAT_COLLEG Name of college
 				sw.Write(Tidy(pat.ChartNumber)+",");//PAT_CHRTNO
-				sw.Write(pat.PatNum.ToString()+",");//PAT_OTHID The primary key in Open Dental ************IMPORTANT***************
+				sw.Write(pat.PatNum.ToString()+",");//PAT_OTHID The primary key in Helianz ************IMPORTANT***************
 				if(pat.PatNum==pat.Guarantor){
 					sw.Write("1");
 				}

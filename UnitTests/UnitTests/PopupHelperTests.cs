@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness.UI;
+using HelianzBusiness.UI;
 using UnitTestsCore;
 using WpfControls.UI;
 
@@ -18,7 +18,7 @@ namespace UnitTests.PopupHelper_Tests {
 				(http://google.com/thisisavjwpoegk20-5352nerror)rgerg is the one you want to click on).
 				http://google.com/validUrlsAreDumb)
 				(google.com/What/is/regex/)
-				(https://opendental.com/manual/sheetscheckbox.html).
+				(https://helianz.com/manual/sheetscheckbox.html).
 			";
 			List<string> listUrls=PopupHelper.GetURLsFromText(testString);
 			Assert.AreEqual(7,listUrls.Count);
@@ -29,7 +29,7 @@ namespace UnitTests.PopupHelper_Tests {
 			Assert.IsTrue(listUrls.Contains(@"http://google.com/thisisavjwpoegk20-5352nerror)rgerg"));
 			Assert.IsTrue(listUrls.Contains(@"http://google.com/validUrlsAreDumb"));
 			Assert.IsTrue(listUrls.Contains(@"google.com/What/is/regex"));
-			Assert.IsTrue(listUrls.Contains(@"https://opendental.com/manual/sheetscheckbox.html"));
+			Assert.IsTrue(listUrls.Contains(@"https://helianz.com/manual/sheetscheckbox.html"));
 		}
 
 		///<summary>Tests to ensure no email addresses get recognized as urls</summary>
@@ -37,7 +37,7 @@ namespace UnitTests.PopupHelper_Tests {
 		public void PopupHelper_TestEmailAddresses() {
 			string testString=@"Joe@yahoo.com,
 			Smurf@hotmail.com,
-			ExampleNameL@opendental.com,
+			ExampleNameL@helianz.com,
 			youremailaddress@educationplace.net";
 			List<string> listUrls=PopupHelper.GetURLsFromText(testString);
 			Assert.AreEqual(0,listUrls.Count);
@@ -46,11 +46,11 @@ namespace UnitTests.PopupHelper_Tests {
 		///<summary>Tests various general websites or website examples</summary>
 		[TestMethod]
 		public void PopupHelper_TestWebsiteUrls() {
-			string testString=@"https://www.opendental.com/manual/graphicaltoothchart.html,
-			https://www.opendental.com/index.html,
-			https://opendental.com/manual/searchmanual.html,
-			https://www.opendental.com/OpenDentalDocumentation24-1.xml,
-			https://opendentalsoft.com:1943/ODBugTracker/PreviousVersions.aspx,
+			string testString=@"https://www.helianz.com/manual/graphicaltoothchart.html,
+			https://www.helianz.com/index.html,
+			https://helianz.com/manual/searchmanual.html,
+			https://www.helianz.com/HelianzDocumentation24-1.xml,
+			https://helianzsoft.com:1943/ODBugTracker/PreviousVersions.aspx,
 			google.com,
 			asdf.net,
 			abc123.gov/directory
@@ -80,7 +80,7 @@ namespace UnitTests.PopupHelper_Tests {
 		///<summary>Tests various websites that point to files at the end of the link.</summary>
 		[TestMethod]
 		public void PopupHelper_TestWeblinksThatLookLikeFiles() {
-			string testString=@"https://www.opendental.com/resources/Setup%20Checklist.pdf,
+			string testString=@"https://www.helianz.com/resources/Setup%20Checklist.pdf,
 			https://vynedental.com/wp-content/uploads/2021/07/Tesia-Dental-Payer-Listing-Website-v07.01.21.pdf,
 			www.MyRealWebsite.com/yeah/totallyrealfile.png,
 			https://thisismywebsite.com/mypdf.pdf";
@@ -100,7 +100,7 @@ namespace UnitTests.PopupHelper_Tests {
 				(http://google.com/thisisavjwpoegk20-5352nerror)rgerg is the one you want to click on).
 				http://google.com/validUrlsAreDumb)
 				(google.com/What/is/regex/)
-				(https://opendental.com/manual/sheetscheckbox.html).
+				(https://helianz.com/manual/sheetscheckbox.html).
 			";
 			List<string> listUrls=PopupHelper2.GetURLsFromText(testString);
 			Assert.AreEqual(7,listUrls.Count);
@@ -111,7 +111,7 @@ namespace UnitTests.PopupHelper_Tests {
 			Assert.IsTrue(listUrls.Contains(@"http://google.com/thisisavjwpoegk20-5352nerror)rgerg"));
 			Assert.IsTrue(listUrls.Contains(@"http://google.com/validUrlsAreDumb"));
 			Assert.IsTrue(listUrls.Contains(@"google.com/What/is/regex"));
-			Assert.IsTrue(listUrls.Contains(@"https://opendental.com/manual/sheetscheckbox.html"));
+			Assert.IsTrue(listUrls.Contains(@"https://helianz.com/manual/sheetscheckbox.html"));
 		}
 
 		///<summary>Tests to ensure no email addresses get recognized as urls</summary>
@@ -119,7 +119,7 @@ namespace UnitTests.PopupHelper_Tests {
 		public void PopupHelper2_TestEmailAddresses() {
 			string testString=@"Joe@yahoo.com,
 			Smurf@hotmail.com,
-			ExampleNameL@opendental.com,
+			ExampleNameL@helianz.com,
 			youremailaddress@educationplace.net";
 			List<string> listUrls=PopupHelper2.GetURLsFromText(testString);
 			Assert.AreEqual(0,listUrls.Count);
@@ -128,11 +128,11 @@ namespace UnitTests.PopupHelper_Tests {
 		///<summary>Tests various general websites or website examples</summary>
 		[TestMethod]
 		public void PopupHelper2_TestWebsiteUrls() {
-			string testString=@"https://www.opendental.com/manual/graphicaltoothchart.html,
-			https://www.opendental.com/index.html,
-			https://opendental.com/manual/searchmanual.html,
-			https://www.opendental.com/OpenDentalDocumentation24-1.xml,
-			https://opendentalsoft.com:1943/ODBugTracker/PreviousVersions.aspx,
+			string testString=@"https://www.helianz.com/manual/graphicaltoothchart.html,
+			https://www.helianz.com/index.html,
+			https://helianz.com/manual/searchmanual.html,
+			https://www.helianz.com/HelianzDocumentation24-1.xml,
+			https://helianzsoft.com:1943/ODBugTracker/PreviousVersions.aspx,
 			google.com,
 			asdf.net,
 			abc123.gov/directory
@@ -162,7 +162,7 @@ namespace UnitTests.PopupHelper_Tests {
 		///<summary>Tests various websites that point to files at the end of the link.</summary>
 		[TestMethod]
 		public void PopupHelper2_TestWeblinksThatLookLikeFiles() {
-			string testString=@"https://www.opendental.com/resources/Setup%20Checklist.pdf,
+			string testString=@"https://www.helianz.com/resources/Setup%20Checklist.pdf,
 			https://vynedental.com/wp-content/uploads/2021/07/Tesia-Dental-Payer-Listing-Website-v07.01.21.pdf,
 			www.MyRealWebsite.com/yeah/totallyrealfile.png,
 			https://thisismywebsite.com/mypdf.pdf";

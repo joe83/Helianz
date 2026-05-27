@@ -24,7 +24,7 @@ namespace ServiceManager {
 			}
 		}
 
-		///<summary>Pass in empty string to create a new service. Pass in OpenDent string to manage an existing service.</summary>
+		///<summary>Pass in empty string to create a new service. Pass in Helianz string to manage an existing service.</summary>
 		public FormServiceManage(string serviceName,bool isInstallOnly,bool isNew) {
 			InitializeComponent();
 			textName.Text=serviceName;
@@ -90,18 +90,18 @@ namespace ServiceManager {
 				return;
 			}
 			string serviceName=textName.Text;
-			if(serviceName.Length<8 || serviceName.Substring(0,8)!="OpenDent") {
-				MessageBox.Show("Error.  Service name must begin with \"OpenDent\".");
+			if(serviceName.Length<8 || serviceName.Substring(0,8)!="Helianz") {
+				MessageBox.Show("Error.  Service name must begin with \"Helianz\".");
 				return;
 			}
 			//if(ServicesHelper.HasService(serviceName,_serviceFileInfo)) {
 			//	MessageBox.Show("Error.  Either a service with this name is already installed or there is another service installed from this directory.");
 			//	return;
 			//}
-			if(_serviceFileInfo.Name=="OpenDentalEConnector.exe"
-				|| _serviceFileInfo.Name=="OpenDentalService.exe" 
-				|| _serviceFileInfo.Name=="OpenDentalReplicationService.exe"
-				|| _serviceFileInfo.Name=="OpenDentalAPIService.exe")
+			if(_serviceFileInfo.Name=="HelianzEConnector.exe"
+				|| _serviceFileInfo.Name=="HelianzService.exe" 
+				|| _serviceFileInfo.Name=="HelianzReplicationService.exe"
+				|| _serviceFileInfo.Name=="HelianzAPIService.exe")
 			{
 				using FormWebConfigSettings FormWCS=new FormWebConfigSettings(_serviceFileInfo);
 				FormWCS.ShowDialog();

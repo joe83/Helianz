@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace UnitTestsCore {
 	public class WebSchedRecallT {
@@ -19,7 +19,7 @@ namespace UnitTestsCore {
 				return new List<WebSchedRecall>();
 			}
 			string command="SELECT * FROM webschedrecall WHERE PatNum IN("+string.Join(",",listPatNums)+")";
-			return OpenDentBusiness.Crud.WebSchedRecallCrud.SelectMany(command);
+			return HelianzBusiness.Crud.WebSchedRecallCrud.SelectMany(command);
 		}
 
 		public static List<WebSchedRecall> CreateWebSchedRecall(long patNum,long recallNum,long clinicNum,long emailFk=0,long smsFk=0,WebSchedRecallSource source=WebSchedRecallSource.EConnectorAutoComm) {

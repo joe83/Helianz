@@ -8,16 +8,16 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 using System.Text.RegularExpressions;
 using CodeBase;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Printing;
-using OpenDental.Drawing;
+using Helianz.Drawing;
 
-namespace OpenDental {
+namespace Helianz {
 	public partial class FrmMsgBoxCopyPaste:FrmODBase {
 		private int _pagesPrinted;
 		///<summary>This is how we carry over to subsequent pages.</summary>

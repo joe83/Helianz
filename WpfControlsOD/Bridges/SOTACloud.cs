@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges{
+namespace Helianz.Bridges{
 	///<summary>Loads the website in a WebView2 control.</summary>
 	public class SOTACloud {
 
@@ -78,7 +78,7 @@ namespace OpenDental.Bridges{
 			}
 		}
 
-		///<summary>Strips out characters that SOTACloud considers invalid for patient names. If the string contains characters such as "é", "-", or " ",
+		///<summary>Strips out characters that SOTACloud considers invalid for patient names. If the string contains characters such as "ï¿½", "-", or " ",
 		///this method will escape them to ensure that the final URL is still valid.</summary>
 		private static string CleanPatientName(string name) {
 			string retVal=name.Replace("&","");

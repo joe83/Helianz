@@ -8,10 +8,10 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 	public partial class FrmCommItemUserPrefs:FrmODBase {
 		///<summary>Helper variable that gets set to Security.CurUser.UserNum on load.</summary>
 		private long _userNum;
@@ -33,7 +33,7 @@ namespace OpenDental {
 				return;
 			}
 			_userNum=Security.CurUser.UserNum;
-			//Add the user name of the user currently logged in to the title of this window much like we do for FormOpenDental.
+			//Add the user name of the user currently logged in to the title of this window much like we do for FormHelianz.
 			this.Text+=" {"+Security.CurUser.UserName+"}";
 			_userOdPrefClearNote=UserOdPrefs.GetByUserAndFkeyType(_userNum,UserOdFkeyType.CommlogPersistClearNote).FirstOrDefault();
 			_userOdPrefEndDate=UserOdPrefs.GetByUserAndFkeyType(_userNum,UserOdFkeyType.CommlogPersistClearEndDate).FirstOrDefault();

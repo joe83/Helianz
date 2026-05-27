@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 using CodeBase;
 using System.IO;
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 	/// <summary></summary>
 	public class VixWinNumbered {
 

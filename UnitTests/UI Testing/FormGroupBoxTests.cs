@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace UnitTests
 {
-	public partial class FormGroupBoxTests : OpenDental.FormODBase
+	public partial class FormGroupBoxTests : Helianz.FormODBase
 	{
 		public FormGroupBoxTests()
 		{

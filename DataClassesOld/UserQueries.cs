@@ -3,7 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Windows.Forms;
 
-namespace OpenDental{
+namespace Helianz{
 
 	///<summary>A list of query favorites that users can run.</summary>
 	public struct UserQuery{

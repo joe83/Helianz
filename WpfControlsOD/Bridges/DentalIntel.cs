@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges{
+namespace Helianz.Bridges{
 	///<summary>Link to Dental Intel Premium Report Provider.</summary>
 	public class DentalIntel {
 
@@ -24,10 +24,10 @@ namespace OpenDental.Bridges{
 					return;
 				}
 				if(Programs.IsEnabled(ProgramName.DentalIntel)) {
-					ODFileUtils.ProcessStart("http://www.opendental.com/manual/portaldentalintel.html");
+					ODFileUtils.ProcessStart("http://www.helianz.com/manual/portaldentalintel.html");
 				}
 				else {
-					ODFileUtils.ProcessStart("http://www.opendental.com/resources/redirects/redirectdentalintel.html");
+					ODFileUtils.ProcessStart("http://www.helianz.com/resources/redirects/redirectdentalintel.html");
 				}
 			}
 			catch {

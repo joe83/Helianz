@@ -8,10 +8,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 	///<summary>This can be used from FormPatientForms to pick a form for a patient. It can also be used from FrmEFormDefs to pick an internal form to add to list of custom forms.</summary>
 	public partial class FrmEFormPicker:FrmODBase {
 		private List<EFormDef> _listEFormDefs;

@@ -19,7 +19,7 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
 using UnitTests.Documentation;
-using OpenDentBusiness;
+using HelianzBusiness;
 using DataConnectionBase;
 using System.Data.SqlClient;
 using System.Xml.Xsl;
@@ -27,7 +27,7 @@ using System.Xml.Xsl;
 namespace DocumentationBuilder {
 	public partial class Form1:Form {
 		private DataConnection dcon;
-		///<summary>A dictionary of all XML 'member' nodes for both OpenDentBusiness and CodeBase libraries. Key: member's 'name' attribute  Value: entire XML node for the member</summary>
+		///<summary>A dictionary of all XML 'member' nodes for both HelianzBusiness and CodeBase libraries. Key: member's 'name' attribute  Value: entire XML node for the member</summary>
 		private Dictionary<string,XElement> _dictXElementMembers=new Dictionary<string,XElement>();
 		private List<string> MissingTables;
 		private List<string> _listTableNames;
@@ -259,13 +259,13 @@ namespace DocumentationBuilder {
 		}
 
 		private void buttonPrefDocumentation_Click(object sender,EventArgs e) {
-			string inputFileODBusiness=ODFileUtils.CombinePaths(new string[] {"..","..","..","OpenDentBusiness","bin","Release","OpenDentBusiness.xml"});
+			string inputFileODBusiness=ODFileUtils.CombinePaths(new string[] {"..","..","..","HelianzBusiness","bin","Release","HelianzBusiness.xml"});
 			XElement xElementODBusiness=XElement.Load(inputFileODBusiness); //Getting summaries found in Pref.cs, less than master list
 			List<XElement> listXElementsODBusinessMembers=xElementODBusiness.Descendants("member").ToList()
 				.FindAll(x => x.HasAttributes && x.Attribute("name")!=null);
 			List<XElement> listXElementsODBusiness=listXElementsODBusinessMembers.FindAll(x => x.Attribute("name").Value
-			.Contains($"F:OpenDentBusiness.PrefName.")).ToList();
-			string inputFileODPrefInfo=ODFileUtils.CombinePaths(new string[] {"..","..","..","OpenDental","Resources","PrefInfos.xml"});
+			.Contains($"F:HelianzBusiness.PrefName.")).ToList();
+			string inputFileODPrefInfo=ODFileUtils.CombinePaths(new string[] {"..","..","..","Helianz","Resources","PrefInfos.xml"});
 			XElement xElementPrefInfos=XElement.Load(inputFileODPrefInfo); //Getting details found in PrefInfos.cs, less than master list
 			List<XElement> listXElementsPrefInfos=xElementPrefInfos.Descendants("PrefInf").ToList();
 			List<PrefName> listPrefNames=Enum.GetValues(typeof(PrefName)).Cast<PrefName>().ToList();//Master list from Pref.cs that contains all prefs
@@ -340,7 +340,7 @@ namespace DocumentationBuilder {
 		}
 
 		private void WriteHtmlToFile(string html) {
-			string odVersion=Assembly.GetAssembly(typeof(OpenDental.FormOpenDental)).GetName().Version.ToString();
+			string odVersion=Assembly.GetAssembly(typeof(Helianz.FormHelianz)).GetName().Version.ToString();
 			string formattedODVersion=odVersion.Replace("0","").Replace(".","").Substring(0,3);
 			string pathPreferenceTableHtml=@"..\..\PreferenceTable\Pref" + formattedODVersion + ".html";
 			if(!File.Exists(pathPreferenceTableHtml)) {
@@ -358,11 +358,11 @@ namespace DocumentationBuilder {
 			MissingTables=new List<string>();
 			//dcon=new DataConnection();
 			List<ODTable> table=ODTables.GetODTables(dcon);
-			string outputFile=ODFileUtils.CombinePaths(new string[] {"..","..","OpenDentalDocumentation.xml"});
+			string outputFile=ODFileUtils.CombinePaths(new string[] {"..","..","HelianzDocumentation.xml"});
 			//input:
-			#region OpenDentBusiness XML 'member' Nodes.
-			//Add all of the member nodes from OpenDentBusiness.xml to the dictionary of all member nodes.
-			string inputFileODBusiness=ODFileUtils.CombinePaths(new string[] {"..","..","..","OpenDentBusiness","bin","Release","OpenDentBusiness.xml"});
+			#region HelianzBusiness XML 'member' Nodes.
+			//Add all of the member nodes from HelianzBusiness.xml to the dictionary of all member nodes.
+			string inputFileODBusiness=ODFileUtils.CombinePaths(new string[] {"..","..","..","HelianzBusiness","bin","Release","HelianzBusiness.xml"});
 			XElement xElementODBusiness=XElement.Load(inputFileODBusiness);
 			List<XElement> listXElementODBusinessMembers=xElementODBusiness.Descendants("member")
 				.Where(x => x.HasAttributes && x.Attribute("name")!=null)
@@ -413,11 +413,11 @@ namespace DocumentationBuilder {
 
 		///<summary>Generates XML for schema changes from previous version.</summary>
 		private void SchemaChanges() {
-			string outputFile=ODFileUtils.CombinePaths(new string[] {"..","..","OpenDentalDiffDocumentation.xml"});
-			string pathDest=ODFileUtils.CombinePaths(new string[] {"..","..","OpenDentalDocumentation.xml"});
+			string outputFile=ODFileUtils.CombinePaths(new string[] {"..","..","HelianzDiffDocumentation.xml"});
+			string pathDest=ODFileUtils.CombinePaths(new string[] {"..","..","HelianzDocumentation.xml"});
 			List<ODTable> listTablesNewVersion=GetFromXML(pathDest);
 			if(_pathPreviousDocumentationFile.IsNullOrEmpty()) {
-				pathDest=ODFileUtils.CombinePaths(new string[] { "..","..","..","..","opendental"+_versionPrevious.Major+"."+_versionPrevious.Minor,"DocumentationBuilder","OpenDentalDocumentation.xml" });
+				pathDest=ODFileUtils.CombinePaths(new string[] { "..","..","..","..","helianz"+_versionPrevious.Major+"."+_versionPrevious.Minor,"DocumentationBuilder","HelianzDocumentation.xml" });
 			}
 			else {
 				pathDest=_pathPreviousDocumentationFile;
@@ -451,7 +451,7 @@ namespace DocumentationBuilder {
 			//table summary
 			string summary="";
 			if(includeSummary) {//Include summary only for database documentation
-				summary=GetSummary("T:OpenDentBusiness."+GetTableName(tableName));
+				summary=GetSummary("T:HelianzBusiness."+GetTableName(tableName));
 			}
 			List<string> ancestorTables=GetAncestorTables(summary);
 			if(ancestorTables.Count>0) {
@@ -505,14 +505,14 @@ namespace DocumentationBuilder {
 				//GetSchemaChanges() will mark column as deleted if column/table was removed.
 				listXAttributes.Add(new XAttribute("deleted","true"));
 			}
-			string summary=GetSummary("F:OpenDentBusiness."+GetTableName(tableName)+"."+colName);
+			string summary=GetSummary("F:HelianzBusiness."+GetTableName(tableName)+"."+colName);
 			if(summary==""){
 				//this deals with the situation where the new data access layer has public Properites instead of public Fields.
-				summary=GetSummary("P:OpenDentBusiness."+GetTableName(tableName)+"."+colName);
+				summary=GetSummary("P:HelianzBusiness."+GetTableName(tableName)+"."+colName);
 			}
 			int i=0;
 			while(summary=="" && i<ancestorTables.Count) {//this deals with an inherited property
-				summary=GetSummary("F:OpenDentBusiness."+GetTableName(ancestorTables[i])+"."+colName);
+				summary=GetSummary("F:HelianzBusiness."+GetTableName(ancestorTables[i])+"."+colName);
 				if(summary=="Primary key.") {
 					summary="FK to "+ancestorTables[i]+"."+colName;
 				}
@@ -556,7 +556,7 @@ namespace DocumentationBuilder {
 			XElement retVal=null;
 			if(enumName.EndsWith(".")) {
 				_errorMessage.AppendLine("ERROR! enum: "+enumName+" ends with \".\" and this causes the documentation to fail.\r\nCorrect the enum summary "+
-					"in the table type and rebuild Open Dental in release mode to update the serialization file.");
+					"in the table type and rebuild Helianz in release mode to update the serialization file.");
 				return retVal;
 			}
 			List<XElement> listXElements=GetMembersForEnum(enumName);
@@ -565,7 +565,7 @@ namespace DocumentationBuilder {
 				return retVal;
 			}
 			List<XElement> listXElementEnumValues=new List<XElement>();
-			//("//member[@name='F:OpenDental."+enumName+".*']");
+			//("//member[@name='F:Helianz."+enumName+".*']");
 			string itemName;
 			int lastDot;
 			foreach(XElement xElement in listXElements) {
@@ -592,9 +592,9 @@ namespace DocumentationBuilder {
 			return retVal;
 		}
 
-		///<summary>Returns a list of raw XElements for the enum passed in. Searches for the enum in the OpenDentBusiness and CodeBase members.</summary>
+		///<summary>Returns a list of raw XElements for the enum passed in. Searches for the enum in the HelianzBusiness and CodeBase members.</summary>
 		private List<XElement> GetMembersForEnum(string enumName) {
-			List<XElement> listXElements=GetMembers($"F:OpenDentBusiness.{enumName}.");
+			List<XElement> listXElements=GetMembers($"F:HelianzBusiness.{enumName}.");
 			if(listXElements.IsNullOrEmpty()) {
 				listXElements=GetMembers($"F:CodeBase.{enumName}.");
 			}
@@ -694,7 +694,7 @@ namespace DocumentationBuilder {
 		private List<ODTable> GetFromXML(string filePathToXML) {
 			XDocument doc=XDocument.Load(filePathToXML);
 			List<ODTable> listTables=new List<ODTable>();
-			//Get a list of all the columns from the OpenDentalDocumentation.xml passed in
+			//Get a list of all the columns from the HelianzDocumentation.xml passed in
 			List<XElement> listXElements=doc.Descendants("table").SelectMany(x =>x.Elements("column")).ToList();
 			//Loop through each XElement and contruct Table objects.
 			foreach(XElement col in listXElements) {
@@ -1069,25 +1069,25 @@ namespace DocumentationBuilder {
 		}
 
 		private List<string> GetTableNames() {
-			//"C:\development\OPEN DENTAL SUBVERSION\head\OpenDentBusiness\TableTypes\";
-			string inputFile=ODFileUtils.CombinePaths(new string[] {"..","..","..","OpenDentBusiness","TableTypes"});
+			//"C:\development\OPEN DENTAL SUBVERSION\head\HelianzBusiness\TableTypes\";
+			string inputFile=ODFileUtils.CombinePaths(new string[] {"..","..","..","HelianzBusiness","TableTypes"});
 			return Directory.GetFiles(inputFile, "*.cs").Select(Path.GetFileNameWithoutExtension).ToList();
 		}
 
-		///<summary>Returns the member XElement that has a name attribute that matches the name passed in. Searches the OpenDentBusiness and CodeBase members.</summary>
+		///<summary>Returns the member XElement that has a name attribute that matches the name passed in. Searches the HelianzBusiness and CodeBase members.</summary>
 		private XElement GetMember(string name) {
 			_dictXElementMembers.TryGetValue(name,out var member);
 			return member;
 		}
 
-		///<summary>Returns the member XElements that have a name attribute that matches the name passed in. Searches the OpenDentBusiness and CodeBase members.</summary>
+		///<summary>Returns the member XElements that have a name attribute that matches the name passed in. Searches the HelianzBusiness and CodeBase members.</summary>
 		private List<XElement> GetMembers(string name) {
 			return _dictXElementMembers.Where(x => x.Key.StartsWith(name))
 				.Select(x => x.Value)
 				.ToList();
 		}
 
-		///<summary>Returns the summary node's Value of the XElement that has a name attribute that matches the name passed in. Searches the OpenDentBusiness and CodeBase members.</summary>
+		///<summary>Returns the summary node's Value of the XElement that has a name attribute that matches the name passed in. Searches the HelianzBusiness and CodeBase members.</summary>
 		private string GetSummary(string name) {
 			return GetSummaryForMember(GetMember(name));
 		}
@@ -1105,9 +1105,9 @@ namespace DocumentationBuilder {
 			return summary;
 		}
 
-		///<summary>Returns the Value of the 'summary' node for the enum passed in; Otherwise empty string. Searches the OpenDentBusiness and CodeBase members.</summary>
+		///<summary>Returns the Value of the 'summary' node for the enum passed in; Otherwise empty string. Searches the HelianzBusiness and CodeBase members.</summary>
 		private string GetSummaryForEnum(string enumName) {
-			string enumSummary=GetSummary("T:OpenDentBusiness."+enumName);
+			string enumSummary=GetSummary("T:HelianzBusiness."+enumName);
 			if(enumSummary.IsNullOrEmpty()) {
 				enumSummary=GetSummary("T:CodeBase."+enumName);
 			}
@@ -1125,7 +1125,7 @@ namespace DocumentationBuilder {
 					if(indexDot!=-1) {
 						baseTable=summary.Substring(14,indexDot-14);
 						ancestors.Add(baseTable);
-						summary=GetSummary("T:OpenDentBusiness."+GetTableName(baseTable));
+						summary=GetSummary("T:HelianzBusiness."+GetTableName(baseTable));
 					}
 				}
 				else {

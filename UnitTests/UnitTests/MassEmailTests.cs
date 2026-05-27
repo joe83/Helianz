@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness;
+using HelianzBusiness;
 using UnitTestsCore;
-using OpenDental;
+using Helianz;
 using CodeBase;
 
 namespace UnitTests.MassEmail_Tests {

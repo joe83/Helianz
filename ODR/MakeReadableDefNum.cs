@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace ODR{
 	///<summary></summary>

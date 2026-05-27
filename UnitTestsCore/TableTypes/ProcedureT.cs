@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System.Linq;
 
 namespace UnitTestsCore {
@@ -119,7 +119,7 @@ namespace UnitTestsCore {
 		}
 
 		public static void InsertMany(List<Procedure> listProcs) {
-			OpenDentBusiness.Crud.ProcedureCrud.InsertMany(listProcs);
+			HelianzBusiness.Crud.ProcedureCrud.InsertMany(listProcs);
 		}
 	}
 }

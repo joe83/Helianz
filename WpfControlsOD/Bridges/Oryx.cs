@@ -3,9 +3,9 @@ using System.Linq;
 using System.Net;
 using CodeBase;
 using Newtonsoft.Json;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 	///<summary></summary>
 	public class Oryx {
 
@@ -13,11 +13,11 @@ namespace OpenDental.Bridges {
 		public static void SendData(Program progOryx,Patient pat) {
 			string clientUrl="";
 			try {
-				clientUrl=OpenDentBusiness.ProgramProperties.GetPropVal(progOryx.ProgramNum,ProgramProperties.ClientUrl);
+				clientUrl=HelianzBusiness.ProgramProperties.GetPropVal(progOryx.ProgramNum,ProgramProperties.ClientUrl);
 				if(clientUrl=="") {//Office has not signed up with Oryx yet, launch a promotional page.
-					string promoUrl="http://www.opendental.com/resources/redirects/redirectoryx.html";
+					string promoUrl="http://www.helianz.com/resources/redirects/redirectoryx.html";
 					if(ODBuild.IsDebug()) {
-						promoUrl="http://www.opendental.com/resources/redirects/redirectoryxdebug.html";
+						promoUrl="http://www.helianz.com/resources/redirects/redirectoryxdebug.html";
 					}
 					ODFileUtils.ProcessStart(promoUrl);
 					return;
@@ -38,7 +38,7 @@ namespace OpenDental.Bridges {
 					ODFileUtils.ProcessStart(clientUrl);
 					return;
 				}
-				string apiUrl=clientUrl.TrimEnd('/')+"/api/auth/opendental/v1/login";
+				string apiUrl=clientUrl.TrimEnd('/')+"/api/auth/helianz/v1/login";
 				string passwordPlain;
 				if(!CDT.Class1.Decrypt(passwordPref.ValueString,out passwordPlain)) {
 					MsgBox.Show("Oryx","Unable to decrypt password");

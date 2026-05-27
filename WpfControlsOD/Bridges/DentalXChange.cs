@@ -1,7 +1,7 @@
 ﻿using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 	///<summary>This class is for the bridge to DentalXCharge. Specifically, this is for patient credit Score.</summary>
 	public class DentalXChange {
 

@@ -7,11 +7,11 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 using CodeBase;
 
-namespace OpenDental {
+namespace Helianz {
 	/// <summary></summary>
 	public partial class FrmEFormFieldChildren : FrmODBase {
 		///<summary>This is set from the parent form.</summary>

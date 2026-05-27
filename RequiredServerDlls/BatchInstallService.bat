@@ -1,8 +1,8 @@
 @echo off
-echo installutil.exe OpenDentServer.exe
+echo installutil.exe HelianzServer.exe
 echo.
 pushd "%~dp0"
-installutil.exe OpenDentServer.exe
+installutil.exe HelianzServer.exe
 popd
 echo.
 pause

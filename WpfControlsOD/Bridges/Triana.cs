@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 	public class Triana {
 
 		///<summary></summary>
@@ -43,7 +43,7 @@ namespace OpenDental.Bridges {
 			iniText+="LASTNAME="+Tidy(pat.LName)+"\r\n";
 			iniText+="SOCIAL_SECURITY=";
 			//If SSN is allowed by the bridge software, then it will always be optional, because SSNs are not common enough to require.
-			//Additionally, Open Dental does not require SSN when creating a patient, so we cannot guarantee that the SSN exists.
+			//Additionally, Helianz does not require SSN when creating a patient, so we cannot guarantee that the SSN exists.
 			if(pat.SSN.Replace("0","").Trim()!="") {
 				iniText+=pat.SSN;
 			}

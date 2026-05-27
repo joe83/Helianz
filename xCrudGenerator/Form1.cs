@@ -5,13 +5,13 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 using CodeBase;
 
 namespace xCrudGenerator {
 	public partial class Form1:Form {
-		public static string crudDir=@"..\..\..\OpenDentBusiness\Crud";
-		public static string convertDbFile=@"..\..\..\OpenDentBusiness\Misc\ConvertDatabases8.cs";
+		public static string crudDir=@"..\..\..\HelianzBusiness\Crud";
+		public static string convertDbFile=@"..\..\..\HelianzBusiness\Misc\ConvertDatabases8.cs";
 		private const string rn="\r\n";
 		private const string t="\t";
 		private const string t2="\t\t";
@@ -102,7 +102,7 @@ namespace xCrudGenerator {
 				}
 			}
 			if(checkRunSchema.Checked) {
-				File.WriteAllText(@"..\..\..\OpenDentBusiness\Db\SchemaCrudTest.cs",CrudSchemaForUnitTest.Create());
+				File.WriteAllText(@"..\..\..\HelianzBusiness\Db\SchemaCrudTest.cs",CrudSchemaForUnitTest.Create());
 			}
 			Cursor=Cursors.Default;
 			MessageBox.Show(results.Length > 0 ? results.ToString() : "Done");
@@ -155,13 +155,13 @@ using System.Linq;"+rn);
 				stringBuilder.Append("using EhrLaboratories;"+rn);
 			}
 			if(isMobile) {
-				stringBuilder.Append(rn+"namespace OpenDentBusiness.Mobile.Crud{");
+				stringBuilder.Append(rn+"namespace HelianzBusiness.Mobile.Crud{");
 			}
 			else if(!string.IsNullOrEmpty(customNamespace)) {
 				stringBuilder.Append(rn+"namespace "+customNamespace+"{");
 			}
 			else { 
-				stringBuilder.Append(rn+"namespace OpenDentBusiness.Crud{");
+				stringBuilder.Append(rn+"namespace HelianzBusiness.Crud{");
 			}
 			stringBuilder.Append(rn+t+"public class "+className+" {");
 			#endregion class header
@@ -2044,7 +2044,7 @@ using System.Linq;"+rn);
 		}
 
 		private void Form1_FormClosing(object sender,FormClosingEventArgs e) {
-			CrudGenHelper.AddToOpenDentBusiness(ListFilesToAddToODBiz);
+			CrudGenHelper.AddToHelianzBusiness(ListFilesToAddToODBiz);
 		}
 
 		

@@ -12,12 +12,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using CodeBase;
-using OpenDental.Bridges;
-using OpenDentBusiness;
+using Helianz.Bridges;
+using HelianzBusiness;
 using WpfControls;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 ///<summary>All this dialog does is set the patnum and it is up to the calling form to do an immediate refresh, or possibly just change the patnum back to what it was.</summary>
 	public partial class FrmPatientSelect : FrmODBase{
 		///<summary>False by default. Rarely true. The only place so far is in the main Patient Search.</summary>
@@ -904,7 +904,7 @@ namespace OpenDental {
 			}
 			long priProv=0;
 			if(!PrefC.GetBool(PrefName.PriProvDefaultToSelectProv)) {
-				//Explicitly use the combo clinic instead of FormOpenDental.ClinicNum because the combo box should default to that clinic unless manually changed by the user.
+				//Explicitly use the combo clinic instead of FormHelianz.ClinicNum because the combo box should default to that clinic unless manually changed by the user.
 				if(PrefC.HasClinicsEnabled && !comboClinic.IsAllSelected) {//clinics enabled and all isn't selected
 					//Set the patients primary provider to the clinic default provider.
 					Provider provider=Providers.GetDefaultProvider(comboClinic.ClinicNumSelected);

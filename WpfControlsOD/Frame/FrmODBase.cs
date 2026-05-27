@@ -14,10 +14,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 /*
 Jordan is the only one allowed to edit this file.
 
@@ -139,7 +139,7 @@ How to:
 -Scale and Zoom
 		Windows scale is handled automatically in WPF, so you won't normally need it, but if you do: 
 				double scale=VisualTreeHelper.GetDpi(this).DpiScaleX;
-		Open Dental zoom is largely handled automatically as well, but if you need it:
+		Helianz zoom is largely handled automatically as well, but if you need it:
 				(FrmODBase).GetZoom(). Example within a Frm: this.GetZoom().
 -Maximum Window Size
 		FrmZoom specifies max window size as 1246x735, but that's for the entire form, including borders.
@@ -171,7 +171,7 @@ How to:
 		HasHelpButton can be set false, but that's rare.
 -BitmapImage
 		This is the new object for storing bitmaps. You can specify BitmapImage.StreamSource to load any bitmap.
-		See OpenDental.Drawing.Graphics.ConvertBitmapFromWpf() and ConvertBitmapToWpf().
+		See Helianz.Drawing.Graphics.ConvertBitmapFromWpf() and ConvertBitmapToWpf().
 		It does not implement the IDisposable interface, so no worry about memory leaks. The GC handles these completely automatically.
 		But the GC does wait until the BitmapImage goes out of scope. Set it to null if you want to clean up a long-lived BitmapImage.
 -DialogResult
@@ -208,9 +208,9 @@ How to:
 		In FormODBase, the way to do it was to override ProcessSignalODs.
 		In WPF, do it like this:
 		(in your frm load:)
-		GlobalFormOpenDental.EventProcessSignalODs+=GlobalFormOpenDental_EventProcessSignalODs;
+		GlobalFormHelianz.EventProcessSignalODs+=GlobalFormHelianz_EventProcessSignalODs;
 		then,
-		private void GlobalFormOpenDental_EventProcessSignalODs(object sender,List<Signalod> listSignalods) {
+		private void GlobalFormHelianz_EventProcessSignalODs(object sender,List<Signalod> listSignalods) {
 			for(int i=0;i<listSignalods.Count;i++) {
 				if(listSignalods[i].IType!=InvalidType.xxx) {
 					continue;
@@ -868,9 +868,9 @@ Long Term Transition Strategy:
 A. (done) Use UI Manager to swap out all controls for WPF on some simple forms. This allows validation of the new custom WPF controls. 
 B. (done) Organize a way to load up and use a new form that consists solely of a WPF UserControl.
 C. (done) Create a tool that converts one form at a time to a WPF UserControl. The UI Manager becomes obsolete. 
-D. (In progress) Gradually convert all forms except FormOpenDental, starting with the simplest forms.
+D. (In progress) Gradually convert all forms except FormHelianz, starting with the simplest forms.
 E. Move the main modules over to WPF UserControls.
-F. Create a new WPF exe project and manually rebuild FormOpenDental as a WPF Window.
+F. Create a new WPF exe project and manually rebuild FormHelianz as a WPF Window.
 At the moment, we are in steps D, meaning we are designing entire windows in WPF.
 Getting firmly on WPF seems to be pretty future proof moving forward, with options including WPF in dotnet 7, WinUI, Avalonia, or whatever else they come up with.
 

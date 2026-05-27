@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System.IO;
 using static CodeBase.ODCloudClient;
 
-namespace OpenDental {
+namespace Helianz {
 	public class CloudClientL
 	{
-		///<summary>Prompt the user to launch, or download and install, the OpenDentalCloudClient</summary>
+		///<summary>Prompt the user to launch, or download and install, the HelianzCloudClient</summary>
 		private static PromptSelections PromptODCloudClientInstall(bool isCheckingCloudClientResponseOnly=false) {
 			string response="false";
 			try {
@@ -27,7 +27,7 @@ namespace OpenDental {
 			if(response!="false") {
 				return PromptSelections.ClientRunning;
 			}
-			string message=Lans.g("CloudClient","Please launch (download and install if missing) the OpenDentalCloudClient program and try again.");
+			string message=Lans.g("CloudClient","Please launch (download and install if missing) the HelianzCloudClient program and try again.");
 			InputBox inputBox=new InputBox(message,new List<string>() { "Launch","Download" },0);
 			inputBox.ShowDialog();
 			if(inputBox.IsDialogCancel) {
@@ -35,13 +35,13 @@ namespace OpenDental {
 			}
 			int selectedIndex=inputBox.SelectedIndex;
 			if(selectedIndex==1) {
-				Process.Start("https://www.opendental.com/resources/ODCloudClientInstaller.msi");
+				Process.Start("https://www.helianz.com/resources/ODCloudClientInstaller.msi");
 				return PromptSelections.Download;
 			}
 			return PromptSelections.Launch;
 		}
 
-		///<summary>PromptODCloudClientInstall helper method for prompting the user to launch, or download and install, the OpenDentalCloudClient</summary>
+		///<summary>PromptODCloudClientInstall helper method for prompting the user to launch, or download and install, the HelianzCloudClient</summary>
 		public static bool IsCloudClientRunning() {
 			if(ODBuild.IsThinfinity()) {
 				PromptSelections promptSelections=PromptODCloudClientInstall();
@@ -81,12 +81,12 @@ namespace OpenDental {
 				}
 				catch (ODException ex) {
 					ex.DoNothing();
-					MsgBox.Show("ODCloudClient", "Unable to access the dcv client for communicating with the OpenDentalCloudClient.");
+					MsgBox.Show("ODCloudClient", "Unable to access the dcv client for communicating with the HelianzCloudClient.");
 					return false;
 				}
 				catch (Exception ex) {
 					ex.DoNothing();
-					MsgBox.Show("ODCloudClient", "The ODCloudClient did not respond, please ensure it is installed and running or some features of Open Dental will not be available.");
+					MsgBox.Show("ODCloudClient", "The ODCloudClient did not respond, please ensure it is installed and running or some features of Helianz will not be available.");
 					return false;
 				}
 				return true;

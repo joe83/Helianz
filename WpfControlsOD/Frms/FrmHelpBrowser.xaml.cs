@@ -10,10 +10,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using Microsoft.Web.WebView2.Core;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 	public partial class FrmHelpBrowser:FrmODBase {
 		private static string _stableVersion;
 		private bool _hasInitialized=false;
@@ -32,7 +32,7 @@ namespace OpenDental {
 		///<summary>Gets the latest stable version in the format of "XXX" (205,194,etc).</summary>
 		private static string GetStableVersion() {
 			if(_stableVersion==null) {
-				_stableVersion=OpenDentalHelp.ODHelp.GetStableVersion();
+				_stableVersion=HelianzHelp.ODHelp.GetStableVersion();
 			}
 			return _stableVersion;
 		}
@@ -131,7 +131,7 @@ namespace OpenDental {
 			string version="";
 			string page="";
 			//The url params for the manual is /manualversion/pagename.html
-			string[] urlParams=manualPageUrl.Replace("https://www.opendental.com/","").Split('/');
+			string[] urlParams=manualPageUrl.Replace("https://www.helianz.com/","").Split('/');
 			if(urlParams[0]=="manual") {//"manual" signifies the stable version
 				version=Faqs.GetStableManualVersion().ToString();
 			}
@@ -139,14 +139,14 @@ namespace OpenDental {
 				version=urlParams[0].Replace("manual","");
 			}
 			page=urlParams[1].Replace(".html","");
-			return $"https://opendentalsoft.com:1943/ODFaq/{page}/{version}";
+			return $"https://helianzsoft.com:1943/ODFaq/{page}/{version}";
 		}
 		
 		///<summary>Helper method that tries to determine if the navigated url is a manual page. To be honest,
 		///this method is just hacking apart the url and returning false as soon as it finds something that doesn't fit
 		///the manual page url pattern. This will definitely have to be added upon in the future.</summary>
 		private bool IsManualPageUrl(string url) {
-			if(!url.StartsWith("https://www.opendental.com/manual")) {
+			if(!url.StartsWith("https://www.helianz.com/manual")) {
 				return false;
 			}
 			if(url.EndsWith("searchmanual.html")) {//The user is most likely to hit 'search' from the help browser
@@ -179,7 +179,7 @@ namespace OpenDental {
 		///	Otherwise the manual page subject will be returned.
 		///</summary>
 		private string GetPageTopicFromUrl(string url) {
-			//The url is expected to in this format: https://opendental.com/manual205/claimedit.html. We would just want the "claimedit" piece.
+			//The url is expected to in this format: https://helianz.com/manual205/claimedit.html. We would just want the "claimedit" piece.
 			if(string.IsNullOrWhiteSpace(url) || !IsManualPageUrl(url)) {
 				return "";
 			}

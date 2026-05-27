@@ -1,5 +1,5 @@
 ﻿using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace UnitTestsCore {
 	public class RecurringChargeT {

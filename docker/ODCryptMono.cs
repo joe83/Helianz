@@ -2,7 +2,7 @@
 // Mono-compatible reimplementation of ODCrypt.dll.
 // The original DLL is Dotfuscated; the obfuscated control-flow produces
 // IL patterns that Mono 6.12's JIT rejects with InvalidProgramException.
-// This file reimplements the public API surface used by OpenDentBusiness:
+// This file reimplements the public API surface used by HelianzBusiness:
 //
 //   ODCrypt.Sha3.Hash(byte[])          → SHA-3-512 (NIST FIPS 202)
 //   ODCrypt.MD5.Hash(byte[])           → MD5

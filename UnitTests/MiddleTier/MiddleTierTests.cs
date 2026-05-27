@@ -9,9 +9,9 @@ using System.Text;
 using CodeBase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DataConnectionBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 using UnitTestsCore;
-using static OpenDentBusiness.WebServiceTests;
+using static HelianzBusiness.WebServiceTests;
 using UnitTests.MiddleTier.ParamCheck_Tests;
 
 namespace UnitTests.MiddleTier {
@@ -23,7 +23,7 @@ namespace UnitTests.MiddleTier {
 		public void Initialize() {
 			//Instantiate a brand new mock service because other unit tests could have changed the database connection settings via DataConnection.SetDb().
 			//Also, we need to make sure that MySQL UserLow and PassLow are used because some of these unit tests require them to be set.
-			RunTestsAgainstMiddleTier(new OpenDentBusiness.WebServices.OpenDentalServerMockIIS(
+			RunTestsAgainstMiddleTier(new HelianzBusiness.WebServices.HelianzServerMockIIS(
 					server:"localhost",
 					db:UnitTestDbName,
 					user:"root",
@@ -741,26 +741,26 @@ namespace UnitTests.MiddleTier {
 
 		[TestMethod]
 		public void MiddleTier_GetListTasksContainingCR() {
-			OpenDentBusiness.Task t=WebServiceTests.GetListTasksContainingCR()[0];
+			HelianzBusiness.Task t=WebServiceTests.GetListTasksContainingCR()[0];
 			Assert.IsTrue(t!=null && t.Descript==WebServiceTests.NewLineString);
 		}
 
 		[TestMethod]
 		public void MiddleTier_GetListTasksSpecialChars() {
 			//Tests special chars, new lines, Date, DateTime, and enum values in a list of objects as the parameter and the return value
-			List<OpenDentBusiness.Task> listTasks=new List<OpenDentBusiness.Task> { new OpenDentBusiness.Task {
+			List<HelianzBusiness.Task> listTasks=new List<HelianzBusiness.Task> { new HelianzBusiness.Task {
 				Descript=WebServiceTests.DirtyString,
 				ParentDesc=WebServiceTests.NewLineString,
 				DateTask=WebServiceTests.DateTodayTest,
 				DateTimeEntry=WebServiceTests.DateTEntryTest,
 				TaskStatus=TaskStatusEnum.Done } };
-			List<OpenDentBusiness.Task> listTasksReturned=WebServiceTests.GetListTasksSpecialChars(listTasks);
+			List<HelianzBusiness.Task> listTasksReturned=WebServiceTests.GetListTasksSpecialChars(listTasks);
 			List<string> strErrors=new List<string>();
 			if(listTasksReturned==null || listTasksReturned.Count<1) {
 				strErrors.Add(listTasksReturned==null?"The list of tasks is null.":"The list of tasks contains an insufficient number of tasks.");
 			}
 			int idx=0;
-			foreach(OpenDentBusiness.Task task in listTasksReturned) {
+			foreach(HelianzBusiness.Task task in listTasksReturned) {
 				if(task==null) {
 					strErrors.Add("The tasklist contains a null task.");
 					idx++;
@@ -806,8 +806,8 @@ namespace UnitTests.MiddleTier {
 			Assert.AreEqual("<&>..</&>",patJennifer.AddrNote);
 			Assert.AreEqual(WebServiceTests.NewLineString,patJohn.ApptModNote);
 			Assert.AreEqual(WebServiceTests.NewLineString,patJennifer.ApptModNote);
-			Assert.AreEqual("service@opendental.com",patJohn.Email);
-			Assert.AreEqual("service@opendental.com",patJennifer.Email);
+			Assert.AreEqual("service@helianz.com",patJohn.Email);
+			Assert.AreEqual("service@helianz.com",patJennifer.Email);
 			Assert.AreEqual(PatientStatus.NonPatient,patJohn.PatStatus);
 			Assert.AreEqual(PatientStatus.NonPatient,patJennifer.PatStatus);
 			Assert.AreEqual(WebServiceTests.DateTodayTest.Date,patJohn.AdmitDate);
@@ -1119,8 +1119,8 @@ namespace UnitTests.MiddleTier {
 		[TestMethod]
 		public void MiddleTier_GetPrimaryKeysFromInsert() {
 			StringBuilder strBuilderErrors=new StringBuilder();
-			List<string> listSClassPaths=Directory.GetFiles(@"..\..\..\OpenDentBusiness\Data Interface").ToList();
-			List<string> listTableTypePaths=Directory.GetFiles(@"..\..\..\OpenDentBusiness\TableTypes").ToList();
+			List<string> listSClassPaths=Directory.GetFiles(@"..\..\..\HelianzBusiness\Data Interface").ToList();
+			List<string> listTableTypePaths=Directory.GetFiles(@"..\..\..\HelianzBusiness\TableTypes").ToList();
 			//Get just the names of the classes without the path and extension information.
 			List<string> listSClassNames=listSClassPaths.Select(x => Path.GetFileNameWithoutExtension(x)).ToList();
 			List<string> listTableTypeNames=listTableTypePaths.Select(x => Path.GetFileNameWithoutExtension(x).ToLower()).ToList();

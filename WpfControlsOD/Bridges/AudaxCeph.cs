@@ -5,11 +5,11 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System.Xml;
 using CodeBase;
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 	///<summary></summary>
 	public class AudaxCeph {
 

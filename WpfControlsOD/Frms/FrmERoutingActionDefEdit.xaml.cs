@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental {
+namespace Helianz {
 
 	/// <summary> Handles editing and deleting eRoutingAction. </summary>
 	public partial class FrmERoutingActionDefEdit : FrmODBase {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace UnitTestsCore {
 	public class SmsToMobileT {
@@ -29,12 +29,12 @@ namespace UnitTestsCore {
 				return new List<SmsToMobile>();
 			}
 			string command="SELECT * FROM smstomobile WHERE PatNum IN("+string.Join(",",listPatNums)+")";
-			return OpenDentBusiness.Crud.SmsToMobileCrud.SelectMany(command);
+			return HelianzBusiness.Crud.SmsToMobileCrud.SelectMany(command);
 		}
 
 		public static List<SmsToMobile> GetAll() {
 			string command="SELECT * FROM smstomobile";
-			return OpenDentBusiness.Crud.SmsToMobileCrud.SelectMany(command);
+			return HelianzBusiness.Crud.SmsToMobileCrud.SelectMany(command);
 		}
 
 		///<summary>Deletes everything from the table.  Does not truncate the table so that PKs are not reused on accident.</summary>

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Windows.Forms;
 
-namespace OpenDental{
+namespace Helianz{
 
 	///<summary>Used in public health.</summary>
 	public struct School{

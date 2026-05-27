@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CodeBase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness;
+using HelianzBusiness;
 using UnitTestsCore;
 
 namespace UnitTests.PayPlanEdit_Tests {
@@ -1648,7 +1648,7 @@ namespace UnitTests.PayPlanEdit_Tests {
 			}
 
 			DateTime_.SetNow(() => listChargesNextPeriod.First().ChargeDate.AddDays(-1));//Set the date time just before the next charge is do and try to run the service
-			PayPlanEdit.IssueChargesDueForDynamicPaymentPlans(new List<PayPlan>{ dynamicPayPlanAwait },new CodeBase.LogWriter(),isOpenDentalService:false);
+			PayPlanEdit.IssueChargesDueForDynamicPaymentPlans(new List<PayPlan>{ dynamicPayPlanAwait },new CodeBase.LogWriter(),isHelianzService:false);
 			//Get recalculation data and verify no splits have been created for the future dated charge, and that no money has been moved from hidden unearned.
 			PayPlanEdit.PayPlanRecalculationData recalcDataAfterFutureCharge=PayPlanT.GetRecalculationData(dynamicPayPlanAwait,pat,fam);
 			List<PayPlanCharge> listChargesInDB=PayPlanCharges.GetForPayPlan(dynamicPayPlanAwait.PayPlanNum);
@@ -1670,7 +1670,7 @@ namespace UnitTests.PayPlanEdit_Tests {
 
 			//Mock opening the dynamic payplan form to make sure hidden unearned splits dont get allocated.
 			DateTime_.SetNow(() => listChargesNextPeriod.First().ChargeDate);//We have to increment our dateTime by 1 month to issue the next charge.
-			PayPlanEdit.IssueChargesDueForDynamicPaymentPlans(new List<PayPlan>{ dynamicPayPlanAwait },new CodeBase.LogWriter(),isOpenDentalService:false);
+			PayPlanEdit.IssueChargesDueForDynamicPaymentPlans(new List<PayPlan>{ dynamicPayPlanAwait },new CodeBase.LogWriter(),isHelianzService:false);
 			listChargesInDB=PayPlanCharges.GetForPayPlan(dynamicPayPlanAwait.PayPlanNum);
 			recalcDataAfterFutureCharge=PayPlanT.GetRecalculationData(dynamicPayPlanAwait,pat,fam);
 			totalPaid=recalcDataAfterFutureCharge.ListPaySplits.Where(x=>x.UnearnedType==0 && x.PayPlanNum!=0).Sum(x=>x.SplitAmt);
@@ -1743,7 +1743,7 @@ namespace UnitTests.PayPlanEdit_Tests {
 			}
 
 			DateTime_.SetNow(() => listChargesNextPeriod.First().ChargeDate.AddDays(-1));//Set the date time just before the next charge is do and try to run the service
-			PayPlanEdit.IssueChargesDueForDynamicPaymentPlans(new List<PayPlan>{ dynamicPayPlanAwait },new CodeBase.LogWriter(),isOpenDentalService:false);
+			PayPlanEdit.IssueChargesDueForDynamicPaymentPlans(new List<PayPlan>{ dynamicPayPlanAwait },new CodeBase.LogWriter(),isHelianzService:false);
 			//Get recalculation data and verify no splits have been created for the future dated charge, and that no money has been moved from hidden unearned.
 			PayPlanEdit.PayPlanRecalculationData recalcDataAfterFutureCharge=PayPlanT.GetRecalculationData(dynamicPayPlanAwait,pat,fam);
 			List<PayPlanCharge> listChargesInDB=PayPlanCharges.GetForPayPlan(dynamicPayPlanAwait.PayPlanNum);
@@ -1765,7 +1765,7 @@ namespace UnitTests.PayPlanEdit_Tests {
 
 			//Mock opening the dynamic payplan form to make sure hidden unearned splits dont get allocated.
 			DateTime_.SetNow(() => listChargesNextPeriod.First().ChargeDate);//We have to increment our dateTime by 1 month to issue the next charge.
-			PayPlanEdit.IssueChargesDueForDynamicPaymentPlans(new List<PayPlan>{ dynamicPayPlanAwait },new CodeBase.LogWriter(),isOpenDentalService:false);
+			PayPlanEdit.IssueChargesDueForDynamicPaymentPlans(new List<PayPlan>{ dynamicPayPlanAwait },new CodeBase.LogWriter(),isHelianzService:false);
 			listChargesInDB=PayPlanCharges.GetForPayPlan(dynamicPayPlanAwait.PayPlanNum);
 			recalcDataAfterFutureCharge=PayPlanT.GetRecalculationData(dynamicPayPlanAwait,pat,fam);
 			totalPaid=recalcDataAfterFutureCharge.ListPaySplits.Where(x=>x.UnearnedType==0 && x.PayPlanNum!=0).Sum(x=>x.SplitAmt);
@@ -1786,7 +1786,7 @@ namespace UnitTests.PayPlanEdit_Tests {
 			
 			//Mock opening the dynamic payplan form to make sure hidden unearned splits dont get allocated.
 			DateTime_.SetNow(() => listChargesNextPeriod.First().ChargeDate);//We have to increment our dateTime by 1 month to issue the next charge.
-			PayPlanEdit.IssueChargesDueForDynamicPaymentPlans(new List<PayPlan>{ dynamicPayPlanAwait },new CodeBase.LogWriter(),isOpenDentalService:false);
+			PayPlanEdit.IssueChargesDueForDynamicPaymentPlans(new List<PayPlan>{ dynamicPayPlanAwait },new CodeBase.LogWriter(),isHelianzService:false);
 			listChargesInDB=PayPlanCharges.GetForPayPlan(dynamicPayPlanAwait.PayPlanNum);
 			recalcDataAfterFutureCharge=PayPlanT.GetRecalculationData(dynamicPayPlanAwait,pat,fam);
 			totalPaid=recalcDataAfterFutureCharge.ListPaySplits.Where(x=>x.UnearnedType==0 && x.PayPlanNum!=0).Sum(x=>x.SplitAmt);

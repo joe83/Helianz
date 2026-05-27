@@ -1,6 +1,6 @@
 @echo off
-echo net stop OpenDental
+echo net stop Helianz
 echo.
-net stop OpenDental
+net stop Helianz
 echo.
 pause

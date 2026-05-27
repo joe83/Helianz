@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using OpenDental;
-using OpenDental.UI;
-using OpenDentBusiness;
+using Helianz;
+using Helianz.UI;
+using HelianzBusiness;
 
 namespace UnitTests{
 	public partial class FormTestAllControls:FormODBase{
@@ -29,7 +29,7 @@ namespace UnitTests{
 			//for(int i=0;i<40;i++){
 			//	_um.ListBox_Items_Add("listBox1","Item"+i.ToString());
 			//}
-			//List<OpenDental.Wui.ListBoxItem> listListBoxItems=Lan.EnumsGetForListBox<DayOfWeek>();
+			//List<Helianz.Wui.ListBoxItem> listListBoxItems=Lan.EnumsGetForListBox<DayOfWeek>();
 			//_um.ListBox_Items_AddList("listBox1",listListBoxItems);
 			//_um.ComboBox_Items_Clear("comboBox1");
 			for(int i=0;i<30;i++){
@@ -174,21 +174,21 @@ Line2\par
 		//	}
 		//	_um.Grid_BeginUpdate("gridMain");
 		//	_um.Grid_ColumnsClear("gridMain");
-		//	OpenDental.Wui.GridColumn gridColumn = new OpenDental.Wui.GridColumn("LastName",100);
+		//	Helianz.Wui.GridColumn gridColumn = new Helianz.Wui.GridColumn("LastName",100);
 		//	_um.Grid_ColumnAdd("gridMain",gridColumn);
-		//	gridColumn=new OpenDental.Wui.GridColumn("FirstName",100,System.Windows.HorizontalAlignment.Center);
+		//	gridColumn=new Helianz.Wui.GridColumn("FirstName",100,System.Windows.HorizontalAlignment.Center);
 		//	gridColumn.IsWidthDynamic=true;
 		//	_um.Grid_ColumnAdd("gridMain",gridColumn);
-		//	List<OpenDental.Wui.GridRow> listGridRows = new List<OpenDental.Wui.GridRow>();
+		//	List<Helianz.Wui.GridRow> listGridRows = new List<Helianz.Wui.GridRow>();
 		//	for(int i = 0;i<table.Rows.Count;i++) {
-		//		OpenDental.Wui.GridRow gridRow = new OpenDental.Wui.GridRow();
-		//		OpenDental.Wui.GridCell gridCell;
-		//		gridCell=new OpenDental.Wui.GridCell(table.Rows[i]["LName"].ToString());
+		//		Helianz.Wui.GridRow gridRow = new Helianz.Wui.GridRow();
+		//		Helianz.Wui.GridCell gridCell;
+		//		gridCell=new Helianz.Wui.GridCell(table.Rows[i]["LName"].ToString());
 		//		if(i==2) {
 		//			gridCell.Bold=true;
 		//		}
 		//		gridRow.Cells.Add(gridCell);
-		//		gridCell=new OpenDental.Wui.GridCell(table.Rows[i]["FName"].ToString());
+		//		gridCell=new Helianz.Wui.GridCell(table.Rows[i]["FName"].ToString());
 		//		if(i%5==0) {
 		//			gridRow.ColorBackG=System.Windows.Media.Colors.Pink;
 		//			gridCell.ColorBackG=System.Windows.Media.Colors.Green;
@@ -219,7 +219,7 @@ Line2\par
 
 		private void butDelete_Click(object sender,EventArgs e) {
 			//float fontSize=textBox1.Font.Size;
-			//OpenDental.MessageBox.Show(fontSize.ToString());
+			//Helianz.MessageBox.Show(fontSize.ToString());
 		}
 
 		private void textBox1_FontChanged(object sender,EventArgs e) {
@@ -292,7 +292,7 @@ Line2\par
 		}
 
 		private void butLaunchWin_Click(object sender,EventArgs e) {
-			//OpenDental.Wui.WindowTest windowTest=new OpenDental.Wui.WindowTest();
+			//Helianz.Wui.WindowTest windowTest=new Helianz.Wui.WindowTest();
 			//windowTest.ShowDialog();
 			//InputBox inputBox=new InputBox("test prompt");
 			//inputBox.ShowDialog();

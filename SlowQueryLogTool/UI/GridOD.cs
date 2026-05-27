@@ -1398,7 +1398,7 @@ namespace SlowQueryLogTool.UI {
 				StringBuilder sb = new StringBuilder();
 				row.Cells.OfType<GridCell>().ToList().ForEach(x => sb.AppendLine(x.Text));
 				sb.AppendLine(row.Note);
-				//_listMenuItemLinks.AddRange(OpenDentBusiness.UI.PopupHelper.GetContextMenuItemLinks(sb.ToString(),DoShowRightClickLinks));
+				//_listMenuItemLinks.AddRange(HelianzBusiness.UI.PopupHelper.GetContextMenuItemLinks(sb.ToString(),DoShowRightClickLinks));
 				if(_listMenuItemLinks.Any(x => x.Text!="-")) {//at least one REAL menu item that is not the divider.
 					_listMenuItemLinks.ForEach(x => this.ContextMenu.MenuItems.Add(x));
 				}
@@ -3549,7 +3549,7 @@ namespace SlowQueryLogTool.UI {
 
 		///<summary>Converts from 96dpi to current total scale.</summary>
 		private int ScaleI(float val96) {
-			//This is here because Dpi.Scale is over in OD. Here, Scale is already used by Windows, so we call it ScaleI.  A refactor could use OpenDentBusiness.UI.DpiScale, but that's too much work, with no benefit.
+			//This is here because Dpi.Scale is over in OD. Here, Scale is already used by Windows, so we call it ScaleI.  A refactor could use HelianzBusiness.UI.DpiScale, but that's too much work, with no benefit.
 			float scaleTotal=_scaleMS*_zoomLocal;//example 1.5*1.2
 			return (int)(Math.Round(val96*scaleTotal));
 		}

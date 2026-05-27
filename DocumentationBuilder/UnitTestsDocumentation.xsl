@@ -165,7 +165,7 @@
 					margin-left:20;
 					}
 				</style>
-				<title>Open Dental Software Manual: Unit Test Resources</title>
+				<title>Helianz Software Manual: Unit Test Resources</title>
 			</head>
 			<body style="min-width: 1775px">
 				<div class="splitLeft">

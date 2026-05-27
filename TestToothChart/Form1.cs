@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using SparksToothChart;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace TestToothChart {
 	public partial class Form1:Form {

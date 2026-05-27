@@ -28,14 +28,14 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.butOld = new OpenDental.UI.Button();
-			this.butNew = new OpenDental.UI.Button();
-			this.butHistory = new OpenDental.UI.Button();
-			this.butChain = new OpenDental.UI.Button();
-			this.butException = new OpenDental.UI.Button();
-			this.butHideCancel = new OpenDental.UI.Button();
-			this.butInnerException = new OpenDental.UI.Button();
-			this.butBlocks = new OpenDental.UI.Button();
+			this.butOld = new Helianz.UI.Button();
+			this.butNew = new Helianz.UI.Button();
+			this.butHistory = new Helianz.UI.Button();
+			this.butChain = new Helianz.UI.Button();
+			this.butException = new Helianz.UI.Button();
+			this.butHideCancel = new Helianz.UI.Button();
+			this.butInnerException = new Helianz.UI.Button();
+			this.butBlocks = new Helianz.UI.Button();
 			this.SuspendLayout();
 			// 
 			// butOld
@@ -139,13 +139,13 @@
 
 		#endregion
 
-		private OpenDental.UI.Button butOld;
-		private OpenDental.UI.Button butNew;
-		private OpenDental.UI.Button butHistory;
-		private OpenDental.UI.Button butChain;
-		private OpenDental.UI.Button butException;
-		private OpenDental.UI.Button butHideCancel;
-		private OpenDental.UI.Button butInnerException;
-		private OpenDental.UI.Button butBlocks;
+		private Helianz.UI.Button butOld;
+		private Helianz.UI.Button butNew;
+		private Helianz.UI.Button butHistory;
+		private Helianz.UI.Button butChain;
+		private Helianz.UI.Button butException;
+		private Helianz.UI.Button butHideCancel;
+		private Helianz.UI.Button butInnerException;
+		private Helianz.UI.Button butBlocks;
 	}
 }

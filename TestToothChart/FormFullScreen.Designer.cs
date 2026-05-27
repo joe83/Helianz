@@ -34,7 +34,7 @@
 			this.toothChartForBig.Cursor=System.Windows.Forms.Cursors.Default;
 			this.toothChartForBig.CursorTool=SparksToothChart.CursorTool.Pointer;
 			this.toothChartForBig.Dock=System.Windows.Forms.DockStyle.Fill;
-			this.toothChartForBig.DrawMode=OpenDentBusiness.DrawingMode.Simple2D;
+			this.toothChartForBig.DrawMode=HelianzBusiness.DrawingMode.Simple2D;
 			this.toothChartForBig.Location=new System.Drawing.Point(0,0);
 			this.toothChartForBig.Name="toothChartForBig";
 			this.toothChartForBig.PreferredPixelFormatNumber=0;

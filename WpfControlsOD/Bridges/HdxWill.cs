@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 using CodeBase;
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 	/// <summary></summary>
 	public class HdxWill{
 

@@ -5,9 +5,9 @@
 # -Force drops the existing database without a confirmation prompt.
 # Remove -Force if you want a prompt before dropping.
 
-Start-Transcript -Path "D:\Project\PakRevi\opendental\Old\setup-db.log" -Force
+Start-Transcript -Path "D:\Project\PakRevi\helianz\Old\setup-db.log" -Force
 try {
-    & "D:\Project\PakRevi\opendental\Old\Setup-OpenDentalDatabase.ps1" -Force
+    & "D:\Project\PakRevi\helianz\Old\Setup-HelianzDatabase.ps1" -Force
 } catch {
     Write-Host "ERROR: $_" -ForegroundColor Red
 }

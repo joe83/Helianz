@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnitTestsCore;
-using OpenDental;
+using Helianz;
 using System.Reflection;
 using System.Globalization;
 using MySqlConnector;
@@ -136,10 +136,10 @@ multiple lines
 If you can read this yo
     u understand the example."),
 				//Normal plaintext email address
-				new Tuple<string, string>("service@open-dent.com","service@open-dent.com"),
+				new Tuple<string, string>("service@helianz.com","service@helianz.com"),
 				//Aliased email address, with UTF-8 QuotedPrintable inline encoded string.
-				new Tuple<string,string>("=?UTF-8?Q?Bobby_Wiggleh=C3=81rt?= <opendentaltestemail@gmail.com>"
-				,"Bobby WigglehÁrt <opendentaltestemail@gmail.com>"),
+				new Tuple<string,string>("=?UTF-8?Q?Bobby_Wiggleh=C3=81rt?= <helianztestemail@gmail.com>"
+				,"Bobby WigglehÁrt <helianztestemail@gmail.com>"),
 				//using a 'c' instead of 'B' (Base64) or 'Q' (Quoted Printable)
 				new Tuple<string,string>("=?UTF-8?c?nu=C2=A4=20=C3=82=20=C3=80=20=C2=A2?=","nu¤ Â À ¢"),
 				//Assert that an email message containing any characters that cannot be represented by a byte do not cause parsing to fail.
@@ -159,14 +159,14 @@ If you can read this yo
 		///<summary>Ensures that Email Reply correctly decodes any HTML encoded characters in the response EmailMessage.</summary>
 		[TestMethod]
 		public void EmailMessages_CreateReply_HtmlEncoding() {
-			EmailMessage receivedEmail=EmailMessageT.CreateEmailMessage(0,fromAddress:"opendentaltestemail@gmail.com",toAddress:"opendentalman@gmail.com"
+			EmailMessage receivedEmail=EmailMessageT.CreateEmailMessage(0,fromAddress:"helianztestemail@gmail.com",toAddress:"helianzman@gmail.com"
 				,recipientAddress:"abc@123.com",subject:"=?UTF-8?Q?nu=C2=A4=20=C3=82=20=C3=80=20=C2=A2?=");
 			receivedEmail.RawEmailIn=@"MIME-Version: 1.0
 Date: Thu, 10 Oct 2019 06:27:02 -0700
 Message-ID: <CAALTEpk8yAUh7pO=FzgCy0r0b20Fi5vefw_8yhRvstMfTvRtAQ@mail.gmail.com>
 Subject: & subject
-From: =?UTF-8?Q?Bobby_Wiggleh=C3=81rt?= <opendentaltestemail@gmail.com>
-To: Bobby Wigglehart <opendentaltestemail@gmail.com>
+From: =?UTF-8?Q?Bobby_Wiggleh=C3=81rt?= <helianztestemail@gmail.com>
+To: Bobby Wigglehart <helianztestemail@gmail.com>
 Content-Type: multipart/alternative; boundary=""0000000000005e7d3705948e5be6""
 X-Antivirus: AVG (VPS 191009-2, 10/09/2019), Inbound message
 X-Antivirus-Status: Clean
@@ -190,21 +190,21 @@ Content-Transfer-Encoding: quoted-printable
 			Assert.AreEqual(receivedEmail.FromAddress,replyEmail.ToAddress);
 			Assert.AreEqual(receivedEmail.RecipientAddress,replyEmail.FromAddress);
 			Assert.AreEqual("RE: nu¤ Â À ¢",replyEmail.Subject);
-			Assert.AreEqual("\r\n\r\n\r\nOn "+DateTime.MinValue.ToString()+" opendentaltestemail@gmail.com sent:\r\n>non-breaking space  less than <greater than >ampersand &"
+			Assert.AreEqual("\r\n\r\n\r\nOn "+DateTime.MinValue.ToString()+" helianztestemail@gmail.com sent:\r\n>non-breaking space  less than <greater than >ampersand &"
 				,replyEmail.BodyText);
 		}
 
 		///<summary>Ensures that Email Reply correctly decodes any HTML encoded characters in the response EmailMessage.</summary>
 		[TestMethod]
 		public void EmailMessages_CreateForward_HtmlEncoding() {
-			EmailMessage receivedEmail=EmailMessageT.CreateEmailMessage(0,fromAddress:"opendentaltestemail@gmail.com",toAddress:"opendentalman@gmail.com"
+			EmailMessage receivedEmail=EmailMessageT.CreateEmailMessage(0,fromAddress:"helianztestemail@gmail.com",toAddress:"helianzman@gmail.com"
 				,subject:"=?UTF-8?Q?nu=C2=A4=20=C3=82=20=C3=80=20=C2=A2?=");
 			receivedEmail.RawEmailIn=@"MIME-Version: 1.0
 Date: Thu, 10 Oct 2019 06:27:02 -0700
 Message-ID: <CAALTEpk8yAUh7pO=FzgCy0r0b20Fi5vefw_8yhRvstMfTvRtAQ@mail.gmail.com>
 Subject: & subject
-From: =?UTF-8?Q?Bobby_Wiggleh=C3=81rt?= <opendentaltestemail@gmail.com>
-To: Bobby Wigglehart <opendentaltestemail@gmail.com>
+From: =?UTF-8?Q?Bobby_Wiggleh=C3=81rt?= <helianztestemail@gmail.com>
+To: Bobby Wigglehart <helianztestemail@gmail.com>
 Content-Type: multipart/alternative; boundary=""0000000000005e7d3705948e5be6""
 X-Antivirus: AVG (VPS 191009-2, 10/09/2019), Inbound message
 X-Antivirus-Status: Clean
@@ -228,7 +228,7 @@ Content-Transfer-Encoding: quoted-printable
 			EmailMessage forwardEmail=EmailMessages.CreateForward(receivedEmail,emailAddress);
 			Assert.AreEqual(emailAddress.EmailUsername,forwardEmail.FromAddress);
 			Assert.AreEqual("FWD: nu¤ Â À ¢",forwardEmail.Subject);
-			Assert.AreEqual("\r\n\r\n\r\nOn "+DateTime.MinValue.ToString()+" opendentaltestemail@gmail.com sent:\r\n>non-breaking space  less than <greater than >ampersand &"
+			Assert.AreEqual("\r\n\r\n\r\nOn "+DateTime.MinValue.ToString()+" helianztestemail@gmail.com sent:\r\n>non-breaking space  less than <greater than >ampersand &"
 				,forwardEmail.BodyText);
 		}
 
@@ -565,15 +565,15 @@ So, ""Hello"".";
 		///including ones sent via an alias (e.g. "Bob Smith Dental <bob.smith@gmail.com>")</summary>
 		[TestMethod]
 		public void EmailMessages_GetMailboxForAddress_ReturnsEmailsSentFromAlias() {
-			string senderAddress=$"{MiscUtils.CreateRandomAlphaNumericString(10)}-sender@opendental.com";
-			string emailUserName=$"{MiscUtils.CreateRandomAlphaNumericString(10)}-username@opendental.com";
+			string senderAddress=$"{MiscUtils.CreateRandomAlphaNumericString(10)}-sender@helianz.com";
+			string emailUserName=$"{MiscUtils.CreateRandomAlphaNumericString(10)}-username@helianz.com";
 			EmailAddress testEmail=EmailAddressT.CreateEmailAddress(senderAddress,emailUserName);
 			string[] fromAddresses=new string[] { senderAddress, emailUserName, $"Email Alias <{emailUserName}>", $"Email Alias <{senderAddress}>" };
 			for(int i=0;i<fromAddresses.Length;i++) {
 				EmailMessageT.CreateEmailMessage(
 					patNum:0,
 					fromAddress:fromAddresses[i],
-					toAddress:$"{MiscUtils.CreateRandomAlphaNumericString(10)}-recipient@notopendental.com",
+					toAddress:$"{MiscUtils.CreateRandomAlphaNumericString(10)}-recipient@nothelianz.com",
 					sentOrReceived:EmailSentOrReceived.Sent,
 					msgDateTime:DateTime.Now);
 			}
@@ -587,7 +587,7 @@ So, ""Hello"".";
 		[TestMethod]
 		public void EmailMessages_GetMailboxForAddress_QueryGetsAllColumns() {
 			try {
-				EmailAddress emailAddress=new EmailAddress { EmailUsername="opendentaltestemail@gmail.com",SenderAddress="opendentaltestemail@gmail.com" };
+				EmailAddress emailAddress=new EmailAddress { EmailUsername="helianztestemail@gmail.com",SenderAddress="helianztestemail@gmail.com" };
 				EmailMessages.GetMailboxForAddress(emailAddress,DateTime.Today,DateTime.Today,MailboxType.Inbox);
 			}
 			catch(MySqlException e) {
@@ -595,7 +595,7 @@ So, ""Hello"".";
 			}
 		}
 
-		///<summary>Ensures that when an image file is in not in OpenDentalImages, but is on another part of the computer (or another computer on the network)
+		///<summary>Ensures that when an image file is in not in HelianzImages, but is on another part of the computer (or another computer on the network)
 		///it will creates the localPath as expected and thus send normally.</summary>
 		[TestMethod]
 		public void EmailMessages_FindAndReplaceImageTagsWithAttachedImage_ClientImageSends() {
@@ -609,7 +609,7 @@ So, ""Hello"".";
 			Assert.IsTrue(ImageStore.TryDeleteFile(tempFile));
 		}
 
-		///<summary>Ensures that when an image is in OpenDentImages it creates the localPath as normal.</summary>
+		///<summary>Ensures that when an image is in HelianzImages it creates the localPath as normal.</summary>
 		[TestMethod]
 		public void EmailMessages_FindAndReplaceImageTagsWithAttachedImage_LocalImageSends() {
 			string tempFile=PrefC.GetRandomTempFile(".jpg");

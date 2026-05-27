@@ -7,10 +7,10 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 
-namespace OpenDental {
+namespace Helianz {
 	public partial class FrmApptBreakRequired:FrmODBase {
 		///<summary>This will be null if the procedure does not exist.</summary>
 		public ProcedureCode ProcedureCodeBrokenSelected;

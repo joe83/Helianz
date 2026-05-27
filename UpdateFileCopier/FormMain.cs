@@ -25,37 +25,37 @@ namespace UpdateFileCopier {
 		///<summary>This indicates whether the file copier should kill all services before copying files.</summary>
 		private bool _doKillServices=true;
 		///<summary>Indicates whether the copied files will be opened after copying is complete.</summary>
-		private bool _doLaunchOpenDental=true;
+		private bool _doLaunchHelianz=true;
 		///<summary>Directory names of special folders that need to have their files preserved.
 		///These names should be treated as if they are being appended to the end of _sourceDirectory and _destDirectory.
 		///Any sub folders should be explicitly listed within this list because the copy method used is not recursive.
 		///E.g. "\\Parent", "\\Parent\\Child", and "\\Gramps\\Dad\\Bro" are all valid directory names.</summary>
 		private readonly List<string> _listSpecialDirs=new List<string>() {
 			"\\Sparks3D",
-			"\\OpenDentalReplicationService",
+			"\\HelianzReplicationService",
 		};
 
 		///<summary>Temporary directory that will be used to copy any files present in the destination folder before attempting to copy.</summary>
 		private string TempPathDest {
 			get {
-				return ODFileUtils.CombinePaths(Path.GetTempPath(),"opendental","updatefilecopier","local");
+				return ODFileUtils.CombinePaths(Path.GetTempPath(),"helianz","updatefilecopier","local");
 			}
 		}
 		///<summary>Temporary directory that will be used to copy all files in the destination folder.</summary>
 		private string TempPathSource {
 			get {
-				return ODFileUtils.CombinePaths(Path.GetTempPath(),"opendental","updatefilecopier","source");
+				return ODFileUtils.CombinePaths(Path.GetTempPath(),"helianz","updatefilecopier","source");
 			}
 		}
 
-		public FormMain(string sourceDirectory,string openDentProcessId,string destDirectory,bool doKillServices,bool doLaunchOpenDental,
+		public FormMain(string sourceDirectory,string openDentProcessId,string destDirectory,bool doKillServices,bool doLaunchHelianz,
 			string serverName=null,string databaseName=null,string mySqlUser=null,string mySqlPassHash=null)
 		{
 			InitializeComponent();
 			_sourceDirectory=sourceDirectory;
 			_destDirectory=destDirectory;
 			_doKillServices=doKillServices;
-			_doLaunchOpenDental=doLaunchOpenDental;
+			_doLaunchHelianz=doLaunchHelianz;
 			_serverName=serverName;
 			_databaseName=databaseName;
 			_mySqlUser=mySqlUser;
@@ -70,17 +70,17 @@ namespace UpdateFileCopier {
 			StartFileCopierThread();
 		}
 
-		///<summary>Kills the processes OpenDental and WebCamOD and then starts a file copier thread.</summary>
+		///<summary>Kills the processes Helianz and WebCamOD and then starts a file copier thread.</summary>
 		private void StartFileCopierThread() {
 			Cursor=Cursors.WaitCursor;
 			if(_doKillServices) {//Generally kill except when dealing with DynamicMode
-				//kill all processes named OpenDental.
+				//kill all processes named Helianz.
 				//If the software has been rebranded, the original exe will NOT be correctly closed.
-				KillProcess("OpenDental");
+				KillProcess("Helianz");
 				//kill all processes named WebCamOD.
-				//web cam does not always close properly when updater kills OpenDental
-				//web cam relies on shared library, OpenDentBusiness.dll (shared ref with OpenDental). 
-				//if this lib can't be updated then the opendental update/install fails
+				//web cam does not always close properly when updater kills Helianz
+				//web cam relies on shared library, HelianzBusiness.dll (shared ref with Helianz). 
+				//if this lib can't be updated then the helianz update/install fails
 				KillProcess("WebCamOD");
 				KillProcess("ProximityOD");
 				//Kill known applications that are present within the installation directory so that the resources are freed if currently in use.
@@ -105,7 +105,7 @@ namespace UpdateFileCopier {
 				return;
 			}
 			SetLabelText("Critical Error: "+error
-				+"\r\n\r\nPlease address the error above, make sure all instances of Open Dental are closed, then click Retry.");
+				+"\r\n\r\nPlease address the error above, make sure all instances of Helianz are closed, then click Retry.");
 			butRetry.Visible=true;
 		}
 
@@ -134,7 +134,7 @@ namespace UpdateFileCopier {
 			//Delay the thread for 300 milliseconds to make sure the above processes have really exited.
 			Thread.Sleep(300);
 			//Any file exclusions will have happened when originally copying files into the AtoZ folder.  Ex: FreeDentalConfig.xml
-			//And that happens in OpenDental.PrefL.CheckProgramVersion().
+			//And that happens in Helianz.PrefL.CheckProgramVersion().
 			List<FileInfoHelper> listSourceFiles=GetFilesFromDir(_sourceDirectory);
 			List<FileInfoHelper> listDestFiles=GetFilesFromDir(_destDirectory);
 			_hasFilesInUse=false;
@@ -163,7 +163,7 @@ namespace UpdateFileCopier {
 
 		///<summary></summary>
 		private void OnThreadComplete(ODThread odThread) {
-			LaunchOpenDental();
+			LaunchHelianz();
 		}
 
 		///<summary>Tries to recreate the two temporary directories that will be used in the copying process.
@@ -315,7 +315,7 @@ namespace UpdateFileCopier {
 					return false;
 				}
 			}
-			//Save the Manifest.txt file for last so that any subsequent attempts launching Open Dental will try to launch the FileUpdateCopier again.
+			//Save the Manifest.txt file for last so that any subsequent attempts launching Helianz will try to launch the FileUpdateCopier again.
 			if(sourceManifest!="") {
 				try {
 					File.Copy(sourceManifest,Path.Combine(_destDirectory,"Manifest.txt"),true);
@@ -363,17 +363,17 @@ namespace UpdateFileCopier {
 		}
 
 		///<summary>Checks and displays messages for any errors that occurred during the file copying.
-		///If no errors, attempts to launch a new instance of Open Dental with the freshly copied binaries.</summary>
-		private void LaunchOpenDental() {
+		///If no errors, attempts to launch a new instance of Helianz with the freshly copied binaries.</summary>
+		private void LaunchHelianz() {
 			if(this.InvokeRequired) {
-				this.Invoke((Action)delegate() { LaunchOpenDental(); });
+				this.Invoke((Action)delegate() { LaunchHelianz(); });
 				return;
 			}
 			Cursor=Cursors.Default;
 			if(_hasFilesInUse) {
-				string error="There are files still in use.  Please make sure all instances of Open Dental are closed then click Retry.";
+				string error="There are files still in use.  Please make sure all instances of Helianz are closed then click Retry.";
 				if(!string.IsNullOrEmpty(_error)) {
-					error=_error+"\r\n\r\nPlease address the error above, make sure all instances of Open Dental are closed, then click Retry.";
+					error=_error+"\r\n\r\nPlease address the error above, make sure all instances of Helianz are closed, then click Retry.";
 				}
 				SetLabelText(error,isLongText:true);
 				butRetry.Visible=true;
@@ -382,13 +382,13 @@ namespace UpdateFileCopier {
 				SetLabelText("Some files failed to copy.  Verify network access and permissions are correct, then click Retry.");
 				butRetry.Visible=true;
 			}
-			else {//Everything copied correctly, try and launch Open Dental.
+			else {//Everything copied correctly, try and launch Helianz.
 				SetLabelText("Done");
 				Thread.Sleep(300);//Give SetLabelText some time to finish to make sure Application.Exit doesn't get called too soon.
-				//If Open Dental has been rebranded, then change this value:
+				//If Helianz has been rebranded, then change this value:
 				try {
-					if(_doLaunchOpenDental) {
-						string destFileName=ODFileUtils.CombinePaths(_destDirectory,"OpenDental.exe");
+					if(_doLaunchHelianz) {
+						string destFileName=ODFileUtils.CombinePaths(_destDirectory,"Helianz.exe");
 						//Arguments: servername, database name, sql username, sql password hash
 						Process proc=new Process();
 						if(!string.IsNullOrWhiteSpace(_serverName)) {

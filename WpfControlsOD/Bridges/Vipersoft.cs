@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using NDde;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System.Collections.Generic;
 using CodeBase;
 
-namespace OpenDental.Bridges{
+namespace Helianz.Bridges{
 	/// <summary></summary>
 	public class Vipersoft{
 
@@ -44,7 +44,7 @@ namespace OpenDental.Bridges{
 			//command="\004hwnd|name|ID|Lastname|Firstname|MI|Comments|Provider|Provider Phone|Addrs1|Addrs2|City|State|Zip|Patient Phone|Practice Name|Patient SSN|restore server|"
 			//\004 is one byte code for version 4. 0x04 or Char(4)
 			//hwnd is calling software's windows handle.
-			//name is for name of calling software (Open Dental)
+			//name is for name of calling software (Helianz)
 			//ID is patient ID.  Required and must be unique.
 			//Provider field is for provider name.
 			//hwnd, ID, Lastname, Firstname, and Provider fields are required.  All other fields are optional.
@@ -59,7 +59,7 @@ namespace OpenDental.Bridges{
 			string command=char4.ToString();//tested to make sure this is just one non-printable byte.
 			IntPtr hwnd=Application.OpenForms[0].Handle;
 			command+=hwnd.ToString()+"|"//hwnd
-				+"OpenDental|";//name
+				+"Helianz|";//name
 			ProgramProperty PPCur=ProgramProperties.GetCur(ForProgram, "Enter 0 to use PatientNum, or 1 to use ChartNum");;
 			string patID;
 			if(PPCur.PropertyValue=="0"){

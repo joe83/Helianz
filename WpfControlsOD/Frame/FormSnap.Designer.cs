@@ -1,4 +1,4 @@
-namespace OpenDental{
+namespace Helianz{
 	partial class FormSnap {
 		/// <summary>
 		/// Required designer variable.

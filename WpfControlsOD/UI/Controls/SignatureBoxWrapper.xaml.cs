@@ -14,8 +14,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using OpenDental.UI;
-using OpenDentBusiness;
+using Helianz.UI;
+using HelianzBusiness;
 
 namespace WpfControls.UI {
 /*
@@ -23,22 +23,22 @@ Jordan is the only one allowed to edit this file.
 
 How to use the SignatureBoxWrapper control:
 	-Size must always 362,79 or scaled proportionally and tested.
-	-Read instructions at the top of OpenDentBusiness\UI\SignatureBoxWrapper.cs
+	-Read instructions at the top of HelianzBusiness\UI\SignatureBoxWrapper.cs
 	-You must have the following lines in your Frm Load event:
 			float scale=(float)VisualTreeHelper.GetDpi(this).DpiScaleX;
 			signatureBoxWrapper.SetScaleAndZoom(scale,GetZoom());
 */
-	///<summary>Read instructions at the top of OpenDentBusiness\UI\SignatureBoxWrapper.cs</summary>
+	///<summary>Read instructions at the top of HelianzBusiness\UI\SignatureBoxWrapper.cs</summary>
 	public partial class SignatureBoxWrapper:UserControl {
-		///<summary>The namespace on this field is misleading. This is the winforms wrapper that's over in OpenDentBusiness.</summary>
-		public OpenDental.UI.SignatureBoxWrapper signatureBoxWrapper;
+		///<summary>The namespace on this field is misleading. This is the winforms wrapper that's over in HelianzBusiness.</summary>
+		public Helianz.UI.SignatureBoxWrapper signatureBoxWrapper;
 		//private Window window;
 
 		///<summary>A WPF/Xaml wrapper for the Winforms signature box wrapper</summary>
 		public SignatureBoxWrapper() {
 			//System.Windows.Forms.Integration.WindowsFormsHost.EnableWindowsFormsInterop();
 			InitializeComponent();
-			signatureBoxWrapper=new OpenDental.UI.SignatureBoxWrapper();
+			signatureBoxWrapper=new Helianz.UI.SignatureBoxWrapper();
 			windowsFormsHost.Child = signatureBoxWrapper;
 			Loaded+=this_Loaded;
 			Unloaded+=this_Unloaded;
@@ -80,7 +80,7 @@ How to use the SignatureBoxWrapper control:
 			System.Drawing.Bitmap bitmap=signatureBoxWrapper.GetSigImage();
 			using System.Drawing.Graphics g=System.Drawing.Graphics.FromImage(bitmap);
 			g.DrawRectangle(System.Drawing.Pens.SlateGray,0,0,bitmap.Width-1,bitmap.Height-1);
-			BitmapImage bitmapImage=OpenDental.Drawing.Graphics.ConvertBitmapToWpf(bitmap);
+			BitmapImage bitmapImage=Helianz.Drawing.Graphics.ConvertBitmapToWpf(bitmap);
 			g?.Dispose();
 			bitmap?.Dispose();
 			return bitmapImage;

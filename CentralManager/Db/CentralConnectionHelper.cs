@@ -1,5 +1,5 @@
 ﻿using System;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -9,7 +9,7 @@ using System.Diagnostics;
 namespace CentralManager {
 	public class CentralConnectionHelper {
 
-		///<summary>Returns command-line arguments for launching Open Dental based off of the settings for the connection passed in.</summary>
+		///<summary>Returns command-line arguments for launching Helianz based off of the settings for the connection passed in.</summary>
 		private static string GetArgsFromConnection(CentralConnection centralConnection,bool useDynamicMode) {
 			string args="";
 			if(centralConnection.DatabaseName!="") {
@@ -33,7 +33,7 @@ namespace CentralManager {
 		}
 
 		///<summary>Launches OD.  Sets hWnd and ProcessID.  If this fails to launch, a textbox will appear.</summary>
-		public static void LaunchOpenDental(CentralConnection centralConnection,bool useDynamicMode,bool isAutoLogin,bool isDomainLogin,long patNum,ref WindowInfo windowInfo) {
+		public static void LaunchHelianz(CentralConnection centralConnection,bool useDynamicMode,bool isAutoLogin,bool isDomainLogin,long patNum,ref WindowInfo windowInfo) {
 			string args=GetArgsFromConnection(centralConnection,useDynamicMode);
 			if(isAutoLogin) {
 				args+="UserName="+Scrub(Security.CurUser.UserName)+" ";
@@ -47,12 +47,12 @@ namespace CentralManager {
 				args+="PatNum="+Scrub(patNum.ToString(),encapsulate:false)+" ";
 			}
 			try {
-				Process process=Process.Start("OpenDental.exe",args);
+				Process process=Process.Start("Helianz.exe",args);
 				windowInfo.HWnd=IntPtr.Zero;//process.MainWindowHandle;//but this hWnd seems to be wrong
 				windowInfo.ProcessId=process.Id;
 			}
 			catch {
-				OpenDental.MessageBox.Show("Unable to start the process OpenDental.exe.");
+				Helianz.MessageBox.Show("Unable to start the process Helianz.exe.");
 				//return IntPtr.Zero;
 			}
 		}

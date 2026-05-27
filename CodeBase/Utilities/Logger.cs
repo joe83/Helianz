@@ -173,8 +173,8 @@ namespace CodeBase {
 				FileInfo fi=new FileInfo(AppDomain.CurrentDomain.BaseDirectory);
 				string drive=Path.GetPathRoot(fi.FullName);
 				//For example, an application at "E:\patientviewer.com\SignupPortal" will have its logger folder at 
-				//"E:\ProgramData\OpenDental\Logs\patientviewer.com\SignupPortal\Logger".
-				ret=ODFileUtils.CombinePaths(new string[] { drive,"ProgramData","OpenDental","Logs",
+				//"E:\ProgramData\Helianz\Logs\patientviewer.com\SignupPortal\Logger".
+				ret=ODFileUtils.CombinePaths(new string[] { drive,"ProgramData","Helianz","Logs",
 					StringTools.SubstringAfter(AppDomain.CurrentDomain.BaseDirectory,drive),"Logger" });
 				if(!Directory.Exists(ret)) {
 					Directory.CreateDirectory(ret);

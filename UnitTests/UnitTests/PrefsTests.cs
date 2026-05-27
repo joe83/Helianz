@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CodeBase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness;
+using HelianzBusiness;
 using UnitTestsCore;
 
 namespace UnitTests.Prefs_Tests {
@@ -89,14 +89,14 @@ namespace UnitTests.Prefs_Tests {
 		///<summary>Duplicate native preferences are not allowed and should throw an exception when filling the cache.</summary>
 		[TestMethod]
 		public void Prefs_FillCacheFromTable_DuplicateDetected() {
-			//Create a duplicate preference that is native to Open Dental.
+			//Create a duplicate preference that is native to Helianz.
 			List<Pref> listPrefs=new List<Pref>() {
 				new Pref(){ PrefName=PrefName.AccountAllowFutureDebits.ToString() },
 				new Pref(){ PrefName=PrefName.AccountAllowFutureDebits.ToString() },
 			};
 			bool hadException=false;
 			try {
-				Prefs.FillCacheFromTable(OpenDentBusiness.Crud.PrefCrud.ListToTable(listPrefs));
+				Prefs.FillCacheFromTable(HelianzBusiness.Crud.PrefCrud.ListToTable(listPrefs));
 			}
 			catch(Exception e) {
 				e.DoNothing();
@@ -109,14 +109,14 @@ namespace UnitTests.Prefs_Tests {
 		///<summary>Duplicate non-native preferences are allowed should not throw an exception when filling the cache.</summary>
 		[TestMethod]
 		public void Prefs_FillCacheFromTable_DuplicateAllowed() {
-			//Create a duplicate preference that is not native to Open Dental.
+			//Create a duplicate preference that is not native to Helianz.
 			List<Pref> listPrefs=new List<Pref>() {
 				new Pref(){ PrefName=MethodBase.GetCurrentMethod().Name },
 				new Pref(){ PrefName=MethodBase.GetCurrentMethod().Name },
 			};
 			bool hadException=false;
 			try {
-				Prefs.FillCacheFromTable(OpenDentBusiness.Crud.PrefCrud.ListToTable(listPrefs));
+				Prefs.FillCacheFromTable(HelianzBusiness.Crud.PrefCrud.ListToTable(listPrefs));
 			}
 			catch(Exception e) {
 				e.DoNothing();

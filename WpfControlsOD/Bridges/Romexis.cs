@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 using System.Collections.Generic;
 using CodeBase;
 
-namespace OpenDental.Bridges{
+namespace Helianz.Bridges{
 	/// <summary></summary>
 	public class Romexis{
 
@@ -16,7 +16,7 @@ namespace OpenDental.Bridges{
 		///<summary>Launches the program using the patient.Cur data.</summary>
 		public static void SendData(Program ProgramCur, Patient pat){
 			string path=Programs.GetProgramPath(ProgramCur);
-			//DxStart.exe ”PatientID” ”FamilyName” ”FirstName” ”BirthDate”
+			//DxStart.exe ï¿½PatientIDï¿½ ï¿½FamilyNameï¿½ ï¿½FirstNameï¿½ ï¿½BirthDateï¿½
 			List<ProgramProperty> ForProgram=ProgramProperties.GetForProgram(ProgramCur.ProgramNum);
 			if(pat==null){
 				MessageBox.Show("Please select a patient first");

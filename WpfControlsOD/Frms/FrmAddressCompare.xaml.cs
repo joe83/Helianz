@@ -2,11 +2,11 @@
 using CodeBase;
 using System;
 
-namespace OpenDental {
-	///<summary> Shows an OpenDentBusiness.Address, and a USPSAddressValidationResponse, and allows the user to select between the two, or cancelling. </summary>
+namespace Helianz {
+	///<summary> Shows an HelianzBusiness.Address, and a USPSAddressValidationResponse, and allows the user to select between the two, or cancelling. </summary>
 	public partial class FrmAddressCompare:FrmODBase {
 		///<summary> Address entered by the user </summary>
-		public OpenDentBusiness.Address AddressFromUserInput;
+		public HelianzBusiness.Address AddressFromUserInput;
 		///<summary> Set true when the user has accepted an address. False when cancelling. </summary>
 		public bool UserChoseAddress=false;
 		///<summary> Response From USPS with corrected address. </summary>

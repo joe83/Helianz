@@ -1,8 +1,8 @@
 using System;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges{
+namespace Helianz.Bridges{
 	///<summary>Link to Practice By Numbers Report Provider.</summary>
 	public class PracticeByNumbers {
 
@@ -17,10 +17,10 @@ namespace OpenDental.Bridges{
 					return;
 				}
 				if(Programs.IsEnabled(ProgramName.PracticeByNumbers)) {
-					ODFileUtils.ProcessStart("http://www.opendental.com/manual/portalpracticebynumbers.html");
+					ODFileUtils.ProcessStart("http://www.helianz.com/manual/portalpracticebynumbers.html");
 				}
 				else {
-					ODFileUtils.ProcessStart("http://www.opendental.com/resources/redirects/redirectpracticebynumbers.html");
+					ODFileUtils.ProcessStart("http://www.helianz.com/resources/redirects/redirectpracticebynumbers.html");
 				}
 			}
 			catch(Exception ex) {

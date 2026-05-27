@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using CodeBase;
-using OpenDental;
-using OpenDentBusiness;
+using Helianz;
+using HelianzBusiness;
 
 namespace UnitTestsCore {
 	public class EtransT {

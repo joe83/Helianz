@@ -5,9 +5,9 @@ using System.Linq;
 using System.Windows.Input;
 using System.Windows.Threading;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental {
+namespace Helianz {
 	public partial class FrmChildCheckIn:FrmODBase {
 		///<summary>Keeps track of keyboard inputs. Will be cleared if any input entered is not a number as it is looking for an employee badge Id. Will also be cleared if the key inputs come in too slow to prevent users from typing out an Id manually. The correct way to fill this string is by using a badge scanner.</summary>
 		private string _keyboardInput="";
@@ -28,10 +28,10 @@ namespace OpenDental {
 		private void FrmChildCheckIn_Load(object sender, EventArgs e) {
 			StartMaximized=true;
 			FillListBoxes();
-			GlobalFormOpenDental.EventProcessSignalODs+=GlobalFormOpenDental_EventProcessSignalODs;
+			GlobalFormHelianz.EventProcessSignalODs+=GlobalFormHelianz_EventProcessSignalODs;
 		}
 
-		private void GlobalFormOpenDental_EventProcessSignalODs(object sender,List<Signalod> listSignalods) {
+		private void GlobalFormHelianz_EventProcessSignalODs(object sender,List<Signalod> listSignalods) {
 			for(int i=0;i<listSignalods.Count;i++) {
 				if(listSignalods[i].IType!=InvalidType.Children) {
 					continue;

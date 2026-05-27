@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using OpenDentBusiness;
+using HelianzBusiness;
 
 namespace UnitTestsCore {
 	public class ApptThankYouSentT {
@@ -12,7 +12,7 @@ namespace UnitTestsCore {
 		///<summary></summary>
 		public static List<ApptThankYouSent> GetAll() {
 			string command="SELECT * FROM apptthankyousent";
-			return DataAction.GetPractice(() => OpenDentBusiness.Crud.ApptThankYouSentCrud.SelectMany(command));
+			return DataAction.GetPractice(() => HelianzBusiness.Crud.ApptThankYouSentCrud.SelectMany(command));
 		}
 	}
 }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using CodeBase;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 	/// <summary></summary>
 	public class Sirona {
 
@@ -16,7 +16,7 @@ namespace OpenDental.Bridges {
 
 		///<summary>Sends data for Patient to a mailbox file and launches the program.</summary>
 		public static void SendData(Program ProgramCur, Patient pat) {
-			OpenDentBusiness.Shared.Sirona.Lans_g=Lans.g;
+			HelianzBusiness.Shared.Sirona.Lans_g=Lans.g;
 			string path=Programs.GetProgramPath(ProgramCur);
 			List<ProgramProperty> listProgramProperties=ProgramProperties.GetForProgram(ProgramCur.ProgramNum);
 			List<string> listIniLines=new List<string>();
@@ -36,7 +36,7 @@ namespace OpenDental.Bridges {
 					line.Append(nTerm);
 					line.Append(pat.Birthdate.ToString("dd.MM.yyyy"));
 					line.Append(nTerm);
-					//leave initial patient id blank. This updates sidexis to patNums used in Open Dental
+					//leave initial patient id blank. This updates sidexis to patNums used in Helianz
 					line.Append(nTerm);
 					line.Append(pat.LName);
 					line.Append(nTerm);
@@ -60,7 +60,7 @@ namespace OpenDental.Bridges {
 					line.Append(nTerm);
 					line.Append(Providers.GetAbbr(Patients.GetProvNum(pat)));
 					line.Append(nTerm);
-					line.Append("OpenDental");
+					line.Append("Helianz");
 					line.Append(nTerm);
 					line.Append("Sidexis");
 					line.Append(nTerm);
@@ -93,7 +93,7 @@ namespace OpenDental.Bridges {
 					line.Append(nTerm);
 					line.Append(Providers.GetAbbr(Patients.GetProvNum(pat)));
 					line.Append(nTerm);
-					line.Append("OpenDental");
+					line.Append("Helianz");
 					line.Append(nTerm);
 					line.Append("Sidexis");
 					line.Append(nTerm);
@@ -128,7 +128,7 @@ namespace OpenDental.Bridges {
 					line.Append(nTerm);
 					line.Append(DateTime.Now.ToString("HH.mm.ss"));
 					line.Append(nTerm);
-					line.Append("OpenDental");
+					line.Append("Helianz");
 					line.Append(nTerm);
 					line.Append("Sidexis");
 					line.Append(nTerm);
@@ -138,7 +138,7 @@ namespace OpenDental.Bridges {
 					listIniLines.Add(line.ToString());
 					#endregion
 					if(!ODEnvironment.IsCloudServer) {
-						OpenDentBusiness.Shared.Sirona.WriteToSendBoxFile(path,listIniLines);
+						HelianzBusiness.Shared.Sirona.WriteToSendBoxFile(path,listIniLines);
 					}
 				}
 				catch(Exception ex) {

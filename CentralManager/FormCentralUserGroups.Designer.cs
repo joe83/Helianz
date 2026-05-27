@@ -24,9 +24,9 @@
 		/// </summary>
 		private void InitializeComponent() {
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormCentralUserGroups));
-			this.butAddGroup = new OpenDental.UI.Button();
+			this.butAddGroup = new Helianz.UI.Button();
 			this.listGroups = new System.Windows.Forms.ListBox();
-			this.butClose = new OpenDental.UI.Button();
+			this.butClose = new Helianz.UI.Button();
 			this.SuspendLayout();
 			// 
 			// butAddGroup
@@ -78,8 +78,8 @@
 
 		#endregion
 
-		private OpenDental.UI.Button butAddGroup;
+		private Helianz.UI.Button butAddGroup;
 		private System.Windows.Forms.ListBox listGroups;
-		private OpenDental.UI.Button butClose;
+		private Helianz.UI.Button butClose;
 	}
 }

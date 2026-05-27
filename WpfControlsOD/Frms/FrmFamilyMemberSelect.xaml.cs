@@ -8,11 +8,11 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using OpenDentBusiness;
+using HelianzBusiness;
 using WpfControls.UI;
 using CodeBase;
 
-namespace OpenDental {
+namespace Helianz {
 /*
 Conversion Checklist====================================================================================================================
 Questions (do not edit)                                              |Answers might include "yes", "ok", "no", "n/a", "done", etc.

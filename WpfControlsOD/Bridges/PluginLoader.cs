@@ -5,12 +5,12 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 using CodeBase;
 
-namespace OpenDental {
+namespace Helianz {
 	public class PluginLoader {
-		///<summary>There is a similar method for Middle Tier at OpenDentBusiness.Plugins.LoadAllPlugins.</summary>
+		///<summary>There is a similar method for Middle Tier at HelianzBusiness.Plugins.LoadAllPlugins.</summary>
 		public static void LoadAllPlugins(Form host) {
 			if(Environment.MachineName.ToLower()=="jordanhome" || Environment.MachineName.ToLower()=="jordancryo"){
 				bool isAllowed=DatabaseIntegrities.IsPluginAllowed("someplugin.dll");//to simulate loading a dll
@@ -67,9 +67,9 @@ namespace OpenDental {
 					else{
 						//try the Plugins folder
 						if(PrefC.AtoZfolderUsed!=DataStorageType.InDatabase) {//must have an AtoZ folder to check
-							string dllPathVersionCentral=OpenDentBusiness.FileIO.FileAtoZ.CombinePaths(ImageStore.GetPreferredAtoZpath(),"Plugins",
+							string dllPathVersionCentral=HelianzBusiness.FileIO.FileAtoZ.CombinePaths(ImageStore.GetPreferredAtoZpath(),"Plugins",
 								listPrograms[i].PluginDllName.Replace("[VersionMajMin]",vers.Major.ToString()+"."+vers.Minor.ToString()));
-							if(OpenDentBusiness.FileIO.FileAtoZ.Exists(dllPathVersionCentral)) {
+							if(HelianzBusiness.FileIO.FileAtoZ.Exists(dllPathVersionCentral)) {
 								try {
 //todo: fix for cloud:
 									//FileAtoZ.Copy(dllPathVersionCentral,dllPath,FileAtoZSourceDestination.AtoZToLocal,doOverwrite:true);

@@ -10,9 +10,9 @@ using System.Net;
 using System.Text;
 using System.Xml;
 using System.Windows.Forms;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental.Bridges {
+namespace Helianz.Bridges {
 	///<summary>No longer used.</summary>
 	public class Tesia_statements {
 

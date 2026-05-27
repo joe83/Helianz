@@ -1,7 +1,7 @@
 using System;
-using OpenDentBusiness;
+using HelianzBusiness;
 
-namespace OpenDental {
+namespace Helianz {
 	///<summary></summary>
 	public partial class FrmChildParentEdit:FrmODBase {
 		///<summary></summary>

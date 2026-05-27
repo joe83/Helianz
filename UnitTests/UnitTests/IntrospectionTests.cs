@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness;
+using HelianzBusiness;
 using UnitTestsCore;
 
 namespace UnitTests.Introspection_Tests {
@@ -71,7 +71,7 @@ namespace UnitTests.Introspection_Tests {
 		[TestMethod]
 		public void Introspection_Preference_Present() {
 			IntrospectionT.DeletePref();
-			string testUrl="https://opendental.com/";
+			string testUrl="https://helianz.com/";
 			IntrospectionT.UpsertPref(new Dictionary<Introspection.IntrospectionEntity, string>() {
 				{ Introspection.IntrospectionEntity.DentalXChangeDwsURL,testUrl }
 			});

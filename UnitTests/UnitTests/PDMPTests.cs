@@ -4,8 +4,8 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDentBusiness;
-using OpenDentBusiness.Crud;
+using HelianzBusiness;
+using HelianzBusiness.Crud;
 using UnitTestsCore;
 
 namespace UnitTests {

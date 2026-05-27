@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using OpenDental;
+using Helianz;
 
 namespace UnitTests {
 	public partial class FormWpfConverter:FormODBase {
@@ -32,7 +32,7 @@ namespace UnitTests {
 					return;
 				} 
 			}
-			Type type= Type.GetType("OpenDental."+textName.Text+", OpenDental");
+			Type type= Type.GetType("Helianz."+textName.Text+", Helianz");
 			if(type is null){
 				MsgBox.Show("Type not found.  Check spelling.");
 				return;

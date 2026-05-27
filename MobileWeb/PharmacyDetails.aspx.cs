@@ -5,8 +5,8 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using WebForms;
-using OpenDentBusiness;
-using OpenDentBusiness.Mobile;
+using HelianzBusiness;
+using HelianzBusiness.Mobile;
 
 namespace MobileWeb {
 	public partial class PharmacyDetails:System.Web.UI.Page {

@@ -13,12 +13,12 @@ namespace CodeBase {
 		///<summary>Indicates the list of packages that have already been custom loaded.</summary>
 		private static List<string> _listPackages=new List<string>();
 
-		///<summary>This method is called from all Open Dental programs or projects. This method can throw. There is a good
+		///<summary>This method is called from all Helianz programs or projects. This method can throw. There is a good
 		///chance you should not let the user continue if the method throws as it can cause the program to behave in unexpecting ways.</summary>
 		public static void Initialize() {
 #if !DOT_NET_CORE && !DOT_NET_STANDARD
 			//Causes all Application threads to use the same short date format.  Namely, forces computers with a two digit year format (e.g. M/d/yy) to use
-			//a four digit format inside OpenDental (bug manifested as DateTime.MinValue being pulled into OD as 01/01/2001), as well as two digit month 
+			//a four digit format inside Helianz (bug manifested as DateTime.MinValue being pulled into OD as 01/01/2001), as well as two digit month 
 			//and year formatting, which is essential for threads that use date strings in validation.
 			DateTimeOD.NormalizeApplicationShortDateFormat();
 #endif

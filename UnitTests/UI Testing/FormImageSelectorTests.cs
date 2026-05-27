@@ -9,11 +9,11 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using OpenDental.UI;
-using OpenDentBusiness;
+using Helianz.UI;
+using HelianzBusiness;
 
 namespace UnitTests{
-	public partial class FormImageSelectorTests : OpenDental.FormODBase{
+	public partial class FormImageSelectorTests : Helianz.FormODBase{
 
 		public FormImageSelectorTests(){
 			InitializeComponent();

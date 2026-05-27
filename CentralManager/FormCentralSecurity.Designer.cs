@@ -34,19 +34,19 @@
 			this.label4 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
 			this.textDays = new System.Windows.Forms.TextBox();
-			this.textDate = new OpenDental.ValidDate();
+			this.textDate = new Helianz.ValidDate();
 			this.label2 = new System.Windows.Forms.Label();
 			this.textSyncCode = new System.Windows.Forms.TextBox();
 			this.label5 = new System.Windows.Forms.Label();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
-			this.butPushBoth = new OpenDental.UI.Button();
+			this.butPushBoth = new Helianz.UI.Button();
 			this.label8 = new System.Windows.Forms.Label();
 			this.label7 = new System.Windows.Forms.Label();
-			this.butPushLocks = new OpenDental.UI.Button();
-			this.butPushUsers = new OpenDental.UI.Button();
-			this.userControlSecurityTabs = new OpenDental.UserControlSecurityUserGroup();
-			this.butOK = new OpenDental.UI.Button();
-			this.butClose = new OpenDental.UI.Button();
+			this.butPushLocks = new Helianz.UI.Button();
+			this.butPushUsers = new Helianz.UI.Button();
+			this.userControlSecurityTabs = new Helianz.UserControlSecurityUserGroup();
+			this.butOK = new Helianz.UI.Button();
+			this.butClose = new Helianz.UI.Button();
 			this.textDomainLoginPath = new System.Windows.Forms.TextBox();
 			this.labelDomainPath = new System.Windows.Forms.Label();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -256,13 +256,13 @@
 			this.userControlSecurityTabs.SelectedUserGroup = null;
 			this.userControlSecurityTabs.Size = new System.Drawing.Size(969, 484);
 			this.userControlSecurityTabs.TabIndex = 253;
-			this.userControlSecurityTabs.AddUserClick += new OpenDental.UserControlSecurityUserGroup.SecurityTabsEventHandler(this.userControlSecurityTabs_AddUserClick);
-			this.userControlSecurityTabs.EditUserClick += new OpenDental.UserControlSecurityUserGroup.SecurityTabsEventHandler(this.userControlSecurityTabs_EditUserClick);
-			this.userControlSecurityTabs.AddUserGroupClick += new OpenDental.UserControlSecurityUserGroup.SecurityTabsEventHandler(this.userControlSecurityTabs_AddUserGroupClick);
-			this.userControlSecurityTabs.EditUserGroupClick += new OpenDental.UserControlSecurityUserGroup.SecurityTabsEventHandler(this.userControlSecurityTabs_EditUserGroupClick);
-			this.userControlSecurityTabs.ReportPermissionChecked += new OpenDental.UserControlSecurityUserGroup.SecurityTreeEventHandler(this.userControlSecurityTabs_ReportPermissionChecked);
-			this.userControlSecurityTabs.GroupPermissionChecked += new OpenDental.UserControlSecurityUserGroup.SecurityTreeEventHandler(this.userControlSecurityTabs_GroupPermissionChecked);
-			this.userControlSecurityTabs.AdjustmentTypeDenyPermissionChecked += new OpenDental.UserControlSecurityUserGroup.SecurityTreeEventHandler(this.userControlSecurityTabs_AdjustmentTypeDenyPermissionChecked);
+			this.userControlSecurityTabs.AddUserClick += new Helianz.UserControlSecurityUserGroup.SecurityTabsEventHandler(this.userControlSecurityTabs_AddUserClick);
+			this.userControlSecurityTabs.EditUserClick += new Helianz.UserControlSecurityUserGroup.SecurityTabsEventHandler(this.userControlSecurityTabs_EditUserClick);
+			this.userControlSecurityTabs.AddUserGroupClick += new Helianz.UserControlSecurityUserGroup.SecurityTabsEventHandler(this.userControlSecurityTabs_AddUserGroupClick);
+			this.userControlSecurityTabs.EditUserGroupClick += new Helianz.UserControlSecurityUserGroup.SecurityTabsEventHandler(this.userControlSecurityTabs_EditUserGroupClick);
+			this.userControlSecurityTabs.ReportPermissionChecked += new Helianz.UserControlSecurityUserGroup.SecurityTreeEventHandler(this.userControlSecurityTabs_ReportPermissionChecked);
+			this.userControlSecurityTabs.GroupPermissionChecked += new Helianz.UserControlSecurityUserGroup.SecurityTreeEventHandler(this.userControlSecurityTabs_GroupPermissionChecked);
+			this.userControlSecurityTabs.AdjustmentTypeDenyPermissionChecked += new Helianz.UserControlSecurityUserGroup.SecurityTreeEventHandler(this.userControlSecurityTabs_AdjustmentTypeDenyPermissionChecked);
 			// 
 			// butOK
 			// 
@@ -356,7 +356,7 @@
 		}
 
 		#endregion
-		private OpenDental.UI.Button butClose;
+		private Helianz.UI.Button butClose;
 		private System.Windows.Forms.ImageList imageListPerm;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.Label label1;
@@ -364,20 +364,20 @@
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.TextBox textDays;
-		private OpenDental.ValidDate textDate;
+		private Helianz.ValidDate textDate;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.CheckBox checkEnable;
-		private OpenDental.UI.Button butOK;
-		private OpenDental.UI.Button butPushUsers;
-		private OpenDental.UI.Button butPushLocks;
+		private Helianz.UI.Button butOK;
+		private Helianz.UI.Button butPushUsers;
+		private Helianz.UI.Button butPushLocks;
 		private System.Windows.Forms.TextBox textSyncCode;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.GroupBox groupBox2;
 		private System.Windows.Forms.Label label7;
-		private OpenDental.UserControlSecurityUserGroup userControlSecurityTabs;
+		private Helianz.UserControlSecurityUserGroup userControlSecurityTabs;
 		private System.Windows.Forms.Label label8;
-		private OpenDental.UI.Button butPushBoth;
+		private Helianz.UI.Button butPushBoth;
 		private System.Windows.Forms.TextBox textDomainLoginPath;
 		private System.Windows.Forms.Label labelDomainPath;
 		private System.Windows.Forms.GroupBox groupBox3;
