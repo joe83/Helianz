@@ -32,7 +32,9 @@ namespace Helianz{
 			this.groupServer = new Helianz.UI.GroupBox();
 			this.checkBoxAutomaticLogin = new Helianz.UI.CheckBox();
 			this.checkUsingEcw = new Helianz.UI.CheckBox();
-			this.textURI = new System.Windows.Forms.TextBox();
+			this.textHost = new System.Windows.Forms.TextBox();
+			this.textPort = new System.Windows.Forms.TextBox();
+			this.labelPort = new System.Windows.Forms.Label();
 			this.textUser2 = new System.Windows.Forms.TextBox();
 			this.textPassword2 = new System.Windows.Forms.TextBox();
 			this.label10 = new System.Windows.Forms.Label();
@@ -59,7 +61,7 @@ namespace Helianz{
 			// 
 			// textConnectionString
 			// 
-			this.textConnectionString.Location = new System.Drawing.Point(376, 419);
+			this.textConnectionString.Location = new System.Drawing.Point(376, 100);
 			this.textConnectionString.Multiline = true;
 			this.textConnectionString.Name = "textConnectionString";
 			this.textConnectionString.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -69,7 +71,7 @@ namespace Helianz{
 			// label8
 			// 
 			this.label8.AutoSize = true;
-			this.label8.Location = new System.Drawing.Point(374, 401);
+			this.label8.Location = new System.Drawing.Point(374, 82);
 			this.label8.Name = "label8";
 			this.label8.Size = new System.Drawing.Size(165, 13);
 			this.label8.TabIndex = 39;
@@ -77,7 +79,7 @@ namespace Helianz{
 			// 
 			// listType
 			// 
-			this.listType.Location = new System.Drawing.Point(376, 363);
+			this.listType.Location = new System.Drawing.Point(376, 59);
 			this.listType.Name = "listType";
 			this.listType.Size = new System.Drawing.Size(99, 30);
 			this.listType.TabIndex = 38;
@@ -85,7 +87,7 @@ namespace Helianz{
 			// 
 			// label7
 			// 
-			this.label7.Location = new System.Drawing.Point(373, 341);
+			this.label7.Location = new System.Drawing.Point(373, 38);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(223, 18);
 			this.label7.TabIndex = 37;
@@ -95,7 +97,7 @@ namespace Helianz{
 			// 
 			// checkConnectServer
 			// 
-			this.checkConnectServer.Location = new System.Drawing.Point(28, 329);
+			this.checkConnectServer.Location = new System.Drawing.Point(28, 15);
 			this.checkConnectServer.Name = "checkConnectServer";
 			this.checkConnectServer.Size = new System.Drawing.Size(328, 18);
 			this.checkConnectServer.TabIndex = 33;
@@ -106,18 +108,20 @@ namespace Helianz{
 			// 
 			this.groupServer.Controls.Add(this.checkBoxAutomaticLogin);
 			this.groupServer.Controls.Add(this.checkUsingEcw);
-			this.groupServer.Controls.Add(this.textURI);
+			this.groupServer.Controls.Add(this.textHost);
+			this.groupServer.Controls.Add(this.textPort);
+			this.groupServer.Controls.Add(this.labelPort);
 			this.groupServer.Controls.Add(this.textUser2);
 			this.groupServer.Controls.Add(this.textPassword2);
 			this.groupServer.Controls.Add(this.label10);
 			this.groupServer.Controls.Add(this.label11);
 			this.groupServer.Controls.Add(this.label9);
 			this.groupServer.Controls.Add(this.label6);
-			this.groupServer.Location = new System.Drawing.Point(28, 357);
+			this.groupServer.Location = new System.Drawing.Point(28, 38);
 			this.groupServer.Name = "groupServer";
 			this.groupServer.Size = new System.Drawing.Size(336, 218);
 			this.groupServer.TabIndex = 32;
-			this.groupServer.Text = "Connect to Middle Tier - Only for advanced users";
+			this.groupServer.Text = "Connect to Middle Tier";
 			// 
 			// checkBoxAutomaticLogin
 			// 
@@ -135,12 +139,28 @@ namespace Helianz{
 			this.checkUsingEcw.TabIndex = 10;
 			this.checkUsingEcw.Text = "Using eClinicalWorks";
 			// 
-			// textURI
+			// textHost
 			// 
-			this.textURI.Location = new System.Drawing.Point(13, 63);
-			this.textURI.Name = "textURI";
-			this.textURI.Size = new System.Drawing.Size(309, 20);
-			this.textURI.TabIndex = 7;
+			this.textHost.Location = new System.Drawing.Point(13, 63);
+			this.textHost.Name = "textHost";
+			this.textHost.Size = new System.Drawing.Size(200, 20);
+			this.textHost.TabIndex = 7;
+			// 
+			// labelPort
+			// 
+			this.labelPort.AutoSize = true;
+			this.labelPort.Location = new System.Drawing.Point(217, 66);
+			this.labelPort.Name = "labelPort";
+			this.labelPort.TabIndex = 44;
+			this.labelPort.Text = "Port:";
+			// 
+			// textPort
+			// 
+			this.textPort.Location = new System.Drawing.Point(252, 63);
+			this.textPort.Name = "textPort";
+			this.textPort.Size = new System.Drawing.Size(60, 20);
+			this.textPort.TabIndex = 43;
+			this.textPort.Text = "80";
 			// 
 			// textUser2
 			// 
@@ -182,7 +202,7 @@ namespace Helianz{
 			this.label9.Name = "label9";
 			this.label9.Size = new System.Drawing.Size(283, 18);
 			this.label9.TabIndex = 9;
-			this.label9.Text = "URI";
+			this.label9.Text = "Server Host / IP";
 			this.label9.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// label6
@@ -204,7 +224,7 @@ namespace Helianz{
 			this.groupDirect.Controls.Add(this.label2);
 			this.groupDirect.Controls.Add(this.label3);
 			this.groupDirect.Controls.Add(this.label4);
-			this.groupDirect.Location = new System.Drawing.Point(28, 15);
+			this.groupDirect.Location = new System.Drawing.Point(28, 271);
 			this.groupDirect.Name = "groupDirect";
 			this.groupDirect.Size = new System.Drawing.Size(660, 246);
 			this.groupDirect.TabIndex = 31;
@@ -299,7 +319,7 @@ namespace Helianz{
 			// butOK
 			// 
 			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butOK.Location = new System.Drawing.Point(636, 605);
+			this.butOK.Location = new System.Drawing.Point(636, 580);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 25);
 			this.butOK.TabIndex = 35;
@@ -308,7 +328,7 @@ namespace Helianz{
 			// 
 			// checkDynamicMode
 			// 
-			this.checkDynamicMode.Location = new System.Drawing.Point(376, 552);
+			this.checkDynamicMode.Location = new System.Drawing.Point(376, 233);
 			this.checkDynamicMode.Name = "checkDynamicMode";
 			this.checkDynamicMode.Size = new System.Drawing.Size(312, 29);
 			this.checkDynamicMode.TabIndex = 41;
@@ -317,14 +337,14 @@ namespace Helianz{
 			// 
 			// textPEM
 			// 
-			this.textPEM.Location = new System.Drawing.Point(42, 295);
+			this.textPEM.Location = new System.Drawing.Point(42, 549);
 			this.textPEM.Name = "textPEM";
 			this.textPEM.Size = new System.Drawing.Size(527, 20);
 			this.textPEM.TabIndex = 8;
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(40, 276);
+			this.label5.Location = new System.Drawing.Point(40, 528);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(509, 18);
 			this.label5.TabIndex = 7;
@@ -334,7 +354,7 @@ namespace Helianz{
 			// FormChooseDatabase
 			// 
 			this.AcceptButton = this.butOK;
-			this.ClientSize = new System.Drawing.Size(723, 642);
+			this.ClientSize = new System.Drawing.Size(723, 617);
 			this.Controls.Add(this.textPEM);
 			this.Controls.Add(this.checkDynamicMode);
 			this.Controls.Add(this.label5);
@@ -371,7 +391,9 @@ namespace Helianz{
 		private Helianz.UI.CheckBox checkConnectServer;
 		private Helianz.UI.GroupBox groupServer;
 		private Helianz.UI.CheckBox checkUsingEcw;
-		private System.Windows.Forms.TextBox textURI;
+		private System.Windows.Forms.TextBox textHost;
+		private System.Windows.Forms.TextBox textPort;
+		private System.Windows.Forms.Label labelPort;
 		private System.Windows.Forms.TextBox textUser2;
 		private System.Windows.Forms.TextBox textPassword2;
 		private System.Windows.Forms.Label label10;

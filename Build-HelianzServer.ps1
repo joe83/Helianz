@@ -103,7 +103,7 @@ param(
 	[string]$Configuration = 'Release',
 
 	[ValidateSet('x86','AnyCPU')]
-	[string]$Platform = 'x86',
+	[string]$Platform = 'AnyCPU',
 
 	[string]$OutputDir = "$PSScriptRoot\Output\HelianzServer",
 
@@ -602,6 +602,9 @@ if (-not (Test-Path $projectFile)) {
 	throw "Project not found: $projectFile"
 }
 
+# MSBuild solution configurations use "Any CPU" (with space); projects use "AnyCPU"
+$SlnPlatform = if ($Platform -eq 'AnyCPU') { 'Any CPU' } else { $Platform }
+
 # Publish profile temp directory and known PackageTmp fallback
 $publishDir    = Join-Path $PSScriptRoot "_publish_HelianzServer"
 $packageTmpDir = Join-Path $PSScriptRoot "HelianzServer\obj\$Platform\$Configuration\Package\PackageTmp"
@@ -615,7 +618,7 @@ Write-Host "[STEP 1/4] Restoring NuGet packages..." -ForegroundColor Yellow
 
 $sln = Get-ChildItem -Path $PSScriptRoot -Filter "*.sln" -File | Select-Object -First 1
 if ($sln) {
-	& $MsBuildPath $sln.FullName /t:Restore /p:Configuration=$Configuration /p:Platform=$Platform /verbosity:minimal
+	& $MsBuildPath $sln.FullName /t:Restore /p:Configuration=$Configuration "/p:Platform=$SlnPlatform" /verbosity:minimal
 	if ($LASTEXITCODE -ne 0) { throw "NuGet restore failed." }
 } else {
 	Write-Host "[WARN] No .sln found; skipping NuGet restore." -ForegroundColor DarkYellow

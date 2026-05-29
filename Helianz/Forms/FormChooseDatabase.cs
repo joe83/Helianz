@@ -43,14 +43,18 @@ namespace Helianz {
 				checkConnectServer.Enabled=false;
 				textUser.ReadOnly=true;
 				textPassword.ReadOnly=true;
-				textURI.ReadOnly=true;
+			textHost.ReadOnly=true;
+			textPort.ReadOnly=true;
 			}
 			listType.Items.Add("MySql");
 			listType.Items.Add("Oracle");
 			listType.SelectedIndex=0;
-			checkConnectServer.Checked=false;
-			groupDirect.Enabled=true;
-			groupServer.Enabled=false;
+			// Default to middle-tier mode; fall through to direct if no ServiceURI is configured
+			checkConnectServer.Checked=true;
+			groupDirect.Enabled=false;
+			groupServer.Enabled=true;
+			checkDynamicMode.Checked=false;
+			checkDynamicMode.Enabled=false;
 			comboComputerName.Text=ChooseDatabaseInfo_.CentralConnectionCur.ServerName;
 			comboDatabase.Text=ChooseDatabaseInfo_.CentralConnectionCur.DatabaseName;
 			textUser.Text=ChooseDatabaseInfo_.CentralConnectionCur.MySqlUser;
@@ -74,7 +78,7 @@ namespace Helianz {
 				checkConnectServer.Checked=true;
 				groupDirect.Enabled=false;
 				groupServer.Enabled=true;
-				textURI.Text=ChooseDatabaseInfo_.CentralConnectionCur.ServiceURI;
+				ParseServiceURIIntoFields(ChooseDatabaseInfo_.CentralConnectionCur.ServiceURI);
 				checkUsingEcw.Checked=ChooseDatabaseInfo_.CentralConnectionCur.WebServiceIsEcw;
 				checkDynamicMode.Checked=false;
 				checkDynamicMode.Enabled=false;
@@ -96,7 +100,7 @@ namespace Helianz {
 			ChooseDatabaseInfo_.CentralConnectionCur.MySqlUser=textUser.Text;
 			ChooseDatabaseInfo_.CentralConnectionCur.MySqlPassword=textPassword.Text;
 			ChooseDatabaseInfo_.NoShow=(checkNoShow.Checked ? YN.Yes : YN.No);
-			ChooseDatabaseInfo_.CentralConnectionCur.ServiceURI=(checkConnectServer.Checked ? textURI.Text : "");
+			ChooseDatabaseInfo_.CentralConnectionCur.ServiceURI=(checkConnectServer.Checked ? BuildServiceURI() : "");
 			ChooseDatabaseInfo_.CentralConnectionCur.OdUser=textUser2.Text;
 			ChooseDatabaseInfo_.CentralConnectionCur.OdPassword=textPassword2.Text;
 			ChooseDatabaseInfo_.CentralConnectionCur.WebServiceIsEcw=checkUsingEcw.Checked;
@@ -106,6 +110,31 @@ namespace Helianz {
 			//Only save AutoLogin if connecting to MT and AutoLogin box is checked.
 			ChooseDatabaseInfo_.CentralConnectionCur.IsAutomaticLogin=(checkBoxAutomaticLogin.Checked && checkConnectServer.Checked);
 			ChooseDatabaseInfo_.UseDynamicMode=checkDynamicMode.Checked;
+		}
+
+		///<summary>Builds the full middle-tier service URI from host and port fields.</summary>
+		private string BuildServiceURI() {
+			string host=textHost.Text.Trim();
+			if(string.IsNullOrEmpty(host)) {
+				return "";
+			}
+			string portStr=textPort.Text.Trim();
+			bool portIsDefault=string.IsNullOrEmpty(portStr) || portStr=="80";
+			string portPart=portIsDefault ? "" : ":"+portStr;
+			return "http://"+host+portPart+"/HelianzServer/ServiceMain.asmx";
+		}
+
+		///<summary>Parses a full service URI into the host and port fields.</summary>
+		private void ParseServiceURIIntoFields(string serviceURI) {
+			try {
+				Uri uri=new Uri(serviceURI);
+				textHost.Text=uri.Host;
+				textPort.Text=(uri.IsDefaultPort ? "80" : uri.Port.ToString());
+			}
+			catch {
+				textHost.Text=serviceURI;
+				textPort.Text="80";
+			}
 		}
 
 		private void FillComboComputerNames() {

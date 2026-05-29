@@ -51,7 +51,7 @@ namespace FreeDentalInstaller
         string str = string.Format("{0}.{1}", FormMain.VersionInstaller.Major, FormMain.VersionInstaller.Minor);
         this.butUpdateDbms.Text = this._dbmsType.ToString();
         this.checkDbmsServer.Text = string.Format("{0} Server", this._dbmsType);
-        this.label6.Text = string.Format("{0} server", this._dbmsType);
+        this.label6.Text = string.Format("(toggle: {0} + data on/off)", this._dbmsType);
         this.checkGrant.Text = string.Format("{0} {1} grant tables", this._dbmsType, str);
         this.textGrantTables.Text = string.Format("These tables will be placed in the data\\mysql folder.  Required by {0} {1}. This will also prompt for {2} credentials.", this._dbmsType, str, this._dbmsType);
         this.textBox2.Text = string.Format("A small file that is required for {0} to function properly.  Uses the paths entered in the \"{1} Server\" box above and the \"helianz Database\" box below.", this._dbmsType, this._dbmsType);
@@ -63,6 +63,7 @@ namespace FreeDentalInstaller
         if (string.IsNullOrEmpty(this._programFilesx86))
           this._programFilesx86 = Environment.GetEnvironmentVariable("ProgramFiles");
         this.textApplication.Text = Path.Combine(this._programFilesx86, "Helianz\\");
+        this.textApplicationServer.Text = Path.Combine(this._programFiles64, "HelianzServer\\");
           this.textDbmsInstallationDir.Text = Path.Combine(this._programFilesx86, string.Format("{0}\\{1} Server {2}\\", this._dbmsType, this._dbmsType, str));
         if (this._dbmsType == DbmsType.MariaDB)
         {
@@ -71,35 +72,23 @@ namespace FreeDentalInstaller
           else
             this.textDbmsInstallationDir.Text = Path.Combine(this._programFilesx86, "MariaDB " + str + "\\");
         }
-        if (File.Exists(Application.StartupPath + "\\Helianz Setup\\Setup.exe"))
-        {
-          this.checkOD.Checked = true;
-          this.checkDbmsServer.Checked = true;
-          this.checkGrant.Checked = true;
-          this.checkmyini.Checked = true;
-          this.checkDatabase.Checked = true;
-          this.checkODImages.Checked = true;
-        }
-        else
-        {
-          this.butFullInstall.Enabled = false;
-          this.butNewServer.Enabled = false;
-          this.butUpdateServer.Enabled = false;
-          this.butWorkstation.Enabled = false;
-          this.butUpdateDbms.Enabled = true;
-          this.checkOD.Enabled = false;
-          this.checkDbmsServer.Checked = true;
-          this.checkGrant.Checked = true;
-          this.checkmyini.Checked = true;
-          this.checkDatabase.Checked = false;
-          this.checkODImages.Checked = false;
-        }
+        this.checkOD.Checked = File.Exists(Application.StartupPath + "\\Helianz Client Setup\\Setup.exe");
+        this.checkODServer.Checked = File.Exists(Application.StartupPath + "\\Helianz Server Setup\\Setup.exe");
+        this.checkDbmsServer.Checked = true;
+        this.checkGrant.Checked = true;
+        this.checkmyini.Checked = true;
+        this.checkDatabase.Checked = true;
+        this.checkODImages.Checked = true;
       }
     }
 
     private void butNewServer_Click(object sender, EventArgs e)
     {
-      this.checkOD.Checked = true;
+      bool server = HasServerSetup();
+      if (!server)
+        MessageBox.Show("Helianz Server Setup was not found in the installer directory.");
+      this.checkOD.Checked = false;
+      this.checkODServer.Checked = server;
       this.checkDbmsServer.Checked = true;
       this.checkGrant.Checked = true;
       this.checkmyini.Checked = true;
@@ -109,7 +98,8 @@ namespace FreeDentalInstaller
 
     private void butUpdateServer_Click(object sender, EventArgs e)
     {
-      this.checkOD.Checked = true;
+      this.checkOD.Checked = false;
+      this.checkODServer.Checked = true;
       if (Directory.Exists(this.textDbmsInstallationDir.Text))
       {
         this.checkDbmsServer.Checked = false;
@@ -128,7 +118,11 @@ namespace FreeDentalInstaller
 
     private void butWorkstation_Click(object sender, EventArgs e)
     {
-      this.checkOD.Checked = true;
+      bool client = HasClientSetup();
+      if (!client)
+        MessageBox.Show("Helianz Client Setup was not found in the installer directory.");
+      this.checkOD.Checked = client;
+      this.checkODServer.Checked = false;
       this.checkDbmsServer.Checked = false;
       this.checkGrant.Checked = false;
       this.checkmyini.Checked = false;
@@ -138,17 +132,20 @@ namespace FreeDentalInstaller
 
     private void butUpdateDbms_Click(object sender, EventArgs e)
     {
-      this.checkOD.Checked = false;
-      this.checkDbmsServer.Checked = true;
-      this.checkGrant.Checked = true;
-      this.checkmyini.Checked = true;
-      this.checkDatabase.Checked = false;
-      this.checkODImages.Checked = false;
+      bool install = !this.checkDbmsServer.Checked;
+      this.checkDbmsServer.Checked = install;
+      this.checkmyini.Checked = install;
+      this.checkDatabase.Checked = install;
     }
 
     private void butFullInstall_Click(object sender, EventArgs e)
     {
-      this.checkOD.Checked = true;
+      bool client = HasClientSetup();
+      bool server = HasServerSetup();
+      if (!client && !server)
+        MessageBox.Show("Neither Helianz Client Setup nor Helianz Server Setup was found in the installer directory.");
+      this.checkOD.Checked = client;
+      this.checkODServer.Checked = server;
       this.checkDbmsServer.Checked = true;
       this.checkGrant.Checked = true;
       this.checkmyini.Checked = true;
@@ -158,7 +155,7 @@ namespace FreeDentalInstaller
 
     private void butInstall_Click(object sender, EventArgs e)
     {
-      if (!this.checkOD.Checked && !this.checkDbmsServer.Checked && !this.checkGrant.Checked && !this.checkmyini.Checked && !this.checkDatabase.Checked && !this.checkODImages.Checked)
+      if (!this.checkOD.Checked && !this.checkODServer.Checked && !this.checkDbmsServer.Checked && !this.checkGrant.Checked && !this.checkmyini.Checked && !this.checkDatabase.Checked && !this.checkODImages.Checked)
       {
         MessageBox.Show("Please select installation items first.");
       }
@@ -192,7 +189,7 @@ namespace FreeDentalInstaller
             return;
           }
         }
-        if (this.checkOD.Checked && !this.CheckODhelper() || this.checkDbmsServer.Checked && !this.IsDbmsServerValid() || (this.checkDbmsServer.Checked || this.checkGrant.Checked || this.checkmyini.Checked) && !this.TryRemoveService() || this.checkDbmsServer.Checked && !this.CheckDbmsHelper() || this.checkGrant.Checked && !this.CheckGrantHelper() || this.checkmyini.Checked && !this.CheckMyIniHelper())
+        if (this.checkODServer.Checked && !this.CheckServerHelper() || this.checkOD.Checked && !this.CheckODhelper() || this.checkDbmsServer.Checked && !this.IsDbmsServerValid() || (this.checkDbmsServer.Checked || this.checkGrant.Checked || this.checkmyini.Checked) && !this.TryRemoveService() || this.checkDbmsServer.Checked && !this.CheckDbmsHelper() || this.checkGrant.Checked && !this.CheckGrantHelper() || this.checkmyini.Checked && !this.CheckMyIniHelper())
           return;
         string targetDB = "";
         if (this.checkDatabase.Checked && !this.CheckDatabaseHelper(out targetDB) || this.checkODImages.Checked && !this.CheckODImagesHelper())
@@ -448,9 +445,23 @@ namespace FreeDentalInstaller
       return true;
     }
 
+    private bool HasClientSetup() => File.Exists(this._appPath + "\\Helianz Client Setup\\Setup.exe");
+
+    private bool HasServerSetup() => File.Exists(this._appPath + "\\Helianz Server Setup\\Setup.exe");
+
+    private bool CheckServerHelper()
+    {
+      string dir = this.textApplicationServer.Text.TrimEnd('\\');
+      Utilities.ProcessCommand(this._appPath + "\\Helianz Server Setup\\Setup.exe",
+        "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR=\"" + dir + "\"");
+      return true;
+    }
+
     private bool CheckODhelper()
     {
-      Utilities.ProcessCommand(this._appPath + "\\Helianz Setup\\Setup.exe", "-sp\"INSTALLDIR=\"\"" + this.textApplication.Text + "\"\"\"");
+      string dir = this.textApplication.Text.TrimEnd('\\');
+      Utilities.ProcessCommand(this._appPath + "\\Helianz Client Setup\\Setup.exe",
+        "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR=\"" + dir + "\"");
       return true;
     }
 

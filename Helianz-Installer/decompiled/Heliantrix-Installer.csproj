@@ -47,9 +47,18 @@
   <ItemGroup>
     <Compile Include="HelianzInstaller\MySQL.cs" />
     <Compile Include="HelianzInstaller\Properties\Resources.cs" />
-    <Compile Include="FormMain.Designer.cs" />
-    <Compile Include="FormMain.cs" />
-    <Compile Include="FormMysqlCredentials.cs" />
+    <Compile Include="FormMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMain.Designer.cs">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormMysqlCredentials.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMysqlCredentials.Designer.cs">
+      <DependentUpon>FormMysqlCredentials.cs</DependentUpon>
+    </Compile>
     <Compile Include="MariaDB.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="CommandResult.cs" />
@@ -58,9 +67,54 @@
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="FormMain.resx" />
-    <EmbeddedResource Include="FormMysqlCredentials.resx" />
-    <EmbeddedResource Include="HelianzInstaller\Properties\Resources.resx" />
+    <EmbeddedResource Include="FormMain.resx">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMysqlCredentials.resx">
+      <DependentUpon>FormMysqlCredentials.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HelianzInstaller\Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <LogicalName>HelianzInstaller.Properties.Resources.resources</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <!-- Transitive dependencies of CodeBase.dll and DataConnectionBase.dll.
+       These are not directly referenced by this project but must be present
+       in the output directory so the VS designer and runtime can load the assembly. -->
+  <ItemGroup>
+    <None Include="..\Release\CDT.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Release\Microsoft.Web.WebView2.Core.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Release\Microsoft.Web.WebView2.WinForms.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Release\MySql.Data.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Release\Newtonsoft.Json.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Release\System.Buffers.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Release\System.Memory.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Release\System.Numerics.Vectors.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Release\Tao.OpenGl.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Release\Tao.Platform.Windows.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Release\VBbridges.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
