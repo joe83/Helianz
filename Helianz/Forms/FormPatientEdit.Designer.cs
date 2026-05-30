@@ -290,7 +290,7 @@ namespace Helianz{
 			this.labelSSN.Name = "labelSSN";
 			this.labelSSN.Size = new System.Drawing.Size(142, 14);
 			this.labelSSN.TabIndex = 0;
-			this.labelSSN.Text = "SS#";
+			this.labelSSN.Text = "NIK/SSN";
 			this.labelSSN.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// labelAddress

@@ -905,6 +905,7 @@
     <Compile Include="WebBridges\RESTfulTemplate.cs" />
     <Compile Include="WebBridges\SatuSehat\SatuSehatApi.cs" />
     <Compile Include="WebBridges\SatuSehat\SatuSehatSync.cs" />
+    <Compile Include="WebBridges\SatuSehat\SatuSehatDemoData.cs" />
     <Compile Include="WebServices\CustomerUpdatesProxy.cs" />
     <Compile Include="Remoting\DtoProcessor.cs" />
     <Compile Include="Remoting\NullObject.cs" />

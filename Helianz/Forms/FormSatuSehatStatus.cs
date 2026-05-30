@@ -92,6 +92,49 @@ namespace Helianz {
 			formSatuSehatSetup.ShowDialog();
 		}
 
+		private void butDemoData_Click(object sender,EventArgs e) {
+			if(!MsgBox.Show(this,MsgBoxButtons.OKCancel,"This will insert 5 demo Indonesian patients with appointments and procedures, "
+				+"then enqueue them for SatuSehat sync.\r\nContinue?"))
+			{
+				return;
+			}
+			Cursor=Cursors.WaitCursor;
+			try {
+				int created=SatuSehatDemoData.CreateDemoData();
+				Cursor=Cursors.Default;
+				if(created==0) {
+					MsgBox.Show(this,"All demo patients already exist (identified by NIK). No new records were inserted.");
+				}
+				else {
+					MsgBox.Show(this,created.ToString()+" demo patient(s) created with appointments, procedures, and sync queue entries.");
+				}
+			}
+			catch(Exception ex) {
+				Cursor=Cursors.Default;
+				MsgBox.Show(this,"Error creating demo data: "+ex.ToString());
+			}
+			FillGrid();
+		}
+
+		private void butClearDemo_Click(object sender,EventArgs e) {
+			if(!MsgBox.Show(this,MsgBoxButtons.OKCancel,"This will soft-delete all demo patients (identified by demo NIK numbers) "
+				+"and remove their appointments, procedures, and sync queue entries.\r\nContinue?"))
+			{
+				return;
+			}
+			Cursor=Cursors.WaitCursor;
+			try {
+				int removed=SatuSehatDemoData.ClearDemoData();
+				Cursor=Cursors.Default;
+				MsgBox.Show(this,removed.ToString()+" demo patient(s) cleared.");
+			}
+			catch(Exception ex) {
+				Cursor=Cursors.Default;
+				MsgBox.Show(this,"Error clearing demo data: "+ex.Message);
+			}
+			FillGrid();
+		}
+
 		private void butClose_Click(object sender,EventArgs e) {
 			Close();
 		}

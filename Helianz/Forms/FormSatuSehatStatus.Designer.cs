@@ -16,6 +16,8 @@ namespace Helianz {
 			this.comboFilter = new Helianz.UI.ComboBox();
 			this.butSyncNow = new Helianz.UI.Button();
 			this.butSettings = new Helianz.UI.Button();
+			this.butDemoData = new Helianz.UI.Button();
+			this.butClearDemo = new Helianz.UI.Button();
 			this.butClose = new Helianz.UI.Button();
 			this.SuspendLayout();
 			// 
@@ -69,6 +71,26 @@ namespace Helianz {
 			this.butSettings.Text = "Settings";
 			this.butSettings.Click += new System.EventHandler(this.butSettings_Click);
 			// 
+			// butDemoData
+			// 
+			this.butDemoData.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butDemoData.Location = new System.Drawing.Point(203, 570);
+			this.butDemoData.Name = "butDemoData";
+			this.butDemoData.Size = new System.Drawing.Size(100, 24);
+			this.butDemoData.TabIndex = 5;
+			this.butDemoData.Text = "Create Demo";
+			this.butDemoData.Click += new System.EventHandler(this.butDemoData_Click);
+			// 
+			// butClearDemo
+			// 
+			this.butClearDemo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butClearDemo.Location = new System.Drawing.Point(311, 570);
+			this.butClearDemo.Name = "butClearDemo";
+			this.butClearDemo.Size = new System.Drawing.Size(100, 24);
+			this.butClearDemo.TabIndex = 6;
+			this.butClearDemo.Text = "Clear Demo";
+			this.butClearDemo.Click += new System.EventHandler(this.butClearDemo_Click);
+			// 
 			// butClose
 			// 
 			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -87,6 +109,8 @@ namespace Helianz {
 			this.Controls.Add(this.comboFilter);
 			this.Controls.Add(this.butSyncNow);
 			this.Controls.Add(this.butSettings);
+			this.Controls.Add(this.butDemoData);
+			this.Controls.Add(this.butClearDemo);
 			this.Controls.Add(this.butClose);
 			this.Name = "FormSatuSehatStatus";
 			this.Text = "SatuSehat Sync Status";
@@ -100,6 +124,8 @@ namespace Helianz {
 		private Helianz.UI.ComboBox comboFilter;
 		private Helianz.UI.Button butSyncNow;
 		private Helianz.UI.Button butSettings;
+		private Helianz.UI.Button butDemoData;
+		private Helianz.UI.Button butClearDemo;
 		private Helianz.UI.Button butClose;
 	}
 }

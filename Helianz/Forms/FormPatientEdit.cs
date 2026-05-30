@@ -168,6 +168,10 @@ End of Checklist================================================================
 				labelST.Text="";//no such thing as state in GB
 				butEditZip.Text=Lan.g(this,"Edit Postcode");
 			}
+			//Helianz: for Indonesian deployments, relabel SSN to NIK so users know to enter the 16-digit KTP/NIK number.
+			if(!CultureInfo.CurrentCulture.Name.EndsWith("CA")) {
+				labelSSN.Text="NIK/SSN";
+			}
 			_referredFromToolTip=new ToolTip();
 			_referredFromToolTip.InitialDelay=500;
 			_referredFromToolTip.ReshowDelay=100;
