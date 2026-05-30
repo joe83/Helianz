@@ -367,6 +367,8 @@
     <Compile Include="Crud\ProviderClinicLinkCrud.cs" />
     <Compile Include="Crud\ReactivationCrud.cs" />
     <Compile Include="Crud\ReferralClinicLinkCrud.cs" />
+    <Compile Include="Crud\SatuSehatConfigCrud.cs" />
+    <Compile Include="Crud\SatuSehatStatusCrud.cs" />
     <Compile Include="Crud\ScheduledProcessCrud.cs" />
     <Compile Include="Crud\SessionTokenCrud.cs" />
     <Compile Include="Crud\StatementProdCrud.cs" />
@@ -630,6 +632,8 @@
     <Compile Include="Data Interface\OrthoProcLinks.cs" />
     <Compile Include="Data Interface\OrthoSchedules.cs" />
     <Compile Include="Data Interface\PayPlanLinks.cs" />
+    <Compile Include="Data Interface\SatuSehatConfigs.cs" />
+    <Compile Include="Data Interface\SatuSehatStatuses.cs" />
     <Compile Include="Data Interface\ScheduledProcesses.cs" />
     <Compile Include="Db Multi Table\PayPlanProductionEntry.cs" />
     <Compile Include="Db Multi Table\ProcFeeHelper.cs" />
@@ -828,6 +832,8 @@
     <Compile Include="TableTypes\Reactivation.cs" />
     <Compile Include="TableTypes\ProviderClinicLink.cs" />
     <Compile Include="TableTypes\ReferralClinicLink.cs" />
+    <Compile Include="TableTypes\SatuSehatConfig.cs" />
+    <Compile Include="TableTypes\SatuSehatStatus.cs" />
     <Compile Include="TableTypes\ScheduledProcess.cs" />
     <Compile Include="TableTypes\SessionToken.cs" />
     <Compile Include="TableTypes\StatementProd.cs" />
@@ -897,6 +903,8 @@
     <Compile Include="WebBridges\PDMP\PDMPLogicoy.cs" />
     <Compile Include="WebBridges\PDMP\PDMPScript.cs" />
     <Compile Include="WebBridges\RESTfulTemplate.cs" />
+    <Compile Include="WebBridges\SatuSehat\SatuSehatApi.cs" />
+    <Compile Include="WebBridges\SatuSehat\SatuSehatSync.cs" />
     <Compile Include="WebServices\CustomerUpdatesProxy.cs" />
     <Compile Include="Remoting\DtoProcessor.cs" />
     <Compile Include="Remoting\NullObject.cs" />

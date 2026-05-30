@@ -6709,6 +6709,11 @@ namespace Helianz{
 			formResellers.ShowDialog();
 		}
 
+		private void menuItemSatuSehat_Click(object sender,EventArgs e) {
+			using FormSatuSehatStatus formSatuSehatStatus=new FormSatuSehatStatus();
+			formSatuSehatStatus.ShowDialog();
+		}
+
 		private void menuItemScreening_Click(object sender,System.EventArgs e) {
 			using FormScreenGroups formScreenGroups=new FormScreenGroups();
 			formScreenGroups.ShowDialog();

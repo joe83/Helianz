@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -2565,6 +2565,35 @@ namespace HelianzBusiness {
 			Db.NonQ(command);
 			//End B59848
 		}//End of 24_3_45() method
+
+		///<summary>SatuSehat integration - creates satusehatconfig and satusehatstatus tables.</summary>
+		private static void To24_3_46() {
+			string command=@"CREATE TABLE IF NOT EXISTS satusehatconfig (
+				SatuSehatConfigNum bigint NOT NULL auto_increment PRIMARY KEY,
+				ClientId varchar(255) NOT NULL DEFAULT '',
+				ClientSecret varchar(255) NOT NULL DEFAULT '',
+				OrganizationId varchar(64) NOT NULL DEFAULT '',
+				Environment varchar(64) NOT NULL DEFAULT 'Staging',
+				AccessToken text NOT NULL,
+				TokenExpiresAt datetime NOT NULL DEFAULT '0001-01-01 00:00:00',
+				IsEnabled tinyint(1) NOT NULL DEFAULT 0,
+				Note text NOT NULL
+		) DEFAULT CHARSET=utf8mb4";
+			Db.NonQ(command);
+			command=@"CREATE TABLE IF NOT EXISTS satusehatstatus (
+				SatuSehatStatusNum bigint NOT NULL auto_increment PRIMARY KEY,
+				PatNum bigint NOT NULL DEFAULT 0,
+				ResourceType varchar(64) NOT NULL DEFAULT 'Patient',
+				LocalResourceId bigint NOT NULL DEFAULT 0,
+				IhsId varchar(128) NOT NULL DEFAULT '',
+				SyncStatus varchar(64) NOT NULL DEFAULT 'Pending',
+				LastSyncAt datetime NOT NULL DEFAULT '0001-01-01 00:00:00',
+				ErrorMessage text NOT NULL,
+				RetryCount smallint NOT NULL DEFAULT 0,
+				DateTimeInsert datetime NOT NULL DEFAULT '0001-01-01 00:00:00'
+		) DEFAULT CHARSET=utf8mb4";
+			Db.NonQ(command);
+		}//End of 24_3_46() method
 
 	}
 }

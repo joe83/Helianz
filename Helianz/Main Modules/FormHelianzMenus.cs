@@ -64,6 +64,7 @@ namespace Helianz{
 		///<summary>Only available in OD HQ.</summary>
 		private MenuItemOD _menuItemResellers;
 		///<summary>Not available if isWeb.</summary>
+		private MenuItemOD _menuItemSatuSehat;
 		private MenuItemOD _menuItemServiceManager;
 		private MenuItemOD _menuItemSites;
 		private MenuItemOD _menuItemStandard;
@@ -425,6 +426,8 @@ namespace Helianz{
 			menuItemTools.Add(_menuItemRepeatingCharges);
 			_menuItemResellers=new MenuItemOD("Resellers",menuItemResellers_Click);
 			menuItemTools.Add(_menuItemResellers);
+			_menuItemSatuSehat=new MenuItemOD("SatuSehat",menuItemSatuSehat_Click);
+			menuItemTools.Add(_menuItemSatuSehat);
 			menuItemTools.Add("Setup Wizard",menuItemSetupWizard_Click);
 			_menuItemStudentRequirements=new MenuItemOD("Student Requirements",menuItemReqStudents_Click);
 			menuItemTools.Add(_menuItemStudentRequirements);

@@ -42,6 +42,9 @@ namespace HelianzBusiness {
 		InsVerifyBatch,
 		///<summary>2</summary>
 		Statements,
+		///<summary>3</summary>
+		[Description("SatuSehat Sync")]
+		SatuSehatSync,
 	}
 
 	/// <summary>Frequency with which an action will be run. When adding a new value to this Enum add a case for it in the ScheduledProcessThread in 

@@ -793,6 +793,18 @@
     <Compile Include="Forms\FormEservicesPaymentPortal.Designer.cs">
       <DependentUpon>FormEservicesPaymentPortal.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FormSatuSehatSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormSatuSehatSetup.Designer.cs">
+      <DependentUpon>FormSatuSehatSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormSatuSehatStatus.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormSatuSehatStatus.Designer.cs">
+      <DependentUpon>FormSatuSehatStatus.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FormERoutings.cs">
       <SubType>Form</SubType>
     </Compile>
