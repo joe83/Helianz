@@ -20,6 +20,8 @@ namespace Helianz {
 			comboFilter.Items.AddEnums<SatuSehatSyncStatus>();
 			comboFilter.SelectedIndex=0;
 			FillGrid();
+			UpdateStats();
+			timerRefresh.Start();
 		}
 
 		private void FillGrid() {
@@ -73,7 +75,29 @@ namespace Helianz {
 			FillGrid();
 		}
 
+		private void timerRefresh_Tick(object sender,EventArgs e) {
+			FillGrid();
+			UpdateStats();
+		}
+
+		private void UpdateStats() {
+			try {
+				SatuSehatSyncStats stats=SatuSehatStatuses.GetSyncStats();
+				labelStats.Text=Lan.g(this,"Pending")+": "+stats.Pending
+					+"  |  "+Lan.g(this,"Synced")+": "+stats.Synced
+					+"  |  "+Lan.g(this,"Failed")+": "+stats.Failed
+					+"  |  "+Lan.g(this,"Skipped")+": "+stats.Skipped
+					+"  \u2014  "+Lan.g(this,"Auto-sync every 5 min");
+			}
+			catch { }
+		}
+
 		private void butSyncNow_Click(object sender,EventArgs e) {
+			SatuSehatConfig config=SatuSehatConfigs.GetOne();
+			if(config==null || !config.IsEnabled) {
+				MsgBox.Show(this,"SatuSehat integration is not enabled. Open Settings, fill in your credentials, check 'Enable', then click Save.");
+				return;
+			}
 			Cursor=Cursors.WaitCursor;
 			try {
 				int count=SatuSehatSync.ProcessPendingQueue();
@@ -136,6 +160,7 @@ namespace Helianz {
 		}
 
 		private void butClose_Click(object sender,EventArgs e) {
+			timerRefresh.Stop();
 			Close();
 		}
 	}

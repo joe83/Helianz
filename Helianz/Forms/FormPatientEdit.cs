@@ -168,9 +168,10 @@ End of Checklist================================================================
 				labelST.Text="";//no such thing as state in GB
 				butEditZip.Text=Lan.g(this,"Edit Postcode");
 			}
-			//Helianz: for Indonesian deployments, relabel SSN to NIK so users know to enter the 16-digit KTP/NIK number.
-			if(!CultureInfo.CurrentCulture.Name.EndsWith("CA")) {
-				labelSSN.Text="NIK/SSN";
+			if(PrefC.GetString(PrefName.LanguageAndRegion)=="id-ID") {
+				//Indonesia: NIK is stored in the dedicated Nik field; hide the US SSN row.
+				labelSSN.Visible=false;
+				textSSN.Visible=false;
 			}
 			_referredFromToolTip=new ToolTip();
 			_referredFromToolTip.InitialDelay=500;
@@ -314,6 +315,7 @@ End of Checklist================================================================
 				//butViewSSN is disabled and not visible from designer.
 			}
 			textMedicaidID.Text=Patient.MedicaidID;
+			textNik.Text=Patient.Nik;
 			textMedicaidState.Text=_ehrPatient.MedicaidState;
 			textAddress.Text=Patient.Address;
 			textAddress2.Text=Patient.Address2;
@@ -2666,6 +2668,7 @@ End of Checklist================================================================
 					Patient.SSN=textSSN.Text;
 				}
 			}
+			Patient.Nik=textNik.Text;
 			if(IsNew) {//Check if patient already exists.
 				List<Patient> listPatients=Patients.GetListByName(Patient.LName,Patient.FName,Patient.PatNum);
 				for(int i=0;i<listPatients.Count;i++) {

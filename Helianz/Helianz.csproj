@@ -3054,6 +3054,18 @@
     <Compile Include="Forms\FormPaySimple.designer.cs">
       <DependentUpon>FormPaySimple.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FormQrisPayment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormQrisPayment.designer.cs">
+      <DependentUpon>FormQrisPayment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormMidtransSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormMidtransSetup.designer.cs">
+      <DependentUpon>FormMidtransSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms Reports\FormRpProdGoal.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -7779,6 +7791,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormPaySimple.resx">
       <DependentUpon>FormPaySimple.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormQrisPayment.resx">
+      <DependentUpon>FormQrisPayment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormMidtransSetup.resx">
+      <DependentUpon>FormMidtransSetup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormBugSubmission.resx">
       <DependentUpon>FormBugSubmission.cs</DependentUpon>

@@ -101,6 +101,7 @@ namespace Helianz {
 					Logger.LogActionIfOverTimeLimit("BeginODCloudDcvExtensionThread",LogPath.Threads, () => BeginODCloudDcvExtensionThread());
 					Logger.LogActionIfOverTimeLimit("BeginODCloudMachineNameThread",LogPath.Threads,() => BeginODCloudMachineNameThread());
 					Logger.LogActionIfOverTimeLimit("BeginApiEventsThread",LogPath.Threads,() => BeginApiEventsThread());
+					Logger.LogActionIfOverTimeLimit("BeginSatuSehatAutoSyncThread",LogPath.Threads,() => BeginSatuSehatAutoSyncThread());
 					Logger.LogToPath("Started threads",LogPath.Threads,LogPhase.Unspecified);
 					return;
 				}
@@ -1147,6 +1148,23 @@ namespace Helianz {
 		}
 		#endregion ApiEventsThread
 
+		#region SatuSehatAutoSyncThread
+		///<summary>Starts a periodic thread that calls SatuSehatSync.TryProcessPendingQueue() every 5 minutes.
+		///Uses a DB-level lock so only one client syncs at a time — safe for both standalone and multi-clinic.</summary>
+		private void BeginSatuSehatAutoSyncThread() {
+			if(IsThreadAlreadyRunning(FormODThreadNames.SatuSehatAutoSync)) {
+				return;
+			}
+			ODThread odThread=new ODThread((int)TimeSpan.FromMinutes(5).TotalMilliseconds,(o) => {
+				HelianzBusiness.WebBridges.SatuSehat.SatuSehatSync.TryProcessPendingQueue();
+			});
+			odThread.AddExceptionHandler(ex => ex.DoNothing());
+			odThread.GroupName=FormODThreadNames.SatuSehatAutoSync.GetDescription();
+			odThread.Name=FormODThreadNames.SatuSehatAutoSync.GetDescription();
+			odThread.Start(true);
+		}
+		#endregion SatuSehatAutoSyncThread
+
 		///<summary>A list of the names and group names for all threads spawned from FormHelianz.</summary>
 		public enum FormODThreadNames {
 			[Obsolete]
@@ -1183,7 +1201,9 @@ namespace Helianz {
 			RegistrationKeyIsDisabled,
 			DataReaderNullMonitor,
 			ApiEvents,
-			ODCloudDcvExtension
+			ODCloudDcvExtension,
+			///<summary>Periodic SatuSehat auto-sync. Runs every 5 minutes if SatuSehat is enabled.</summary>
+			SatuSehatAutoSync,
 		}
 	}
 }

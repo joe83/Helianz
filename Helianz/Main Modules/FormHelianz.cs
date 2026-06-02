@@ -6709,6 +6709,18 @@ namespace Helianz{
 			formResellers.ShowDialog();
 		}
 
+		private void menuItemMidtrans_Click(object sender,EventArgs e) {
+			MidtransConfig midtransConfig=null;
+			try {
+				midtransConfig=MidtransConfigs.GetForClinic(Clinics.ClinicNum);
+			}
+			catch {
+				//Table may not exist yet
+			}
+			using FormMidtransSetup formMidtransSetup=new FormMidtransSetup(midtransConfig);
+			formMidtransSetup.ShowDialog();
+		}
+
 		private void menuItemSatuSehat_Click(object sender,EventArgs e) {
 			using FormSatuSehatStatus formSatuSehatStatus=new FormSatuSehatStatus();
 			formSatuSehatStatus.ShowDialog();

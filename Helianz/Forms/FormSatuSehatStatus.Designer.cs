@@ -19,6 +19,8 @@ namespace Helianz {
 			this.butDemoData = new Helianz.UI.Button();
 			this.butClearDemo = new Helianz.UI.Button();
 			this.butClose = new Helianz.UI.Button();
+			this.labelStats = new System.Windows.Forms.Label();
+			this.timerRefresh = new System.Windows.Forms.Timer();
 			this.SuspendLayout();
 			// 
 			// gridMain
@@ -101,9 +103,23 @@ namespace Helianz {
 			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
+			// labelStats
+			// 
+			this.labelStats.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
+			this.labelStats.Location = new System.Drawing.Point(12, 598);
+			this.labelStats.Name = "labelStats";
+			this.labelStats.Size = new System.Drawing.Size(600, 18);
+			this.labelStats.TabIndex = 10;
+			this.labelStats.Text = "";
+			// 
+			// timerRefresh
+			// 
+			this.timerRefresh.Interval = 30000;
+			this.timerRefresh.Tick += new System.EventHandler(this.timerRefresh_Tick);
+			// 
 			// FormSatuSehatStatus
 			// 
-			this.ClientSize = new System.Drawing.Size(884, 606);
+			this.ClientSize = new System.Drawing.Size(884, 624);
 			this.Controls.Add(this.gridMain);
 			this.Controls.Add(this.labelFilter);
 			this.Controls.Add(this.comboFilter);
@@ -112,6 +128,7 @@ namespace Helianz {
 			this.Controls.Add(this.butDemoData);
 			this.Controls.Add(this.butClearDemo);
 			this.Controls.Add(this.butClose);
+			this.Controls.Add(this.labelStats);
 			this.Name = "FormSatuSehatStatus";
 			this.Text = "SatuSehat Sync Status";
 			this.Load += new System.EventHandler(this.FormSatuSehatStatus_Load);
@@ -127,5 +144,7 @@ namespace Helianz {
 		private Helianz.UI.Button butDemoData;
 		private Helianz.UI.Button butClearDemo;
 		private Helianz.UI.Button butClose;
+		private System.Windows.Forms.Label labelStats;
+		private System.Windows.Forms.Timer timerRefresh;
 	}
 }

@@ -29,6 +29,7 @@ namespace Helianz{
 			this.labelPosition = new System.Windows.Forms.Label();
 			this.labelBirthdate = new System.Windows.Forms.Label();
 			this.labelSSN = new System.Windows.Forms.Label();
+			this.labelNik = new System.Windows.Forms.Label();
 			this.labelAddress = new System.Windows.Forms.Label();
 			this.labelAddress2 = new System.Windows.Forms.Label();
 			this.labelCity = new System.Windows.Forms.Label();
@@ -42,6 +43,7 @@ namespace Helianz{
 			this.textMiddleI = new System.Windows.Forms.TextBox();
 			this.textPreferred = new System.Windows.Forms.TextBox();
 			this.textSSN = new System.Windows.Forms.TextBox();
+			this.textNik = new System.Windows.Forms.TextBox();
 			this.textAddress = new System.Windows.Forms.TextBox();
 			this.textAddress2 = new System.Windows.Forms.TextBox();
 			this.textCity = new System.Windows.Forms.TextBox();
@@ -290,8 +292,17 @@ namespace Helianz{
 			this.labelSSN.Name = "labelSSN";
 			this.labelSSN.Size = new System.Drawing.Size(142, 14);
 			this.labelSSN.TabIndex = 0;
-			this.labelSSN.Text = "NIK/SSN";
+			this.labelSSN.Text = "SSN";
 			this.labelSSN.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// labelNik
+			// 
+			this.labelNik.Location = new System.Drawing.Point(12, 31);
+			this.labelNik.Name = "labelNik";
+			this.labelNik.Size = new System.Drawing.Size(142, 14);
+			this.labelNik.TabIndex = 0;
+			this.labelNik.Text = "NIK";
+			this.labelNik.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// labelAddress
 			// 
@@ -414,6 +425,14 @@ namespace Helianz{
 			this.textSSN.TabIndex = 11;
 			this.textSSN.Leave += new System.EventHandler(this.textBox_Leave);
 			this.textSSN.Validating += new System.ComponentModel.CancelEventHandler(this.textSSN_Validating);
+			// 
+			// textNik
+			// 
+			this.textNik.Location = new System.Drawing.Point(155, 28);
+			this.textNik.MaxLength = 16;
+			this.textNik.Name = "textNik";
+			this.textNik.Size = new System.Drawing.Size(140, 20);
+			this.textNik.TabIndex = 12;
 			// 
 			// textAddress
 			// 
@@ -1840,6 +1859,8 @@ namespace Helianz{
 			this.tabOther.Controls.Add(this.checkBoxSignedTil);
 			this.tabOther.Controls.Add(this.textSSN);
 			this.tabOther.Controls.Add(this.labelSSN);
+			this.tabOther.Controls.Add(this.textNik);
+			this.tabOther.Controls.Add(this.labelNik);
 			this.tabOther.Controls.Add(this.labelDateFirstVisit);
 			this.tabOther.Controls.Add(this.textTrophyFolder);
 			this.tabOther.Controls.Add(this.labelTrophyFolder);
@@ -2202,6 +2223,7 @@ namespace Helianz{
 		private System.Windows.Forms.TextBox textMiddleI;
 		private System.Windows.Forms.TextBox textPreferred;
 		private System.Windows.Forms.TextBox textSSN;
+		private System.Windows.Forms.TextBox textNik;
 		private System.Windows.Forms.TextBox textAddress;
 		private System.Windows.Forms.TextBox textAddress2;
 		private System.Windows.Forms.TextBox textCity;
@@ -2240,6 +2262,7 @@ namespace Helianz{
 		private System.Windows.Forms.TextBox textEmployer;
 		private System.Windows.Forms.Label labelEmployer;
 		private System.Windows.Forms.Label labelSSN;
+		private System.Windows.Forms.Label labelNik;
 		private System.Windows.Forms.Label labelZip;
 		private System.Windows.Forms.Label labelST;
 		private Helianz.UI.Button butEditZip;

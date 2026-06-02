@@ -25,6 +25,7 @@ namespace Helianz {
 			textClientId.Text=_satuSehatConfigCur.ClientId;
 			textClientSecret.Text=_satuSehatConfigCur.ClientSecret;
 			textOrganizationId.Text=_satuSehatConfigCur.OrganizationId;
+			textLocationId.Text=_satuSehatConfigCur.LocationId;
 			comboEnvironment.Items.AddEnums<SatuSehatEnvironment>();
 			comboEnvironment.SetSelectedEnum(_satuSehatConfigCur.Environment);
 			checkIsEnabled.Checked=_satuSehatConfigCur.IsEnabled;
@@ -91,6 +92,7 @@ namespace Helianz {
 			configNew.ClientId=textClientId.Text.Trim();
 			configNew.ClientSecret=textClientSecret.Text.Trim();
 			configNew.OrganizationId=textOrganizationId.Text.Trim();
+			configNew.LocationId=textLocationId.Text.Trim();
 			configNew.Environment=comboEnvironment.GetSelected<SatuSehatEnvironment>();
 			configNew.IsEnabled=checkIsEnabled.Checked;
 			configNew.Note=textNote.Text;

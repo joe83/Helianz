@@ -70,6 +70,11 @@ namespace Helianz {
 		///<summary>The original splits that existed when this window was opened.  Empty for new payments.</summary>
 		private List<PaySplit> _listPaySplitsOld;
 		private List<Def> _listDefsPaymentType;
+		///<summary>Subset of _listDefsPaymentType actually shown in listPayType (excludes "QRIS" def when Midtrans virtual item is active).
+		///Use this for index-based lookups on listPayType.SelectedIndex.</summary>
+		private List<Def> _listDefsPaymentTypeDisplay;
+		///<summary>Index of the virtual QRIS item in listPayType. -1 if QRIS is not configured.</summary>
+		private int _qrisPayTypeIndex=-1;
 		///<summary>A current list of splits showing on the left grid.</summary>
 		private List<PaySplit> _listPaySplits=new List<PaySplit>();
 		///<summary>Holds most all the data needed to load the form.</summary>
@@ -260,15 +265,38 @@ namespace Helianz {
 			textBankBranch.Text=_payment.BankBranch;
 			textSurcharge.Text=_payment.MerchantFee.ToString("F");
 			_listDefsPaymentType=Defs.GetDefsForCategory(DefCat.PaymentTypes,true);
+			_listDefsPaymentTypeDisplay=new List<Def>();
+			//Determine if Midtrans QRIS is active so we can suppress the standalone "QRIS" def (handled by the virtual item below)
+			bool midtransActive=false;
+			MidtransConfig midtransConfigForList=null;
+			try {
+				midtransConfigForList=MidtransConfigs.GetForClinic(_payment.ClinicNum);
+				midtransActive=midtransConfigForList!=null && midtransConfigForList.IsEnabled;
+			}
+			catch { /*Table may not exist yet*/ }
 			for(int i = 0;i<_listDefsPaymentType.Count;i++) {
+				//Skip the "QRIS" def when Midtrans is active — the virtual item below handles it
+				if(midtransActive && string.Equals(_listDefsPaymentType[i].ItemName,"QRIS",StringComparison.OrdinalIgnoreCase)) {
+					continue;
+				}
+				_listDefsPaymentTypeDisplay.Add(_listDefsPaymentType[i]);
 				listPayType.Items.Add(_listDefsPaymentType[i].ItemName);
 				if(IsNew && PrefC.GetBool(PrefName.PaymentsPromptForPayType)) {//skip auto selecting payment type if preference is enabled and payment is new
 					continue;//user will be forced to selectan indexbefore closing or clicking ok
 				}
 				if(_listDefsPaymentType[i].DefNum==_payment.PayType) {
-					listPayType.SelectedIndex=i;
+					listPayType.SelectedIndex=listPayType.Items.Count-1;
 				}
 			}
+			//Add virtual QRIS item when Midtrans is configured for this clinic
+			if(midtransActive) {
+				_qrisPayTypeIndex=listPayType.Items.Count;
+				listPayType.Items.Add("QRIS (Midtrans)");
+				if(_payment.PaymentSource==CreditCardSource.MidtransQris) {
+					listPayType.SelectedIndex=_qrisPayTypeIndex;
+				}
+			}
+			UpdateQrisButtonState();
 			textNote.Text=_payment.PayNote;
 			Deposit deposit=null;
 			if(_payment.DepositNum!=0) {
@@ -567,6 +595,11 @@ namespace Helianz {
 		}
 
 		private void butPay_Click(object sender,EventArgs e) {
+			//Intercept QRIS virtual payment type
+			if(_qrisPayTypeIndex>=0 && listPayType.SelectedIndex==_qrisPayTypeIndex) {
+				RunQrisPayment();
+				return;
+			}
 			if(checkPayTypeNone.Checked) {
 				if(!gridSplits.ListGridRows.IsNullOrEmpty()) {
 					if(!MsgBox.Show(this,MsgBoxButtons.OKCancel,"Performing a transfer will overwrite all Current Payment Splits.  Continue?")) {
@@ -641,6 +674,83 @@ namespace Helianz {
 			if(_payment.IsCcCompleted) {
 				DisablePaymentControls();
 			}
+		}
+
+		private void butQris_Click(object sender,EventArgs e) {
+			double amount=PIn.Double(textAmount.Text);
+			if(amount<=0) {
+				MsgBox.Show(this,"Amount must be greater than zero.");
+				return;
+			}
+			MidtransConfig midtransConfig=MidtransConfigs.GetForClinic(_payment.ClinicNum);
+			if(midtransConfig==null || !midtransConfig.IsEnabled) {
+				MsgBox.Show(this,"Midtrans QRIS is not configured for this clinic.\r\nGo to Setup > Midtrans QRIS Setup to configure.");
+				return;
+			}
+			//Convert amount to IDR (no decimals)
+			long amountIdr=(long)Math.Round(amount,MidpointRounding.AwayFromZero);
+			MidtransTransaction midtransTransaction;
+			try {
+				HelianzBusiness.WebBridges.MidtransApi midtransApi=new HelianzBusiness.WebBridges.MidtransApi(midtransConfig);
+				midtransTransaction=midtransApi.CreateQrisCharge(_patient.PatNum,_payment.ClinicNum,amountIdr,textNote.Text);
+			}
+			catch(Exception ex) {
+				MessageBox.Show(Lan.g(this,"Failed to create QRIS charge.")+"\r\n"+ex.Message,Lan.g(this,"QRIS Payment"));
+				return;
+			}
+			using FormQrisPayment formQrisPayment=new FormQrisPayment(midtransConfig,midtransTransaction);
+			formQrisPayment.ShowDialog(this);
+			if(!formQrisPayment.IsPaymentSettled) {
+				return;
+			}
+			//Payment was settled — link the transaction to the payment and record the payment source
+			_payment.PaymentSource=CreditCardSource.MidtransQris;
+			_payment.IsCcCompleted=true;
+			MidtransTransaction settledTx=formQrisPayment.MidtransTransactionResult;
+			if(settledTx!=null) {
+				settledTx.PayNum=_payment.PayNum;
+				MidtransTransactions.Update(settledTx);
+			}
+			DisablePaymentControls();
+		}
+
+		private void RunQrisPayment() {
+			double amount=PIn.Double(textAmount.Text);
+			if(amount<=0) {
+				MsgBox.Show(this,"Amount must be greater than zero.");
+				return;
+			}
+			MidtransConfig midtransConfig=MidtransConfigs.GetForClinic(_payment.ClinicNum);
+			if(midtransConfig==null || !midtransConfig.IsEnabled) {
+				MsgBox.Show(this,"Midtrans QRIS is not configured for this clinic.\r\nGo to Setup > Account > Midtrans QRIS to configure.");
+				return;
+			}
+			long amountIdr=(long)Math.Round(amount,MidpointRounding.AwayFromZero);
+			MidtransTransaction midtransTransaction;
+			try {
+				HelianzBusiness.WebBridges.MidtransApi midtransApi=new HelianzBusiness.WebBridges.MidtransApi(midtransConfig);
+				midtransTransaction=midtransApi.CreateQrisCharge(_patient.PatNum,_payment.ClinicNum,amountIdr,textNote.Text);
+			}
+			catch(Exception ex) {
+				MessageBox.Show(Lan.g(this,"Failed to create QRIS charge.")+"\r\n"+ex.Message,Lan.g(this,"QRIS Payment"));
+				return;
+			}
+			using FormQrisPayment formQrisPayment=new FormQrisPayment(midtransConfig,midtransTransaction);
+			formQrisPayment.ShowDialog(this);
+			if(!formQrisPayment.IsPaymentSettled) {
+				return;
+			}
+			_payment.PaymentSource=CreditCardSource.MidtransQris;
+			_payment.IsCcCompleted=true;
+			//Set the dedicated QRIS payment type (auto-created if it doesn't exist yet)
+			_payment.PayType=MidtransConfigs.GetOrCreateQrisPayTypeDef();
+			MidtransTransaction settledTx=formQrisPayment.MidtransTransactionResult;
+			if(settledTx!=null) {
+				settledTx.PayNum=_payment.PayNum;
+				MidtransTransactions.Update(settledTx);
+			}
+			DisablePaymentControls();
+			UpdateQrisButtonState();//Re-enable butSave now that payment is complete
 		}
 
 		private void butPaySimple_Click(object sender,MouseEventArgs e) {
@@ -855,6 +965,35 @@ namespace Helianz {
 			}
 			textDepositAccount.Visible=false;
 			SetComboDepositAccounts();
+			UpdateQrisButtonState();
+		}
+
+		///<summary>Called when the list selection changes via keyboard or programmatic assignment.
+		///Ensures QRIS save-gate is updated even without a mouse click.</summary>
+		private void listPayType_SelectedIndexChanged(object sender,EventArgs e) {
+			UpdateQrisButtonState();
+		}
+
+		///<summary>Greys out butSave when the QRIS virtual item is selected but payment has not yet
+		///been completed. Re-enables it once the QRIS transaction is settled.
+		///Also updates labelQrisBadge to show an instruction hint when save is blocked.</summary>
+		private void UpdateQrisButtonState() {
+			if(_qrisPayTypeIndex<0) {
+				return;
+			}
+			bool qrisSelected=listPayType.SelectedIndex==_qrisPayTypeIndex;
+			bool qrisPaid=_payment.IsCcCompleted && _payment.PaymentSource==CreditCardSource.MidtransQris;
+			butSave.Enabled=!(qrisSelected && !qrisPaid);
+			labelQrisBadge.Enabled=true;//Restore Enabled in case DisablePaymentControls() cleared it
+			labelQrisBadge.Visible=qrisSelected;
+			if(qrisSelected && !qrisPaid) {
+				labelQrisBadge.Text="QRIS selected\r\nClick Pay to continue";
+				labelQrisBadge.BackColor=System.Drawing.Color.FromArgb(204,102,0);
+			}
+			else if(qrisSelected && qrisPaid) {
+				labelQrisBadge.Text="QRIS confirmed\r\nYou can Save now";
+				labelQrisBadge.BackColor=System.Drawing.Color.FromArgb(0,136,82);
+			}
 		}
 
 		private void menuPayConnect_Click(object sender,EventArgs e) {
@@ -1203,6 +1342,26 @@ namespace Helianz {
 			Program programPayConnect=Programs.GetCur(ProgramName.PayConnect);
 			Program programPaySimple=Programs.GetCur(ProgramName.PaySimple);
 			Program programCareCredit=Programs.GetCur(ProgramName.CareCredit);
+			//If Midtrans/QRIS is configured, hide all other payment gateways and credit-card UI and return early.
+			try {
+				MidtransConfig midtransConfigCheck=MidtransConfigs.GetForClinic(_payment.ClinicNum);
+				if(midtransConfigCheck!=null && midtransConfigCheck.IsEnabled) {
+					//Hide all other payment gateways when QRIS is active.
+					//Do NOT force labelQrisBadge.Visible=true here — UpdateQrisButtonState() owns that.
+					panelXcharge.Visible=false;
+					panelEdgeExpress.Visible=false;
+					butPayConnect.Visible=false;
+					butPaySimple.Visible=false;
+					butCareCredit.Visible=false;
+					labelCreditCards.Visible=false;
+					comboCreditCards.Visible=false;
+					checkRecurring.Visible=false;
+					UpdateQrisButtonState();//Refresh badge + butSave state
+					return;
+				}
+			}
+			catch { /*Midtrans table may not exist yet; skip silently*/ }
+			labelQrisBadge.Visible=false;
 			if(_programX==null || programPayConnect==null || programPaySimple==null || programCareCredit==null || programEdgeExpress==null) {//Should not happen.
 				panelXcharge.Visible=(_programX!=null);
 				butPayConnect.Visible=(programPayConnect!=null);
@@ -1435,6 +1594,7 @@ namespace Helianz {
 				panelXcharge.Enabled=false;
 				butPaySimple.Enabled=false;
 				butPayConnect.Enabled=false;
+				labelQrisBadge.Enabled=false;
 			}
 		}
 
@@ -2897,7 +3057,8 @@ namespace Helianz {
 					MessageBox.Show(Lan.g(this,"Please enter an amount or create payment splits."));
 					return false;
 				}
-				if(amt!=0 && (listPayType.SelectedIndex==-1 || listPayType.SelectedIndex>=_listDefsPaymentType.Count)) {
+				if(amt!=0 && (listPayType.SelectedIndex==-1 || listPayType.SelectedIndex>=_listDefsPaymentTypeDisplay.Count)
+					&& !(_payment.IsCcCompleted && _payment.PaymentSource==CreditCardSource.MidtransQris)) {
 					MsgBox.Show(this,"A payment type must be selected.");
 					return false;
 				}
@@ -2945,7 +3106,12 @@ namespace Helianz {
 				}
 			}
 			else {//Not an income transfer
-				paymentTypeParam=_listDefsPaymentType[listPayType.SelectedIndex].ItemName;
+				if(listPayType.SelectedIndex==_qrisPayTypeIndex) {
+					paymentTypeParam="QRIS";
+				}
+				else {
+					paymentTypeParam=_listDefsPaymentTypeDisplay[listPayType.SelectedInI dondex].ItemName;
+				}
 			}
 			object[] objectArrayParameters={ paymentTypeParam,textNote.Text,_isCCDeclined,_payment };
 			Plugins.HookAddCode(this,"FormPayment.SavePaymentToDb_afterUnearnedCurCheck",objectArrayParameters);
@@ -3018,9 +3184,10 @@ namespace Helianz {
 			if((PIn.Double(textAmount.Text)==0 && listPayType.SelectedIndex==-1) || checkPayTypeNone.Checked) {
 				_payment.PayType=0;
 			}
-			else {
-				_payment.PayType=_listDefsPaymentType[listPayType.SelectedIndex].DefNum;
+			else if(listPayType.SelectedIndex>=0 && listPayType.SelectedIndex<_listDefsPaymentTypeDisplay.Count) {
+				_payment.PayType=_listDefsPaymentTypeDisplay[listPayType.SelectedIndex].DefNum;
 			}
+			//else: QRIS or other virtual item — PayType already set by RunQrisPayment()
 			if(_listPaySplits.Count==0) {//Existing payment with no splits.
 				if(!_isCCDeclined && _rigorousAccounting!=RigorousAccounting.DontEnforce) {
 					_listPaySplits=GetSuggestedAutoSplits();//PayAmt needs to be set first
@@ -3192,8 +3359,14 @@ namespace Helianz {
 				}
 				return;
 			}
+			//Virtual items (e.g. QRIS) are appended beyond the def list; skip deposit account lookup for them.
+			if(listPayType.SelectedIndex>=_listDefsPaymentTypeDisplay.Count) {
+				labelDepositAccount.Visible=false;
+				comboDepositAccount.Visible=false;
+				return;
+			}
 			AccountingAutoPay accountingAutoPay=AccountingAutoPays.GetForPayType(
-				_listDefsPaymentType[listPayType.SelectedIndex].DefNum);
+				_listDefsPaymentTypeDisplay[listPayType.SelectedIndex].DefNum);
 			if(accountingAutoPay==null) {
 				labelDepositAccount.Visible=false;
 				comboDepositAccount.Visible=false;
@@ -4605,7 +4778,7 @@ namespace Helianz {
 				return;
 			}
 			//make user select a payment type, prevents exception when trying to set payment type of voided CC payment.
-			if(!checkPayTypeNone.Checked && (listPayType.SelectedIndex==-1 || listPayType.SelectedIndex>=_listDefsPaymentType.Count)) {
+			if(!checkPayTypeNone.Checked && (listPayType.SelectedIndex==-1 || listPayType.SelectedIndex>=_listDefsPaymentTypeDisplay.Count)) {
 				MsgBox.Show(this,"A payment type must be selected.");
 				e.Cancel=true;//Stop the form from closing
 				return;
@@ -4631,9 +4804,10 @@ namespace Helianz {
 			if(checkPayTypeNone.Checked) {
 				_payment.PayType=0;
 			}
-			else {
-				_payment.PayType=_listDefsPaymentType[listPayType.SelectedIndex].DefNum;
+			else if(listPayType.SelectedIndex>=0 && listPayType.SelectedIndex<_listDefsPaymentTypeDisplay.Count) {
+				_payment.PayType=_listDefsPaymentTypeDisplay[listPayType.SelectedIndex].DefNum;
 			}
+			//else: QRIS or other virtual item — PayType already set by RunQrisPayment()
 			if(_listPaySplits.Count==0) {
 				AddOneSplit();
 				//FillMain();

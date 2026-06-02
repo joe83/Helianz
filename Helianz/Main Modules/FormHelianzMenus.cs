@@ -64,6 +64,7 @@ namespace Helianz{
 		///<summary>Only available in OD HQ.</summary>
 		private MenuItemOD _menuItemResellers;
 		///<summary>Not available if isWeb.</summary>
+		private MenuItemOD _menuItemMidtrans;
 		private MenuItemOD _menuItemSatuSehat;
 		private MenuItemOD _menuItemServiceManager;
 		private MenuItemOD _menuItemSites;
@@ -257,6 +258,8 @@ namespace Helianz{
 			menuItemAccount.Add("Allocations",menuItemAllocations_Click);
 			_menuItemDefaultCCProcs=new MenuItemOD("Default CC Procedures",menuItemDefaultCCProcs_Click);
 			menuItemAccount.Add(_menuItemDefaultCCProcs);
+			_menuItemMidtrans=new MenuItemOD("Midtrans QRIS",menuItemMidtrans_Click);
+			menuItemAccount.Add(_menuItemMidtrans);
 			menuItemAccount.Add("Pay Plan Templates",menuItemPayPlanTemplates_Click);
 		}
 

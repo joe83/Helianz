@@ -221,6 +221,7 @@
 			this.labelSurchargeFee = new System.Windows.Forms.Label();
 			this.textSurcharge = new System.Windows.Forms.TextBox();
 			this.butPayConnect = new System.Windows.Forms.Panel();
+			this.labelQrisBadge = new System.Windows.Forms.Label();
 			this.groupXWeb.SuspendLayout();
 			this.tabControlCharges.SuspendLayout();
 			this.tabPageOutstanding.SuspendLayout();
@@ -592,6 +593,7 @@
 			this.listPayType.Size = new System.Drawing.Size(120, 95);
 			this.listPayType.TabIndex = 4;
 			this.listPayType.Click += new System.EventHandler(this.listPayType_Click);
+			this.listPayType.SelectedIndexChanged += new System.EventHandler(this.listPayType_SelectedIndexChanged);
 			// 
 			// textNote
 			// 
@@ -1377,6 +1379,19 @@
 			this.textSurcharge.TabIndex = 1005;
 			this.textSurcharge.Visible = false;
 			// 
+			// labelQrisBadge
+			// 
+			this.labelQrisBadge.AutoSize = false;
+			this.labelQrisBadge.BackColor = System.Drawing.Color.FromArgb(0, 136, 82);
+			this.labelQrisBadge.ForeColor = System.Drawing.Color.White;
+			this.labelQrisBadge.Font = new System.Drawing.Font("Segoe UI", 9.5f, System.Drawing.FontStyle.Bold);
+			this.labelQrisBadge.Location = new System.Drawing.Point(640, 96);
+			this.labelQrisBadge.Name = "labelQrisBadge";
+			this.labelQrisBadge.Size = new System.Drawing.Size(214, 48);
+			this.labelQrisBadge.TabIndex = 142;
+			this.labelQrisBadge.Text = "QRIS selected\r\nClick Pay to continue";
+			this.labelQrisBadge.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.labelQrisBadge.Visible = false;
 			// butPayConnect
 			// 
 			this.butPayConnect.BackgroundImage = global::Helianz.Properties.Resources.payconnect_btn_26;
@@ -1391,6 +1406,7 @@
 			// FormPayment
 			// 
 			this.ClientSize = new System.Drawing.Size(1111, 696);
+			this.Controls.Add(this.labelQrisBadge);
 			this.Controls.Add(this.butPayConnect);
 			this.Controls.Add(this.textSurcharge);
 			this.Controls.Add(this.labelSurchargeFee);
@@ -1488,5 +1504,6 @@
 		private System.Windows.Forms.TextBox textSurcharge;
 		private System.Windows.Forms.Label labelIncludesNegativeEntries;
 		private System.Windows.Forms.Panel butPayConnect;
+		private System.Windows.Forms.Label labelQrisBadge;
 	}
 }

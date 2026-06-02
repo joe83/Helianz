@@ -30,6 +30,8 @@ namespace HelianzBusiness{
 		public DateTime Birthdate;
 		/// <summary>In the US, this is 9 digits, no dashes. For all other countries, any punctuation or format is allowed.</summary>
 		public string SSN;
+		/// <summary>Indonesian National ID — Nomor Induk Kependudukan (NIK). 16-digit numeric string. Blank for non-Indonesian patients.</summary>
+		public string Nik;
 		/// <summary>.</summary>
 		[CrudColumn(SpecialType=CrudSpecialColType.CleanText)]
 		public string Address;

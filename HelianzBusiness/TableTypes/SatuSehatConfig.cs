@@ -27,6 +27,14 @@ namespace HelianzBusiness {
 		///<summary>Optional notes about this configuration.</summary>
 		[CrudColumn(SpecialType=CrudSpecialColType.IsText)]
 		public string Note;
+		///<summary>SatuSehat Location IHS ID for the primary clinic location.  Used as Encounter.location reference.
+		///If empty the sync will attempt to auto-fetch the first location registered under OrganizationId.</summary>
+		public string LocationId;
+		///<summary>Hostname of the client that currently holds the auto-sync lock. Empty when unlocked.</summary>
+		public string SyncLockHost;
+		///<summary>UTC time when the sync lock was acquired. Used to detect stale locks (older than 10 minutes).</summary>
+		[CrudColumn(SpecialType=CrudSpecialColType.DateT)]
+		public DateTime SyncLockAt;
 
 		///<summary></summary>
 		public SatuSehatConfig Copy() {

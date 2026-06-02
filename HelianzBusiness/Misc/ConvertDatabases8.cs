@@ -2595,5 +2595,62 @@ namespace HelianzBusiness {
 			Db.NonQ(command);
 		}//End of 24_3_46() method
 
+		///<summary>Adds Nik column to patient table for Indonesian NIK (Nomor Induk Kependudukan).
+		///Sets SalesTaxPercentage to 11 if LanguageAndRegion is id-ID (Indonesia).</summary>
+		private static void To24_3_47() {
+			if(!LargeTableHelper.ColumnExists(LargeTableHelper.GetCurrentDatabase(),"patient","Nik")) {
+				Db.NonQ("ALTER TABLE patient ADD COLUMN Nik varchar(20) NOT NULL DEFAULT '' AFTER SSN");
+			}
+			//If this database is already configured for Indonesia, set the default VAT/PPN to 11%.
+			string langRegion=DataCore.GetScalar("SELECT ValueString FROM preference WHERE PrefName='LanguageAndRegion'");
+			if(langRegion=="id-ID") {
+				string existingTax=DataCore.GetScalar("SELECT ValueString FROM preference WHERE PrefName='SalesTaxPercentage'");
+				if(string.IsNullOrEmpty(existingTax) || existingTax=="0") {
+					Db.NonQ("UPDATE preference SET ValueString='11' WHERE PrefName='SalesTaxPercentage'");
+				}
+			}
+		}//End of 24_3_47() method
+
+		///<summary>Midtrans QRIS integration - creates midtransconfig and midtranstransaction tables.</summary>
+		private static void To24_3_48() {
+			Db.NonQ(@"CREATE TABLE IF NOT EXISTS midtransconfig (
+				MidtransConfigNum bigint NOT NULL auto_increment PRIMARY KEY,
+				ServerKey varchar(255) NOT NULL DEFAULT '',
+				ClientKey varchar(255) NOT NULL DEFAULT '',
+				Environment varchar(64) NOT NULL DEFAULT 'Sandbox',
+				IsEnabled tinyint(1) NOT NULL DEFAULT 0,
+				ClinicNum bigint NOT NULL DEFAULT 0,
+				MerchantName varchar(255) NOT NULL DEFAULT '',
+				Note text NOT NULL
+			) DEFAULT CHARSET=utf8mb4");
+			Db.NonQ(@"CREATE TABLE IF NOT EXISTS midtranstransaction (
+				MidtransTransactionNum bigint NOT NULL auto_increment PRIMARY KEY,
+				PatNum bigint NOT NULL DEFAULT 0,
+				PayNum bigint NOT NULL DEFAULT 0,
+				OrderId varchar(255) NOT NULL DEFAULT '',
+				TransactionId varchar(255) NOT NULL DEFAULT '',
+				PaymentType varchar(64) NOT NULL DEFAULT '',
+				GrossAmount bigint NOT NULL DEFAULT 0,
+				QrCodeUrl text NOT NULL,
+				StatusUrl text NOT NULL,
+				TransactionStatus varchar(64) NOT NULL DEFAULT 'Created',
+				LastResponseJson text NOT NULL,
+				DateTimeCreated datetime NOT NULL DEFAULT '0001-01-01 00:00:00',
+				DateTimeSettled datetime NOT NULL DEFAULT '0001-01-01 00:00:00',
+				ClinicNum bigint NOT NULL DEFAULT 0,
+				PayNote text NOT NULL
+			) DEFAULT CHARSET=utf8mb4");
+		}//End of 24_3_48() method
+
+		private static void To24_3_49() {
+			//Add PayTypeDefNum column to midtransconfig so each clinic can configure which payment type
+			//definition (DefCat.PaymentTypes) is used when posting a QRIS payment to the account ledger.
+			string command="SELECT COUNT(*) FROM information_schema.COLUMNS "
+				+"WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='midtransconfig' AND COLUMN_NAME='PayTypeDefNum'";
+			if(Db.GetScalar(command)=="0") {
+				Db.NonQ("ALTER TABLE midtransconfig ADD PayTypeDefNum bigint NOT NULL DEFAULT 0");
+			}
+		}//End of 24_3_49() method
+
 	}
 }

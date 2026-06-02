@@ -20,7 +20,9 @@ namespace HelianzBusiness {
 			string command="SELECT * FROM satusehatstatus "
 				+"WHERE SyncStatus IN ('"+POut.String(SatuSehatSyncStatus.Pending.ToString())+"','"+POut.String(SatuSehatSyncStatus.Failed.ToString())+"') "
 				+"AND RetryCount < "+POut.Int(MAX_RETRY_COUNT)+" "
-				+"ORDER BY DateTimeInsert ASC "
+			//Patient rows must come before their dependent resources (Encounter, Procedure, etc.) so the IHS ID
+			//is resolved before dependents are processed in the same batch.
+			+"ORDER BY CASE ResourceType WHEN 'Patient' THEN 0 WHEN 'Encounter' THEN 1 WHEN 'Condition' THEN 2 ELSE 3 END ASC, DateTimeInsert ASC "
 				+"LIMIT "+POut.Int(maxBatch);
 			return Crud.SatuSehatStatusCrud.SelectMany(command);
 		}
@@ -58,6 +60,25 @@ namespace HelianzBusiness {
 				+"ORDER BY DateTimeInsert DESC "
 				+"LIMIT "+POut.Int(pageSize)+" OFFSET "+POut.Int(pageIndex*pageSize);
 			return Crud.SatuSehatStatusCrud.SelectMany(command);
+		}
+
+		///<summary>Returns a count per SyncStatus for display in the stats bar.</summary>
+		public static SatuSehatSyncStats GetSyncStats() {
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				return Meth.GetObject<SatuSehatSyncStats>(MethodBase.GetCurrentMethod());
+			}
+			string command="SELECT SyncStatus,COUNT(*) cnt FROM satusehatstatus GROUP BY SyncStatus";
+			DataTable table=Db.GetTable(command);
+			SatuSehatSyncStats stats=new SatuSehatSyncStats();
+			foreach(DataRow row in table.Rows) {
+				int count=PIn.Int(row["cnt"].ToString());
+				string status=row["SyncStatus"].ToString();
+				if(status==SatuSehatSyncStatus.Pending.ToString()) { stats.Pending=count; }
+				else if(status==SatuSehatSyncStatus.Synced.ToString())  { stats.Synced=count;  }
+				else if(status==SatuSehatSyncStatus.Failed.ToString())  { stats.Failed=count;  }
+				else if(status==SatuSehatSyncStatus.Skipped.ToString()) { stats.Skipped=count; }
+			}
+			return stats;
 		}
 
 		#endregion Get Methods

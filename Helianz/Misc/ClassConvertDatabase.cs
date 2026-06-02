@@ -314,7 +314,7 @@ namespace Helianz{
 					Prefs.UpdateBool(PrefName.CorruptedDatabase,true);
 				}
 				ConvertDatabases.FromVersion=FromVersion;
-				if(!ODBuild.IsDebug()) {
+				if(!ODBuild.ShouldBypassVersionChecks()) {
 					//Typically the UpdateInProgressOnComputerName preference will have already been set within FormUpdate.
 					//However, the user could have cancelled out of FormUpdate after successfully downloading the Setup.exe
 					//OR the Setup.exe could have been manually sent to our customer (during troubleshooting with HQ).
@@ -347,8 +347,8 @@ namespace Helianz{
 					LogText="New version detected. Database update initiated from "+FromVersion.ToString()+" to "+ToVersion.ToString()+".",
 					CompName=Security.GetComplexComputerName()
 				};
-				SecurityLogs.MakeLogEntry(securityLog);
-			return true;
+				SecurityLogs.MakeLogEntry(securityLog);				//Clear the update lock now that migration has completed successfully.
+				ODException.SwallowAnyException(() => Prefs.UpdateString(PrefName.UpdateInProgressOnComputerName,""));			return true;
 #if !DEBUG
 			}
 			catch(System.IO.FileNotFoundException e) {

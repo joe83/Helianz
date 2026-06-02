@@ -113,6 +113,17 @@ namespace HelianzBusiness {
 				Logger.LogVerbose("Ending convert script");
 				Logger.DoVerboseLogging=doVerboseLogging;
 			});
+			//After all migrations complete, sync ProgramVersion to the new DataBaseVersion.
+			//This ensures the Middle Tier version check in DtoProcessor passes without requiring
+			//the full client-side update infrastructure (SetupHelianz.exe / CheckProgramVersion).
+			ODException.SwallowAnyException(() => {
+				string dbVer=Db.GetScalar("SELECT ValueString FROM preference WHERE PrefName='DataBaseVersion'");
+				string progVer=Db.GetScalar("SELECT ValueString FROM preference WHERE PrefName='ProgramVersion'");
+				Version vDb, vProg;
+				if(Version.TryParse(dbVer,out vDb) && Version.TryParse(progVer,out vProg) && vProg < vDb) {
+					Prefs.UpdateStringNoCache(PrefName.ProgramVersion,dbVer);
+				}
+			});
 			DataConnection.CommandTimeout=3600;//Set back to default of 1 hour.
 		}
 	}

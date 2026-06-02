@@ -108,6 +108,62 @@ namespace HelianzBusiness.WebBridges.SatuSehat {
 			return entry!=null ? entry.ToString() : "";
 		}
 
+		///<summary>Fetches the IHS ID of the first Location registered under the given Organization.
+		///Tries both FHIR parameter names used by SatuSehat staging vs production.
+		///Returns empty string if none found or on error.</summary>
+		public string GetOrganizationFirstLocationId(string orgId) {
+			if(string.IsNullOrWhiteSpace(orgId)) {
+				return "";
+			}
+			//SatuSehat uses 'organization' with a plain ID (not a full reference).
+			string[] paramNames=new string[] { "organization","managingOrganization" };
+			foreach(string param in paramNames) {
+				try {
+					string url=BaseUrl+FHIR_PATH+"/Location?"+param+"="+Uri.EscapeDataString(orgId);
+					string responseJson=FhirGet(url);
+					JObject bundle=JObject.Parse(responseJson);
+					JToken entry=bundle.SelectToken("entry[0].resource.id");
+					if(entry!=null && !string.IsNullOrEmpty(entry.ToString())) {
+						return entry.ToString();
+					}
+				}
+				catch { }
+			}
+			return "";
+		}
+
+		///<summary>Creates a dental clinic Location resource under the given Organization on SatuSehat.
+		///Called automatically during sync when no Location is configured and none is found via query.
+		///Returns the IHS Location ID, or empty string on failure.</summary>
+		public string CreateOrganizationLocation(string orgId) {
+			var obj=new JObject {
+				["resourceType"]="Location",
+				["identifier"]=new JArray(new JObject {
+					["system"]="http://sys-ids.kemkes.go.id/location/"+orgId,
+					["value"]="poli-gigi"
+				}),
+				["status"]="active",
+				["name"]="Poli Gigi",
+				["mode"]="instance",
+				["physicalType"]=new JObject {
+					["coding"]=new JArray(new JObject {
+						["system"]="http://terminology.hl7.org/CodeSystem/location-physical-type",
+						["code"]="ro",
+						["display"]="Room"
+					})
+				},
+				["managingOrganization"]=new JObject { ["reference"]="Organization/"+orgId }
+			};
+			try {
+				string responseJson=FhirSend(BaseUrl+FHIR_PATH+"/Location","POST",obj.ToString());
+				JObject resource=JObject.Parse(responseJson);
+				return resource["id"]!=null ? resource["id"].ToString() : "";
+			}
+			catch {
+				return "";
+			}
+		}
+
 		///<summary>Creates or updates a FHIR resource on SatuSehat.
 		///<para>If ihsId is non-empty a PUT (update) is performed; otherwise a POST (create) is used.</para>
 		///Returns the IHS resource ID assigned by SatuSehat.</summary>

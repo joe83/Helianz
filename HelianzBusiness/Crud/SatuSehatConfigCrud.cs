@@ -65,6 +65,9 @@ namespace HelianzBusiness.Crud {
 				satuSehatConfig.TokenExpiresAt     = PIn.DateT (row["TokenExpiresAt"].ToString());
 				satuSehatConfig.IsEnabled          = PIn.Bool  (row["IsEnabled"].ToString());
 				satuSehatConfig.Note               = PIn.String(row["Note"].ToString());
+				satuSehatConfig.LocationId         = PIn.String(row["LocationId"].ToString());
+				satuSehatConfig.SyncLockHost       = PIn.String(row["SyncLockHost"].ToString());
+				satuSehatConfig.SyncLockAt         = PIn.DateT (row["SyncLockAt"].ToString());
 				retVal.Add(satuSehatConfig);
 			}
 			return retVal;
@@ -85,6 +88,9 @@ namespace HelianzBusiness.Crud {
 			table.Columns.Add("TokenExpiresAt");
 			table.Columns.Add("IsEnabled");
 			table.Columns.Add("Note");
+			table.Columns.Add("LocationId");
+			table.Columns.Add("SyncLockHost");
+			table.Columns.Add("SyncLockAt");
 			foreach(SatuSehatConfig satuSehatConfig in listSatuSehatConfigs) {
 				table.Rows.Add(new object[] {
 					POut.Long  (satuSehatConfig.SatuSehatConfigNum),
@@ -96,6 +102,9 @@ namespace HelianzBusiness.Crud {
 					POut.DateT (satuSehatConfig.TokenExpiresAt,false),
 					POut.Bool  (satuSehatConfig.IsEnabled),
 					POut.String(satuSehatConfig.Note),
+					POut.String(satuSehatConfig.LocationId),
+					POut.String(satuSehatConfig.SyncLockHost),
+					POut.DateT (satuSehatConfig.SyncLockAt,false),
 				});
 			}
 			return table;
@@ -115,7 +124,7 @@ namespace HelianzBusiness.Crud {
 			if(useExistingPK || PrefC.RandomKeys) {
 				command+="SatuSehatConfigNum,";
 			}
-			command+="ClientId,ClientSecret,OrganizationId,Environment,AccessToken,TokenExpiresAt,IsEnabled,Note) VALUES(";
+			command+="ClientId,ClientSecret,OrganizationId,Environment,AccessToken,TokenExpiresAt,IsEnabled,Note,LocationId,SyncLockHost,SyncLockAt) VALUES(";
 			if(useExistingPK || PrefC.RandomKeys) {
 				command+=POut.Long(satuSehatConfig.SatuSehatConfigNum)+",";
 			}
@@ -127,7 +136,10 @@ namespace HelianzBusiness.Crud {
 				+"'"+POut.String(satuSehatConfig.AccessToken)+"',"
 				+    POut.DateT (satuSehatConfig.TokenExpiresAt)+","
 				+    POut.Bool  (satuSehatConfig.IsEnabled)+","
-				+"'"+POut.String(satuSehatConfig.Note)+"')";
+				+"'"+POut.String(satuSehatConfig.Note)+"',"
+				+"'"+POut.String(satuSehatConfig.LocationId)+"',"
+				+"'"+POut.String(satuSehatConfig.SyncLockHost)+"',"
+				+    POut.DateT (satuSehatConfig.SyncLockAt)+")";
 			if(useExistingPK || PrefC.RandomKeys) {
 				Db.NonQ(command);
 			}
@@ -152,7 +164,7 @@ namespace HelianzBusiness.Crud {
 			if(isRandomKeys || useExistingPK) {
 				command+="SatuSehatConfigNum,";
 			}
-			command+="ClientId,ClientSecret,OrganizationId,Environment,AccessToken,TokenExpiresAt,IsEnabled,Note) VALUES(";
+			command+="ClientId,ClientSecret,OrganizationId,Environment,AccessToken,TokenExpiresAt,IsEnabled,Note,LocationId,SyncLockHost,SyncLockAt) VALUES(";
 			if(isRandomKeys || useExistingPK) {
 				command+=POut.Long(satuSehatConfig.SatuSehatConfigNum)+",";
 			}
@@ -164,7 +176,10 @@ namespace HelianzBusiness.Crud {
 				+"'"+POut.String(satuSehatConfig.AccessToken)+"',"
 				+    POut.DateT (satuSehatConfig.TokenExpiresAt)+","
 				+    POut.Bool  (satuSehatConfig.IsEnabled)+","
-				+"'"+POut.String(satuSehatConfig.Note)+"')";
+				+"'"+POut.String(satuSehatConfig.Note)+"',"
+				+"'"+POut.String(satuSehatConfig.LocationId)+"',"
+				+"'"+POut.String(satuSehatConfig.SyncLockHost)+"',"
+				+    POut.DateT (satuSehatConfig.SyncLockAt)+")";
 			if(useExistingPK || isRandomKeys) {
 				Db.NonQ(command);
 			}
@@ -184,7 +199,10 @@ namespace HelianzBusiness.Crud {
 				+"AccessToken     = '"+POut.String(satuSehatConfig.AccessToken)+"', "
 				+"TokenExpiresAt  =  "+POut.DateT (satuSehatConfig.TokenExpiresAt)+", "
 				+"IsEnabled       =  "+POut.Bool  (satuSehatConfig.IsEnabled)+", "
-				+"Note            = '"+POut.String(satuSehatConfig.Note)+"' "
+			+"Note            = '"+POut.String(satuSehatConfig.Note)+"', "
+			+"LocationId      = '"+POut.String(satuSehatConfig.LocationId)+"', "
+			+"SyncLockHost    = '"+POut.String(satuSehatConfig.SyncLockHost)+"', "
+			+"SyncLockAt      =  "+POut.DateT (satuSehatConfig.SyncLockAt)+" "
 				+"WHERE SatuSehatConfigNum = "+POut.Long(satuSehatConfig.SatuSehatConfigNum);
 			Db.NonQ(command);
 		}
@@ -223,6 +241,18 @@ namespace HelianzBusiness.Crud {
 			if(satuSehatConfig.Note != oldSatuSehatConfig.Note) {
 				if(command!="") { command+=",";}
 				command+="Note = '"+POut.String(satuSehatConfig.Note)+"'";
+			}
+			if(satuSehatConfig.LocationId != oldSatuSehatConfig.LocationId) {
+				if(command!="") { command+=",";}
+				command+="LocationId = '"+POut.String(satuSehatConfig.LocationId)+"'";
+			}
+			if(satuSehatConfig.SyncLockHost != oldSatuSehatConfig.SyncLockHost) {
+				if(command!="") { command+=",";}
+				command+="SyncLockHost = '"+POut.String(satuSehatConfig.SyncLockHost)+"'";
+			}
+			if(satuSehatConfig.SyncLockAt != oldSatuSehatConfig.SyncLockAt) {
+				if(command!="") { command+=",";}
+				command+="SyncLockAt = "+POut.DateT(satuSehatConfig.SyncLockAt)+"";
 			}
 			if(command=="") {
 				return false;

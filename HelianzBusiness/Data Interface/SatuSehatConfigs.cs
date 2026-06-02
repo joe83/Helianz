@@ -76,6 +76,18 @@ namespace HelianzBusiness {
 			Db.NonQ(command);
 		}
 
+		///<summary>Caches the resolved Location IHS ID back to the config row so subsequent syncs skip the API lookup.</summary>
+		public static void UpdateLocationId(long satuSehatConfigNum,string locationId) {
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				Meth.GetVoid(MethodBase.GetCurrentMethod(),satuSehatConfigNum,locationId);
+				return;
+			}
+			string command="UPDATE satusehatconfig SET "
+				+"LocationId='"+POut.String(locationId)+"' "
+				+"WHERE SatuSehatConfigNum="+POut.Long(satuSehatConfigNum);
+			Db.NonQ(command);
+		}
+
 		#endregion Update
 
 		#region Delete
@@ -90,5 +102,46 @@ namespace HelianzBusiness {
 		}
 
 		#endregion Delete
+
+		#region Sync Lock
+
+		///<summary>Tries to atomically acquire the auto-sync lock for the given config row.
+		///Returns true if this client now holds the lock; false if another client holds a fresh lock.
+		///A lock older than 10 minutes is treated as stale and can be stolen.</summary>
+		public static bool TryAcquireSyncLock(long satuSehatConfigNum,string hostName) {
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				return Meth.GetBool(MethodBase.GetCurrentMethod(),satuSehatConfigNum,hostName);
+			}
+			//Atomic conditional UPDATE: succeeds only when the lock is unclaimed or stale (>10 min old).
+			string command="UPDATE satusehatconfig SET "
+				+"SyncLockHost='"+POut.String(hostName)+"', "
+				+"SyncLockAt=NOW() "
+				+"WHERE SatuSehatConfigNum="+POut.Long(satuSehatConfigNum)+" "
+				+"AND (SyncLockHost='' OR SyncLockAt < DATE_SUB(NOW(), INTERVAL 10 MINUTE))";
+			long rowsAffected=Db.NonQ(command);
+			return rowsAffected>0;
+		}
+
+		///<summary>Releases the auto-sync lock so other clients can acquire it.</summary>
+		public static void ReleaseSyncLock(long satuSehatConfigNum) {
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				Meth.GetVoid(MethodBase.GetCurrentMethod(),satuSehatConfigNum);
+				return;
+			}
+			string command="UPDATE satusehatconfig SET SyncLockHost='', SyncLockAt="+POut.DateT(DateTime.MinValue)+" "
+				+"WHERE SatuSehatConfigNum="+POut.Long(satuSehatConfigNum);
+			Db.NonQ(command);
+		}
+
+		#endregion Sync Lock
+	}
+
+	///<summary>Summary counts of sync queue rows by status. Returned by SatuSehatStatuses.GetSyncStats().</summary>
+	[Serializable]
+	public class SatuSehatSyncStats {
+		public int Pending;
+		public int Synced;
+		public int Failed;
+		public int Skipped;
 	}
 }

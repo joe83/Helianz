@@ -189,6 +189,8 @@ namespace HelianzBusiness {
 		///<summary>22 - XWeb payment taken through the Payment Portal as a guest.</summary>
 		[OnlinePaymentMethod]
 		XWebPaymentPortalGuest,
+		///<summary>23 - Midtrans QRIS payment (Indonesian QRIS standard). Customer scans QR code displayed in-clinic.</summary>
+		MidtransQris,
 	}
 
 	public enum ChargeFrequencyType {

@@ -17,6 +17,8 @@ namespace Helianz {
 			this.textClientSecret = new System.Windows.Forms.TextBox();
 			this.labelOrganizationId = new System.Windows.Forms.Label();
 			this.textOrganizationId = new System.Windows.Forms.TextBox();
+			this.labelLocationId = new System.Windows.Forms.Label();
+			this.textLocationId = new System.Windows.Forms.TextBox();
 			this.labelEnvironment = new System.Windows.Forms.Label();
 			this.comboEnvironment = new Helianz.UI.ComboBox();
 			this.checkIsEnabled = new Helianz.UI.CheckBox();
@@ -77,9 +79,26 @@ namespace Helianz {
 			this.textOrganizationId.Size = new System.Drawing.Size(280, 20);
 			this.textOrganizationId.TabIndex = 3;
 			// 
+			// 
+			// labelLocationId
+			// 
+			this.labelLocationId.Location = new System.Drawing.Point(20, 104);
+			this.labelLocationId.Name = "labelLocationId";
+			this.labelLocationId.Size = new System.Drawing.Size(130, 20);
+			this.labelLocationId.TabIndex = 0;
+			this.labelLocationId.Text = "Location ID (IHS)";
+			this.labelLocationId.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// textLocationId
+			// 
+			this.textLocationId.Location = new System.Drawing.Point(155, 104);
+			this.textLocationId.Name = "textLocationId";
+			this.textLocationId.Size = new System.Drawing.Size(280, 20);
+			this.textLocationId.TabIndex = 4;
+			// 
 			// labelEnvironment
 			// 
-			this.labelEnvironment.Location = new System.Drawing.Point(20, 104);
+			this.labelEnvironment.Location = new System.Drawing.Point(20, 130);
 			this.labelEnvironment.Name = "labelEnvironment";
 			this.labelEnvironment.Size = new System.Drawing.Size(130, 20);
 			this.labelEnvironment.TabIndex = 0;
@@ -88,22 +107,22 @@ namespace Helianz {
 			// 
 			// comboEnvironment
 			// 
-			this.comboEnvironment.Location = new System.Drawing.Point(155, 104);
+			this.comboEnvironment.Location = new System.Drawing.Point(155, 130);
 			this.comboEnvironment.Name = "comboEnvironment";
 			this.comboEnvironment.Size = new System.Drawing.Size(150, 21);
-			this.comboEnvironment.TabIndex = 4;
+			this.comboEnvironment.TabIndex = 5;
 			// 
 			// checkIsEnabled
 			// 
-			this.checkIsEnabled.Location = new System.Drawing.Point(155, 130);
+			this.checkIsEnabled.Location = new System.Drawing.Point(155, 156);
 			this.checkIsEnabled.Name = "checkIsEnabled";
 			this.checkIsEnabled.Size = new System.Drawing.Size(200, 20);
-			this.checkIsEnabled.TabIndex = 5;
+			this.checkIsEnabled.TabIndex = 6;
 			this.checkIsEnabled.Text = "Enabled";
 			// 
 			// labelNote
 			// 
-			this.labelNote.Location = new System.Drawing.Point(20, 156);
+			this.labelNote.Location = new System.Drawing.Point(20, 182);
 			this.labelNote.Name = "labelNote";
 			this.labelNote.Size = new System.Drawing.Size(130, 20);
 			this.labelNote.TabIndex = 0;
@@ -112,18 +131,18 @@ namespace Helianz {
 			// 
 			// textNote
 			// 
-			this.textNote.Location = new System.Drawing.Point(155, 156);
+			this.textNote.Location = new System.Drawing.Point(155, 182);
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
 			this.textNote.Size = new System.Drawing.Size(280, 60);
-			this.textNote.TabIndex = 6;
+			this.textNote.TabIndex = 7;
 			// 
 			// labelConnectionStatus
 			// 
 			this.labelConnectionStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
 			this.labelConnectionStatus.AutoSize = true;
 			this.labelConnectionStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5f, System.Drawing.FontStyle.Bold);
-			this.labelConnectionStatus.Location = new System.Drawing.Point(148, 236);
+			this.labelConnectionStatus.Location = new System.Drawing.Point(148, 262);
 			this.labelConnectionStatus.Name = "labelConnectionStatus";
 			this.labelConnectionStatus.Size = new System.Drawing.Size(100, 16);
 			this.labelConnectionStatus.TabIndex = 0;
@@ -132,10 +151,10 @@ namespace Helianz {
 			// butTestConnection
 			// 
 			this.butTestConnection.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.butTestConnection.Location = new System.Drawing.Point(20, 232);
+			this.butTestConnection.Location = new System.Drawing.Point(20, 258);
 			this.butTestConnection.Name = "butTestConnection";
 			this.butTestConnection.Size = new System.Drawing.Size(120, 24);
-			this.butTestConnection.TabIndex = 7;
+			this.butTestConnection.TabIndex = 8;
 			this.butTestConnection.Text = "Test Connection";
 			this.butTestConnection.Click += new System.EventHandler(this.butTestConnection_Click);
 			// textClientId - wire TextChanged to clear status
@@ -146,7 +165,7 @@ namespace Helianz {
 			// butSave
 			// 
 			this.butSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butSave.Location = new System.Drawing.Point(355, 232);
+			this.butSave.Location = new System.Drawing.Point(355, 258);
 			this.butSave.Name = "butSave";
 			this.butSave.Size = new System.Drawing.Size(75, 24);
 			this.butSave.TabIndex = 8;
@@ -156,22 +175,24 @@ namespace Helianz {
 			// butCancel
 			// 
 			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butCancel.Location = new System.Drawing.Point(355, 262);
+			this.butCancel.Location = new System.Drawing.Point(355, 288);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 24);
-			this.butCancel.TabIndex = 9;
+			this.butCancel.TabIndex = 10;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// FormSatuSehatSetup
 			// 
-			this.ClientSize = new System.Drawing.Size(460, 302);
+			this.ClientSize = new System.Drawing.Size(460, 328);
 			this.Controls.Add(this.labelClientId);
 			this.Controls.Add(this.textClientId);
 			this.Controls.Add(this.labelClientSecret);
 			this.Controls.Add(this.textClientSecret);
 			this.Controls.Add(this.labelOrganizationId);
 			this.Controls.Add(this.textOrganizationId);
+			this.Controls.Add(this.labelLocationId);
+			this.Controls.Add(this.textLocationId);
 			this.Controls.Add(this.labelEnvironment);
 			this.Controls.Add(this.comboEnvironment);
 			this.Controls.Add(this.checkIsEnabled);
@@ -195,6 +216,8 @@ namespace Helianz {
 		private System.Windows.Forms.TextBox textClientSecret;
 		private System.Windows.Forms.Label labelOrganizationId;
 		private System.Windows.Forms.TextBox textOrganizationId;
+		private System.Windows.Forms.Label labelLocationId;
+		private System.Windows.Forms.TextBox textLocationId;
 		private System.Windows.Forms.Label labelEnvironment;
 		private Helianz.UI.ComboBox comboEnvironment;
 		private Helianz.UI.CheckBox checkIsEnabled;
