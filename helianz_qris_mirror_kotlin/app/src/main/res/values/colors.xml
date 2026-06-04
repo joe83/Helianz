@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<color name="sand">#F6EFE2</color>
+	<color name="mist">#D9E7E0</color>
+	<color name="ink">#163234</color>
+	<color name="body">#355154</color>
+	<color name="muted">#6A7C7D</color>
+	<color name="cardStroke">#E6DED0</color>
+	<color name="statusIdle">#E7F4F4</color>
+	<color name="errorBg">#FFF0E8</color>
+	<color name="errorText">#8E3E25</color>
+	<color name="inputBg">#FBF8F1</color>
+	<color name="detailBg">#F5F0E6</color>
+</resources>

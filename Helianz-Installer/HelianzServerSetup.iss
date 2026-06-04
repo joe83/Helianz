@@ -43,6 +43,7 @@ Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
 PrivilegesRequired=admin
+DisableFinishedPage=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

@@ -3060,6 +3060,7 @@
     <Compile Include="Forms\FormQrisPayment.designer.cs">
       <DependentUpon>FormQrisPayment.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\QrisMirrorServer.cs" />
     <Compile Include="Forms\FormMidtransSetup.cs">
       <SubType>Form</SubType>
     </Compile>

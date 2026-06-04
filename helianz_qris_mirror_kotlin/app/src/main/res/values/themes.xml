@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.HelianzQrisMirror" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#0E5D63</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#D9ECE7</item>
+        <item name="colorOnPrimaryContainer">#163234</item>
+        <item name="colorSecondary">#D48F1F</item>
+        <item name="android:statusBarColor">#0E5D63</item>
+        <item name="android:navigationBarColor">#F7F0E3</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>

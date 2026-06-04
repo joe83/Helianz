@@ -129,6 +129,44 @@ if ($IsccPath)        { $buildParams['IsccPath']        = $IsccPath }
 Write-Host "[INFO] Build-HelianzSetup.ps1 complete." -ForegroundColor Green
 
 # ---------------------------------------------------------------------------
+# Step 5: Build helianz_qris_mirror_kotlin (Release APK)
+# ---------------------------------------------------------------------------
+Write-Host ""
+Write-Host "[STEP 5/6] Building QRIS Mirror Android app (assembleRelease)..." -ForegroundColor Yellow
+
+$qrisDir = Join-Path $PSScriptRoot "helianz_qris_mirror_kotlin"
+if (-not (Test-Path $qrisDir)) { throw "QRIS Kotlin project not found: $qrisDir" }
+
+$gradlew = Join-Path $qrisDir "gradlew.bat"
+if (-not (Test-Path $gradlew)) { throw "gradlew.bat not found: $gradlew" }
+
+Push-Location $qrisDir
+try {
+	# Android Gradle Plugin 8.7.3 requires Java 11+.
+	# Use Android Studio's bundled JBR (Java 21) if JAVA_HOME is not already set to 11+.
+	$savedJavaHome = $env:JAVA_HOME
+	$studioJbr = "D:\Android\Android Studio\jbr"
+	if (Test-Path $studioJbr) {
+		$env:JAVA_HOME = $studioJbr
+		Write-Host "[INFO] JAVA_HOME -> $studioJbr" -ForegroundColor DarkGray
+	} else {
+		Write-Warning "Android Studio JBR not found at '$studioJbr'. Ensure Java 11+ is on PATH or set JAVA_HOME before running this script."
+	}
+	& cmd.exe /c "$gradlew assembleRelease"
+	$env:JAVA_HOME = $savedJavaHome
+	if ($LASTEXITCODE -ne 0) { throw "QRIS Mirror assembleRelease failed (exit code $LASTEXITCODE)." }
+} finally {
+	Pop-Location
+}
+
+$qrisApk = Join-Path $qrisDir "app\build\outputs\apk\release\app-release.apk"
+if (Test-Path $qrisApk) {
+	Write-Host "[INFO] QRIS Mirror APK: $qrisApk" -ForegroundColor Green
+} else {
+	Write-Warning "Expected APK not found at: $qrisApk"
+}
+
+# ---------------------------------------------------------------------------
 # Resolve version for the distribution package
 # (if not specified, detect from the built client exe)
 # ---------------------------------------------------------------------------
@@ -148,7 +186,7 @@ Write-Host "[INFO] Using ISCC: $IsccPath" -ForegroundColor Green
 # Step 5: Compile HelianzPackage.iss -> Release\HelianzSetup.exe
 # ---------------------------------------------------------------------------
 Write-Host ""
-Write-Host "[STEP 5/5] Compiling distribution package (HelianzPackage.iss)..." -ForegroundColor Yellow
+Write-Host "[STEP 6/6] Compiling distribution package (HelianzPackage.iss)..." -ForegroundColor Yellow
 
 $packageIss  = Join-Path $PSScriptRoot "Helianz-Installer\HelianzPackage.iss"
 $releaseDir  = Join-Path $PSScriptRoot "Helianz-Installer\Release"

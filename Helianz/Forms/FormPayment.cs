@@ -3110,7 +3110,7 @@ namespace Helianz {
 					paymentTypeParam="QRIS";
 				}
 				else {
-					paymentTypeParam=_listDefsPaymentTypeDisplay[listPayType.SelectedInI dondex].ItemName;
+					paymentTypeParam=_listDefsPaymentTypeDisplay[listPayType.SelectedIndex].ItemName;
 				}
 			}
 			object[] objectArrayParameters={ paymentTypeParam,textNote.Text,_isCCDeclined,_payment };
