@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ConnectionSettings>
+    <ServerConnection>
+        <URI>http://localhost/HelianzServer/ServiceMain.asmx</URI>
+        <UsingEcw>False</UsingEcw>
+    </ServerConnection>
+    <DatabaseType>MySql</DatabaseType>
+    <UseDynamicMode>False</UseDynamicMode>
+</ConnectionSettings>

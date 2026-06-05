@@ -51,7 +51,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 ; Logger\ contains runtime log files; tempCompNames.txt is a dev artifact — exclude both.
 Source: "{#SourceDir}\*"; DestDir: "{app}"; Excludes: "FreeDentalConfig.xml,Logger,tempCompNames.txt"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; FreeDentalConfig.xml stores the user's database connection — never overwrite on upgrade
-Source: "{#SourceDir}\FreeDentalConfig.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist
+; Source is the installer-directory copy (not the build output), so it survives a clean build.
+Source: "FreeDentalConfig.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
