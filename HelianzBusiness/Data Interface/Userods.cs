@@ -643,6 +643,20 @@ namespace HelianzBusiness {
 				mysqlUserLow=xPathNavigatorConn.SelectSingleNode("UserLow").Value;
 				mysqlPasswordLow=xPathNavigatorConn.SelectSingleNode("PasswordLow").Value;
 			}
+			//Support environment variable overrides (for Docker/Kubernetes/production server deployments).
+			//When set, environment variables take precedence over values in the XML config file.
+			string envServer = Environment.GetEnvironmentVariable("HELIANZ_DB_SERVER");
+			string envDatabase = Environment.GetEnvironmentVariable("HELIANZ_DB_NAME");
+			string envUser = Environment.GetEnvironmentVariable("HELIANZ_DB_USER");
+			string envPassword = Environment.GetEnvironmentVariable("HELIANZ_DB_PASSWORD");
+			string envUserLow = Environment.GetEnvironmentVariable("HELIANZ_DB_USER_LOW");
+			string envPasswordLow = Environment.GetEnvironmentVariable("HELIANZ_DB_PASSWORD_LOW");
+			if(!string.IsNullOrEmpty(envServer))   server=envServer;
+			if(!string.IsNullOrEmpty(envDatabase)) database=envDatabase;
+			if(!string.IsNullOrEmpty(envUser))     mysqlUser=envUser;
+			if(!string.IsNullOrEmpty(envPassword))   mysqlPassword=envPassword;
+			if(!string.IsNullOrEmpty(envUserLow))   mysqlUserLow=envUserLow;
+			if(!string.IsNullOrEmpty(envPasswordLow)) mysqlPasswordLow=envPasswordLow;
 			XPathNavigator xPathNavigatorDbType=xPathNavigatorConn.SelectSingleNode("DatabaseType");
 			DatabaseType databaseType=DatabaseType.MySql;
 			if(xPathNavigatorDbType!=null){

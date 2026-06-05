@@ -208,6 +208,15 @@ namespace FreeDentalInstaller
             mysqlCredentials.StartPosition = FormStartPosition.CenterParent;
             mysqlCredentials.ShowDialog(this);
           }
+          // Configure HelianzServer: create the oduser MySQL account and generate HelianzServerConfig.xml.
+          if (this.checkODServer.Checked)
+          {
+            FormHelianzServerConfig serverConfig = new FormHelianzServerConfig();
+            serverConfig.StartPosition = FormStartPosition.CenterParent;
+            serverConfig.MariaDbInstallDir = this.textDbmsInstallationDir.Text;
+            serverConfig.HelianzServerDir = this.textApplicationServer.Text;
+            serverConfig.ShowDialog(this);
+          }
           this.Cursor = Cursors.Default;
           MessageBox.Show("Installation complete.  You can now close this program and start Helianz by clicking on the shortcut on your desktop.");
         }

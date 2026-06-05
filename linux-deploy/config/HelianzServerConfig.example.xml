@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!--
+  HelianzServer config for Linux deployment.
+  Copy to HelianzServerConfig.xml and replace placeholders with actual values.
+
+  SECURITY:
+    - Do NOT use the MySQL root user. Create a dedicated user with minimal privileges.
+    - Alternatively, set HELIANZ_DB_* environment variables to override these values
+      (recommended for Docker / Kubernetes / production deployments).
+    - See linux-deploy/src/grant_oduser.sql for privilege setup.
+-->
+<ConnectionSettings>
+  <ServerPort>9390</ServerPort>
+  <DatabaseConnection>
+    <!--
+      ComputerName must be "mysql" when running via docker-compose
+      (that is the Docker service name and resolves via Docker's internal DNS).
+      Change to the actual hostname/IP only if running MySQL outside of Docker.
+    -->
+    <ComputerName>mysql</ComputerName>
+    <Database>helianz</Database>
+    <User>oduser</User>
+    <Password>YOUR_PASSWORD_HERE</Password>
+    <UserLow>oduser</UserLow>
+    <PasswordLow>YOUR_PASSWORD_HERE</PasswordLow>
+  </DatabaseConnection>
+</ConnectionSettings>

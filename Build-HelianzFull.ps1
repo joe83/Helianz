@@ -11,7 +11,9 @@
 	  2. Build Helianz Server        (Build-HelianzServer.ps1)
 	  3. Compile HelianzClientSetup.iss  -> Helianz-Installer\Release\Helianz Client Setup\Setup.exe
 	  4. Compile HelianzServerSetup.iss  -> Helianz-Installer\Release\Helianz Server Setup\Setup.exe
-	  5. Compile HelianzPackage.iss      -> Helianz-Installer\Release\HelianzSetup.exe
+	  5. Build HelianzInstaller           -> Helianz-Installer\Release\HelianzInstaller.exe
+	  6. Build helianz_qris_mirror_kotlin -> app-release.apk
+	  7. Compile HelianzPackage.iss      -> Helianz-Installer\Release\HelianzSetup.exe
 
 	HelianzSetup.exe, when run by an end-user:
 	  - Extracts all installer files to a Windows temp sub-folder
@@ -129,10 +131,69 @@ if ($IsccPath)        { $buildParams['IsccPath']        = $IsccPath }
 Write-Host "[INFO] Build-HelianzSetup.ps1 complete." -ForegroundColor Green
 
 # ---------------------------------------------------------------------------
-# Step 5: Build helianz_qris_mirror_kotlin (Release APK)
+# Step 5: Build HelianzInstaller (the WinForms installer that runs on customer machines)
 # ---------------------------------------------------------------------------
 Write-Host ""
-Write-Host "[STEP 5/6] Building QRIS Mirror Android app (assembleRelease)..." -ForegroundColor Yellow
+Write-Host "[STEP 5/7] Building HelianzInstaller (WinForms setup wizard)..." -ForegroundColor Yellow
+
+$installerCsproj = Join-Path $PSScriptRoot "Helianz-Installer\decompiled\Heliantrix-Installer.csproj"
+$installerBinDir = Join-Path (Split-Path $installerCsproj -Parent) "bin\$Configuration"
+$installerReleaseDir = Join-Path $PSScriptRoot "Helianz-Installer\Release"
+$installerExeName = "HelianzInstaller.exe"
+
+if (-not (Test-Path $installerCsproj)) {
+	throw "Installer project not found: $installerCsproj"
+}
+
+# Locate MSBuild
+$msbuild = $null
+$vsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+if (Test-Path $vsWhere) {
+	$msbuildPath = & $vsWhere -latest -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe 2>$null
+	if ($msbuildPath) { $msbuild = $msbuildPath | Select-Object -First 1 }
+}
+if (-not $msbuild) {
+	# Fallback: VS 2019/2022 known paths
+	$msbuildCandidates = @(
+		"${env:ProgramFiles}\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe",
+		"${env:ProgramFiles}\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe",
+		"${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe",
+		"${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin\MSBuild.exe"
+	)
+	foreach ($c in $msbuildCandidates) {
+		if (Test-Path $c) { $msbuild = $c; break }
+	}
+}
+if (-not $msbuild) {
+	throw "MSBuild.exe not found. Install Visual Studio 2019/2022 with the .NET desktop build workload."
+}
+Write-Host "[INFO] Using MSBuild: $msbuild" -ForegroundColor DarkGray
+
+Push-Location (Split-Path $installerCsproj -Parent)
+try {
+	& $msbuild (Split-Path $installerCsproj -Leaf) /p:Configuration=$Configuration /p:Platform=AnyCPU /nologo /verbosity:minimal
+	if ($LASTEXITCODE -ne 0) { throw "HelianzInstaller build failed (exit code $LASTEXITCODE)." }
+} finally {
+	Pop-Location
+}
+
+# Copy the built exe to Release\ so Inno Setup can find it
+$builtExe = Join-Path $installerBinDir $installerExeName
+if (Test-Path $builtExe) {
+	if (-not (Test-Path $installerReleaseDir)) {
+		New-Item -ItemType Directory -Path $installerReleaseDir -Force | Out-Null
+	}
+	Copy-Item -Path $builtExe -Destination (Join-Path $installerReleaseDir $installerExeName) -Force
+	Write-Host "[INFO] HelianzInstaller copied to Release\HelianzInstaller.exe" -ForegroundColor Green
+} else {
+	Write-Warning "Built installer not found at: $builtExe"
+}
+
+# ---------------------------------------------------------------------------
+# Step 6: Build helianz_qris_mirror_kotlin (Release APK)
+# ---------------------------------------------------------------------------
+Write-Host ""
+Write-Host "[STEP 6/7] Building QRIS Mirror Android app (assembleRelease)..." -ForegroundColor Yellow
 
 $qrisDir = Join-Path $PSScriptRoot "helianz_qris_mirror_kotlin"
 if (-not (Test-Path $qrisDir)) { throw "QRIS Kotlin project not found: $qrisDir" }
@@ -177,16 +238,16 @@ if ([string]::IsNullOrWhiteSpace($AppVersion)) {
 }
 
 # ---------------------------------------------------------------------------
-# Locate ISCC (needed for step 5; may already be known from buildParams)
+# Locate ISCC (needed for step 7; may already be known from buildParams)
 # ---------------------------------------------------------------------------
 if ([string]::IsNullOrWhiteSpace($IsccPath)) { $IsccPath = Find-ISCC }
 Write-Host "[INFO] Using ISCC: $IsccPath" -ForegroundColor Green
 
 # ---------------------------------------------------------------------------
-# Step 5: Compile HelianzPackage.iss -> Release\HelianzSetup.exe
+# Step 7: Compile HelianzPackage.iss -> Release\HelianzSetup.exe
 # ---------------------------------------------------------------------------
 Write-Host ""
-Write-Host "[STEP 6/6] Compiling distribution package (HelianzPackage.iss)..." -ForegroundColor Yellow
+Write-Host "[STEP 7/7] Compiling distribution package (HelianzPackage.iss)..." -ForegroundColor Yellow
 
 $packageIss  = Join-Path $PSScriptRoot "Helianz-Installer\HelianzPackage.iss"
 $releaseDir  = Join-Path $PSScriptRoot "Helianz-Installer\Release"

@@ -59,6 +59,12 @@
     <Compile Include="FormMysqlCredentials.Designer.cs">
       <DependentUpon>FormMysqlCredentials.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormHelianzServerConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormHelianzServerConfig.Designer.cs">
+      <DependentUpon>FormHelianzServerConfig.cs</DependentUpon>
+    </Compile>
     <Compile Include="MariaDB.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="CommandResult.cs" />

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -13,7 +13,7 @@ using DataConnectionBase;
 
 namespace HelianzBusiness {
 	public class DtoProcessor {
-		
+
 		///<summary>Used to indicate whether the middle tier process has initialized.</summary>
 		private static bool _isMiddleTierInitialized=false;
 		///<summary>Date and time that this ServerMT instance has processed signals.</summary>
@@ -124,17 +124,19 @@ namespace HelianzBusiness {
 				#endregion
 				dto=DataTransferObject.Deserialize(dtoString);
 				DtoInformation dtoInformation=new DtoInformation(dto);
-				if(dtoInformation.FullNameComponents.Length==3 && dtoInformation.FullNameComponents[2].ToLower()=="hashpassword") {
-					responseString=dtoInformation.GetHashPassword();
-					return responseString;
-				}
-				//Set Security.CurUser so that queries can be run against the db as if it were this user.
+				//Authenticate BEFORE processing any method invocation (including HashPassword).
+				//Previously HashPassword was called before auth, allowing unauthenticated password hashing.
 				Security.CurUser=Userods.CheckUserAndPassword(dto.Credentials.Username,dto.Credentials.Password
 					,Programs.UsingEcwTightOrFullMode());
 				Security.PasswordTyped=dto.Credentials.Password;
 				//Set the computer name so securitylog entries use the client's computer name instead of the middle tier server name
 				//Older clients might not include ComputerName in the dto, so we need to make sure it's not null.
 				Security.CurComputerName=dto.ComputerName??"";
+				//Now that the user is authenticated, handle HashPassword requests.
+				if(dtoInformation.FullNameComponents.Length==3 && dtoInformation.FullNameComponents[2].ToLower()=="hashpassword") {
+					responseString=dtoInformation.GetHashPassword();
+					return responseString;
+				}
 				Type type=dto.GetType();
 				#region DtoGetTable
 				if(type == typeof(DtoGetTable)) {
@@ -306,7 +308,7 @@ namespace HelianzBusiness {
 			public string[] FullNameComponents;
 			///<summary>The name of the assembly/namespace. Usually HelianzBusiness, but may be a plugin.</summary>
 			public string AssemblyName;
-			///<summary>The name of the class that stores the method that will be invoked. If the namespace has a sub-namespace, such as 
+			///<summary>The name of the class that stores the method that will be invoked. If the namespace has a sub-namespace, such as
 			///HelianzBusiness.Eclaims, the ClassName will include both the sub-namespace and the class such as Eclaims.Eclaims.</summary>
 			public string ClassName;
 			///<summary>The name of the method that will be invoked.</summary>
@@ -349,7 +351,7 @@ namespace HelianzBusiness {
 			}
 
 			///<summary>Only used if the dto is trying to call "Userods.HashPassword".
-			///This is so that passwords will be hashed on the server to utilize the server's MD5 hash algorithm instead of the workstation's algorithm.  
+			///This is so that passwords will be hashed on the server to utilize the server's MD5 hash algorithm instead of the workstation's algorithm.
 			///This is due to the group policy security option "System cryptography: Use FIPS compliant algorithms for encryption,
 			///hashing and signing" that is enabled on workstations for some users but not on the server.  This allows those users to utilize the server's
 			///algorithm without requiring the workstations to have the algorithm at all.</summary>
@@ -361,12 +363,12 @@ namespace HelianzBusiness {
 
 			///<summary>Helper function to handle full method name and turn it into 3 components.  The 3 components returned are:
 			///1. Assembly name
-			///2. Class name (however, this may contain the portion of the namespace after the assembly, 
+			///2. Class name (however, this may contain the portion of the namespace after the assembly,
 			///e.g. if "HelianzBusiness.Eclaims.Eclaims.GetMissingData" is passed in, this component will contain "Eclaims.Eclaims".)
 			///3. Method name</summary>
 			private static string[] GetComponentsFromDtoMeth(string methodName) {
 				if(methodName.Split('.').Length==2) {
-					//Versions prior to 14.3 will send 2 components. 14.3 and above will send the assembly name HelianzBusiness or plugin assembly name.  
+					//Versions prior to 14.3 will send 2 components. 14.3 and above will send the assembly name HelianzBusiness or plugin assembly name.
 					//If only 2 components are received, we will prepend HelianzBusiness so this will be backward compatible with versions prior to 14.3.
 					methodName="HelianzBusiness."+methodName;
 				}

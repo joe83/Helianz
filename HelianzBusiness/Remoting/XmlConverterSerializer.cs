@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -76,21 +76,21 @@ namespace HelianzBusiness {
 			//the result will be fully qualified xml, including declaration.  Example:
 			/*
 			{<?xml version="1.0" encoding="utf-16"?>
-<Userod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <IsNew>false</IsNew>
-   <UserNum>1</UserNum>
-   <UserName>Admin</UserName>
-   <Password />
-   <UserGroupNum>1</UserGroupNum>
-   <EmployeeNum>0</EmployeeNum>
-   <ClinicNum>0</ClinicNum>
-   <ProvNum>0</ProvNum>
-   <IsHidden>false</IsHidden>
-   <TaskListInBox>0</TaskListInBox>
-   <AnesthProvType>3</AnesthProvType>
-   <DefaultHidePopups>false</DefaultHidePopups>
-   <PasswordIsStrong>false</PasswordIsStrong>
-</Userod>}*/
+	<Userod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	   <IsNew>false</IsNew>
+	   <UserNum>1</UserNum>
+	   <UserName>Admin</UserName>
+	   <Password />
+	   <UserGroupNum>1</UserGroupNum>
+	   <EmployeeNum>0</EmployeeNum>
+	   <ClinicNum>0</ClinicNum>
+	   <ProvNum>0</ProvNum>
+	   <IsHidden>false</IsHidden>
+	   <TaskListInBox>0</TaskListInBox>
+	   <AnesthProvType>3</AnesthProvType>
+	   <DefaultHidePopups>false</DefaultHidePopups>
+	   <PasswordIsStrong>false</PasswordIsStrong>
+	</Userod>}*/
 		}
 
 		///<summary>Should accept any type.  Tested types include System types, OD types, Arrays, Lists, arrays of DtoObject, null DataObjectBase, null arrays, null Lists.  But not DataTable or DataSet.  If we find a type that isn't supported, then we need to add it.  Types that are currently unsupported include Arrays of DataObjectBase that contain a null.  Lists that contain nulls are untested and may be an issue for DataObjectBase.</summary>
@@ -111,8 +111,11 @@ namespace HelianzBusiness {
 				}
 			}
 			StringReader strReader=new StringReader(xmlData);
-			//XmlReader reader=XmlReader.Create(strReader);
-			XmlTextReader reader=new XmlTextReader(strReader);
+			//SECURITY: Use XmlReader with DTD processing prohibited to prevent XXE attacks.
+			XmlReaderSettings settings=new XmlReaderSettings();
+			settings.DtdProcessing=DtdProcessing.Prohibit;
+			settings.XmlResolver=null;
+			XmlReader reader=XmlReader.Create(strReader,settings);
 			XmlSerializer serializer;
 			T retVal;
 			if(type==typeof(Color)) {
