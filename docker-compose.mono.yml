@@ -25,16 +25,17 @@ services:
       --default-authentication-plugin=mysql_native_password
       --sql-mode=ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
     environment:
-      MYSQL_ROOT_PASSWORD: rootrootroot       # change before production use
+      # SECURITY: Override in a .env file for production. Never commit real passwords.
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootrootroot}
       MYSQL_DATABASE:      helianz
       MYSQL_USER:          oduser
-      MYSQL_PASSWORD:      odpass             # must match docker/HelianzServerConfig.Docker.xml
+      MYSQL_PASSWORD:      ${DB_PASSWORD:-odpass}
     ports:
       - "3307:3306"     # mapped to 3307 to avoid collision with a local MySQL instance
     volumes:
       - od-mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootrootroot"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootrootroot"]
       interval: 10s
       timeout: 5s
       retries: 12
@@ -52,6 +53,15 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    # SECURITY: Pass DB credentials via environment variables instead of config files.
+    # These override values in HelianzServerConfig.xml when set.
+    environment:
+      - HELIANZ_DB_SERVER=${HELIANZ_DB_SERVER:-mysql}
+      - HELIANZ_DB_NAME=${HELIANZ_DB_NAME:-helianz}
+      - HELIANZ_DB_USER=${HELIANZ_DB_USER:-oduser}
+      - HELIANZ_DB_PASSWORD=${DB_PASSWORD:-odpass}
+      - HELIANZ_DB_USER_LOW=${HELIANZ_DB_USER_LOW:-oduser}
+      - HELIANZ_DB_PASSWORD_LOW=${DB_PASSWORD:-odpass}
     volumes:
       # Live-reload the DB config without rebuilding the image:
       #   edit docker/HelianzServerConfig.Docker.xml, then restart the container.

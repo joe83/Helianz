@@ -144,3 +144,8 @@ helianz_qris_mirror_kotlin/app/build
 helianz_qris_mirror_kotlin/.gradle
 helianz_qris_mirror_kotlin/.idea
 helianz_qris_mirror_kotlin/gradle
+
+# Server config files (contain database credentials — never commit real passwords)
+HelianzServerConfig.xml
+**/HelianzServerConfig.xml
+!**/HelianzServerConfig.example.xml

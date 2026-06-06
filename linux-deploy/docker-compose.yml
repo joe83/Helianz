@@ -26,16 +26,17 @@ services:
     #                                Helianz uses 0000-00-00 sentinel dates everywhere;
     #                                MySQL 8.0 strict mode rejects these by default
     environment:
-      MYSQL_ROOT_PASSWORD: rootrootroot   # change before production use
+      # SECURITY: Override in a .env file for production. Never commit real passwords.
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootrootroot}
       MYSQL_DATABASE:      helianz
       MYSQL_USER:          oduser
-      MYSQL_PASSWORD:      odpass         # must match config/HelianzServerConfig.xml
+      MYSQL_PASSWORD:      ${DB_PASSWORD:-odpass}
     ports:
       - "3307:3306"   # mapped to 3307 to avoid collision with a local MySQL instance
     volumes:
       - od-mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootroot root"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootrootroot"]
       interval: 10s
       timeout: 5s
       retries: 12
@@ -52,6 +53,15 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    # SECURITY: Pass DB credentials via environment variables instead of config files.
+    # These override values in HelianzServerConfig.xml when set.
+    environment:
+      - HELIANZ_DB_SERVER=${HELIANZ_DB_SERVER:-mysql}
+      - HELIANZ_DB_NAME=${HELIANZ_DB_NAME:-helianz}
+      - HELIANZ_DB_USER=${HELIANZ_DB_USER:-oduser}
+      - HELIANZ_DB_PASSWORD=${DB_PASSWORD:-odpass}
+      - HELIANZ_DB_USER_LOW=${HELIANZ_DB_USER_LOW:-oduser}
+      - HELIANZ_DB_PASSWORD_LOW=${DB_PASSWORD:-odpass}
     volumes:
       # Bind-mount the config so the hostname resolves to the "mysql" service.
       # Edit config/HelianzServerConfig.xml and restart to change DB settings.

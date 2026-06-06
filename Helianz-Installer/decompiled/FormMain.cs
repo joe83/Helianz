@@ -30,6 +30,12 @@ namespace FreeDentalInstaller
     public FormMain()
     {
       this.InitializeComponent();
+      // Avoid executing runtime-only initialization when loaded inside the WinForms designer.
+      if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+      {
+        return;
+      }
+
       this._dbmsType = Utilities.GetDbmsType();
       FormMain.VersionInstaller = Assembly.GetExecutingAssembly().GetName().Version;
       FormMain.Architecturetype = this._dbmsType == DbmsType.MariaDB ? "win64" : "win32";
@@ -202,11 +208,15 @@ namespace FreeDentalInstaller
         {
           if (!string.IsNullOrEmpty(targetDB) && this.checkODImages.Checked && this.textHelianzImages.Text != "C:\\HelianzImages\\")
             this.TryUpdateDataPath(targetDB);
-          if (this.checkGrant.Checked)
+          // Configure MySQL and HelianzServer in a single dialog:
+          // set root password, create oduser account, generate HelianzServerConfig.xml.
+          if (this.checkGrant.Checked || this.checkODServer.Checked)
           {
-            FormMysqlCredentials mysqlCredentials = new FormMysqlCredentials();
-            mysqlCredentials.StartPosition = FormStartPosition.CenterParent;
-            mysqlCredentials.ShowDialog(this);
+            FormHelianzServerConfig serverConfig = new FormHelianzServerConfig();
+            serverConfig.StartPosition = FormStartPosition.CenterParent;
+            serverConfig.MariaDbInstallDir = this.textDbmsInstallationDir.Text;
+            serverConfig.HelianzServerDir = this.textApplicationServer.Text;
+            serverConfig.ShowDialog(this);
           }
           this.Cursor = Cursors.Default;
           MessageBox.Show("Installation complete.  You can now close this program and start Helianz by clicking on the shortcut on your desktop.");
@@ -453,7 +463,7 @@ namespace FreeDentalInstaller
     {
       string dir = this.textApplicationServer.Text.TrimEnd('\\');
       Utilities.ProcessCommand(this._appPath + "\\Helianz Server Setup\\Setup.exe",
-        "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR=\"" + dir + "\"");
+        "/SILENT /SUPPRESSMSGBOXES /NORESTART /DIR=\"" + dir + "\"");
       return true;
     }
 
@@ -461,7 +471,7 @@ namespace FreeDentalInstaller
     {
       string dir = this.textApplication.Text.TrimEnd('\\');
       Utilities.ProcessCommand(this._appPath + "\\Helianz Client Setup\\Setup.exe",
-        "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR=\"" + dir + "\"");
+        "/SILENT /SUPPRESSMSGBOXES /NORESTART /DIR=\"" + dir + "\"");
       return true;
     }
 

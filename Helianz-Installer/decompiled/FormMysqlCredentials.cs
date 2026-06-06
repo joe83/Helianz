@@ -11,6 +11,9 @@ namespace FreeDentalInstaller
   {
     private DataConnection _conRoot = null;
 
+    /// <summary>The MySQL root password entered by the user (blank if left blank).</summary>
+    public string RootPassword => this.textPassword.Text;
+
     public FormMysqlCredentials() => this.InitializeComponent();
 
     private void FormMysqlCredentials_Load(object sender, EventArgs e)

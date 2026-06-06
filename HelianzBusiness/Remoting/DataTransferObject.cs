@@ -19,7 +19,7 @@ namespace HelianzBusiness {
 		public DtoObject[] Params;
 		///<summary>This is the Environement.MachineName for the computer making the request.</summary>
 		public string ComputerName;
-		
+
 
 		public string Serialize(){
 			if(this.Params!=null) {
@@ -37,8 +37,11 @@ namespace HelianzBusiness {
 
 		public static DataTransferObject Deserialize(string data) {
 			StringReader strReader=new StringReader(data);
-			//XmlReader reader=XmlReader.Create(strReader);
-			XmlTextReader reader=new XmlTextReader(strReader);
+			//SECURITY: Use XmlReader with DTD processing prohibited to prevent XXE attacks.
+			XmlReaderSettings settings=new XmlReaderSettings();
+			settings.DtdProcessing=DtdProcessing.Prohibit;
+			settings.XmlResolver=null;
+			XmlReader reader=XmlReader.Create(strReader,settings);
 			string strNodeName="";
 			while(reader.Read()){
 				if(reader.NodeType!=XmlNodeType.Element){
@@ -47,11 +50,7 @@ namespace HelianzBusiness {
 				strNodeName=reader.Name;
 				break;
 			}
-			//strReader.Close();
-			//reader.Close();
 			Type type = Type.GetType("HelianzBusiness." +strNodeName);
-			//StringReader strReader2=new StringReader(data);
-			//XmlReader reader2=XmlReader.Create(strReader2);
 			XmlSerializer serializer = new XmlSerializer(type);
 			DataTransferObject retVal=(DataTransferObject)serializer.Deserialize(reader);
 			strReader.Close();
@@ -74,12 +73,12 @@ namespace HelianzBusiness {
 
 	///<summary></summary>
 	public class DtoGetDS:DataTransferObject{
-	
+
 	}
 
 	///<summary></summary>
 	public class DtoGetTable:DataTransferObject{
-		
+
 	}
 
 	///<summary></summary>
@@ -93,7 +92,7 @@ namespace HelianzBusiness {
 
 	///<summary>Gets a long.</summary>
 	public class DtoGetLong:DataTransferObject{
-		
+
 	}
 
 	///<summary>Gets an int.</summary>
@@ -108,7 +107,7 @@ namespace HelianzBusiness {
 
 	///<summary>Used when the return type is void.  It will still return 0 to ack.</summary>
 	public class DtoGetVoid:DataTransferObject {
-		
+
 	}
 
 	///<summary>Gets an object which must be serializable.  Calling code will convert object to specific type.</summary>
@@ -119,17 +118,16 @@ namespace HelianzBusiness {
 
 	///<summary>Gets a simple string.</summary>
 	public class DtoGetString:DataTransferObject{
-		
+
 	}
 
 	///<summary>Gets a bool.</summary>
 	public class DtoGetBool:DataTransferObject {
-		
+
 	}
 
-	
 
-	
+
 
 	//<summary>IDorRows will be the InsertID for insert type commands.  For some other commands, it will be the rows changed, and for some commands, it will just be 0.</summary>
 	//public class DtoServerAck:DataTransferObject {
@@ -144,8 +142,6 @@ namespace HelianzBusiness {
 		///<summary>Error code integer of the ODException.</summary>
 		public int ErrorCode;
 	}
-
-	
 
 
 

@@ -136,7 +136,11 @@ namespace HelianzBusiness {
 			if(!type.IsInterface) {
 				serializer=new XmlSerializer(type);
 			}
-			XmlTextReader reader2=new XmlTextReader(new StringReader(strObj));
+			//SECURITY: Use XmlReader with DTD processing prohibited to prevent XXE attacks.
+				XmlReaderSettings settings=new XmlReaderSettings();
+				settings.DtdProcessing=DtdProcessing.Prohibit;
+				settings.XmlResolver=null;
+				XmlReader reader2=XmlReader.Create(new StringReader(strObj),settings);
 			if(TypeName=="System.Drawing.Color") {
 				Obj=Color.FromArgb((int)serializer.Deserialize(reader2));
 			}

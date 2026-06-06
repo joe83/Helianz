@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+  HelianzServer config for Docker Compose.
+  The MySQL host is "mysql" (the Compose service name) instead of "localhost".
+  Mount this file over /app/HelianzServerConfig.xml in the container,
+  or rebuild the image after updating credentials.
+
+  SECURITY NOTE:
+    - Do not commit real passwords to version control.
+    - Rotate these credentials before deploying to any non-development environment.
+    - Alternatively, set HELIANZ_DB_* environment variables in docker-compose.yml
+      to override these values without storing passwords in config files.
+-->
+<ConnectionSettings>
+  <ServerPort>9390</ServerPort>
+  <DatabaseConnection>
+    <ComputerName>mysql</ComputerName>
+    <Database>helianz</Database>
+    <User>oduser</User>
+    <Password>YOUR_PASSWORD_HERE</Password>
+    <UserLow>oduser</UserLow>
+    <PasswordLow>YOUR_PASSWORD_HERE</PasswordLow>
+  </DatabaseConnection>
+</ConnectionSettings>
