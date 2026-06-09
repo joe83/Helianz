@@ -752,7 +752,9 @@ namespace Helianz{
 				Logger.LogToPath("userControlTasks1.InitializeOnStartup",LogPath.Startup,LogPhase.Unspecified);
 				userControlTasks1.InitializeOnStartup();
 			}
-			moduleBar.SelectedIndex=Security.GetModule(0);//for eCW, this fails silently.
+			ApplyModuleSecurityVisibility();
+			ApplyTopMenuSecurityVisibility();
+			moduleBar.SelectedIndex=GetFirstVisibleAuthorizedModuleIndex(0);//for eCW, this fails silently.
 			Logger.LogToPath("Programs.UsingEcwTightOrFullMode",LogPath.Startup,LogPhase.Unspecified);
 			if(Programs.UsingEcwTightOrFullMode()
 				|| (HL7Defs.IsExistingHL7Enabled() && !HL7Defs.GetOneDeepEnabled().ShowAppts)) {
@@ -764,6 +766,7 @@ namespace Helianz{
 			LayoutToolBar();
 			Logger.LogToPath("RefreshMenuReports",LogPath.Startup,LogPhase.Unspecified);
 			RefreshMenuReports();
+			ApplyTopMenuSecurityVisibility();
 			Cursor=Cursors.Default;
 			if(moduleBar.SelectedModule==EnumModuleType.None) {
 				MsgBox.Show(this,"You do not have permission to use any modules.");
@@ -1324,7 +1327,9 @@ namespace Helianz{
 						Security.CurUser=userod.Copy();
 						SecurityLogs.MakeLogEntry(EnumPermType.UserLogOnOff,0,Lan.g(this,"User:")+" "+Security.CurUser.UserName+" "+Lan.g(this,"has logged on via command line."));
 					}
-					moduleBar.SelectedIndex=Security.GetModule(moduleBar.IndexOf(_moduleTypeLast));
+					ApplyModuleSecurityVisibility();
+					ApplyTopMenuSecurityVisibility();
+					moduleBar.SelectedIndex=GetFirstVisibleAuthorizedModuleIndex(moduleBar.IndexOf(_moduleTypeLast));
 					moduleBar.Invalidate();
 					SetModuleSelected();
 					Patient patient=Patients.GetPat(PatNumCur);//pat could be null
@@ -1339,7 +1344,9 @@ namespace Helianz{
 			}
 			#endregion
 			#region Module
-			if(moduleTypeStarting!=EnumModuleType.None && moduleBar.IndexOf(moduleTypeStarting)==Security.GetModule(moduleBar.IndexOf(moduleTypeStarting))) {
+			if(moduleTypeStarting!=EnumModuleType.None
+				&& moduleBar.IsVisible(moduleTypeStarting)
+				&& moduleBar.IndexOf(moduleTypeStarting)==GetFirstVisibleAuthorizedModuleIndex(moduleBar.IndexOf(moduleTypeStarting))) {
 				UnselectActive();
 				AllNeutral();//Sets all controls to false.  Needed to set the new module as selected.
 				moduleBar.SelectedModule=moduleTypeStarting;
@@ -1862,6 +1869,8 @@ namespace Helianz{
 			}
 			if(arrayITypes.Contains(InvalidType.Security) || isAll) {
 				RefreshMenuDashboards();
+				ApplyModuleSecurityVisibility();
+				ApplyTopMenuSecurityVisibility();
 			}
 			#endregion
 			#region InvalidType.Signals
@@ -1919,6 +1928,8 @@ namespace Helianz{
 					moduleBar.SetVisible(EnumModuleType.Appointments,true);
 					moduleBar.SetVisible(EnumModuleType.Account,true);
 				}
+				ApplyModuleSecurityVisibility();
+				ApplyTopMenuSecurityVisibility();
 				moduleBar.Invalidate();
 			}
 			#endregion
@@ -4230,6 +4241,38 @@ namespace Helianz{
 		#endregion Tasks
 
 		#region Modules
+		private bool IsModuleAuthorized(EnumModuleType moduleType) {
+			return true;
+		}
+
+		private void ApplyModuleSecurityVisibility() {
+			// Intentionally left as a no-op so module visibility is controlled by existing app/program logic only.
+		}
+
+		private int GetFirstVisibleAuthorizedModuleIndex(int suggestedIndex) {
+			EnumModuleType[] arrayModuleTypes=new EnumModuleType[] {
+				EnumModuleType.Appointments,
+				EnumModuleType.Family,
+				EnumModuleType.Account,
+				EnumModuleType.TreatPlan,
+				EnumModuleType.Chart,
+				EnumModuleType.Imaging,
+				EnumModuleType.Manage,
+			};
+			if(suggestedIndex>=0 && suggestedIndex<arrayModuleTypes.Length) {
+				EnumModuleType moduleTypeSuggested=arrayModuleTypes[suggestedIndex];
+				if(moduleBar.IsVisible(moduleTypeSuggested)) {
+					return suggestedIndex;
+				}
+			}
+			for(int i=0;i<arrayModuleTypes.Length;i++) {
+				if(moduleBar.IsVisible(arrayModuleTypes[i])) {
+					return i;
+				}
+			}
+			return -1;
+		}
+
 		///<summary>Delegate method for GotoModule. Only required parameter is moduleType. Pass in other optional parameters like patNum:patnum</summary>
 		private void GotoModule_ModuleSelected(EnumModuleType moduleType, DateTime? dateSelected=null,List<long> listPinApptNums=null,
 			long selectedAptNum=0,long claimNum=0,long patNum=0,long docNum=0,bool doShowSearch=false){
@@ -6192,6 +6235,7 @@ namespace Helianz{
 				if(menuStripOD!=null){
 					menuStripOD.LayoutItems();
 				}
+				ApplyTopMenuSecurityVisibility();
 				return;//Return early to avoid adding a useless separator in the menu.
 			}
 			//Add separator, then dynamic items to the bottom of the menu.
@@ -6204,6 +6248,7 @@ namespace Helianz{
 				menuItem.Tag=listToolButItems[i];
 				_menuItemReports.Add(menuItem);
 			}
+			ApplyTopMenuSecurityVisibility();
 		}
 
 		private void menuReportLink_Click(object sender,System.EventArgs e) {
@@ -8111,7 +8156,9 @@ namespace Helianz{
 					}
 				}
 			}
-			moduleBar.SelectedIndex=Security.GetModule(moduleBar.IndexOf(_moduleTypeLast));
+			ApplyModuleSecurityVisibility();
+			ApplyTopMenuSecurityVisibility();
+			moduleBar.SelectedIndex=GetFirstVisibleAuthorizedModuleIndex(moduleBar.IndexOf(_moduleTypeLast));
 			moduleBar.Invalidate();
 			if(PrefC.HasClinicsEnabled) {
 				Clinics.LoadClinicNumForUser();

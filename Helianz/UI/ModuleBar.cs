@@ -206,6 +206,15 @@ namespace Helianz {
 			moduleBarButton.Visible=isVisible;
 			Invalidate();
 		}
+
+		///<summary>Returns true if the module button is currently visible.</summary>
+		public bool IsVisible(EnumModuleType moduleType){
+			ModuleBarButton moduleBarButton=_listButtons.FirstOrDefault(x=>x.ModuleType==moduleType);
+			if(moduleBarButton==null){
+				return false;
+			}
+			return moduleBarButton.Visible;
+		}
 		#endregion Methods - Public
 
 		#region Methods - OnPaint

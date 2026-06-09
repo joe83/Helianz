@@ -208,18 +208,20 @@ namespace FreeDentalInstaller
       string lowPass = textLowPrivPassword.Text;
 
       string sql = "";
-      sql += "CREATE USER IF NOT EXISTS '" + EscapeSql(appUser) + "'@'%' IDENTIFIED BY '" + EscapeSql(appPass) + "';\n";
-      sql += "ALTER USER '" + EscapeSql(appUser) + "'@'%' IDENTIFIED BY '" + EscapeSql(appPass) + "';\n";
+      // MySQL only serves locally — clinics connect via HelianzServer SOAP, not directly to MySQL.
+      // Restrict all users to 'localhost' so MySQL never accepts remote connections.
+      sql += "CREATE USER IF NOT EXISTS '" + EscapeSql(appUser) + "'@'localhost' IDENTIFIED BY '" + EscapeSql(appPass) + "';\n";
+      sql += "ALTER USER '" + EscapeSql(appUser) + "'@'localhost' IDENTIFIED BY '" + EscapeSql(appPass) + "';\n";
       sql += "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, " +
         "CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE " +
-        "ON `" + EscapeSql(dbName) + "`.* TO '" + EscapeSql(appUser) + "'@'%';\n";
+        "ON `" + EscapeSql(dbName) + "`.* TO '" + EscapeSql(appUser) + "'@'localhost';\n";
 
       if (!string.IsNullOrWhiteSpace(lowUser))
       {
         string effectiveLowPass = string.IsNullOrEmpty(lowPass) ? appPass : lowPass;
-        sql += "CREATE USER IF NOT EXISTS '" + EscapeSql(lowUser) + "'@'%' IDENTIFIED BY '" + EscapeSql(effectiveLowPass) + "';\n";
-        sql += "ALTER USER '" + EscapeSql(lowUser) + "'@'%' IDENTIFIED BY '" + EscapeSql(effectiveLowPass) + "';\n";
-        sql += "GRANT SELECT ON `" + EscapeSql(dbName) + "`.* TO '" + EscapeSql(lowUser) + "'@'%';\n";
+        sql += "CREATE USER IF NOT EXISTS '" + EscapeSql(lowUser) + "'@'localhost' IDENTIFIED BY '" + EscapeSql(effectiveLowPass) + "';\n";
+        sql += "ALTER USER '" + EscapeSql(lowUser) + "'@'localhost' IDENTIFIED BY '" + EscapeSql(effectiveLowPass) + "';\n";
+        sql += "GRANT SELECT ON `" + EscapeSql(dbName) + "`.* TO '" + EscapeSql(lowUser) + "'@'localhost';\n";
       }
 
       sql += "FLUSH PRIVILEGES;\n";

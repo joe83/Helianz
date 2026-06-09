@@ -7,18 +7,20 @@
 -- SECURITY NOTE:
 --   These grants are scoped to the 'helianz' database only.
 --   The oduser account does NOT have access to mysql.* or other databases.
---   If you need to tighten host access, replace '%' with a specific hostname/IP.
+--   All access is restricted to 'localhost' only — MySQL never faces the network.
+--   Clinics connect via HelianzServer SOAP, not directly to MySQL.
 -- =============================================================================
 
--- Revoke any existing overly-broad grants (cleanup from older config)
+-- Revoke any existing overly-broad grants (cleanup from older config with @'%')
 REVOKE ALL PRIVILEGES ON *.* FROM 'oduser'@'%';
+REVOKE ALL PRIVILEGES ON *.* FROM 'oduser'@'localhost';
 
--- Grant only what HelianzServer needs on the helianz database
+-- Grant only what HelianzServer needs on the helianz database (localhost only)
 GRANT SELECT, INSERT, UPDATE, DELETE,
       CREATE, ALTER, INDEX,
       CREATE TEMPORARY TABLES,
       LOCK TABLES,
       EXECUTE
-ON helianz.* TO 'oduser'@'%';
+ON helianz.* TO 'oduser'@'localhost';
 
 FLUSH PRIVILEGES;

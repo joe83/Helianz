@@ -16,6 +16,10 @@ namespace Helianz{
 		private MenuItemOD _menuItemAlerts;
 		private MenuItemOD _menuItemCareCreditTransactions;
 		private MenuItemOD _menuItemClinicsMain;
+		private MenuItemOD _menuItemEServicesMain;
+		private MenuItemOD _menuItemFileMain;
+		private MenuItemOD _menuItemHelpMain;
+		private MenuItemOD _menuItemListsMain;
 		private MenuItemOD _menuItemClinics;
 		private MenuItemOD _menuItemCloudUsers;
 		private MenuItemOD _menuItemCounties;
@@ -33,6 +37,7 @@ namespace Helianz{
 		private MenuItemOD _menuItemEditTestModeOverrides;
 		private MenuItemOD _menuItemEvaluations;
 		private MenuItemOD _menuItemFeeSchedGroups;
+		private MenuItemOD _menuItemGraphic;
 		///<summary>Only available if Billing/Finance Charges are enabled on the Show Features window.</summary>
 		private MenuItemOD _menuItemFinanceCharges;
 		private MenuItemOD _menuItemHL7;
@@ -54,6 +59,8 @@ namespace Helianz{
 		private MenuItemOD _menuItemQueryFavorites;
 		private MenuItemOD _menuItemQueryMonitor;
 		private MenuItemOD _menuItemReports;
+		private MenuItemOD _menuItemSetupMain;
+		private MenuItemOD _menuItemToolsMain;
 		///<summary>Only show enterprise setup if it is enabled.</summary>
 		private MenuItemOD _menuItemReactivation;
 		private MenuItemOD _menuItemRemoteSupport;
@@ -89,17 +96,17 @@ namespace Helianz{
 			//Log Off--------------------------------------------------------------------------------------------------------
 			menuMain.Add(new MenuItemOD("Log &Off",menuItemLogOff_Click));
 			//File-----------------------------------------------------------------------------------------------------------
-			MenuItemOD menuItemFile=new MenuItemOD("&File");
-			menuMain.Add(menuItemFile);
-			LayoutMenuFile(menuItemFile);
+			_menuItemFileMain=new MenuItemOD("&File");
+			menuMain.Add(_menuItemFileMain);
+			LayoutMenuFile(_menuItemFileMain);
 			//Setup----------------------------------------------------------------------------------------------------------
-			MenuItemOD menuItemSetup=new MenuItemOD("&Setup");
-			menuMain.Add(menuItemSetup);
-			LayoutMenuSetup(menuItemSetup);
+			_menuItemSetupMain=new MenuItemOD("&Setup");
+			menuMain.Add(_menuItemSetupMain);
+			LayoutMenuSetup(_menuItemSetupMain);
 			//Lists----------------------------------------------------------------------------------------------------------
-			MenuItemOD menuItemLists=new MenuItemOD("&Lists");
-			menuMain.Add(menuItemLists);
-			LayoutMenuLists(menuItemLists);
+			_menuItemListsMain=new MenuItemOD("&Lists");
+			menuMain.Add(_menuItemListsMain);
+			LayoutMenuLists(_menuItemListsMain);
 			//Reports--------------------------------------------------------------------------------------------------------
 			_menuItemReports=new MenuItemOD("&Reports");
 			menuMain.Add(_menuItemReports);
@@ -108,24 +115,63 @@ namespace Helianz{
 			_menuItemCustomReports=new MenuItemOD("Custom Reports");
 			menuMain.Add(_menuItemCustomReports);
 			//Tools----------------------------------------------------------------------------------------------------------
-			MenuItemOD menuItemTools=new MenuItemOD("&Tools");
-			menuMain.Add(menuItemTools);
-			LayoutMenuTools(menuItemTools);
+			_menuItemToolsMain=new MenuItemOD("&Tools");
+			menuMain.Add(_menuItemToolsMain);
+			LayoutMenuTools(_menuItemToolsMain);
 			//Clinics--------------------------------------------------------------------------------------------------------
 			_menuItemClinicsMain=new MenuItemOD("&Clinics");
 			menuMain.Add(_menuItemClinicsMain);
 			//eServices------------------------------------------------------------------------------------------------------
-			menuMain.Add("eServices",menuItemEServices_Click);
+			_menuItemEServicesMain=new MenuItemOD("eServices",menuItemEServices_Click);
+			menuMain.Add(_menuItemEServicesMain);
 			//Alerts---------------------------------------------------------------------------------------------------------
 			_menuItemAlerts=new MenuItemOD("Alerts (0)",menuItemAlerts_Click);
 			menuMain.Add(_menuItemAlerts);
 			//_menuItemNoAlerts=new MenuItemOD("No alerts");
 			//_menuItemAlerts.Add(_menuItemNoAlerts);
 			//Help-----------------------------------------------------------------------------------------------------------
-			MenuItemOD menuItemHelp=new MenuItemOD("&Help");
-			menuMain.Add(menuItemHelp);
-			LayoutMenuHelp(menuItemHelp);
+			_menuItemHelpMain=new MenuItemOD("&Help");
+			menuMain.Add(_menuItemHelpMain);
+			LayoutMenuHelp(_menuItemHelpMain);
 			menuMain.EndUpdate();
+		}
+
+		private void ApplyTopMenuSecurityVisibility() {
+			if(Security.CurUser==null) {
+				return;
+			}
+			bool isSecurityAdmin=Security.IsAuthorized(EnumPermType.SecurityAdmin,true);
+			bool isEServicesSetup=Security.IsAuthorized(EnumPermType.EServicesSetup,true);
+			bool canRunStandardReports=Security.IsAuthorized(EnumPermType.Reports,true);
+			bool canRunGraphicalReports=Security.IsAuthorized(EnumPermType.GraphicalReports,true);
+			bool canRunUserQuery=Security.IsAuthorized(EnumPermType.UserQuery,true);
+			bool canRunUserQueryAdmin=Security.IsAuthorized(EnumPermType.UserQueryAdmin,true);
+			DisplayReport displayReportUnfinalizedPay=DisplayReports.GetWhere(
+				x => x.InternalName==DisplayReports.ReportNames.UnfinalizedInsPay).FirstOrDefault();
+			bool canRunUnfinalizedPay=displayReportUnfinalizedPay!=null
+				&& !displayReportUnfinalizedPay.IsHidden
+				&& GroupPermissions.HasReportPermission(DisplayReports.ReportNames.UnfinalizedInsPay,Security.CurUser);
+			// Keep privileged maintenance and server/operations surfaces hidden from non-admin roles.
+			_menuItemListsMain.Available=isSecurityAdmin;
+			_menuItemSetupMain.Available=isSecurityAdmin;
+			_menuItemToolsMain.Available=isSecurityAdmin;
+			_menuItemEServicesMain.Available=isSecurityAdmin || isEServicesSetup;
+			_menuItemAlerts.Available=isSecurityAdmin;
+			_menuItemStandard.Available=canRunStandardReports;
+			_menuItemStandardFiltered.Available=canRunStandardReports;
+			_menuItemGraphic.Available=canRunGraphicalReports;
+			_menuItemUserQuery.Available=canRunUserQueryAdmin;
+			_menuItemQueryFavorites.Available=canRunUserQuery;
+			_menuItemActivityLog.Available=isSecurityAdmin;
+			_menuItemUnfinalizedPay.Available=canRunUnfinalizedPay;
+			bool isReports=_menuItemStandard.Available
+				|| _menuItemStandardFiltered.Available
+				|| _menuItemGraphic.Available
+				|| _menuItemUserQuery.Available
+				|| _menuItemQueryFavorites.Available
+				|| _menuItemActivityLog.Available
+				|| _menuItemUnfinalizedPay.Available;
+			_menuItemReports.Available=isReports;
 		}
 		#endregion MainMenu
 
@@ -356,7 +402,8 @@ namespace Helianz{
 			menuItemReports.Add(_menuItemStandard);
 			_menuItemStandardFiltered=new MenuItemOD("Standard Favorites",menuItemReportsFilteredClick_Click);
 			menuItemReports.Add(_menuItemStandardFiltered);
-			menuItemReports.Add("&Graphic",menuItemReportsGraphic_Click);
+			_menuItemGraphic=new MenuItemOD("&Graphic",menuItemReportsGraphic_Click);
+			menuItemReports.Add(_menuItemGraphic);
 			_menuItemUserQuery=new MenuItemOD("&User Query",menuItemReportsUserQuery_Click);
 			menuItemReports.Add(_menuItemUserQuery);
 			_menuItemQueryFavorites=new MenuItemOD("User Query Favorites",menuItemReportsQueryFavorites_Click);
