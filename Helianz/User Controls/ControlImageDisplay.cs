@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
@@ -4674,9 +4675,16 @@ Here is the desired behavior:
 					_odWebView2.ODWebView2Navigate(_odWebView2FilePath);
 				}
 			}
-			catch(Exception ex) {
-				ex.DoNothing();
-				//An exception can happen if they do not have Microsoft WebView2 Runtime installed.
+			catch {
+				// WebView2 failed (runtime not installed or init error) — fall back to system default viewer
+				try {
+					if(!string.IsNullOrEmpty(_odWebView2FilePath) && File.Exists(_odWebView2FilePath)) {
+						Process.Start(_odWebView2FilePath);
+					}
+				}
+				catch {
+					//Fallback also failed, nothing we can do.
+				}
 			}
 		}
 
