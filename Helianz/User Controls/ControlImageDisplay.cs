@@ -3844,7 +3844,7 @@ Here is the desired behavior:
 			g.ScaleTransform(scale,scale);
 			DrawDocument(g);
 			string pathThumbnails=Path.Combine(PatFolder,"Thumbnails");
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !Directory.Exists(pathThumbnails)) {
+			if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && !Directory.Exists(pathThumbnails)) {
 				try {
 					Directory.CreateDirectory(pathThumbnails);
 				}
@@ -3853,7 +3853,7 @@ Here is the desired behavior:
 				}
 			}
 			string fileNameFull=Path.Combine(PatFolder,"Thumbnails",document.FileName);
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				if(File.Exists(fileNameFull)) {
 					try {
 						File.Delete(fileNameFull);
@@ -3884,7 +3884,7 @@ Here is the desired behavior:
 			g.ScaleTransform(scale,scale);
 			DrawMount(g);
 			string pathThumbnails=Path.Combine(PatFolder,"Thumbnails");
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !Directory.Exists(pathThumbnails)) {
+			if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && !Directory.Exists(pathThumbnails)) {
 				try {
 					Directory.CreateDirectory(pathThumbnails);
 				} 
@@ -3895,7 +3895,7 @@ Here is the desired behavior:
 			string fileName="Mount"+_mountShowing.MountNum.ToString()+".jpg";
 			string fileNameFull=Path.Combine(PatFolder,"Thumbnails",fileName);
 			//todo: if storage in db
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				if(File.Exists(fileNameFull)) {
 					try {
 						File.Delete(fileNameFull);
@@ -4682,7 +4682,7 @@ Here is the desired behavior:
 
 		private void SetPdfFilePath(string atoZFolder,string atoZFileName,string localPath,string downloadMessage) {
 			string pdfFilePath="";
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				pdfFilePath=ODFileUtils.CombinePaths(atoZFolder,atoZFileName);
 			}
 			else if(CloudStorage.IsCloudStorage) {
