@@ -61,14 +61,32 @@ namespace Helianz {
 				}
 				//All folder names to be created should be put in this list, so that each folder is created exactly
 				//the same way.
-				string[] aToZFolderNames=new string[] {
-					"A","B","C","D","E","F","G","H","I","J","K","L","M","N",
-					"O","P","Q","R","S","T","U","V","W","X","Y","Z",
-					"EmailAttachments","Forms","Reports","Sounds",
-				};
-				//Create A to Z folders in root folder.
-				for(int i=0;i<aToZFolderNames.Length;i++) {
-					string pathToCreate=ODFileUtils.CombinePaths(rootDir,aToZFolderNames[i]);
+				bool isHybrid=(PrefC.GetInt(PrefName.AtoZfolderUsed)==(int)DataStorageType.LocalAtoZHybrid);
+				string[] folderNames;
+				if(isHybrid) {
+					// Numbered folders 0-99 for hybrid mode
+					folderNames=new string[100];
+					for(int n=0;n<100;n++) {
+						folderNames[n]=n.ToString();
+					}
+					// Append shared folders
+					Array.Resize(ref folderNames,folderNames.Length+4);
+					folderNames[100]="EmailAttachments";
+					folderNames[101]="Forms";
+					folderNames[102]="Reports";
+					folderNames[103]="Sounds";
+				}
+				else {
+					// Legacy A-Z folders
+					folderNames=new string[] {
+						"A","B","C","D","E","F","G","H","I","J","K","L","M","N",
+						"O","P","Q","R","S","T","U","V","W","X","Y","Z",
+						"EmailAttachments","Forms","Reports","Sounds",
+					};
+				}
+				//Create folders in root folder.
+				for(int i=0;i<folderNames.Length;i++) {
+					string pathToCreate=ODFileUtils.CombinePaths(rootDir,folderNames[i]);
 					if(!Directory.Exists(pathToCreate)) {
 						// Mono does support Directory.CreateDirectory(string, DirectorySecurity)
 						Directory.CreateDirectory(pathToCreate,directorySecurity);
@@ -77,7 +95,7 @@ namespace Helianz {
 				//Save new image path into the DocPath and 
 				//set "use A to Z folders" check-box to checked.
 				Prefs.UpdateString(PrefName.DocPath,rootDir);
-				Prefs.UpdateString(PrefName.AtoZfolderUsed,"1");
+				Prefs.UpdateString(PrefName.AtoZfolderUsed,((int)DataStorageType.LocalAtoZHybrid).ToString());
 				Cache.Refresh(InvalidType.Prefs);
 				//Prefs_client.RefreshClient();
 			}

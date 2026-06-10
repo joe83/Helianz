@@ -20,6 +20,7 @@ namespace HelianzBusiness {
 						return '/';
 					case DataStorageType.InDatabase:
 					case DataStorageType.LocalAtoZ:
+					case DataStorageType.LocalAtoZHybrid:
 					default:
 						return Path.DirectorySeparatorChar;
 				}
@@ -36,6 +37,7 @@ namespace HelianzBusiness {
 						return true;
 					case DataStorageType.InDatabase:
 					case DataStorageType.LocalAtoZ:
+					case DataStorageType.LocalAtoZHybrid:
 					default:
 						return false;
 				}
@@ -54,6 +56,7 @@ namespace HelianzBusiness {
 						break;
 					case DataStorageType.InDatabase:
 					case DataStorageType.LocalAtoZ:
+					case DataStorageType.LocalAtoZHybrid:
 						//Local storage methods should never be calling this method, throw an exception so it's more obvious that this was the issue,
 						//rather than returning null and having the method throw a null exception later.
 						throw new Exception("Unknown cloud storage type: "+PrefC.AtoZfolderUsed.ToString());
@@ -100,6 +103,7 @@ namespace HelianzBusiness {
 					break;
 				case DataStorageType.InDatabase:
 				case DataStorageType.LocalAtoZ:
+				case DataStorageType.LocalAtoZHybrid:
 					//Local storage methods should never be calling this method, throw an exception so it's more obvious that this was the issue,
 					//rather than returning null and having the method throw a null exception later.
 					throw new Exception("Unknown cloud storage type: "+PrefC.AtoZfolderUsed.ToString());
@@ -148,6 +152,7 @@ namespace HelianzBusiness {
 					break;
 				case DataStorageType.InDatabase:
 				case DataStorageType.LocalAtoZ:
+				case DataStorageType.LocalAtoZHybrid:
 					//Local storage methods should never be calling this method, throw an exception so it's more obvious that this was the issue,
 					//rather than returning null and having the method throw a null exception later.
 					throw new Exception("Unknown cloud storage type: "+PrefC.AtoZfolderUsed.ToString());
@@ -176,6 +181,7 @@ namespace HelianzBusiness {
 					break;
 				case DataStorageType.InDatabase:
 				case DataStorageType.LocalAtoZ:
+				case DataStorageType.LocalAtoZHybrid:
 					//Local storage methods should never be calling this method, throw an exception so it's more obvious that this was the issue,
 					//rather than returning null and having the method throw a null exception later.
 					throw new Exception("Unknown cloud storage type: "+PrefC.AtoZfolderUsed.ToString());
@@ -204,6 +210,7 @@ namespace HelianzBusiness {
 					break;
 				case DataStorageType.InDatabase:
 				case DataStorageType.LocalAtoZ:
+				case DataStorageType.LocalAtoZHybrid:
 					//Local storage methods should never be calling this method, throw an exception so it's more obvious that this was the issue,
 					//rather than returning null and having the method throw a null exception later.
 					throw new Exception("Unknown cloud storage type: "+PrefC.AtoZfolderUsed.ToString());
@@ -235,6 +242,7 @@ namespace HelianzBusiness {
 					break;
 				case DataStorageType.InDatabase:
 				case DataStorageType.LocalAtoZ:
+				case DataStorageType.LocalAtoZHybrid:
 					//Local storage methods should never be calling this method, throw an exception so it's more obvious that this was the issue,
 					//rather than returning null and having the method throw a null exception later.
 					throw new Exception("Unknown cloud storage type: "+PrefC.AtoZfolderUsed.ToString());
@@ -267,6 +275,7 @@ namespace HelianzBusiness {
 					break;
 				case DataStorageType.InDatabase:
 				case DataStorageType.LocalAtoZ:
+				case DataStorageType.LocalAtoZHybrid:
 					//Local storage methods should never be calling this method, throw an exception so it's more obvious that this was the issue,
 					//rather than returning null and having the method throw a null exception later.
 					throw new Exception("Unknown cloud storage type: "+PrefC.AtoZfolderUsed.ToString());
@@ -298,6 +307,7 @@ namespace HelianzBusiness {
 					break;
 				case DataStorageType.InDatabase:
 				case DataStorageType.LocalAtoZ:
+				case DataStorageType.LocalAtoZHybrid:
 					//Local storage methods should never be calling this method, throw an exception so it's more obvious that this was the issue,
 					//rather than returning null and having the method throw a null exception later.
 					throw new Exception("Unknown cloud storage type: "+PrefC.AtoZfolderUsed.ToString());
@@ -320,6 +330,7 @@ namespace HelianzBusiness {
 					break;
 				case DataStorageType.InDatabase:
 				case DataStorageType.LocalAtoZ:
+				case DataStorageType.LocalAtoZHybrid:
 					//Local storage methods should never be calling this method, throw an exception so it's more obvious that this was the issue,
 					//rather than returning null and having the method throw a null exception later.
 					throw new Exception("Unknown cloud storage type: "+PrefC.AtoZfolderUsed.ToString());
@@ -343,6 +354,7 @@ namespace HelianzBusiness {
 					break;
 				case DataStorageType.InDatabase:
 				case DataStorageType.LocalAtoZ:
+				case DataStorageType.LocalAtoZHybrid:
 				default:
 					break;
 			}

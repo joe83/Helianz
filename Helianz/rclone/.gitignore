@@ -1,0 +1,3 @@
+# Ignore rclone binary (download separately)
+rclone.exe
+rclone

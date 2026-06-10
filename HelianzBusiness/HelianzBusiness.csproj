@@ -1583,6 +1583,9 @@
     <Compile Include="Misc\ConvertDatabases5.cs" />
     <Compile Include="Misc\EhrCCD.cs" />
     <Compile Include="Misc\FileAtoZ.cs" />
+    <Compile Include="Misc\HybridMediaResolver.cs" />
+    <Compile Include="Misc\MediaMigration.cs" />
+    <Compile Include="Misc\RcloneSync.cs" />
     <Compile Include="Misc\InnoDb.cs" />
     <Compile Include="Misc\ConvertDatabases2.cs" />
     <Compile Include="Misc\ConvertDatabases1.cs" />

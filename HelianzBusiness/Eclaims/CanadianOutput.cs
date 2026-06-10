@@ -745,7 +745,7 @@ namespace HelianzBusiness.Eclaims {
 			for(int i=0;i<listAttachments.Count;i++) {
 				string attachmentPath=FileAtoZ.CombinePaths(EmailAttaches.GetAttachPath(),listAttachments[i].ActualFileName);
 				//Mimics WebFormL.LoadImagesToSheetDef()
-				if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !File.Exists(attachmentPath)) ||
+				if(((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && !File.Exists(attachmentPath)) ||
 					(CloudStorage.IsCloudStorage && !CloudStorage.FileExists(attachmentPath)))
 				{
 					throw new ODException($"The file {listAttachments[i].DisplayedFileName} could not be found in {attachmentPath}");

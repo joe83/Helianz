@@ -1955,6 +1955,15 @@ namespace HelianzBusiness {
 		///<summary>When using a distinct read only server over middle tier, stores the uri.</summary>
 		[PrefName(ValueType=PrefValueType.STRING)]
 		ReadOnlyServerURI,
+		///<summary>String. Path to rclone binary for hybrid media sync. Default "rclone".</summary>
+		[PrefName(ValueType=PrefValueType.STRING)]
+		RclonePath,
+		///<summary>String. rclone remote name configured for SFTP media server. Default "helianz-media".</summary>
+		[PrefName(ValueType=PrefValueType.STRING)]
+		RcloneRemoteName,
+		///<summary>String. Server-side base path for media storage. Default "/media".</summary>
+		[PrefName(ValueType=PrefValueType.STRING)]
+		RcloneServerPath,
 		RecallAdjustDown,
 		RecallAdjustRight,
 		///<summary>Defaults to 12 for new customers.  The number in this field is considered adult.  Only used when automatically adding procedures to a new recall appointment.</summary>

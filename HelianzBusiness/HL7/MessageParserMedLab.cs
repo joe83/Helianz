@@ -949,7 +949,7 @@ namespace HelianzBusiness.HL7 {
 				string embeddedFile="";
 				try {
 					string embeddedFilePath=ODFileUtils.CombinePaths(ImageStore.GetPreferredAtoZpath(),"MedLabEmbeddedFiles");
-					if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !Directory.Exists(embeddedFilePath)) {
+					if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && !Directory.Exists(embeddedFilePath)) {
 						Directory.CreateDirectory(embeddedFilePath);
 					}
 					else {//Cloud, create random temp folder

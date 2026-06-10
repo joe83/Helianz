@@ -506,7 +506,7 @@ namespace HelianzBusiness {
 			}
 			string fileNameFull=ODFileUtils.CombinePaths(patientFolder,shortFileName);
 			//If the document no longer exists, then there is no corresponding thumbnail image.
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !File.Exists(fileNameFull)) {
+			if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && !File.Exists(fileNameFull)) {
 				throw new ODException("No image file found for document.");
 			}
 			//If the specified document is not an image return 'not available'.
@@ -514,7 +514,7 @@ namespace HelianzBusiness {
 				throw new ODException("Document is not associated to an image file format.");
 			}
 			Bitmap bitmapRaw=null;
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				bitmapRaw=new Bitmap(fileNameFull);
 			}
 			else {//Cloud

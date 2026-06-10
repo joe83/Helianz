@@ -529,7 +529,7 @@ namespace HelianzBusiness{
 			if(CloudStorage.IsCloudStorage) {
 				imagePath=imagePath.Replace("\\","/");
 			}
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !Directory.Exists(imagePath)) {
+			if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && !Directory.Exists(imagePath)) {
 				Directory.CreateDirectory(imagePath);
 			}
 			return imagePath;
@@ -582,7 +582,7 @@ namespace HelianzBusiness{
 				throw new ApplicationException("Must be using AtoZ folders.");
 			}
 			imagePath=ODFileUtils.CombinePaths(ImageStore.GetPreferredAtoZpath(),"SheetPatImages");
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !Directory.Exists(imagePath)) {
+			if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && !Directory.Exists(imagePath)) {
 				Directory.CreateDirectory(imagePath);
 			}
 			if(CloudStorage.IsCloudStorage) {

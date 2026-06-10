@@ -68,6 +68,27 @@ namespace Helianz {
 			this.textSftpAtoZ = new System.Windows.Forms.TextBox();
 			this.label7 = new System.Windows.Forms.Label();
 			this.textSftpHostname = new System.Windows.Forms.TextBox();
+			this.radioHybrid = new System.Windows.Forms.RadioButton();
+			this.tabHybrid = new Helianz.UI.TabPage();
+			this.labelHybridDesc = new System.Windows.Forms.Label();
+			this.labelHybridLocalPath = new System.Windows.Forms.Label();
+			this.textHybridLocalPath = new System.Windows.Forms.TextBox();
+			this.butHybridBrowseLocal = new Helianz.UI.Button();
+			this.labelHybridSftpHost = new System.Windows.Forms.Label();
+			this.textHybridSftpHost = new System.Windows.Forms.TextBox();
+			this.labelHybridSftpUser = new System.Windows.Forms.Label();
+			this.textHybridSftpUser = new System.Windows.Forms.TextBox();
+			this.labelHybridSftpPass = new System.Windows.Forms.Label();
+			this.textHybridSftpPass = new System.Windows.Forms.TextBox();
+			this.labelHybridRclonePath = new System.Windows.Forms.Label();
+			this.textHybridRclonePath = new System.Windows.Forms.TextBox();
+			this.labelHybridServerPath = new System.Windows.Forms.Label();
+			this.textHybridServerPath = new System.Windows.Forms.TextBox();
+			this.butHybridTestConnection = new Helianz.UI.Button();
+			this.labelHybridKeyFile = new System.Windows.Forms.Label();
+			this.textHybridKeyFile = new System.Windows.Forms.TextBox();
+			this.butHybridBrowseKey = new Helianz.UI.Button();
+			this.butHybridMigrate = new Helianz.UI.Button();
 			this.radioDatabaseStorage = new System.Windows.Forms.RadioButton();
 			this.radioUseFolder = new System.Windows.Forms.RadioButton();
 			this.groupbox1.SuspendLayout();
@@ -177,11 +198,12 @@ namespace Helianz {
 			this.groupbox1.Controls.Add(this.radioSftp);
 			this.groupbox1.Controls.Add(this.radioDropboxStorage);
 			this.groupbox1.Controls.Add(this.tabControlDataStorageType);
+			this.groupbox1.Controls.Add(this.radioHybrid);
 			this.groupbox1.Controls.Add(this.radioDatabaseStorage);
 			this.groupbox1.Controls.Add(this.radioUseFolder);
 			this.groupbox1.Location = new System.Drawing.Point(10, 12);
 			this.groupbox1.Name = "groupbox1";
-			this.groupbox1.Size = new System.Drawing.Size(624, 365);
+			this.groupbox1.Size = new System.Drawing.Size(624, 384);
 			this.groupbox1.TabIndex = 0;
 			this.groupbox1.Text = "A to Z Images Folder for storing images and documents";
 			// 
@@ -211,7 +233,8 @@ namespace Helianz {
 			this.tabControlDataStorageType.Controls.Add(this.tabInDatabase);
 			this.tabControlDataStorageType.Controls.Add(this.tabDropbox);
 			this.tabControlDataStorageType.Controls.Add(this.tabSftp);
-			this.tabControlDataStorageType.Location = new System.Drawing.Point(11, 100);
+			this.tabControlDataStorageType.Controls.Add(this.tabHybrid);
+			this.tabControlDataStorageType.Location = new System.Drawing.Point(11, 119);
 			this.tabControlDataStorageType.Name = "tabControlDataStorageType";
 			this.tabControlDataStorageType.Size = new System.Drawing.Size(606, 256);
 			this.tabControlDataStorageType.TabIndex = 97;
@@ -403,6 +426,174 @@ namespace Helianz {
 			this.tabSftp.Size = new System.Drawing.Size(602, 233);
 			this.tabSftp.TabIndex = 3;
 			this.tabSftp.Text = "SFTP";
+			this.tabHybrid.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(252)))), ((int)(((byte)(253)))), ((int)(((byte)(254)))));
+			this.tabHybrid.Controls.Add(this.butHybridTestConnection);
+			this.tabHybrid.Controls.Add(this.textHybridServerPath);
+			this.tabHybrid.Controls.Add(this.labelHybridServerPath);
+			this.tabHybrid.Controls.Add(this.textHybridRclonePath);
+			this.tabHybrid.Controls.Add(this.labelHybridRclonePath);
+			this.tabHybrid.Controls.Add(this.textHybridSftpPass);
+			this.tabHybrid.Controls.Add(this.labelHybridSftpPass);
+			this.tabHybrid.Controls.Add(this.textHybridSftpUser);
+			this.tabHybrid.Controls.Add(this.labelHybridSftpUser);
+			this.tabHybrid.Controls.Add(this.textHybridSftpHost);
+			this.tabHybrid.Controls.Add(this.labelHybridSftpHost);
+			this.tabHybrid.Controls.Add(this.butHybridBrowseLocal);
+			this.tabHybrid.Controls.Add(this.textHybridLocalPath);
+			this.tabHybrid.Controls.Add(this.labelHybridLocalPath);
+			this.tabHybrid.Controls.Add(this.butHybridBrowseKey);
+			this.tabHybrid.Controls.Add(this.butHybridMigrate);
+			this.tabHybrid.Controls.Add(this.textHybridKeyFile);
+			this.tabHybrid.Controls.Add(this.labelHybridKeyFile);
+			this.tabHybrid.Controls.Add(this.labelHybridDesc);
+			this.tabHybrid.Location = new System.Drawing.Point(2, 21);
+			this.tabHybrid.Name = "tabHybrid";
+			this.tabHybrid.Size = new System.Drawing.Size(602, 255);
+			this.tabHybrid.TabIndex = 4;
+			this.tabHybrid.Text = "Hybrid";
+						// 
+			// labelHybridDesc
+			// 
+			this.labelHybridDesc.Location = new System.Drawing.Point(6, 3);
+			this.labelHybridDesc.Name = "labelHybridDesc";
+			this.labelHybridDesc.Size = new System.Drawing.Size(588, 32);
+			this.labelHybridDesc.TabIndex = 150;
+			this.labelHybridDesc.Text = "Hybrid: local numbered folders (0-99) with rclone sync to SFTP server for multi-clinic.";
+			this.labelHybridDesc.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// labelHybridLocalPath
+			// 
+			this.labelHybridLocalPath.Location = new System.Drawing.Point(6, 40);
+			this.labelHybridLocalPath.Name = "labelHybridLocalPath";
+			this.labelHybridLocalPath.Size = new System.Drawing.Size(130, 18);
+			this.labelHybridLocalPath.TabIndex = 151;
+			this.labelHybridLocalPath.Text = "Local AtoZ Path";
+			this.labelHybridLocalPath.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textHybridLocalPath
+			// 
+			this.textHybridLocalPath.Location = new System.Drawing.Point(140, 39);
+			this.textHybridLocalPath.Name = "textHybridLocalPath";
+			this.textHybridLocalPath.Size = new System.Drawing.Size(370, 20);
+			this.textHybridLocalPath.TabIndex = 152;
+			// 
+			// butHybridBrowseLocal
+			// 
+			this.butHybridBrowseLocal.Location = new System.Drawing.Point(516, 37);
+			this.butHybridBrowseLocal.Name = "butHybridBrowseLocal";
+			this.butHybridBrowseLocal.Size = new System.Drawing.Size(75, 23);
+			this.butHybridBrowseLocal.TabIndex = 153;
+			this.butHybridBrowseLocal.Text = "Browse";
+			this.butHybridBrowseLocal.Click += new System.EventHandler(this.butHybridBrowseLocal_Click);
+			// 
+			// labelHybridSftpHost
+			// 
+			this.labelHybridSftpHost.Location = new System.Drawing.Point(6, 66);
+			this.labelHybridSftpHost.Name = "labelHybridSftpHost";
+			this.labelHybridSftpHost.Size = new System.Drawing.Size(130, 18);
+			this.labelHybridSftpHost.TabIndex = 154;
+			this.labelHybridSftpHost.Text = "SFTP Host";
+			this.labelHybridSftpHost.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textHybridSftpHost
+			// 
+			this.textHybridSftpHost.Location = new System.Drawing.Point(140, 65);
+			this.textHybridSftpHost.Name = "textHybridSftpHost";
+			this.textHybridSftpHost.Size = new System.Drawing.Size(370, 20);
+			this.textHybridSftpHost.TabIndex = 155;
+			// 
+			// labelHybridSftpUser
+			// 
+			this.labelHybridSftpUser.Location = new System.Drawing.Point(6, 92);
+			this.labelHybridSftpUser.Name = "labelHybridSftpUser";
+			this.labelHybridSftpUser.Size = new System.Drawing.Size(130, 18);
+			this.labelHybridSftpUser.TabIndex = 156;
+			this.labelHybridSftpUser.Text = "SFTP Username";
+			this.labelHybridSftpUser.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textHybridSftpUser
+			// 
+			this.textHybridSftpUser.Location = new System.Drawing.Point(140, 91);
+			this.textHybridSftpUser.Name = "textHybridSftpUser";
+			this.textHybridSftpUser.Size = new System.Drawing.Size(370, 20);
+			this.textHybridSftpUser.TabIndex = 157;
+			// 
+			// labelHybridSftpPass
+			// 
+			this.labelHybridSftpPass.Location = new System.Drawing.Point(6, 118);
+			this.labelHybridSftpPass.Name = "labelHybridSftpPass";
+			this.labelHybridSftpPass.Size = new System.Drawing.Size(130, 18);
+			this.labelHybridSftpPass.TabIndex = 158;
+			this.labelHybridSftpPass.Text = "SFTP Password";
+			this.labelHybridSftpPass.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textHybridSftpPass
+			// 
+			this.textHybridSftpPass.Location = new System.Drawing.Point(140, 117);
+			this.textHybridSftpPass.Name = "textHybridSftpPass";
+			this.textHybridSftpPass.Size = new System.Drawing.Size(370, 20);
+			this.textHybridSftpPass.TabIndex = 159;
+			this.textHybridSftpPass.UseSystemPasswordChar = true;
+			// 
+			// labelHybridRclonePath
+			// 
+			this.labelHybridRclonePath.Location = new System.Drawing.Point(6, 166);
+			this.labelHybridRclonePath.Name = "labelHybridRclonePath";
+			this.labelHybridRclonePath.Size = new System.Drawing.Size(130, 18);
+			this.labelHybridRclonePath.TabIndex = 160;
+			this.labelHybridRclonePath.Text = "rclone Path";
+			this.labelHybridRclonePath.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textHybridRclonePath
+			// 
+			this.textHybridRclonePath.Location = new System.Drawing.Point(140, 165);
+			this.textHybridRclonePath.Name = "textHybridRclonePath";
+			this.textHybridRclonePath.Size = new System.Drawing.Size(370, 20);
+			this.textHybridRclonePath.TabIndex = 161;
+			// 
+			// labelHybridServerPath
+			// 
+			this.labelHybridServerPath.Location = new System.Drawing.Point(6, 192);
+			this.labelHybridServerPath.Name = "labelHybridServerPath";
+			this.labelHybridServerPath.Size = new System.Drawing.Size(130, 18);
+			this.labelHybridServerPath.TabIndex = 162;
+			this.labelHybridServerPath.Text = "Server Media Path";
+			this.labelHybridServerPath.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textHybridServerPath
+			// 
+			this.textHybridServerPath.Location = new System.Drawing.Point(140, 191);
+			this.textHybridServerPath.Name = "textHybridServerPath";
+			this.textHybridServerPath.Size = new System.Drawing.Size(370, 20);
+			this.textHybridServerPath.TabIndex = 163;
+			// 
+			// butHybridMigrate
+			// 
+			this.butHybridMigrate.Location = new System.Drawing.Point(200, 217);
+			this.butHybridMigrate.Name = "butHybridMigrate";
+			this.butHybridMigrate.Size = new System.Drawing.Size(160, 26);
+			this.butHybridMigrate.TabIndex = 173;
+			this.butHybridMigrate.Text = "Migrate from A-Z";
+			this.butHybridMigrate.Click += new System.EventHandler(this.butHybridMigrate_Click);
+			// 
+			// butHybridTestConnection
+			// 
+			this.butHybridTestConnection.Location = new System.Drawing.Point(370, 217);
+			this.butHybridTestConnection.Name = "butHybridTestConnection";
+			this.butHybridTestConnection.Size = new System.Drawing.Size(170, 26);
+			this.butHybridTestConnection.TabIndex = 164;
+			this.butHybridTestConnection.Text = "Test rclone && Setup";
+			this.butHybridTestConnection.Click += new System.EventHandler(this.butHybridTestConnection_Click);
+			// 
+			// radioHybrid
+			// 
+			this.radioHybrid.Location = new System.Drawing.Point(9, 95);
+			this.radioHybrid.Name = "radioHybrid";
+			this.radioHybrid.Size = new System.Drawing.Size(569, 18);
+			this.radioHybrid.TabIndex = 104;
+			this.radioHybrid.Text = "Hybrid: local numbered folders + rclone sync to SFTP server (for multi-clinic)";
+			this.radioHybrid.UseVisualStyleBackColor = true;
+			this.radioHybrid.Click += new System.EventHandler(this.radioHybrid_Click);
 			// 
 			// label11
 			// 
@@ -522,7 +713,7 @@ namespace Helianz {
 			// FormPath
 			// 
 			this.AcceptButton = this.butOK;
-			this.ClientSize = new System.Drawing.Size(675, 626);
+			this.ClientSize = new System.Drawing.Size(675, 645);
 			this.Controls.Add(this.groupbox1);
 			this.Controls.Add(this.butBrowseLetter);
 			this.Controls.Add(this.butBrowseExport);
@@ -548,6 +739,34 @@ namespace Helianz {
 			this.tabDropbox.PerformLayout();
 			this.tabSftp.ResumeLayout(false);
 			this.tabSftp.PerformLayout();
+			// 
+			// labelHybridKeyFile
+			// 
+			this.labelHybridKeyFile.Location = new System.Drawing.Point(6, 144);
+			this.labelHybridKeyFile.Name = "labelHybridKeyFile";
+			this.labelHybridKeyFile.Size = new System.Drawing.Size(130, 18);
+			this.labelHybridKeyFile.TabIndex = 170;
+			this.labelHybridKeyFile.Text = "SSH Key File (optional)";
+			this.labelHybridKeyFile.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textHybridKeyFile
+			// 
+			this.textHybridKeyFile.Location = new System.Drawing.Point(140, 143);
+			this.textHybridKeyFile.Name = "textHybridKeyFile";
+			this.textHybridKeyFile.Size = new System.Drawing.Size(370, 20);
+			this.textHybridKeyFile.TabIndex = 171;
+			// 
+			// butHybridBrowseKey
+			// 
+			this.butHybridBrowseKey.Location = new System.Drawing.Point(516, 141);
+			this.butHybridBrowseKey.Name = "butHybridBrowseKey";
+			this.butHybridBrowseKey.Size = new System.Drawing.Size(75, 23);
+			this.butHybridBrowseKey.TabIndex = 172;
+			this.butHybridBrowseKey.Text = "Browse";
+			this.butHybridBrowseKey.Click += new System.EventHandler(this.butHybridBrowseKey_Click);
+			// 
+			this.tabHybrid.ResumeLayout(false);
+			this.tabHybrid.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -601,5 +820,26 @@ namespace Helianz {
 		private Label label11;
 		private Label label12;
 		private FolderBrowserDialog folderBrowserDialog;
+		private RadioButton radioHybrid;
+		private Helianz.UI.TabPage tabHybrid;
+		private Label labelHybridDesc;
+		private Label labelHybridLocalPath;
+		private TextBox textHybridLocalPath;
+		private Helianz.UI.Button butHybridBrowseLocal;
+		private Label labelHybridSftpHost;
+		private TextBox textHybridSftpHost;
+		private Label labelHybridSftpUser;
+		private TextBox textHybridSftpUser;
+		private Label labelHybridSftpPass;
+		private TextBox textHybridSftpPass;
+		private Label labelHybridRclonePath;
+		private TextBox textHybridRclonePath;
+		private Label labelHybridServerPath;
+		private TextBox textHybridServerPath;
+		private Helianz.UI.Button butHybridTestConnection;
+		private Label labelHybridKeyFile;
+		private TextBox textHybridKeyFile;
+		private Helianz.UI.Button butHybridBrowseKey;
+		private Helianz.UI.Button butHybridMigrate;
 	}
 }

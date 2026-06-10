@@ -396,7 +396,7 @@ namespace HelianzBusiness{
 				throw new ApplicationException(Lans.g("WikiPages","Must be using AtoZ folders."));
 			}
 			wikiPath=CloudStorage.PathTidy(Path.Combine(ImageStore.GetPreferredAtoZpath(),"Wiki"));
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !Directory.Exists(wikiPath)) {
+			if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && !Directory.Exists(wikiPath)) {
 				Directory.CreateDirectory(wikiPath);
 			}
 			return wikiPath;

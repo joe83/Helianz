@@ -135,7 +135,7 @@ namespace HelianzBusiness{
 		public static string GetAttachPath() {
 			Meth.NoCheckMiddleTierRole();
 			string attachPath;
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				attachPath=ODFileUtils.CombinePaths(ImageStore.GetPreferredAtoZpath(),"EmailAttachments");
 				if(!Directory.Exists(attachPath)) {
 					Directory.CreateDirectory(attachPath);

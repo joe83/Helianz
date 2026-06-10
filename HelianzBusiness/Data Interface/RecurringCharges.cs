@@ -508,7 +508,7 @@ namespace HelianzBusiness {
 				string payConnectResultDir=FileAtoZ.CombinePaths(ImageStore.GetPreferredAtoZpath(),"PayConnect");
 				string payConnectResultFile=FileAtoZ.CombinePaths(payConnectResultDir,"RecurringChargeResult.txt");
 				try {
-					if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !Directory.Exists(payConnectResultDir)) {
+					if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && !Directory.Exists(payConnectResultDir)) {
 						Directory.CreateDirectory(payConnectResultDir);
 					}
 					FileAtoZ.WriteAllText(payConnectResultFile,strBuilderResultFilePayConnect.ToString());
@@ -521,7 +521,7 @@ namespace HelianzBusiness {
 				string paySimpleResultDir=FileAtoZ.CombinePaths(ImageStore.GetPreferredAtoZpath(),"PaySimple");
 				string paySimpleResultFile=FileAtoZ.CombinePaths(paySimpleResultDir,"RecurringChargeResult.txt");
 				try {
-					if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !Directory.Exists(paySimpleResultDir)) {
+					if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && !Directory.Exists(paySimpleResultDir)) {
 						Directory.CreateDirectory(paySimpleResultDir);
 					}
 					FileAtoZ.WriteAllText(paySimpleResultFile,strBuilderResultFilePaySimple.ToString());

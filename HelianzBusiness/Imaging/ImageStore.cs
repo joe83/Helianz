@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 namespace HelianzBusiness {
 	/// <summary></summary>
@@ -40,7 +41,22 @@ namespace HelianzBusiness {
 					pat.ImageFolder.Substring(0,1).ToUpper(),
 					pat.ImageFolder,'/');//use '/' char instead of Path.DirectorySeparatorChar
 			}
-			else if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			else if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
+				int bucket=(int)(pat.PatNum % 100);
+				retVal=ODFileUtils.CombinePaths(AtoZpath,bucket.ToString(),pat.ImageFolder);
+				try {
+					if(string.IsNullOrEmpty(AtoZpath)) {
+						throw new ApplicationException("AtoZpath was null or empty");
+					}
+					if(!Directory.Exists(retVal)) {
+						Directory.CreateDirectory(retVal);
+					}
+				}
+				catch(Exception ex) {
+					throw new ApplicationException(Lans.g("ContrDocs","Error.  Could not create folder for patient:")+" "+retVal,ex);
+				}
+			}
+			else if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				object[] objectArray={pat,AtoZpath};
 				Plugins.HookAddCode(null,"ImageStore.GetPatientFolder_LocalAtoZ",objectArray);
 				AtoZpath=(string)objectArray[1];
@@ -68,8 +84,12 @@ namespace HelianzBusiness {
 			return retVal;
 		}
 
-		///<summary>Returns the name of the ImageFolder. Removes any non letter to the patient's name.</summary>
+		///<summary>Returns the name of the ImageFolder. Removes any non letter to the patient's name.
+		///For LocalAtoZHybrid, returns just the PatNum as a string (numbered folder scheme).</summary>
 		public static string GetImageFolderName(Patient pat) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
+				return pat.PatNum.ToString();
+			}
 			string name=pat.LName+pat.FName;
 			string folder="";
 			for(int i=0;i<name.Length;i++) {
@@ -92,7 +112,7 @@ namespace HelianzBusiness {
 			if(CloudStorage.IsCloudStorage) {
 				retVal=retVal.Replace("\\","/");
 			}
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !Directory.Exists(retVal)) {
+			if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && !Directory.Exists(retVal)) {
 				if(string.IsNullOrEmpty(AtoZPath)) {
 					throw new ApplicationException(Lans.g("ContrDocs","Could not find the path for the AtoZ folder."));
 				}
@@ -112,7 +132,7 @@ namespace HelianzBusiness {
 			if(CloudStorage.IsCloudStorage) {
 				retVal=retVal.Replace("\\","/");
 			}
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !Directory.Exists(retVal)) {
+			if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && !Directory.Exists(retVal)) {
 				if(string.IsNullOrEmpty(AtoZPath)) {
 					throw new ApplicationException(Lans.g("ContrDocs","Could not find the path for the AtoZ folder."));
 				}
@@ -132,7 +152,7 @@ namespace HelianzBusiness {
 			if(CloudStorage.IsCloudStorage) {
 				retVal=retVal.Replace("\\","/");
 			}
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !Directory.Exists(retVal)) {
+			if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && !Directory.Exists(retVal)) {
 				if(string.IsNullOrEmpty(AtoZPath)) {
 					throw new ApplicationException(Lans.g("ContrDocs","Could not find the path for the AtoZ folder."));
 				}
@@ -149,7 +169,7 @@ namespace HelianzBusiness {
 			}
 			string AtoZPath=GetPreferredAtoZpath();
 			retVal=FileAtoZ.CombinePaths(AtoZPath,"ProviderImages");
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !Directory.Exists(retVal)) {
+			if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && !Directory.Exists(retVal)) {
 				if(string.IsNullOrEmpty(AtoZPath)) {
 					throw new ApplicationException(Lans.g("ContrDocs","Could not find the path for the AtoZ folder."));
 				}
@@ -169,7 +189,7 @@ namespace HelianzBusiness {
 				throw new ApplicationException(Lans.g("WikiPages","Must be using AtoZ folders."));
 			}
 			emailPath=FileAtoZ.CombinePaths(GetPreferredAtoZpath(),"EmailImages");
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !Directory.Exists(emailPath)) {
+			if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && !Directory.Exists(emailPath)) {
 				Directory.CreateDirectory(emailPath);
 			}
 			return emailPath;
@@ -183,7 +203,7 @@ namespace HelianzBusiness {
 			}
 			string patFolder=GetPatientFolder(pat,GetPreferredAtoZpath());
 			List<string> fileList=new List<string>();
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				DirectoryInfo di = new DirectoryInfo(patFolder);
 				List<FileInfo> fiList = di.GetFiles().Where(x => !x.Attributes.HasFlag(FileAttributes.Hidden)).ToList();
 				fileList.AddRange(fiList.Select(x => x.FullName));
@@ -259,7 +279,7 @@ namespace HelianzBusiness {
 			if(!doc.FileName.EndsWith(".dcm")){
 				return null;
 			}
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				string srcFileName = ODFileUtils.CombinePaths(patFolder,doc.FileName);
 				return DicomHelper.GetFromFile(srcFileName);
 			}
@@ -305,7 +325,7 @@ namespace HelianzBusiness {
 		///<summary>Can be null.</summary>
 		public static Bitmap OpenImage(Document doc,string patFolder,string localPath="") {
 			//todo: use a stream so that the returned bitmap does not have a file lock.
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				string srcFileName = ODFileUtils.CombinePaths(patFolder,doc.FileName);
 				if(HasImageExtension(srcFileName)) {
 					//if(File.Exists(srcFileName) && HasImageExtension(srcFileName)) {
@@ -355,7 +375,7 @@ namespace HelianzBusiness {
 
 		public static Bitmap[] OpenImagesEob(EobAttach eob,string localPath="") {
 			Bitmap[] values = new Bitmap[1];
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				string eobFolder=GetEobFolder();
 				string srcFileName = ODFileUtils.CombinePaths(eobFolder,eob.FileName);
 				if(HasImageExtension(srcFileName)) {
@@ -411,7 +431,7 @@ namespace HelianzBusiness {
 
 		public static Bitmap[] OpenImagesAmd(EhrAmendment amd) {
 			Bitmap[] values = new Bitmap[1];
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				string amdFolder=GetAmdFolder();
 				string srcFileName = ODFileUtils.CombinePaths(amdFolder,amd.FileName);
 				if(HasImageExtension(srcFileName)) {
@@ -481,7 +501,7 @@ namespace HelianzBusiness {
 		/// <summary>Imports any document, not just images.  Also handles dicom by calculating initial windowing.  Also processes Exif rotation info on jpg files.</summary>
 		public static Document Import(string pathImportFrom,long docCategory,Patient pat) {
 			string patFolder="";
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || CloudStorage.IsCloudStorage)  {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid || CloudStorage.IsCloudStorage)  {
 				patFolder=GetPatientFolder(pat,GetPreferredAtoZpath());
 			}
 			Document doc = new Document();
@@ -551,7 +571,7 @@ namespace HelianzBusiness {
 		/// <summary>Saves to AtoZ folder, Cloud, or to db.  Saves image as a jpg.  Compression will differ depending on imageType. Throws exception if it can't save. doPrintHeading is set to true for ToothChart and radiographs.</summary>
 		public static Document Import(Bitmap image,long docCategory,ImageType imageType,Patient pat,string mimeType="image/jpeg",bool doPrintHeading=false) {
 			string patFolder="";
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || CloudStorage.IsCloudStorage) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid || CloudStorage.IsCloudStorage) {
 				patFolder=GetPatientFolder(pat,GetPreferredAtoZpath());
 			}
 			Document doc = new Document();
@@ -604,7 +624,7 @@ namespace HelianzBusiness {
 		/// <summary>Saves to AtoZ folder, Cloud, or to db.  Saves document based off of the mimeType passed in.</summary>
 		public static Document Import(byte[] arrayBytes,long docCategory,ImageType imageType,Patient pat,string mimeType="image/jpeg",string fileExtension=null) {
 			string patFolder="";
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || CloudStorage.IsCloudStorage) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid || CloudStorage.IsCloudStorage) {
 				patFolder=GetPatientFolder(pat,GetPreferredAtoZpath());
 			}
 			Document doc=new Document();
@@ -712,7 +732,7 @@ namespace HelianzBusiness {
 		/// <summary>Saves to either AtoZ folder or to db.  Saves image as a jpg.  Compression will be according to user setting.</summary>
 		public static EobAttach ImportEobAttach(Bitmap image,long claimPaymentNum) {
 			string eobFolder="";
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || CloudStorage.IsCloudStorage) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid || CloudStorage.IsCloudStorage) {
 				eobFolder=GetEobFolder();
 			}
 			EobAttach eob=new EobAttach();
@@ -752,7 +772,7 @@ namespace HelianzBusiness {
 		/// <summary></summary>
 		public static EobAttach ImportEobAttach(string pathImportFrom,long claimPaymentNum) {
 			string eobFolder="";
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || CloudStorage.IsCloudStorage) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid || CloudStorage.IsCloudStorage) {
 				eobFolder=GetEobFolder();
 			}
 			EobAttach eob=new EobAttach();
@@ -782,7 +802,7 @@ namespace HelianzBusiness {
 
 		public static EhrAmendment ImportAmdAttach(Bitmap image,EhrAmendment amd) {
 			string amdFolder="";
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || CloudStorage.IsCloudStorage) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid || CloudStorage.IsCloudStorage) {
 				amdFolder=GetAmdFolder();
 			}
 			amd.FileName=DateTime.Now.ToString("yyyyMMdd_HHmmss_")+amd.EhrAmendmentNum;
@@ -821,7 +841,7 @@ namespace HelianzBusiness {
 		public static EhrAmendment ImportAmdAttach(string pathImportFrom,EhrAmendment amd) {
 			string amdFolder="";
 			string amdFilename="";
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || CloudStorage.IsCloudStorage) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid || CloudStorage.IsCloudStorage) {
 				amdFolder=GetAmdFolder();
 				amdFilename=amd.FileName;
 			}
@@ -839,7 +859,7 @@ namespace HelianzBusiness {
 				//EhrAmendments.Delete(amd.EhrAmendmentNum);
 				throw;
 			}
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || CloudStorage.IsCloudStorage) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid || CloudStorage.IsCloudStorage) {
 				amd.DateTAppend=DateTime.Now;
 				EhrAmendments.Update(amd);
 				CleanAmdAttach(amdFilename);
@@ -984,7 +1004,7 @@ namespace HelianzBusiness {
 		public static void SaveDocument(Document doc,Bitmap image,ImageFormat format,string patFolder) {
 			//Had to reassign image to new bitmap due to a possible C# bug. Would sometimes cause UE: "A generic error occurred in GDI+."
 			using(Bitmap bitmap=new Bitmap(image)) {
-				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 					string pathFileOut = ODFileUtils.CombinePaths(patFolder,doc.FileName);
 					bitmap.Save(pathFileOut);
 				}
@@ -1009,7 +1029,7 @@ namespace HelianzBusiness {
 		public static void SaveDocument(Document doc,Bitmap image,ImageCodecInfo codec,EncoderParameters encoderParameters,string patFolder,bool uploadHasExceptions=false) {
 			//Had to reassign image to new bitmap due to a possible C# bug. Would sometimes cause UE: "A generic error occurred in GDI+."
 			using(Bitmap bitmap=new Bitmap(image)) {
-				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {//if saving to AtoZ folder
+				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {//if saving to AtoZ folder
 					bitmap.Save(ODFileUtils.CombinePaths(patFolder,doc.FileName),codec,encoderParameters);
 				}
 				else if(CloudStorage.IsCloudStorage) {
@@ -1031,8 +1051,12 @@ namespace HelianzBusiness {
 
 		///<summary>If using AtoZfolder, then patFolder must be fully qualified and valid.  If not using AtoZfolder, this uploads to Cloud or fills the eob.RawBase64 which must then be updated to db.</summary>
 		public static void SaveDocument(Document doc,string pathSourceFile,string patFolder) {
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ
+					|| PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				File.Copy(pathSourceFile,ODFileUtils.CombinePaths(patFolder,doc.FileName));
+				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
+					TriggerAsyncRclonePush(doc,patFolder);
+				}
 			}
 			else if(CloudStorage.IsCloudStorage) {
 				CloudStorage.Upload(patFolder,doc.FileName,File.ReadAllBytes(pathSourceFile));
@@ -1046,8 +1070,12 @@ namespace HelianzBusiness {
 
 		///<summary>If using AtoZfolder, then patFolder must be fully qualified and valid.  If not using AtoZfolder, this uploads to Cloud or fills the doc.RawBase64 which must then be updated to db.</summary>
 		public static void SaveDocument(Document doc,byte[] arrayBytes,string patFolder) {
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ
+					|| PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				File.WriteAllBytes(ODFileUtils.CombinePaths(patFolder,doc.FileName),arrayBytes);
+				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
+					TriggerAsyncRclonePush(doc,patFolder);
+				}
 			}
 			else if(CloudStorage.IsCloudStorage) {
 				CloudStorage.Upload(patFolder,doc.FileName,arrayBytes);
@@ -1062,7 +1090,7 @@ namespace HelianzBusiness {
 		public static void SaveEobAttach(EobAttach eob,Bitmap image,ImageCodecInfo codec,EncoderParameters encoderParameters,string eobFolder) {
 			//Had to reassign image to new bitmap due to a possible C# bug. Would sometimes cause UE: "A generic error occurred in GDI+."
 			using(Bitmap bitmap=new Bitmap(image)) {
-				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 					bitmap.Save(ODFileUtils.CombinePaths(eobFolder,eob.FileName),codec,encoderParameters);
 				}
 				else if(CloudStorage.IsCloudStorage) {
@@ -1086,7 +1114,7 @@ namespace HelianzBusiness {
 		public static void SaveAmdAttach(EhrAmendment amd,Bitmap image,ImageCodecInfo codec,EncoderParameters encoderParameters,string amdFolder) {
 			//Had to reassign image to new bitmap due to a possible C# bug. Would sometimes cause UE: "A generic error occurred in GDI+."
 			using(Bitmap bitmap=new Bitmap(image)) {
-				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 					bitmap.Save(ODFileUtils.CombinePaths(amdFolder,amd.FileName),codec,encoderParameters);
 				}
 				else if(CloudStorage.IsCloudStorage) {
@@ -1109,7 +1137,7 @@ namespace HelianzBusiness {
 
 		///<summary>If using AtoZfolder, then patFolder must be fully qualified and valid.  If not using AtoZfolder, this fills the eob.RawBase64 which must then be updated to db.</summary>
 		public static void SaveEobAttach(EobAttach eob,string pathSourceFile,string eobFolder) {
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				File.Copy(pathSourceFile,ODFileUtils.CombinePaths(eobFolder,eob.FileName));
 			}
 			else if(CloudStorage.IsCloudStorage) {
@@ -1124,7 +1152,7 @@ namespace HelianzBusiness {
 
 		///<summary>If using AtoZfolder, then patFolder must be fully qualified and valid.  If not using AtoZfolder, this fills the eob.RawBase64 which must then be updated to db.</summary>
 		public static void SaveAmdAttach(EhrAmendment amd,string pathSourceFile,string amdFolder) {
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				File.Copy(pathSourceFile,ODFileUtils.CombinePaths(amdFolder,amd.FileName));
 			}
 			else if(CloudStorage.IsCloudStorage) {
@@ -1155,7 +1183,7 @@ namespace HelianzBusiness {
 					throw new Exception(msgText);
 				}
 				//Attempt to delete the file.
-				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 					try {
 						string filePath = ODFileUtils.CombinePaths(patFolder,documents[i].FileName);
 						if(File.Exists(filePath)) {
@@ -1180,7 +1208,7 @@ namespace HelianzBusiness {
 
 		///<summary>Also handles deletion of db object.</summary>
 		public static void DeleteEobAttach(EobAttach eob) {
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				string eobFolder=GetEobFolder();
 				string filePath=ODFileUtils.CombinePaths(eobFolder,eob.FileName);
 				if(File.Exists(filePath)) {
@@ -1200,7 +1228,7 @@ namespace HelianzBusiness {
 
 		///<summary>Also handles deletion of db object.</summary>
 		public static void DeleteAmdAttach(EhrAmendment amendment) {
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				string amdFolder=GetAmdFolder();
 				string filePath=ODFileUtils.CombinePaths(amdFolder,amendment.FileName);
 				if(File.Exists(filePath)) {
@@ -1242,7 +1270,7 @@ namespace HelianzBusiness {
 
 		///<summary>Cleans up unreferenced Amendments</summary>
 		public static void CleanAmdAttach(string amdFileName) {
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				string amdFolder=GetAmdFolder();
 				string filePath=ODFileUtils.CombinePaths(amdFolder,amdFileName);
 				if(File.Exists(filePath)) {
@@ -1281,7 +1309,7 @@ namespace HelianzBusiness {
 			}
 			else {*/
 			//string patFolder=GetPatientFolder(pat);
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				string thumbnailFile=ODFileUtils.CombinePaths(patFolder,"Thumbnails",doc.FileName);
 				if(File.Exists(thumbnailFile)) {
 					try {
@@ -1326,6 +1354,55 @@ namespace HelianzBusiness {
 			//==02/25/2014 - Added .tig as an accepted image extention for tigerview enhancement.
 			return (ext == ".jpg" || ext == ".jpeg" || ext == ".tga" || ext == ".bmp" || ext == ".tif" ||
 				ext == ".tiff" || ext == ".gif" || ext == ".emf" || ext == ".exif" || ext == ".ico" || ext == ".png" || ext == ".wmf" || ext == ".tig");
+		}
+
+		///<summary>Checks if an ImageFolder value uses the new numbered format (pure digits) vs legacy A-Z format (contains letters).</summary>
+		public static bool IsNumberedFolder(string imageFolder) {
+			if(string.IsNullOrEmpty(imageFolder)) {
+				return false;
+			}
+			for(int i=0;i<imageFolder.Length;i++) {
+				if(!char.IsDigit(imageFolder[i])) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		///<summary>Triggers an async rclone push of a single document to the server. Fire-and-forget with error logging.</summary>
+		private static void TriggerAsyncRclonePush(Document doc,string patFolder) {
+			try {
+				string localBase=GetPreferredAtoZpath();
+				System.Threading.Tasks.Task.Run(() => {
+					try {
+						RcloneSync.PushFile(doc.PatNum,localBase,doc.FileName);
+					}
+					catch(Exception ex) {
+						Logger.openlog.LogMB("Async rclone push failed for document "+doc.DocNum+": "+ex.Message,Logger.Severity.WARNING);
+					}
+				});
+			}
+			catch(Exception ex) {
+				Logger.openlog.LogMB("Failed to queue rclone push: "+ex.Message,Logger.Severity.WARNING);
+			}
+		}
+
+		///<summary>Triggers an async rclone push of an entire patient folder to the server. Fire-and-forget with error logging.</summary>
+		private static void TriggerAsyncRclonePushFolder(long patNum) {
+			try {
+				string localBase=GetPreferredAtoZpath();
+				System.Threading.Tasks.Task.Run(() => {
+					try {
+						RcloneSync.PushPatientFolder(patNum,localBase);
+					}
+					catch(Exception ex) {
+						Logger.openlog.LogMB("Async rclone push folder failed for patient "+patNum+": "+ex.Message,Logger.Severity.WARNING);
+					}
+				});
+			}
+			catch(Exception ex) {
+				Logger.openlog.LogMB("Failed to queue rclone push folder: "+ex.Message,Logger.Severity.WARNING);
+			}
 		}
 
 		///<summary>Makes log entry for documents.  Supply beginning text, permission, document, and the DateTStamp that the document was previously last 

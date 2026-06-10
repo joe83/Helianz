@@ -24,7 +24,9 @@ namespace HelianzBusiness.FileIO {
 			if(PrefC.AtoZfolderUsed==DataStorageType.InDatabase) {
 				return null;
 			}
-			else if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			else if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ
+
+				|| PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				if(LocalAtoZpath==null) {//on startup
 					try {
 						LocalAtoZpath=ComputerPrefs.LocalComputer.AtoZpath;
@@ -52,6 +54,15 @@ namespace HelianzBusiness.FileIO {
 		///Set documentPaths to a single path or a semicolon delimited string representing multiple paths.
 		///A valid path is considered as the first path that contains a folder named 'A'.</summary>
 		public static string GetValidPathFromString(string documentPaths) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
+				// Hybrid mode: validate that the base directory exists (numbered subfolders may not exist yet)
+				foreach(string path in documentPaths.Split(new char[] { ';' })) {
+					if(!string.IsNullOrEmpty(path) && Directory.Exists(path)) {
+						return path;
+					}
+				}
+				return null;
+			}
 			foreach(string path in documentPaths.Split(new char[] { ';' })) {
 				string tryPath=ODFileUtils.CombinePaths(path,"A");
 				if(Directory.Exists(tryPath)) {

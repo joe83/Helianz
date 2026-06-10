@@ -121,7 +121,13 @@ namespace HelianzBusiness {
 		///<summary>Returns a unique filename for a previously inserted doc based on the pat's first and last name and docNum with the given extension.</summary>
 		public static string GetUniqueFileNameForPatient(Patient patient,long docNum,string fileExtension) {
 			Meth.NoCheckMiddleTierRole();
-			string fileName=new string((patient.LName+patient.FName).Where(x => Char.IsLetter(x)).ToArray())+docNum.ToString()+fileExtension;//ensures unique name
+			string fileName;
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
+				fileName=docNum.ToString()+fileExtension;
+			}
+			else {
+				fileName=new string((patient.LName+patient.FName).Where(x => Char.IsLetter(x)).ToArray())+docNum.ToString()+fileExtension;
+			}//ensures unique name
 			//there is still a slight chance that someone manually added a file with this name, so quick fix:
 			List<string> listUsedNames=GetAllWithPat(patient.PatNum).Select(x => x.FileName).ToList();
 			while(listUsedNames.Contains(fileName)) {
@@ -178,6 +184,9 @@ namespace HelianzBusiness {
 			}
 			if(uniqueIdentifier.IsNullOrEmpty()) {//The current date/time stamp, to the 100,000th of a second
 				uniqueIdentifier=DateTime.Now.ToString("yyMMddhhmmssfffff");
+			}
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
+				return uniqueIdentifier+extension;
 			}
 			string patientNameLastFirst=patient.LName+patient.FName;
 			string fileName=new string(patientNameLastFirst.Where(x => Char.IsLetter(x)).Select(x => x).ToArray());
@@ -383,7 +392,7 @@ namespace HelianzBusiness {
 			}
 			string fullName=ODFileUtils.CombinePaths(patFolder,fileName);
 			//If the document no longer exists, then there is no corresponding thumbnail image.
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !File.Exists(fullName)) {
+			if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && !File.Exists(fullName)) {
 				return NoAvailablePhoto();
 			}
 			//If the specified document is not an image return 'not available'.
@@ -392,7 +401,7 @@ namespace HelianzBusiness {
 			}
 			//Create Thumbnails folder if it does not already exist for this patient folder.
 			string thumbPath=ODFileUtils.CombinePaths(patFolder,"Thumbnails");
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !Directory.Exists(thumbPath)) {
+			if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && !Directory.Exists(thumbPath)) {
 				try {
 					Directory.CreateDirectory(thumbPath);
 				} 
@@ -403,7 +412,7 @@ namespace HelianzBusiness {
 			}
 			string fileNameThumb=ODFileUtils.CombinePaths(patFolder,"Thumbnails",fileName);
 			//Use the existing thumbnail if it already exists and it was created after the last document modification.
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && File.Exists(fileNameThumb)) {
+			if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && File.Exists(fileNameThumb)) {
 				try {
 					DateTime dateTimeThumbMod=File.GetLastWriteTime(fileNameThumb);
 					if(dateTimeThumbMod>document.DateTStamp //thumbnail file is old
@@ -439,7 +448,7 @@ namespace HelianzBusiness {
 			}
 			Bitmap bitmapThumb=ImageHelper.GetBitmapSquare(bitmapFullSize,100);//Thumbnails saved in the thumbnails folder are always 100x100
 			bitmapFullSize?.Dispose();
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {//Only save thumbnail to local directory if using local AtoZ
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {//Only save thumbnail to local directory if using local AtoZ
 				try {
 					bitmapThumb.Save(fileNameThumb);
 				}
@@ -462,7 +471,7 @@ namespace HelianzBusiness {
 		//	/*
 		//	//If we also want to save it:
 		//	string fileNameThumb=ODFileUtils.CombinePaths(patFolder,"Thumbnails",document.FileName);
-		//	if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {//Only save thumbnail to local directory if using local AtoZ
+		//	if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {//Only save thumbnail to local directory if using local AtoZ
 		//		try {
 		//			bitmapThumb.Save(fileNameThumb);
 		//		}
@@ -958,7 +967,7 @@ namespace HelianzBusiness {
 				return "";
 			}
 			string documentPath;
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				documentPath=ImageStore.GetFilePath(document,ImageStore.GetPatientFolder(patient,ImageStore.GetPreferredAtoZpath()));
 			}
 			else if(PrefC.AtoZfolderUsed==DataStorageType.InDatabase) {
@@ -999,7 +1008,7 @@ namespace HelianzBusiness {
 			if(patient==null) {
 				return false;
 			}
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				return File.Exists(ImageStore.GetFilePath(document,ImageStore.GetPatientFolder(patient,ImageStore.GetPreferredAtoZpath())));
 			}
 			else if(CloudStorage.IsCloudStorage) {
@@ -1035,7 +1044,7 @@ namespace HelianzBusiness {
 				return "";
 			}
 			string documentPath;
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				documentPath=ImageStore.GetFilePath(document,ImageStore.GetPatientFolder(patient,ImageStore.GetPreferredAtoZpath()));
 			}
 			else if(PrefC.AtoZfolderUsed==DataStorageType.InDatabase) {
@@ -1132,7 +1141,7 @@ namespace HelianzBusiness {
 					documentToSave.DocCategory=listDocCategories[i];
 					documentToSave.Description=fileName;//no extension.
 					documentToSave.RawBase64=rawBase64;//blank if using AtoZfolder
-					if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+					if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 						string filePath=ImageStore.GetPatientFolder(patient,ImageStore.GetPreferredAtoZpath());
 						while(File.Exists(filePath+"\\"+fileName+".pdf")) {
 							fileName+="x";
@@ -1213,7 +1222,7 @@ namespace HelianzBusiness {
 					documentToSave.DocCategory=listDocCategories[i];
 					documentToSave.Description=fileName;//no extension.
 					documentToSave.RawBase64=rawBase64;//blank if using AtoZfolder
-					if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+					if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 						string filePath=ImageStore.GetPatientFolder(patient,ImageStore.GetPreferredAtoZpath());
 						while(File.Exists(filePath+"\\"+fileName+".pdf")) {
 							fileName+="x";
@@ -1364,7 +1373,7 @@ namespace HelianzBusiness {
 				documentToSave.DocCategory=listDocCategories[i];
 				documentToSave.Description=fileName;//no extension.
 				documentToSave.RawBase64=rawBase64;//blank if using AtoZfolder
-				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 					string filePath=ImageStore.GetPatientFolder(patient,ImageStore.GetPreferredAtoZpath());
 					while(File.Exists(filePath+"\\"+fileName+".pdf")) {
 						fileName+="x";

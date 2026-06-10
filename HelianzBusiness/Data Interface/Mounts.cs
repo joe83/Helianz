@@ -110,7 +110,7 @@ namespace HelianzBusiness {
 			Meth.NoCheckMiddleTierRole();
 			//Create Thumbnails folder if it does not already exist for this patient folder.
 			string pathThumbnails=Path.Combine(patFolder,"Thumbnails");
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !Directory.Exists(pathThumbnails)) {
+			if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && !Directory.Exists(pathThumbnails)) {
 				try {
 					Directory.CreateDirectory(pathThumbnails);
 				} 
@@ -123,7 +123,7 @@ namespace HelianzBusiness {
 			//Use the existing thumbnail if it already exists
 			//(no way currently to check how old it is)
 			Bitmap bitmap=null;
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && File.Exists(fileNameFull)) {
+			if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && File.Exists(fileNameFull)) {
 				try {
 					bitmap=(Bitmap)Bitmap.FromFile(fileNameFull);
 				}

@@ -45,7 +45,7 @@ namespace HelianzBusiness{
 			string fileExt=Path.GetExtension(eobAttach.FileName);
 			string eobFolderPath=ImageStore.GetEobFolder();
 			string filePath;
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {//EOBs/filename in AtoZ
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {//EOBs/filename in AtoZ
 				filePath=CodeBase.ODFileUtils.CombinePaths(eobFolderPath,eobAttach.FileName);
 			}
 			else if(PrefC.AtoZfolderUsed==DataStorageType.InDatabase) {//Use RawBase64

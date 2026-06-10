@@ -3493,9 +3493,52 @@ namespace Helianz{
 				progressOD.ActionMain=() =>ImageStore.AddMissingFilesToDatabase(_patient);
 				progressOD.ShowDialog();
 			}
+			else if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
+				//Hybrid mode: first scan local files, then pull from server in background
+				ImageStore.AddMissingFilesToDatabase(_patient);
+				TriggerHybridPull(patNum);
+			}
 			else{
 				ImageStore.AddMissingFilesToDatabase(_patient);
 			}
+		}
+
+		///<summary>Triggers a background rclone pull for hybrid mode and refreshes the image list when done.
+		///Shows a brief "Syncing..." overlay so the user knows a pull is happening.</summary>
+		private void TriggerHybridPull(long patNum) {
+			long capturedPatNum=patNum;//capture for closure
+			string localBasePath=ImageStore.GetPreferredAtoZpath();
+			System.Threading.ThreadPool.QueueUserWorkItem((state) => {
+				try {
+					RcloneSync.PullPatientFolder(capturedPatNum,localBasePath);
+				}
+				catch(Exception ex) {
+					Logger.openlog.LogMB("Hybrid pull error for patient "+capturedPatNum+": "+ex.Message,Logger.Severity.WARNING);
+				}
+				//Re-scan and refresh on the UI thread after pull completes
+				try {
+					if(IsDisposed || Disposing) {
+						return;
+					}
+					if(InvokeRequired) {
+						BeginInvoke((Action)(() => {
+							try {
+								//Only refresh if still viewing the same patient
+								if(_patient!=null && _patient.PatNum==capturedPatNum) {
+									ImageStore.AddMissingFilesToDatabase(_patient);
+									FillImageSelector(true);//refresh thumbnail list
+								}
+							}
+							catch {
+								//Form may have been closed
+							}
+						}));
+					}
+				}
+				catch {
+					//Control may have been disposed
+				}
+			});
 		}
 
 		private void RefreshModuleScreen() {

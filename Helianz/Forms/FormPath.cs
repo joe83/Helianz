@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.IO;
+using System.Diagnostics;
 using System.Windows.Forms;
 using HelianzBusiness;
 using CodeBase;
@@ -36,6 +37,17 @@ namespace Helianz{
 		///<summary>This is the database storage type that the user has chosen (or was pulled from the database.
 		///DO NOT change the value of this variable outside of SetRadioButtonChecked() or there is a chance for a stack overflow exception</summary>
 		private DataStorageType _dataStorageType=DataStorageType.LocalAtoZ;
+
+		#region Hybrid Private Variables
+		private ProgramProperty _progPropHybridSftpHost;
+		private ProgramProperty _progPropHybridSftpUser;
+		private ProgramProperty _progPropHybridSftpPass;
+		private ProgramProperty _progPropHybridKeyFile;
+		private const string PropDescHybridSftpHost = "Hybrid SFTP Host";
+		private const string PropDescHybridSftpUser = "Hybrid SFTP User";
+		private const string PropDescHybridSftpPass = "Hybrid SFTP Pass";
+		private const string PropDescHybridSftpKeyFile = "Hybrid Key File";
+		#endregion
 
 		///<summary></summary>
 		public FormPath(){
@@ -90,6 +102,7 @@ namespace Helianz{
 			if(PrefC.AtoZfolderUsed!=DataStorageType.InDatabase) {
 				radioDatabaseStorage.Visible=false;
 				LayoutManager.MoveLocation(radioDropboxStorage,new Point(LayoutManager.Scale(9),LayoutManager.Scale(38)));
+				LayoutManager.MoveLocation(radioHybrid,new Point(LayoutManager.Scale(9),LayoutManager.Scale(95)));
 				LayoutManager.MoveLocation(radioSftp,new Point(LayoutManager.Scale(9),LayoutManager.Scale(57)));
 			}
 		}
@@ -169,6 +182,12 @@ namespace Helianz{
 					tabControlDataStorageType.SelectedTab=tabSftp;
 					_dataStorageType=DataStorageType.SftpAtoZ;
 					break;
+					case DataStorageType.LocalAtoZHybrid:
+						LoadHybridSetup();
+						radioHybrid.Checked=true;
+						tabControlDataStorageType.SelectedTab=tabHybrid;
+						_dataStorageType=DataStorageType.LocalAtoZHybrid;
+						break;
 				default:
 					MsgBox.Show(this,"There was an error retrieving your preferred data storage method.  Please call support to solve this issue.");
 					break;
@@ -401,8 +420,193 @@ namespace Helianz{
 			SetRadioButtonChecked(DataStorageType.SftpAtoZ);
 		}
 
-		#endregion
 
+
+		#endregion
+		#region Hybrid
+
+		private void LoadHybridSetup() {
+			textHybridLocalPath.Text=PrefC.GetString(PrefName.DocPath);
+			// Load SFTP credentials from ProgramProperties (where butSave_Click stores them)
+			if(_program==null) {
+				_program=Programs.GetCur(ProgramName.SFTP);
+			}
+			if(_program!=null) {
+				List<ProgramProperty> listProgProps=ProgramProperties.GetForProgram(_program.ProgramNum);
+				_progPropHybridSftpHost=listProgProps.Find(x => x.PropertyDesc==PropDescHybridSftpHost);
+				_progPropHybridSftpUser=listProgProps.Find(x => x.PropertyDesc==PropDescHybridSftpUser);
+				_progPropHybridSftpPass=listProgProps.Find(x => x.PropertyDesc==PropDescHybridSftpPass);
+				_progPropHybridKeyFile=listProgProps.Find(x => x.PropertyDesc==PropDescHybridSftpKeyFile);
+				textHybridSftpHost.Text=_progPropHybridSftpHost?.PropertyValue??"";
+				textHybridSftpUser.Text=_progPropHybridSftpUser?.PropertyValue??"";
+				if(_progPropHybridSftpPass!=null && !string.IsNullOrEmpty(_progPropHybridSftpPass.PropertyValue)) {
+					string pass="";
+					if(CDT.Class1.DecryptSftp(_progPropHybridSftpPass.PropertyValue,out pass)) {
+						textHybridSftpPass.Text=pass;
+					}
+				}
+				else {
+					textHybridSftpPass.Text="";
+				}
+				textHybridKeyFile.Text=_progPropHybridKeyFile?.PropertyValue??"";
+			}
+			// Auto-detect bundled rclone
+			if(RcloneSync.IsBundledRcloneAvailable()) {
+				textHybridRclonePath.Text=Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"rclone",
+					Environment.OSVersion.Platform==PlatformID.Unix?"rclone":"rclone.exe");
+			}
+			else {
+				textHybridRclonePath.Text=PrefC.GetStringSilent(PrefName.RclonePath);
+				if(string.IsNullOrEmpty(textHybridRclonePath.Text)) {
+					textHybridRclonePath.Text="rclone";
+				}
+			}
+			textHybridServerPath.Text=PrefC.GetStringSilent(PrefName.RcloneServerPath);
+			if(string.IsNullOrEmpty(textHybridServerPath.Text)) {
+				textHybridServerPath.Text="/media";
+			}
+		}
+
+		private void radioHybrid_Click(object sender,EventArgs e) {
+			if(!VerifySwitchingAwayFromDBStorage()) {
+				return;
+			}
+			if(_dataStorageType==DataStorageType.LocalAtoZHybrid) {
+				return;
+			}
+			SetRadioButtonChecked(DataStorageType.LocalAtoZHybrid);
+		}
+
+		private void butHybridBrowseLocal_Click(object sender,EventArgs e) {
+			if(ShowFileBrowserDialog()) {
+				textHybridLocalPath.Text=FixDirSeparators(folderBrowserDialog.SelectedPath);
+			}
+		}
+
+		private void butHybridTestConnection_Click(object sender,EventArgs e) {
+			string rclonePath=textHybridRclonePath.Text.Trim();
+			if(string.IsNullOrEmpty(rclonePath)) {
+				rclonePath="rclone";
+			}
+			// 1. Check rclone binary
+			try {
+				string ver=RcloneSync.RunRcloneCommand("version");
+				MsgBox.Show(this,"rclone found: "+ver);
+			}
+			catch {
+				MsgBox.Show(this,"rclone not found at: "+rclonePath+"\nPlease install rclone or place rclone.exe in the app rclone/ folder.");
+				return;
+			}
+			// 2. Write config and test SFTP connection
+			string host=textHybridSftpHost.Text.Trim();
+			string user=textHybridSftpUser.Text.Trim();
+			string pass=textHybridSftpPass.Text;
+			string keyFile=textHybridKeyFile.Text.Trim();
+			if(string.IsNullOrEmpty(host) || string.IsNullOrEmpty(user)) {
+				MsgBox.Show(this,"SFTP host and username are required.");
+				return;
+			}
+			try {
+				RcloneSync.WriteConfigFile(host,user,keyFile);
+				string configPath=RcloneSync.GetConfigFilePath();
+				string args="lsf helianz-media: --config \""+configPath+"\" --max-depth 1";
+				string output=RcloneSync.RunRcloneCommand(args,pass);
+				RcloneSync.InvalidateAvailabilityCache();
+				MsgBox.Show(this,"Connection successful!\nRemote root contents:\n"+output);
+			}
+			catch(Exception ex) {
+				MsgBox.Show(this,"SFTP connection failed: "+ex.Message);
+			}
+		}
+
+	private void butHybridBrowseKey_Click(object sender,EventArgs e) {
+			OpenFileDialog dlg=new OpenFileDialog();
+			dlg.Title="Select SSH Key File";
+			dlg.Filter="SSH Key Files|*.pem;*.key;id_rsa;id_rsa.pub|All Files|*.*";
+			if(dlg.ShowDialog()==System.Windows.Forms.DialogResult.OK) {
+				textHybridKeyFile.Text=dlg.FileName;
+			}
+		}
+
+		private void butHybridMigrate_Click(object sender,EventArgs e) {
+			if(PrefC.AtoZfolderUsed!=DataStorageType.LocalAtoZHybrid) {
+				MsgBox.Show(this,"Migration can only run when Hybrid mode is selected.");
+				return;
+			}
+			int count=MediaMigration.CountPatientsToMigrate();
+			if(count==0) {
+				MsgBox.Show(this,"No patients found with old A-Z paths. All patients are already using numbered folders.");
+				return;
+			}
+			if(!MsgBox.Show(this,MsgBoxButtons.OKCancel,"Found "+count+" patient(s) with old A-Z paths."
+				+"\r\nThis will move files from A-Z folders to numbered folders (0-99)."
+				+"\r\n\r\nThis operation cannot be undone. Continue?"))
+			{
+				return;
+			}
+			Cursor=Cursors.WaitCursor;
+			try {
+				int migrated=0;
+				int errors=0;
+				UI.ProgressWin progressWin=new UI.ProgressWin();
+				progressWin.StartingMessage="Migrating "+count+" patient(s) from A-Z to numbered folders...";
+				MediaMigration.OnLog=(msg) => {
+					Logger.openlog.LogMB("Migration: "+msg,Logger.Severity.INFO);
+				};
+				progressWin.ActionMain=() => {
+					migrated=MediaMigration.MigrateAll();
+				};
+				progressWin.ShowDialog();
+				if(migrated >= 0) {
+					MsgBox.Show(this,"Migration complete.\r\nMigrated: "+migrated+" patient(s).");
+				}
+			}
+			catch(Exception ex) {
+				MsgBox.Show(this,"Migration error: "+ex.Message);
+			}
+			finally {
+				Cursor=Cursors.Default;
+				MediaMigration.OnLog=null;
+			}
+		}
+
+		///<summary>Updates an existing ProgramProperty or creates a new one if it does not exist.</summary>
+		private void UpdateOrCreateProp(string propDesc,string propValue) {
+			if(_program==null) {
+				return;
+			}
+			ProgramProperty prop=ProgramProperties.GetForProgram(_program.ProgramNum)
+				.Find(x => x.PropertyDesc==propDesc);
+			if(prop!=null) {
+				prop.PropertyValue=propValue;
+				ProgramProperties.Update(prop);
+			}
+			else {
+				prop=new ProgramProperty();
+				prop.ProgramNum=_program.ProgramNum;
+				prop.PropertyDesc=propDesc;
+				prop.PropertyValue=propValue;
+				ProgramProperties.Insert(prop);
+			}
+		}
+
+		///<summary>Safely updates a Pref value. If the pref does not exist in the DB yet,
+		///inserts it. This avoids the exception thrown by Prefs.UpdateString when
+		///a new PrefName enum value has no corresponding row in the preference table.</summary>
+		private void UpdatePrefSafe(PrefName prefName,string newValue) {
+			try {
+				Prefs.UpdateString(prefName,newValue);
+			}
+			catch {
+				// Pref does not exist in DB yet. Add to in-memory cache so it works immediately.
+				Pref pref=new Pref();
+				pref.PrefName=prefName.ToString();
+				pref.ValueString=newValue;
+				Prefs.UpdateValueForKey(pref);
+			}
+		}
+
+				#endregion
 		private void butSave_Click(object sender, System.EventArgs e){
 			//remember that user might be using a website or a linux box to store images, therefore must allow forward slashes.
 			if(radioUseFolder.Checked){
@@ -420,7 +624,7 @@ namespace Helianz{
 				}
 				else {
 					if(HelianzBusiness.FileIO.FileAtoZ.GetValidPathFromString(textDocPath.Text)==null) {
-						MsgBox.Show(this,"The path is invalid.  The folder must exist and must contain all 26 A through Z folders.");
+						MsgBox.Show(this,"The path is invalid. The folder must exist and must contain the required subfolders.");
 						return;
 					}
 				}				
@@ -469,6 +673,41 @@ namespace Helianz{
 			{
 				return;
 			}
+
+			if(radioHybrid.Checked) {
+				if(HelianzBusiness.FileIO.FileAtoZ.GetValidPathFromString(textHybridLocalPath.Text)==null) {
+					MsgBox.Show(this,"The local path is invalid. The folder must exist.");
+					return;
+				}
+				// Save SFTP credentials as ProgramProperties
+				if(_program==null) {
+					_program=Programs.GetCur(ProgramName.SFTP);
+				}
+				if(_program!=null) {
+					UpdateOrCreateProp(PropDescHybridSftpHost,textHybridSftpHost.Text.Trim());
+					UpdateOrCreateProp(PropDescHybridSftpUser,textHybridSftpUser.Text.Trim());
+					string encryptedPass="";
+					if(!string.IsNullOrEmpty(textHybridSftpPass.Text)) {
+						encryptedPass=CDT.Class1.EncryptSftp(textHybridSftpPass.Text);
+					}
+					UpdateOrCreateProp(PropDescHybridSftpPass,encryptedPass);
+					UpdateOrCreateProp(PropDescHybridSftpKeyFile,textHybridKeyFile.Text.Trim());
+					DataValid.SetInvalid(InvalidType.Programs);
+				}
+				// Save local path so GetPreferredAtoZpath() returns the correct path
+				UpdatePrefSafe(PrefName.DocPath,textHybridLocalPath.Text.Trim());
+				HelianzBusiness.FileIO.FileAtoZ.LocalAtoZpath=textHybridLocalPath.Text.Trim();
+				ComputerPrefs.LocalComputer.AtoZpath=textHybridLocalPath.Text.Trim();
+				ComputerPrefs.Update(ComputerPrefs.LocalComputer);
+				// Save rclone and server path as Prefs
+				UpdatePrefSafe(PrefName.RclonePath,textHybridRclonePath.Text.Trim());
+				UpdatePrefSafe(PrefName.RcloneRemoteName,"helianz-media");
+				UpdatePrefSafe(PrefName.RcloneServerPath,textHybridServerPath.Text.Trim());
+				// Write rclone config file
+				RcloneSync.WriteConfigFile(textHybridSftpHost.Text.Trim(),textHybridSftpUser.Text.Trim(),textHybridKeyFile.Text.Trim());
+				RcloneSync.InvalidateAvailabilityCache();
+			}
+
 			bool isChanged=false;
 			if(radioSftp.Checked){
 				isChanged|=ProgramProperties.UpdateProgramPropertyWithValue(_programPropertySftpPathAtoZ,textSftpAtoZ.Text);

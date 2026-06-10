@@ -1475,7 +1475,9 @@ namespace HelianzBusiness{
 		///<summary>2</summary>
 		DropboxAtoZ,
 		///<summary>3</summary>
-		SftpAtoZ
+		SftpAtoZ,
+		///<summary>4 - Hybrid local+server. Uses numbered folder scheme (PatNum%100/PatNum) with rclone sync to SFTP server.</summary>
+		LocalAtoZHybrid
 	}
 
 	///<summary>Only used by the Signup Portal</summary>
