@@ -98,6 +98,7 @@
 			this.butTask = new Helianz.UI.Button();
 			this.butDelete = new Helianz.UI.Button();
 			this.butPin = new Helianz.UI.Button();
+			this.butCancel = new Helianz.UI.Button();
 			this.butSave = new Helianz.UI.Button();
 			this.butAttachAll = new Helianz.UI.Button();
 			this.contrApptProvSlider = new Helianz.UI.ControlApptProvSlider();
@@ -822,9 +823,19 @@
 			this.butPin.TabIndex = 122;
 			this.butPin.Text = "Pinboard";
 			this.butPin.Click += new System.EventHandler(this.butPin_Click);
-			// 
+			//
+			// butCancel
+			//
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Location = new System.Drawing.Point(1137, 636);
+			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(92, 24);
+			this.butCancel.TabIndex = 120;
+			this.butCancel.Text = "&Cancel";
+			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
+			//
 			// butSave
-			// 
+			//
 			this.butSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butSave.Location = new System.Drawing.Point(1138, 662);
 			this.butSave.Name = "butSave";
@@ -907,6 +918,7 @@
 			this.Controls.Add(this.butTask);
 			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.butPin);
+			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butSave);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
@@ -922,6 +934,7 @@
 
 		}
 		#endregion
+		private Helianz.UI.Button butCancel;
 		private Helianz.UI.Button butSave;
 		private Helianz.UI.GridOD gridPatient;
 		private Helianz.UI.GridOD gridComm;

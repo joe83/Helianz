@@ -2713,6 +2713,11 @@ namespace Helianz{
 			OnDelete_Click();
 		}
 
+		private void butCancel_Click(object sender,EventArgs e) {
+			DialogResult=DialogResult.Cancel;
+			Close();
+		}
+
 		private void butSave_Click(object sender, System.EventArgs e) {
 			DateTime datePrevious=_appointment.DateTStamp;
 			if(comboStatus.GetSelected<ApptStatus>()==ApptStatus.UnschedList) {
@@ -2775,41 +2780,47 @@ namespace Helianz{
 			if(_appointment==null) {//Could not find _appointment in the Db on load.
 				return;
 			}
-			if(PrefC.GetBool(PrefName.ApptsRequireProc)
-				&& (_appointment.AptStatus==ApptStatus.Scheduled || _appointment.AptStatus==ApptStatus.Planned)
-				&& gridProc.SelectedIndices.Length==0 && !_isDeleted && !IsNew) {
-				MsgBox.Show("At least one procedure must be attached to the appointment.");
-				e.Cancel=true; //form won't close until procedure is attached or appointment is canceled.
-				return;
+			//Skip these blocking validation checks if user explicitly clicked Cancel - they want to discard changes.
+			if(DialogResult!=DialogResult.Cancel) {
+				if(PrefC.GetBool(PrefName.ApptsRequireProc)
+					&& (_appointment.AptStatus==ApptStatus.Scheduled || _appointment.AptStatus==ApptStatus.Planned)
+					&& gridProc.SelectedIndices.Length==0 && !_isDeleted && !IsNew) {
+					MsgBox.Show("At least one procedure must be attached to the appointment.");
+					e.Cancel=true; //form won't close until procedure is attached or appointment is canceled.
+					return;
+				}
 			}
 			//Do not use pat.PatNum here.  Use _appointment.PatNum instead.  Pat will be null in the case that the user does not have the appt create permission.
 			DateTime datePrevious=_appointment.DateTStamp;
 			if(DialogResult!=DialogResult.OK) {
-				string requiredProcMsg=AppointmentTypes.CheckRequiredProcsAttached(_appointment.AppointmentTypeNum, gridProc.SelectedTags<Procedure>());
-				if(requiredProcMsg!="" && !_isDeleted){
-					MsgBox.Show(requiredProcMsg);
-					e.Cancel=true; //form won't close until procedure is attached or appointment is canceled.
-					return;
-				}
-				if(_appointment.AptStatus==ApptStatus.Complete) {
-					//This is a completed appointment and we need to warn the user if they are trying to leave the window and need to detach procs first.
-					for(int i=0;i<gridProc.ListGridRows.Count;i++) {
-						bool attached=false;
-						if(_appointment.AptStatus==ApptStatus.Planned && ((Procedure)gridProc.ListGridRows[i].Tag).PlannedAptNum==_appointment.AptNum) {
-							attached=true;
-						}
-						else if(((Procedure)gridProc.ListGridRows[i].Tag).AptNum==_appointment.AptNum) {
-							attached=true;
-						}
-						if(((Procedure)gridProc.ListGridRows[i].Tag).ProcStatus!=ProcStat.TP || !attached) {
-							continue;
-						}
-						if(!Security.IsAuthorized(EnumPermType.AppointmentCompleteEdit,suppressMessage: true)) {
-							continue;
-						}
-						MsgBox.Show(this,"Detach treatment planned procedures or click OK in the appointment edit window to set them complete.");
-						e.Cancel=true;
+				//Skip these blocking validation checks if user explicitly clicked Cancel.
+				if(DialogResult!=DialogResult.Cancel) {
+					string requiredProcMsg=AppointmentTypes.CheckRequiredProcsAttached(_appointment.AppointmentTypeNum, gridProc.SelectedTags<Procedure>());
+					if(requiredProcMsg!="" && !_isDeleted){
+						MsgBox.Show(requiredProcMsg);
+						e.Cancel=true; //form won't close until procedure is attached or appointment is canceled.
 						return;
+					}
+					if(_appointment.AptStatus==ApptStatus.Complete) {
+						//This is a completed appointment and we need to warn the user if they are trying to leave the window and need to detach procs first.
+						for(int i=0;i<gridProc.ListGridRows.Count;i++) {
+							bool attached=false;
+							if(_appointment.AptStatus==ApptStatus.Planned && ((Procedure)gridProc.ListGridRows[i].Tag).PlannedAptNum==_appointment.AptNum) {
+								attached=true;
+							}
+							else if(((Procedure)gridProc.ListGridRows[i].Tag).AptNum==_appointment.AptNum) {
+								attached=true;
+							}
+							if(((Procedure)gridProc.ListGridRows[i].Tag).ProcStatus!=ProcStat.TP || !attached) {
+								continue;
+							}
+							if(!Security.IsAuthorized(EnumPermType.AppointmentCompleteEdit,suppressMessage: true)) {
+								continue;
+							}
+							MsgBox.Show(this,"Detach treatment planned procedures or click OK in the appointment edit window to set them complete.");
+							e.Cancel=true;
+							return;
+						}
 					}
 				}
 				if(IsNew) {

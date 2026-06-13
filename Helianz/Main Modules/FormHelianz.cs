@@ -8108,6 +8108,7 @@ namespace Helianz{
 			UnselectActive(true);
 			AllNeutral();
 			controlChart.UserLogOffCommited();//Ensures that we refresh view when user logs back on or a new user logs on.
+			controlAppt.UserLogOffCommited();//Ensures that the appointment view is re-resolved on next login.
 			if(userControlTasks1.Visible) {
 				userControlTasks1.ClearLogOff();
 			}

@@ -3001,6 +3001,13 @@ namespace Helianz {
 			Plugins.HookAddCode(this,"ContrAppt.ModuleUnselected_end");
 		}
 
+		///<summary>Clears state that should be re-resolved from the database when a user logs back on.
+		///Prevents stale objects from persisting across login sessions after caches have been cleared.</summary>
+		public void UserLogOffCommited() {
+			contrApptPanel.ApptViewCur=null;
+			_hasInitializedOnStartup=false;
+		}
+
 		///<summary>>Refreshes everything except the patient info. isRefreshBubble will refresh the appointment bubble.  If another workstation made a change, then refreshes datatables.</summary>
 		public void RefreshPeriod(List<long> listOpNums=null,List<long> listProvNums=null,bool isRefreshAppointments=true,
 			bool isRefreshSchedules=false,List<long> listPinApptNums=null)
@@ -4059,14 +4066,7 @@ namespace Helianz {
 			ApptView apptView=null;
 			UserodApptView userodApptView=UserodApptViews.GetOneForUserAndClinic(Security.CurUser.UserNum,Clinics.ClinicNum);
 			if(userodApptView!=null) { //if there is an entry in the userodapptview table for this user
-				if(_hasInitializedOnStartup) { //if ContrAppt has already been initialized
-					apptView=ApptViews.GetApptView(userodApptView.ApptViewNum); //then load the view for the user in the userodapptview table
-				}
-				else if(Security.CurUser.ClinicIsRestricted) { //current user is restricted
-					if(Clinics.ClinicNum!=ComputerPrefs.LocalComputer.ClinicNum) { //and FormHelianz.ClinicNum (set to the current user's clinic) is not the computerpref clinic
-						apptView=ApptViews.GetApptView(userodApptView.ApptViewNum); //then load the view for the user in the userodapptview table
-					}
-				}
+				apptView=ApptViews.GetApptView(userodApptView.ApptViewNum); //load the view for this user+clinic
 			}
 			if(apptView==null //if no entry in the userodapptview table
 				&& Clinics.ClinicNum==ComputerPrefs.LocalComputer.ClinicNum) //and if the program level ClinicNum is the stored recent ClinicNum for this computer 

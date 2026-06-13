@@ -9,8 +9,9 @@
 ; Called silently by HelianzInstaller.exe:
 ;   Setup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR="<install path>"
 ;
-; NOTE: After copying files, the [Run] section automatically registers HelianzServer
-; as an IIS Web Application under "Default Web Site" via Register-HelianzServerIIS.ps1.
+; NOTE: After copying files, the [Run] section automatically:
+;   1. Installs IIS (if absent) via Install-IIS.ps1
+;   2. Registers HelianzServer as an IIS Web Application under "Default Web Site" via Register-HelianzServerIIS.ps1.
 ; ---------------------------------------------------------------------------
 
 #ifndef MyAppVersion
@@ -55,10 +56,16 @@ Source: "{#SourceDir}\*"; DestDir: "{app}"; Excludes: "Web.config,HelianzServerC
 Source: "{#SourceDir}\Web.config"; DestDir: "{app}"; Flags: onlyifdoesntexist
 ; HelianzServerConfig.xml holds the DB connection — never overwrite; skip if not built yet
 Source: "{#SourceDir}\HelianzServerConfig.xml"; DestDir: "{app}"; Flags: skipifsourcedoesntexist onlyifdoesntexist
+; IIS installation helper script
+Source: "Install-IIS.ps1"; DestDir: "{app}"; Flags: ignoreversion
 ; IIS registration helper script
 Source: "Register-HelianzServerIIS.ps1"; DestDir: "{app}"; Flags: ignoreversion
 
 [Run]
+; Install IIS (if not already present) before registering the web application.
+; Runs even during silent installs (HelianzInstaller.exe uses /VERYSILENT).
+Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\Install-IIS.ps1"" -LogDir ""{app}"""; Flags: runhidden waituntilterminated; StatusMsg: "Installing IIS (this may take a few minutes)..."
+
 ; Register the web service as an IIS application under Default Web Site.
 ; Runs even during silent installs (HelianzInstaller.exe uses /VERYSILENT).
 Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\Register-HelianzServerIIS.ps1"" -InstallDir ""{app}"""; Flags: runhidden; StatusMsg: "Registering HelianzServer in IIS..."
