@@ -550,10 +550,19 @@ namespace Helianz{
 				}
 				if(ReplicationServers.GetServerId()!=0 && ReplicationServers.GetServerId()==PrefC.GetLong(PrefName.ReplicationFailureAtServer_id)) {
 					MsgBox.Show(this,"This database is temporarily unavailable.  Please connect instead to your alternate database at the other location.");
-					chooseDatabaseInfo.NoShow=YN.No;//This ensures they will get a choose db window next time through the loop.
+					chooseDatabaseInfo.NoShow=YN.No;
 					ReplicationServers.SetServerId(-1);
 					formSplash.Close();
-					formSplash=new FormSplash();//force the splash screen to show again.
+					formSplash=new FormSplash();
+					continue;
+				}
+				//Log on the user. If Back is clicked on FormLogOn, return to choose database.
+				Logger.LogToPath("LogOnHelianzUser",LogPath.Startup,LogPhase.Start);
+				LogOnHelianzUser(odUser,odPassword,domainUser);
+				Logger.LogToPath("LogOnHelianzUser",LogPath.Startup,LogPhase.End);
+				if(!Security.IsUserLoggedIn) {
+					//User clicked Back on FormLogOn — loop back to choose database.
+					chooseDatabaseInfo.NoShow=YN.No;
 					continue;
 				}
 				break;
@@ -652,10 +661,7 @@ namespace Helianz{
 				timerSignals.Interval=PrefC.GetInt(PrefName.ProcessSigsIntervalInSecs)*1000;
 				timerSignals.Start();
 			}
-			Logger.LogToPath("LogOnHelianzUser",LogPath.Startup,LogPhase.Start);
-			LogOnHelianzUser(odUser,odPassword,domainUser);
-			Logger.LogToPath("LogOnHelianzUser",LogPath.Startup,LogPhase.End);
-			//At this point a user has successfully logged in.  Flag the userod cache as safe to cache data.
+			//At this point a user has successfully logged in (via the while loop above).  Flag the userod cache as safe to cache data.
 			Userods.SetIsCacheAllowed(true);
 			//Active Instances Validation for OD Cloud
 			if(!ActiveInstanceUnderLimit()) {
@@ -7625,7 +7631,15 @@ namespace Helianz{
 		private void LogOnHelianzUser(string odUser,string odPassword,string domainUserFromCmd) {
 			//CurUser will be set if using web service because login from ChooseDatabase window.
 			if(Security.CurUser!=null) {
-				if(!IsCloudUserIpAllowed()) {
+				//For Middle Tier: CurUser is the connect user from TryToConnect. Force FormLogOn so the real user can authenticate.
+				if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+					ShowLogOn();
+					//If Back was clicked, ShowLogOn returned without setting IsUserLoggedIn — go back to FormChooseDatabase.
+					if(!Security.IsUserLoggedIn) {
+						return;
+					}
+				}
+				else if(!IsCloudUserIpAllowed()) {
 					ShowLogOn();
 				}
 				else {
@@ -7838,6 +7852,10 @@ namespace Helianz{
 			using FormLogOn formLogOn=new FormLogOn(doRefreshSecurityCache:false,doClearCaches:doClearCaches);
 			formLogOn.ShowDialog(this);
 			if(formLogOn.DialogResult!=DialogResult.OK) {
+				//If the user clicked Back, return to caller without exiting.
+				if(formLogOn.IsBackRequested) {
+					return;
+				}
 				//Using FormLogOn_.DialogResult==DailogResult.CANCEL previously resulted in a null user/UE.
 				CloseOpenForms(isForceClose:true);
 				Cursor=Cursors.Default;

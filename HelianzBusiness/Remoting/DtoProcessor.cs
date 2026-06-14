@@ -124,11 +124,25 @@ namespace HelianzBusiness {
 				#endregion
 				dto=DataTransferObject.Deserialize(dtoString);
 				DtoInformation dtoInformation=new DtoInformation(dto);
-				//Authenticate BEFORE processing any method invocation (including HashPassword).
-				//Previously HashPassword was called before auth, allowing unauthenticated password hashing.
-				Security.CurUser=Userods.CheckUserAndPassword(dto.Credentials.Username,dto.Credentials.Password
-					,Programs.UsingEcwTightOrFullMode());
-				Security.PasswordTyped=dto.Credentials.Password;
+				//Methods that do not require authentication. These are called by FormLogOn to populate the
+				//clickable user list BEFORE the user has logged in. They only return non-sensitive user names.
+				string[] unrestrictedMethods=new string[] {
+					"GetUserNamesNoCache",
+					"HasUsersForCEMTNoCache",
+				};
+				if(unrestrictedMethods.Contains(dtoInformation.MethodName)) {
+					//Bypass authentication for unrestricted methods.
+					//Set a non-null CurUser so downstream code doesn't throw NullReferenceException.
+					Security.CurUser=new Userod();
+					Security.PasswordTyped="";
+				}
+				else {
+					//Authenticate BEFORE processing any method invocation (including HashPassword).
+					//Previously HashPassword was called before auth, allowing unauthenticated password hashing.
+					Security.CurUser=Userods.CheckUserAndPassword(dto.Credentials.Username,dto.Credentials.Password
+						,Programs.UsingEcwTightOrFullMode());
+					Security.PasswordTyped=dto.Credentials.Password;
+				}
 				//Set the computer name so securitylog entries use the client's computer name instead of the middle tier server name
 				//Older clients might not include ComputerName in the dto, so we need to make sure it's not null.
 				Security.CurComputerName=dto.ComputerName??"";

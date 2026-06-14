@@ -36,6 +36,7 @@ namespace Helianz {
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormLogOn));
 			this.butOK = new Helianz.UI.Button();
+			this.butBack = new Helianz.UI.Button();
 			this.listUser = new Helianz.UI.ListBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
@@ -57,6 +58,16 @@ namespace Helianz {
 			this.butOK.TabIndex = 1;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
+			//
+			// butBack
+			//
+			this.butBack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butBack.Location = new System.Drawing.Point(14, 328);
+			this.butBack.Name = "butBack";
+			this.butBack.Size = new System.Drawing.Size(75, 26);
+			this.butBack.TabIndex = 10;
+			this.butBack.Text = "&Back";
+			this.butBack.Click += new System.EventHandler(this.butBack_Click);
 			// 
 			// listUser
 			// 
@@ -151,6 +162,7 @@ namespace Helianz {
 			this.Controls.Add(this.checkShowCEMTUsers);
 			this.Controls.Add(this.textUser);
 			this.Controls.Add(this.textPassword);
+			this.Controls.Add(this.butBack);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
@@ -168,6 +180,7 @@ namespace Helianz {
 		}
 		#endregion
 		private Helianz.UI.Button butOK;
+		private Helianz.UI.Button butBack;
 		private Helianz.UI.ListBox listUser;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;

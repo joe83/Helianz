@@ -9,6 +9,8 @@ using System.Windows.Threading;
 namespace Helianz {
 	///<summary></summary>
 	public partial class FormLogOn : FormODBase {
+		///<summary>True when the user clicked the Back button (to distinguish from Cancel/Exit).</summary>
+		public bool IsBackRequested { get; private set; }
 		///<summary>Used when temporarily switching users. Currently only used when overriding signed notes.
 		///The user will not be logged on (Security.CurUser is untouched) but CurUserSimpleSwitch will be set to the desired user.</summary>
 		private bool _isSimpleSwitch;
@@ -165,6 +167,11 @@ namespace Helianz {
 				return;
 			}
 			_keyboardInput+=e.KeyCode.ToString().Substring(1);//Get the key number pressed
+		}
+
+		private void butBack_Click(object sender,EventArgs e) {
+			IsBackRequested=true;
+			DialogResult=DialogResult.Cancel;
 		}
 
 		private void butOK_Click(object sender,EventArgs e) {
