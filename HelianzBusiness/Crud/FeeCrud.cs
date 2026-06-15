@@ -50,6 +50,7 @@ namespace HelianzBusiness.Crud{
 				fee=new Fee();
 				fee.FeeNum         = PIn.Long  (row["FeeNum"].ToString());
 				fee.Amount         = PIn.Double(row["Amount"].ToString());
+				fee.ProviderShare  = PIn.Double(row["ProviderShare"].ToString());
 				fee.OldCode        = PIn.String(row["OldCode"].ToString());
 				fee.FeeSched       = PIn.Long  (row["FeeSched"].ToString());
 				fee.UseDefaultFee  = PIn.Bool  (row["UseDefaultFee"].ToString());
@@ -73,6 +74,7 @@ namespace HelianzBusiness.Crud{
 			DataTable table=new DataTable(tableName);
 			table.Columns.Add("FeeNum");
 			table.Columns.Add("Amount");
+			table.Columns.Add("ProviderShare");
 			table.Columns.Add("OldCode");
 			table.Columns.Add("FeeSched");
 			table.Columns.Add("UseDefaultFee");
@@ -87,6 +89,7 @@ namespace HelianzBusiness.Crud{
 				table.Rows.Add(new object[] {
 					POut.Long  (fee.FeeNum),
 					POut.Double(fee.Amount),
+					POut.Double(fee.ProviderShare),
 					            fee.OldCode,
 					POut.Long  (fee.FeeSched),
 					POut.Bool  (fee.UseDefaultFee),
@@ -116,12 +119,13 @@ namespace HelianzBusiness.Crud{
 			if(useExistingPK || PrefC.RandomKeys) {
 				command+="FeeNum,";
 			}
-			command+="Amount,OldCode,FeeSched,UseDefaultFee,UseDefaultCov,CodeNum,ClinicNum,ProvNum,SecUserNumEntry,SecDateEntry) VALUES(";
+			command+="Amount,ProviderShare,OldCode,FeeSched,UseDefaultFee,UseDefaultCov,CodeNum,ClinicNum,ProvNum,SecUserNumEntry,SecDateEntry) VALUES(";
 			if(useExistingPK || PrefC.RandomKeys) {
 				command+=POut.Long(fee.FeeNum)+",";
 			}
 			command+=
 				 		 POut.Double(fee.Amount)+","
+				+    POut.Double(fee.ProviderShare)+","
 				+"'"+POut.String(fee.OldCode)+"',"
 				+    POut.Long  (fee.FeeSched)+","
 				+    POut.Bool  (fee.UseDefaultFee)+","
@@ -167,7 +171,7 @@ namespace HelianzBusiness.Crud{
 						if(useExistingPK) {
 							sbCommands.Append("FeeNum,");
 						}
-						sbCommands.Append("Amount,OldCode,FeeSched,UseDefaultFee,UseDefaultCov,CodeNum,ClinicNum,ProvNum,SecUserNumEntry,SecDateEntry) VALUES ");
+						sbCommands.Append("Amount,ProviderShare,OldCode,FeeSched,UseDefaultFee,UseDefaultCov,CodeNum,ClinicNum,ProvNum,SecUserNumEntry,SecDateEntry) VALUES ");
 						countRows=0;
 					}
 					else {
@@ -177,6 +181,7 @@ namespace HelianzBusiness.Crud{
 						sbRow.Append(POut.Long(fee.FeeNum)); sbRow.Append(",");
 					}
 					sbRow.Append(POut.Double(fee.Amount)); sbRow.Append(",");
+					sbRow.Append(POut.Double(fee.ProviderShare)); sbRow.Append(",");
 					sbRow.Append("'"+POut.String(fee.OldCode)+"'"); sbRow.Append(",");
 					sbRow.Append(POut.Long(fee.FeeSched)); sbRow.Append(",");
 					sbRow.Append(POut.Bool(fee.UseDefaultFee)); sbRow.Append(",");
@@ -221,12 +226,13 @@ namespace HelianzBusiness.Crud{
 			if(isRandomKeys || useExistingPK) {
 				command+="FeeNum,";
 			}
-			command+="Amount,OldCode,FeeSched,UseDefaultFee,UseDefaultCov,CodeNum,ClinicNum,ProvNum,SecUserNumEntry,SecDateEntry) VALUES(";
+			command+="Amount,ProviderShare,OldCode,FeeSched,UseDefaultFee,UseDefaultCov,CodeNum,ClinicNum,ProvNum,SecUserNumEntry,SecDateEntry) VALUES(";
 			if(isRandomKeys || useExistingPK) {
 				command+=POut.Long(fee.FeeNum)+",";
 			}
 			command+=
 				 	   POut.Double(fee.Amount)+","
+				+    POut.Double(fee.ProviderShare)+","
 				+"'"+POut.String(fee.OldCode)+"',"
 				+    POut.Long  (fee.FeeSched)+","
 				+    POut.Bool  (fee.UseDefaultFee)+","
@@ -250,6 +256,7 @@ namespace HelianzBusiness.Crud{
 		public static void Update(Fee fee) {
 			string command="UPDATE fee SET "
 				+"Amount         =  "+POut.Double(fee.Amount)+", "
+				+"ProviderShare  =  "+POut.Double(fee.ProviderShare)+", "
 				+"OldCode        = '"+POut.String(fee.OldCode)+"', "
 				+"FeeSched       =  "+POut.Long  (fee.FeeSched)+", "
 				+"UseDefaultFee  =  "+POut.Bool  (fee.UseDefaultFee)+", "
@@ -270,6 +277,10 @@ namespace HelianzBusiness.Crud{
 			if(fee.Amount != oldFee.Amount) {
 				if(command!="") { command+=",";}
 				command+="Amount = "+POut.Double(fee.Amount)+"";
+			}
+			if(fee.ProviderShare != oldFee.ProviderShare) {
+				if(command!="") { command+=",";}
+				command+="ProviderShare = "+POut.Double(fee.ProviderShare)+"";
 			}
 			if(fee.OldCode != oldFee.OldCode) {
 				if(command!="") { command+=",";}
@@ -315,6 +326,9 @@ namespace HelianzBusiness.Crud{
 		///Does not make any changes to the database and can be called before remoting role is checked.</summary>
 		public static bool UpdateComparison(Fee fee,Fee oldFee) {
 			if(fee.Amount != oldFee.Amount) {
+				return true;
+			}
+			if(fee.ProviderShare != oldFee.ProviderShare) {
 				return true;
 			}
 			if(fee.OldCode != oldFee.OldCode) {

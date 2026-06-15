@@ -538,11 +538,19 @@ namespace Helianz {
 			gridMain.Columns.Add(col);
 			col=new GridColumn(Lan.g("TableProcedures","Code"),50);
 			gridMain.Columns.Add(col);
-			col=new GridColumn("Fee 1",50,HorizontalAlignment.Right,true);
+			col=new GridColumn("Fee 1",80,HorizontalAlignment.Right,true);
 			gridMain.Columns.Add(col);
-			col=new GridColumn("Fee 2",50,HorizontalAlignment.Right,true);
+			col=new GridColumn("PS 1",80,HorizontalAlignment.Right);
 			gridMain.Columns.Add(col);
-			col=new GridColumn("Fee 3",50,HorizontalAlignment.Right,true);
+			col=new GridColumn("Fee 2",80,HorizontalAlignment.Right,true);
+			gridMain.Columns.Add(col);
+			col=new GridColumn("PS 2",80,HorizontalAlignment.Right);
+			gridMain.Columns.Add(col);
+			col=new GridColumn("Fee 3",80,HorizontalAlignment.Right,true);
+			gridMain.Columns.Add(col);
+			col=new GridColumn("PS 3",80,HorizontalAlignment.Right);
+			gridMain.Columns.Add(col);
+			col=new GridColumn("",0,HorizontalAlignment.Right);
 			gridMain.Columns.Add(col);
 			gridMain.ListGridRows.Clear();
 			GridRow row;
@@ -598,6 +606,7 @@ namespace Helianz {
 				if(feeSched3!=null) {
 					fee3=Fees.GetFee(listProcedureCodes[i].CodeNum,feeSched3.FeeSchedNum,clinic3Num,provider3Num,_listFees);
 				}
+				//Fee 1
 				if(fee1==null || fee1.Amount==-1) {
 					row.Cells.Add("");
 				}
@@ -605,6 +614,14 @@ namespace Helianz {
 					row.Cells.Add(fee1.Amount.ToString("n"));
 					row.Cells[row.Cells.Count-1].ColorText=GetColorForFee(fee1);
 				}
+				//PS 1 - ProviderShare from fee1
+				if(fee1==null || fee1.ProviderShare==0) {
+					row.Cells.Add("");
+				}
+				else {
+					row.Cells.Add(fee1.ProviderShare.ToString("n"));
+				}
+				//Fee 2
 				if(fee2==null || fee2.Amount==-1) {
 					row.Cells.Add("");
 				}
@@ -612,6 +629,14 @@ namespace Helianz {
 					row.Cells.Add(fee2.Amount.ToString("n"));
 					row.Cells[row.Cells.Count-1].ColorText=GetColorForFee(fee2);
 				}
+				//PS 2 - ProviderShare from fee2
+				if(fee2==null || fee2.ProviderShare==0) {
+					row.Cells.Add("");
+				}
+				else {
+					row.Cells.Add(fee2.ProviderShare.ToString("n"));
+				}
+				//Fee 3
 				if(fee3==null || fee3.Amount==-1) {
 					row.Cells.Add("");
 				}
@@ -619,6 +644,15 @@ namespace Helianz {
 					row.Cells.Add(fee3.Amount.ToString("n"));
 					row.Cells[row.Cells.Count-1].ColorText=GetColorForFee(fee3);
 				}
+				//PS 3 - ProviderShare from fee3
+				if(fee3==null || fee3.ProviderShare==0) {
+					row.Cells.Add("");
+				}
+				else {
+					row.Cells.Add(fee3.ProviderShare.ToString("n"));
+				}
+				//Empty filler column to prevent PS 3 from stretching when form expands
+				row.Cells.Add("");
 				gridMain.ListGridRows.Add(row);
 			}
 			gridMain.EndUpdate();
@@ -699,7 +733,7 @@ namespace Helianz {
 			if(!Security.IsAuthorized(EnumPermType.FeeSchedEdit,true)) { //Don't do anything if they don't have permission.
 				return;
 			}
-			//Logic only works for columns 4 to 6.
+			//Logic only works for columns 4, 6, 8 (Fee 1, Fee 2, Fee 3). PS columns (5, 7, 9) are read-only.
 			long codeNum=((ProcedureCode)gridMain.ListGridRows[e.Row].Tag).CodeNum;
 			FeeSched feeSched=null;
 			long provNum=0;
@@ -707,6 +741,9 @@ namespace Helianz {
 			Fee fee=null;
 			bool isEditingGroup=false;
 			FeeSchedGroup feeSchedGroupSelected=null;
+			if(e.Col==5 || e.Col==7 || e.Col==9) {
+				return; //PS columns are read-only
+			}
 			if(e.Col==4) {
 				feeSched=_listFeeScheds[comboFeeSched1.SelectedIndex];
 				if(comboProvider1.SelectedIndex>0) {
@@ -724,7 +761,7 @@ namespace Helianz {
 				}
 				fee=Fees.GetFee(codeNum,feeSched.FeeSchedNum,clinicNum,provNum,_listFees);
 			}
-			else if(e.Col==5) {
+			else if(e.Col==6) {
 				if(comboFeeSched2.SelectedIndex==0) {//It's on the "none" option
 					gridMain.ListGridRows[e.Row].Cells[e.Col].Text="";
 					return;
@@ -745,7 +782,7 @@ namespace Helianz {
 				}
 				fee=Fees.GetFee(codeNum,feeSched.FeeSchedNum,clinicNum,provNum,_listFees);
 			}
-			else if(e.Col==6) {
+			else if(e.Col==8) {
 				if(comboFeeSched3.SelectedIndex==0) {//It's on the "none" option
 					gridMain.ListGridRows[e.Row].Cells[e.Col].Text="";
 					return;

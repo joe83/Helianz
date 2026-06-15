@@ -14,6 +14,8 @@ namespace HelianzBusiness{
 		///The absence of a fee is shown in the user interface as a blank entry.
 		///For clinic and/or provider fees, amount can be set to -1 which indicates that their fee should be blank and not use the default fee.</summary>
 		public double Amount;
+		///<summary>Provider Share (PS) amount for this fee schedule entry. The share that goes to the provider.</summary>
+		public double ProviderShare;
 		///<summary>Do not use.</summary>
 		public string OldCode;
 		///<summary>FK to feesched.FeeSchedNum.</summary>

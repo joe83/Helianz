@@ -5344,6 +5344,12 @@ namespace Helianz{
 			SecurityLogs.MakeLogEntry(EnumPermType.Setup,0,"EHR");
 		}
 
+		private void menuItemSetupProcCodes_Click(object sender,EventArgs e) {
+			//security handled within form
+			using FormProcCodes formProcCodes=new FormProcCodes(true);
+			formProcCodes.ShowDialog();
+		}
+
 		private void menuItemFeeScheds_Click(object sender,EventArgs e) {
 			if(!Security.IsAuthorized(EnumPermType.FeeSchedEdit)){
 				return;

@@ -2337,6 +2337,7 @@ CREATE TABLE `employer` (
 CREATE TABLE `fee` (
   `FeeNum` mediumint(8) unsigned NOT NULL auto_increment,
   `Amount` double NOT NULL default '0',
+  `ProviderShare` double NOT NULL default '0',
   `ADACode` varchar(15) NOT NULL default '',
   `FeeSched` smallint(5) unsigned NOT NULL default '0',
   `UseDefaultFee` tinyint(1) unsigned NOT NULL default '0',
@@ -10042,8 +10043,8 @@ insert  into procedurecode values
 ('D5987', 'Commissure Splint', 'CommSplnt', '/X/', 87, 0, 0, 0, 0, 0, '', 0, 0, ''), 
 ('D5988', 'Surgical Splint', 'SurgSplnt', '/X/', 87, 0, 0, 0, 0, 0, '', 0, 0, ''), 
 ('D5999', 'Unspecified Maxillofacial Prosthesis, by Report', 'UnspecMaxPros', '/X/', 87, 0, 0, 0, 0, 0, '', 0, 0, ''), 
-('D6010', 'Surgical Placement of Implant Body:   Endosteal Implant', 'SurgImpEnd', '/X/', 87, 0, 0, 0, 0, 0, '', 0, 10, ''), 
-('D6020', 'Abutment Placement or Substitution:   Endosteal Implant', 'PlaceAbut', '/XXX/', 80, 2, 0, 0, 0, 0, '', 0, 10, ''), 
+('D6010', 'Surgical Placement of Implant Body: ï¿½ Endosteal Implant', 'SurgImpEnd', '/X/', 87, 0, 0, 0, 0, 0, '', 0, 10, ''), 
+('D6020', 'Abutment Placement or Substitution: ï¿½ Endosteal Implant', 'PlaceAbut', '/XXX/', 80, 2, 0, 0, 0, 0, '', 0, 10, ''), 
 ('D6040', 'Surgical Placement Eposteal Implant', 'SurgEpoImp', '/X/', 87, 0, 0, 0, 0, 0, '', 0, 0, ''), 
 ('D6050', 'Surgical Placement Transosteal Implant', 'SurgTranImp', '/X/', 87, 0, 0, 0, 0, 0, '', 0, 0, ''), 
 ('D6053', 'Implant/Abutment Supported Removable Denture for Completely Edentulous Arch', 'ImpAvRmvDnCpEdA', '/X/', 87, 0, 0, 0, 0, 0, '', 0, 0, ''), 

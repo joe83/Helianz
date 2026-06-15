@@ -2292,13 +2292,38 @@ namespace Helianz {
 						if(Plugins.HookMethod(this,"ContrAccount.ToolBarMain_ButtonClick_Payment")) {
 							break;
 						}
-						//Auto-populate payment amount from patient balance
-						double payAmt=(double)((decimal)_family.ListPats[0].BalTotal - (decimal)_family.ListPats[0].InsEst);
-						if(payAmt <= 0) {
-							MsgBox.Show(this,"Patient balance is zero or negative.");
+						List<InputBoxParam> listInputBoxParams=new List<InputBoxParam>();
+						InputBoxParam inputBoxParam=new InputBoxParam();
+						inputBoxParam.InputBoxType_=InputBoxType.ValidDouble;
+						inputBoxParam.LabelText=Lan.g(this,"Please enter an amount: ");
+						listInputBoxParams.Add(inputBoxParam);
+						if(_family.ListPats.Length>1) {
+							inputBoxParam=new InputBoxParam();
+							inputBoxParam.SizeParam=new System.Windows.Size(120,20);
+							inputBoxParam.InputBoxType_=InputBoxType.CheckBox;
+							inputBoxParam.Text=Lan.g(this," - Prefer this patient");
+							listInputBoxParams.Add(inputBoxParam);
+						}
+						Func<string, bool> funcOkClick=new Func<string, bool>((text) => {
+							if(text=="") {
+								MsgBox.Show(this,"Please enter a value.");
+								return false;//Should stop user from continuing to payment window.
+							}
+							return true;//Allow user to the payment window.
+							});
+						InputBox inputBox=new InputBox(listInputBoxParams);
+						inputBox.FuncOkClick=funcOkClick;
+						Plugins.HookAddCode(this,"ContrAccount.ToolBarMain_ButtonClick_paymentInputBox",inputBox,_patient);
+						inputBox.ShowDialog();
+						if(inputBox.IsDialogCancel) {
 							break;
 						}
-						toolBarButPay_Click(payAmt);
+						Plugins.HookAddCode(this,"ControlAccount.ToolBarMain_ButtonClick_afterPaymentInputBox",inputBox,_patient);
+						bool preferCurrentPat=false;
+						if(inputBox.BoolResult) {
+							preferCurrentPat=true;
+						}
+						toolBarButPay_Click(PIn.Double(inputBox.StringResult),preferCurrentPat:preferCurrentPat);
 						break;
 					case "Adjustment":
 						toolBarButAdj_Click();

@@ -142,7 +142,7 @@ namespace Helianz{
 				isAnyClinicMedical=true;
 			}
 			DataTable table=new DataTable();
-			try { 
+			try {
 				table=RpProcSheet.GetIndividualTable(date1.SelectionStart,date2.SelectionStart,_listProvNums,_listClinicNums,textCode.Text,
 					isAnyClinicMedical,checkAllProv.Checked,PrefC.HasClinicsEnabled);
 			}
@@ -160,10 +160,10 @@ namespace Helianz{
 			}
 			string subtitleProvs=ConstructProviderSubtitle();
 			string subtitleClinics=ConstructClinicSubtitle();
-			Font font=new Font("Tahoma",9);
-			Font fontBold=new Font("Tahoma",9,FontStyle.Bold);
-			Font fontTitle=new Font("Tahoma",17,FontStyle.Bold);
-			Font fontSubTitle=new Font("Tahoma",10,FontStyle.Bold);
+			Font font=new Font("Tahoma",8);
+			Font fontBold=new Font("Tahoma",8,FontStyle.Bold);
+			Font fontTitle=new Font("Tahoma",14,FontStyle.Bold);
+			Font fontSubTitle=new Font("Tahoma",9,FontStyle.Bold);
 			report.ReportName=Lan.g(this,"Daily Procedures");
 			report.AddTitle("Title",Lan.g(this,"Daily Procedures"),fontTitle);
 			report.AddSubTitle("Practice Title",PrefC.GetString(PrefName.PracticeTitle),fontSubTitle);
@@ -173,23 +173,31 @@ namespace Helianz{
 				report.AddSubTitle("Clinics",subtitleClinics,fontSubTitle);
 			}
 			QueryObject query=report.AddQuery(table,Lan.g(this,"Date")+": "+DateTime.Today.ToString("d"));
-			query.AddColumn(Lan.g(this,"Date"),85,FieldValueType.Date,font);
+			query.AddColumn(Lan.g(this,"Date"),75,FieldValueType.Date,font);
 			query.GetColumnDetail(Lan.g(this,"Date")).StringFormat="d";
-			query.AddColumn(Lan.g(this,"Patient Name"),145,FieldValueType.String,font);
+			query.AddColumn(Lan.g(this,"Patient Name"),120,FieldValueType.String,font);
 			if(isAnyClinicMedical) {
-				query.AddColumn(Lan.g(this,"Code"),140,FieldValueType.String,font);
+				query.AddColumn(Lan.g(this,"Code"),100,FieldValueType.String,font);
 			}
 			else {
-				query.AddColumn(Lan.g(this,"Code"),70,FieldValueType.String,font);
-				query.AddColumn("Tooth",40,FieldValueType.String,font);
+				query.AddColumn(Lan.g(this,"Code"),60,FieldValueType.String,font);
+				query.AddColumn("Tooth",30,FieldValueType.String,font);
 			}
-			query.AddColumn("Area",60,FieldValueType.String,font);
-			query.AddColumn(Lan.g(this,"Description"),140,FieldValueType.String,font);
-			query.AddColumn(Lan.g(this,"Prov"),60,FieldValueType.String,font);
+			query.AddColumn("Area",40,FieldValueType.String,font);
+			query.AddColumn(Lan.g(this,"Description"),110,FieldValueType.String,font);
+			query.AddColumn(Lan.g(this,"Prov"),50,FieldValueType.String,font);
 			if(PrefC.HasClinicsEnabled) {
-				query.AddColumn(Lan.g(this,"Clinic"),100,FieldValueType.String,font);
+				query.AddColumn(Lan.g(this,"Clinic"),85,FieldValueType.String,font);
 			}
-			query.AddColumn(Lan.g(this,"Fee"),65,FieldValueType.Number,font);
+			query.AddColumn(Lan.g(this,"Fee"),70,FieldValueType.Number,font,"n0");
+			query.AddColumn("Share",70,FieldValueType.Number,font,"n0");
+			query.AddColumn("Bahan",70,FieldValueType.Number,font,"n0");
+			query.AddColumn("Opr",70,FieldValueType.Number,font,"n0");
+			//Add totals for the amount columns
+			query.AddGroupSummaryField("Tot:",Lan.g(this,"Fee"),"$fee",SummaryOperation.Sum,font:fontBold,offSetX:2,offSetY:4,formatString:"n0");
+			query.AddGroupSummaryField("","Share","Share",SummaryOperation.Sum,font:fontBold,offSetX:2,offSetY:4,formatString:"n0");
+			query.AddGroupSummaryField("","Bahan","Bahan",SummaryOperation.Sum,font:fontBold,offSetX:2,offSetY:4,formatString:"n0");
+			query.AddGroupSummaryField("","Opr","Opr",SummaryOperation.Sum,font:fontBold,offSetX:2,offSetY:4,formatString:"n0");
 			report.AddPageNum(font);
 			if(!report.SubmitQueries()) {
 				return;
@@ -204,10 +212,10 @@ namespace Helianz{
 			DataTable table=RpProcSheet.GetGroupedTable(date1.SelectionStart,date2.SelectionStart,_listProvNums,_listClinicNums,textCode.Text,checkAllProv.Checked);
 			string subtitleProvs=ConstructProviderSubtitle();
 			string subtitleClinics=ConstructClinicSubtitle();
-			Font font=new Font("Tahoma",9);
-			Font fontBold=new Font("Tahoma",9,FontStyle.Bold);
-			Font fontTitle=new Font("Tahoma",17,FontStyle.Bold);
-			Font fontSubTitle=new Font("Tahoma",10,FontStyle.Bold);
+			Font font=new Font("Tahoma",8);
+			Font fontBold=new Font("Tahoma",8,FontStyle.Bold);
+			Font fontTitle=new Font("Tahoma",14,FontStyle.Bold);
+			Font fontSubTitle=new Font("Tahoma",9,FontStyle.Bold);
 			report.ReportName=Lan.g(this,"Procedures By Procedure Code");
 			report.AddTitle("Title",Lan.g(this,"Procedures By Procedure Code"),fontTitle);
 			report.AddSubTitle("Practice Title",PrefC.GetString(PrefName.PracticeTitle),fontSubTitle);
@@ -217,14 +225,14 @@ namespace Helianz{
 				report.AddSubTitle("Clinics",subtitleClinics,fontSubTitle);
 			}
 			QueryObject query=report.AddQuery(table,Lan.g(this,"Date")+": "+DateTime.Today.ToString("d"));
-			query.AddColumn(Lan.g(this,"Category"),150,FieldValueType.String,font);
-			query.AddColumn(Lan.g(this,"Code"),130,FieldValueType.String,font);
-			query.AddColumn(Lan.g(this,"Description"),140,FieldValueType.String,font);
+			query.AddColumn(Lan.g(this,"Category"),130,FieldValueType.String,font);
+			query.AddColumn(Lan.g(this,"Code"),110,FieldValueType.String,font);
+			query.AddColumn(Lan.g(this,"Description"),110,FieldValueType.String,font);
 			query.AddColumn(Lan.g(this,"Quantity"),60,FieldValueType.Integer,font);
 			query.GetColumnDetail(Lan.g(this,"Quantity")).ContentAlignment=ContentAlignment.MiddleRight;
-			query.AddColumn(Lan.g(this,"Average Fee"),110,FieldValueType.String,font);
+			query.AddColumn(Lan.g(this,"Average Fee"),90,FieldValueType.Number,font,"n0");
 			query.GetColumnDetail(Lan.g(this,"Average Fee")).ContentAlignment=ContentAlignment.MiddleRight;
-			query.AddColumn(Lan.g(this,"Total Fees"),110,FieldValueType.Number,font);
+			query.AddColumn(Lan.g(this,"Total Fees"),90,FieldValueType.Number,font,"n0");
 			report.AddPageNum(font);
 			if(!report.SubmitQueries()) {
 				return;

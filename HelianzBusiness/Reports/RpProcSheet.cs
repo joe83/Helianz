@@ -26,7 +26,8 @@ namespace HelianzBusiness {
 				query+="COALESCE(IF(clinic.IsHidden,CONCAT(clinic.Abbr,'("+POut.String(Lans.g("FormRpProcSheet","hidden"))+")'),clinic.Abbr),\"Unassigned\") Clinic,";
 			}
 			query+="procedurelog.ProcFee*(procedurelog.UnitQty+procedurelog.BaseUnits)"
-				+"-COALESCE(SUM(claimproc.WriteOff),0) $fee "//if no writeoff, then subtract 0
+				+"-COALESCE(SUM(claimproc.WriteOff),0) $fee,"
+				+"procedurelog.Share,procedurelog.Bahan,procedurelog.Alat AS Opr "//if no writeoff, then subtract 0
 				+"FROM patient "
 				+"INNER JOIN procedurelog ON procedurelog.PatNum=patient.PatNum "
 				+"INNER JOIN procedurecode ON procedurecode.CodeNum=procedurelog.CodeNum "
@@ -57,7 +58,7 @@ namespace HelianzBusiness {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
 				return Meth.GetTable(MethodBase.GetCurrentMethod(),dateFrom,dateTo,listProvNums,listClinicNums,procCode,hasAllProvs);
 			}
-			string query="SELECT procs.ItemName,procs.ProcCode,procs.Descript,COUNT(*),FORMAT(ROUND(AVG(procs.fee),2),2) $AvgFee,SUM(procs.fee) AS $TotFee "
+			string query="SELECT procs.ItemName,procs.ProcCode,procs.Descript,COUNT(*),ROUND(AVG(procs.fee),0) $AvgFee,SUM(procs.fee) AS $TotFee "
 				+"FROM ( "
 				+"SELECT procedurelog.ProcFee*(procedurelog.UnitQty+procedurelog.BaseUnits) -COALESCE(SUM(claimproc.WriteOff),0) fee, "
 				+"procedurecode.ProcCode,	procedurecode.Descript,	definition.ItemName, definition.ItemOrder "
