@@ -41,6 +41,8 @@ namespace Helianz {
 			this.checkAllProv = new Helianz.UI.CheckBox();
 			this.checkAllClin = new Helianz.UI.CheckBox();
 			this.listClin = new Helianz.UI.ListBox();
+			this.checkShowBahan = new Helianz.UI.CheckBox();
+			this.checkShowOpr = new Helianz.UI.CheckBox();
 			this.labelClin = new System.Windows.Forms.Label();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
@@ -124,7 +126,7 @@ namespace Helianz {
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(26, 324);
+			this.label2.Location = new System.Drawing.Point(26, 328);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(290, 20);
 			this.label2.TabIndex = 37;
@@ -133,7 +135,7 @@ namespace Helianz {
 			// 
 			// textCode
 			// 
-			this.textCode.Location = new System.Drawing.Point(28, 348);
+			this.textCode.Location = new System.Drawing.Point(28, 352);
 			this.textCode.Name = "textCode";
 			this.textCode.Size = new System.Drawing.Size(100, 20);
 			this.textCode.TabIndex = 38;
@@ -157,6 +159,26 @@ namespace Helianz {
 			this.checkAllClin.TabIndex = 54;
 			this.checkAllClin.Text = "All (Includes hidden)";
 			this.checkAllClin.Click += new System.EventHandler(this.checkAllClin_Click);
+			// 
+			// checkShowBahan 
+			// 
+			this.checkShowBahan.Checked = true;
+			this.checkShowBahan.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkShowBahan.Location = new System.Drawing.Point(28, 306);
+			this.checkShowBahan.Name = "checkShowBahan";
+			this.checkShowBahan.Size = new System.Drawing.Size(95, 16);
+			this.checkShowBahan.TabIndex = 55;
+			this.checkShowBahan.Text = "Show Bahan";
+			// 
+			// checkShowOpr 
+			// 
+			this.checkShowOpr.Checked = true;
+			this.checkShowOpr.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkShowOpr.Location = new System.Drawing.Point(140, 306);
+			this.checkShowOpr.Name = "checkShowOpr";
+			this.checkShowOpr.Size = new System.Drawing.Size(95, 16);
+			this.checkShowOpr.TabIndex = 56;
+			this.checkShowOpr.Text = "Show Opr";
 			// 
 			// listClin
 			// 
@@ -182,6 +204,8 @@ namespace Helianz {
 			this.ClientSize = new System.Drawing.Size(719, 402);
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.Controls.Add(this.checkAllClin);
+			this.Controls.Add(this.checkShowBahan);
+			this.Controls.Add(this.checkShowOpr);
 			this.Controls.Add(this.listClin);
 			this.Controls.Add(this.labelClin);
 			this.Controls.Add(this.checkAllProv);
@@ -221,6 +245,8 @@ namespace Helianz {
 		private TextBox textCode;
 		private Helianz.UI.CheckBox checkAllProv;
 		private Helianz.UI.CheckBox checkAllClin;
+		private Helianz.UI.CheckBox checkShowBahan;
+		private Helianz.UI.CheckBox checkShowOpr;
 		private Helianz.UI.ListBox listClin;
 		private Label labelClin;
 	}

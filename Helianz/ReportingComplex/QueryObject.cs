@@ -295,7 +295,8 @@ namespace Helianz.ReportingComplex {
 			_reportObjects[i].DataField=dataFieldName;
 			_reportObjects[i].SummaryGroups=queryGroupValues;
 			_sections[AreaSectionType.GroupFooter].Height+=(int)((grfx.MeasureString(staticText,font)).Height/grfx.DpiY*100+2)+offSetY;
-			i=_reportObjects.Add(new ReportObject(columnName+"GroupSummaryText",AreaSectionType.GroupFooter,location,new Size(0,0),color,summaryOperation,columnName,font,ContentAlignment.MiddleLeft,dataFieldName,offSetX,offSetY,formatString));
+			Size headerSize=GetObjectByName(columnName+"Header").Size;
+			i=_reportObjects.Add(new ReportObject(columnName+"GroupSummaryText",AreaSectionType.GroupFooter,location,headerSize,color,summaryOperation,columnName,font,ContentAlignment.MiddleRight,dataFieldName,offSetX,offSetY,formatString));
 			_reportObjects[i].SummaryGroups=queryGroupValues;
 			grfx.Dispose();
 		}

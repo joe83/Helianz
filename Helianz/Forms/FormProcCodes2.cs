@@ -530,6 +530,25 @@ namespace Helianz {
 			gridMain.BeginUpdate();
 			gridMain.Columns.Clear();
 			//The order of these columns are important for gridMain_CellDoubleClick(), gridMain_CellLeave(), and GridMain_CellEnter()
+			//Auto-fit fee schedule header widths (min 80, max 130)
+			string fee1Hdr=feeSched1?.Description??"Fee 1";
+			string ps1Hdr=fee1Hdr+" PS";
+			string fee2Hdr=feeSched2?.Description??"Fee 2";
+			string ps2Hdr=fee2Hdr+" PS";
+			string fee3Hdr=feeSched3?.Description??"Fee 3";
+			string ps3Hdr=fee3Hdr+" PS";
+			int feeW=80,psW=80;
+			using(Graphics g=Graphics.FromImage(new Bitmap(1,1))) {
+				Font hdrFont=new Font("Tahoma",8,FontStyle.Bold);
+				feeW=Math.Max(feeW,(int)g.MeasureString(fee1Hdr,hdrFont).Width+12);
+				psW=Math.Max(psW,(int)g.MeasureString(ps1Hdr,hdrFont).Width+12);
+				feeW=Math.Max(feeW,(int)g.MeasureString(fee2Hdr,hdrFont).Width+12);
+				psW=Math.Max(psW,(int)g.MeasureString(ps2Hdr,hdrFont).Width+12);
+				feeW=Math.Max(feeW,(int)g.MeasureString(fee3Hdr,hdrFont).Width+12);
+				psW=Math.Max(psW,(int)g.MeasureString(ps3Hdr,hdrFont).Width+12);
+				feeW=Math.Min(feeW,130);
+				psW=Math.Min(psW,130);
+			}
 			GridColumn col=new GridColumn(Lan.g("TableProcedures","Category"),90);
 			gridMain.Columns.Add(col);
 			col=new GridColumn(Lan.g("TableProcedures","Description"),206);
@@ -538,17 +557,17 @@ namespace Helianz {
 			gridMain.Columns.Add(col);
 			col=new GridColumn(Lan.g("TableProcedures","Code"),50);
 			gridMain.Columns.Add(col);
-			col=new GridColumn("Fee 1",80,HorizontalAlignment.Right,true);
+			col=new GridColumn(fee1Hdr,feeW,HorizontalAlignment.Right,true);
 			gridMain.Columns.Add(col);
-			col=new GridColumn("PS 1",80,HorizontalAlignment.Right);
+			col=new GridColumn(ps1Hdr,psW,HorizontalAlignment.Right);
 			gridMain.Columns.Add(col);
-			col=new GridColumn("Fee 2",80,HorizontalAlignment.Right,true);
+			col=new GridColumn(fee2Hdr,feeW,HorizontalAlignment.Right,true);
 			gridMain.Columns.Add(col);
-			col=new GridColumn("PS 2",80,HorizontalAlignment.Right);
+			col=new GridColumn(ps2Hdr,psW,HorizontalAlignment.Right);
 			gridMain.Columns.Add(col);
-			col=new GridColumn("Fee 3",80,HorizontalAlignment.Right,true);
+			col=new GridColumn(fee3Hdr,feeW,HorizontalAlignment.Right,true);
 			gridMain.Columns.Add(col);
-			col=new GridColumn("PS 3",80,HorizontalAlignment.Right);
+			col=new GridColumn(ps3Hdr,psW,HorizontalAlignment.Right);
 			gridMain.Columns.Add(col);
 			col=new GridColumn("",0,HorizontalAlignment.Right);
 			gridMain.Columns.Add(col);

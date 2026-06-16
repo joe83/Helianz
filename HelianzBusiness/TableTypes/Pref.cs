@@ -2251,6 +2251,9 @@ namespace HelianzBusiness {
 		ShowAllocateUnearnedPaymentPrompt,
 		///<summary>Set to 0 by default. Preference that controls if the auto deposit group box shows or not in FormClaimPayEdit.cs</summary>
 		ShowAutoDeposit,
+		///<summary>Boolean. When true, show Bahan column in the procedure sheet report.</summary>
+		[PrefName(ValueType=PrefValueType.BOOL)]
+		ShowBahan,
 		[PrefName(ValueType=PrefValueType.BOOL)]
 		ShowFeatureEhr,
 		///<summary>Set to 0 by default. Controls if the Enterprise Setup Window will be available.</summary>
@@ -2279,6 +2282,9 @@ namespace HelianzBusiness {
 		///<summary></summary>
 		[PrefName(ValueType=PrefValueType.BOOL)]
 		ShowIncomeTransferManager,
+		///<summary>Boolean. When true, show Opr column in the procedure sheet report.</summary>
+		[PrefName(ValueType=PrefValueType.BOOL)]
+		ShowOpr,
 		///<summary>Boolean.  True by default. If true then the user might be prompted to create a planned appointment when leaving the Chart Module.</summary>
 		ShowPlannedAppointmentPrompt,
 		///<summary>Boolean.	True by default. If true then users are able to show pronouns that do not necessarily match gender.</summary>

@@ -4,6 +4,7 @@ using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using HelianzBusiness;
+using HelianzBusiness.Crud;
 using Helianz.ReportingComplex;
 using CodeBase;
 using System.Linq;
@@ -37,6 +38,31 @@ namespace Helianz{
 			if(checkAllProv.Enabled==false && _listProviders.Count>0) {
 				listProv.SetSelected(0);
 			}
+			//Bahan/Opr only available in Individual mode
+			radioIndividual.CheckedChanged+=(s,ev) => {
+				checkShowBahan.Enabled=radioIndividual.Checked;
+				checkShowOpr.Enabled=radioIndividual.Checked;
+			};
+			//Load persisted Bahan/Opr visibility (default checked on first use)
+			checkShowBahan.Checked=PrefC.GetBoolSilent(PrefName.ShowBahan,true);
+			checkShowOpr.Checked=PrefC.GetBoolSilent(PrefName.ShowOpr,true);
+			//Save on toggle, creating the pref row in DB on first use
+			checkShowBahan.Click+=(s,ev) => {
+				if(!PrefC.ContainsKey(nameof(PrefName.ShowBahan))) {
+					Pref p=new Pref(){ PrefName=nameof(PrefName.ShowBahan),ValueString=POut.Bool(checkShowBahan.Checked) };
+					PrefCrud.Insert(p);
+					Prefs.UpdateValueForKey(p);
+				}
+				Prefs.UpdateBool(PrefName.ShowBahan,checkShowBahan.Checked);
+			};
+			checkShowOpr.Click+=(s,ev) => {
+				if(!PrefC.ContainsKey(nameof(PrefName.ShowOpr))) {
+					Pref p=new Pref(){ PrefName=nameof(PrefName.ShowOpr),ValueString=POut.Bool(checkShowOpr.Checked) };
+					PrefCrud.Insert(p);
+					Prefs.UpdateValueForKey(p);
+				}
+				Prefs.UpdateBool(PrefName.ShowOpr,checkShowOpr.Checked);
+			};
 			if(!PrefC.HasClinicsEnabled) {
 				listClin.Visible=false;
 				labelClin.Visible=false;
@@ -158,10 +184,32 @@ namespace Helianz{
 					row["ToothNum"]=Tooth.Display(row["ToothNum"].ToString());
 				}
 			}
+
+			/*
+			//Compute totals and append a total row to the table
+			DataRow totRow=table.NewRow();
+			double totFee=0,totShare=0,totBahan=0,totOpr=0;
+			foreach(DataRow r in table.Rows) {
+				totFee+=PIn.Double(r["$fee"].ToString());
+				totShare+=PIn.Double(r["Share"].ToString());
+				totBahan+=PIn.Double(r["Bahan"].ToString());
+				totOpr+=PIn.Double(r["Opr"].ToString());
+			}
+			//Put "TOTAL" label under Clinic if present, otherwise under Description
+			if(table.Columns.Contains("Clinic"))
+				totRow["Clinic"]=Lan.g(this,"TOTAL");
+			else
+				totRow["Descript"]=Lan.g(this,"TOTAL");
+			totRow["$fee"]=totFee;
+			totRow["Share"]=totShare;
+			if(checkShowBahan.Checked) totRow["Bahan"]=totBahan;
+			if(checkShowOpr.Checked) totRow["Opr"]=totOpr;
+			table.Rows.Add(totRow);
+
+			*/
 			string subtitleProvs=ConstructProviderSubtitle();
 			string subtitleClinics=ConstructClinicSubtitle();
 			Font font=new Font("Tahoma",8);
-			Font fontBold=new Font("Tahoma",8,FontStyle.Bold);
 			Font fontTitle=new Font("Tahoma",14,FontStyle.Bold);
 			Font fontSubTitle=new Font("Tahoma",9,FontStyle.Bold);
 			report.ReportName=Lan.g(this,"Daily Procedures");
@@ -191,13 +239,8 @@ namespace Helianz{
 			}
 			query.AddColumn(Lan.g(this,"Fee"),70,FieldValueType.Number,font,"n0");
 			query.AddColumn("Share",70,FieldValueType.Number,font,"n0");
-			query.AddColumn("Bahan",70,FieldValueType.Number,font,"n0");
-			query.AddColumn("Opr",70,FieldValueType.Number,font,"n0");
-			//Add totals for the amount columns
-			query.AddGroupSummaryField("Tot:",Lan.g(this,"Fee"),"$fee",SummaryOperation.Sum,font:fontBold,offSetX:2,offSetY:4,formatString:"n0");
-			query.AddGroupSummaryField("","Share","Share",SummaryOperation.Sum,font:fontBold,offSetX:2,offSetY:4,formatString:"n0");
-			query.AddGroupSummaryField("","Bahan","Bahan",SummaryOperation.Sum,font:fontBold,offSetX:2,offSetY:4,formatString:"n0");
-			query.AddGroupSummaryField("","Opr","Opr",SummaryOperation.Sum,font:fontBold,offSetX:2,offSetY:4,formatString:"n0");
+			if(checkShowBahan.Checked) query.AddColumn("Bahan",70,FieldValueType.Number,font,"n0");
+			if(checkShowOpr.Checked) query.AddColumn("Opr",70,FieldValueType.Number,font,"n0");
 			report.AddPageNum(font);
 			if(!report.SubmitQueries()) {
 				return;
@@ -213,7 +256,6 @@ namespace Helianz{
 			string subtitleProvs=ConstructProviderSubtitle();
 			string subtitleClinics=ConstructClinicSubtitle();
 			Font font=new Font("Tahoma",8);
-			Font fontBold=new Font("Tahoma",8,FontStyle.Bold);
 			Font fontTitle=new Font("Tahoma",14,FontStyle.Bold);
 			Font fontSubTitle=new Font("Tahoma",9,FontStyle.Bold);
 			report.ReportName=Lan.g(this,"Procedures By Procedure Code");
