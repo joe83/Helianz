@@ -3543,7 +3543,9 @@ namespace Helianz {
 					patName=table.Rows[i]["patName"].ToString();
 				}
 				row.Cells.Add(patName);
-				timeWait=DateTime.Parse(table.Rows[i]["waitTime"].ToString());//we ignore date
+				if(!DateTime.TryParse(table.Rows[i]["waitTime"].ToString(),out timeWait)) {
+					timeWait=DateTime.Today;//default to midnight if parsing fails
+				}//we ignore date
 				timeWait+=timeSpanDeltaSinceRefresh;
 				row.Cells.Add(timeWait.ToString("H:mm:ss"));
 				row.Bold=false;

@@ -5599,6 +5599,18 @@
     <Compile Include="Forms\FormSupplyEdit.Designer.cs">
       <DependentUpon>FormSupplyEdit.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FormSupplyEditS.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormSupplyEditS.Designer.cs">
+      <DependentUpon>FormSupplyEditS.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormSupplyInventoryS.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormSupplyInventoryS.Designer.cs">
+      <DependentUpon>FormSupplyInventoryS.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FormSupplierEdit.cs">
       <SubType>Form</SubType>
     </Compile>

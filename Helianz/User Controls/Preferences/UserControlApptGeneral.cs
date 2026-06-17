@@ -101,7 +101,7 @@ namespace Helianz {
 			}
 			checkApptModuleAdjInProd.Checked=PrefC.GetBool(PrefName.ApptModuleAdjustmentsInProd);
 			checkApptModuleProductionUsesOps.Checked=PrefC.GetBool(PrefName.ApptModuleProductionUsesOps);
-			//checkApptsRequireProc.Checked=PrefC.GetBool(PrefName.ApptsRequireProc);
+			checkApptsRequireProc.Checked=PrefC.GetBool(PrefName.ApptsRequireProc);
 			checkApptAllowFutureComplete.Checked=PrefC.GetBool(PrefName.ApptAllowFutureComplete);
 			checkApptAllowEmptyComplete.Checked=PrefC.GetBool(PrefName.ApptAllowEmptyComplete);
 			textApptWithoutProcsDefaultLength.Text=PrefC.GetString(PrefName.AppointmentWithoutProcsDefaultLength);
@@ -132,7 +132,7 @@ namespace Helianz {
 			Changed|=Prefs.UpdateBool(PrefName.AppointmentClinicTimeReset,checkApptTimeReset.Checked);
 			Changed|=Prefs.UpdateBool(PrefName.ApptModuleAdjustmentsInProd,checkApptModuleAdjInProd.Checked);
 			Changed|=Prefs.UpdateBool(PrefName.ApptModuleProductionUsesOps,checkApptModuleProductionUsesOps.Checked);
-			//Changed|=Prefs.UpdateBool(PrefName.ApptsRequireProc,checkApptsRequireProc.Checked);
+			Changed|=Prefs.UpdateBool(PrefName.ApptsRequireProc,checkApptsRequireProc.Checked);
 			Changed|=Prefs.UpdateBool(PrefName.ApptAllowFutureComplete,checkApptAllowFutureComplete.Checked);
 			Changed|=Prefs.UpdateBool(PrefName.ApptAllowEmptyComplete,checkApptAllowEmptyComplete.Checked);
 			Changed|=Prefs.UpdateString(PrefName.AppointmentWithoutProcsDefaultLength,textApptWithoutProcsDefaultLength.Text);

@@ -6113,6 +6113,14 @@ namespace Helianz{
 			//SecurityLogs.MakeLogEntry(Permissions.Setup,"Zip Codes");
 		}
 
+		private void menuItemSupplies_Click(object sender,EventArgs e) {
+			if(!Security.IsAuthorized(EnumPermType.SupplierEdit)) {
+				return;
+			}
+			using FormSupplyInventory formSupplyInventory=new FormSupplyInventory();
+			formSupplyInventory.ShowDialog();
+		}
+
 		#endregion Menu - Lists
 
 		#region Menu - Reports

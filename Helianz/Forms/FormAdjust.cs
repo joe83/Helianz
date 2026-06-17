@@ -119,6 +119,23 @@ namespace Helianz {
 			}
 			FillListBoxAdjTypes();
 			FillProcedure();
+			//Populate Discount combo (5% - 100%)
+			comboDiscount.Items.Clear();
+			for(int i=5;i<=100;i+=5) {
+				comboDiscount.Items.Add(i.ToString());
+			}
+			//Populate Finance Charge combo (0.5% - 5%)
+			comboFinanceCharge.Items.Clear();
+			comboFinanceCharge.Items.Add("0.5");
+			comboFinanceCharge.Items.Add("1");
+			comboFinanceCharge.Items.Add("1.5");
+			comboFinanceCharge.Items.Add("2");
+			comboFinanceCharge.Items.Add("2.5");
+			comboFinanceCharge.Items.Add("3");
+			comboFinanceCharge.Items.Add("3.5");
+			comboFinanceCharge.Items.Add("4");
+			comboFinanceCharge.Items.Add("4.5");
+			comboFinanceCharge.Items.Add("5");
 			textNote.Text=_adjustment.AdjNote;
 		}
 
@@ -475,6 +492,82 @@ namespace Helianz {
 
 		private void checkOnlyTsiExcludedAdjTypes_Checked(object sender,EventArgs e) {
 			FillListBoxAdjTypes();
+		}
+
+		private void butItemSale_Click(object sender,EventArgs e) {
+			using FormSupplyInventoryS formSupplyInventoryS=new FormSupplyInventoryS();
+			formSupplyInventoryS.Location=new Point(this.Width/2-formSupplyInventoryS.Width/2,0);
+			if(formSupplyInventoryS.ShowDialog()!=DialogResult.OK) {
+				return;
+			}
+			if(string.IsNullOrEmpty(formSupplyInventoryS.dataFormX3)) {
+				return;//No item selected
+			}
+			//Append to existing selections so multiple items can be added
+			if(!string.IsNullOrEmpty(textQty.Text)) {
+				textQty.Text+=";"+formSupplyInventoryS.dataFormX1;
+				textPrice.Text+=";"+formSupplyInventoryS.dataFormX2;
+				textProduct.Text+=";"+formSupplyInventoryS.dataFormX3;
+			}
+			else {
+				textQty.Text=formSupplyInventoryS.dataFormX1;
+				textPrice.Text=formSupplyInventoryS.dataFormX2;
+				textProduct.Text=formSupplyInventoryS.dataFormX3;
+			}
+		}
+
+		private void comboDiscount_SelectedIndexChanged(object sender,EventArgs e) {
+			if(comboDiscount.SelectedIndex==-1) {
+				return;
+			}
+			if(!textAmount.IsValid()) {
+				return;
+			}
+			textAmount.Text=Convert.ToString((float)((double)float.Parse(textAmount.Text)*(double)float.Parse(comboDiscount.Text)/100.0));
+			textNote.Text="Discount "+comboDiscount.Text+"%";
+		}
+
+		private void comboFinanceCharge_SelectedIndexChanged(object sender,EventArgs e) {
+			if(comboFinanceCharge.SelectedIndex==-1) {
+				return;
+			}
+			if(!textAmount.IsValid()) {
+				return;
+			}
+			textAmount.Text=Convert.ToString((float)((double)float.Parse(textAmount.Text)*(double)float.Parse(comboFinanceCharge.Text)/100.0));
+			textNote.Text="Financial Charge "+comboFinanceCharge.Text+"%";
+		}
+
+		private void textProduct_TextChanged(object sender,EventArgs e) {
+			if(string.IsNullOrEmpty(textQty.Text) || string.IsNullOrEmpty(textPrice.Text) || string.IsNullOrEmpty(textProduct.Text)) {
+				return;
+			}
+			//Parse semicolon-separated values for multiple item sales
+			string[] qtys=textQty.Text.Split(';');
+			string[] prices=textPrice.Text.Split(';');
+			string[] products=textProduct.Text.Split(';');
+			float totalAmount=0;
+			string noteText="";
+			for(int i=0;i<products.Length;i++) {
+				if(i>=qtys.Length || i>=prices.Length) {
+					break;
+				}
+				if(string.IsNullOrEmpty(products[i])) {
+					continue;
+				}
+				float qty;
+				float price;
+				if(!float.TryParse(qtys[i],out qty) || !float.TryParse(prices[i],out price)) {
+					continue;
+				}
+				totalAmount+=qty*price;
+				if(i>0) {
+					noteText+="\r\n";
+				}
+				noteText+=(i+1).ToString()+". "+products[i]+",   Qty : "+qtys[i]+",   Price @ : "+prices[i];
+			}
+			textAmount.Text=totalAmount.ToString();
+			textNote.Text=noteText;
 		}
 	}
 

@@ -74,9 +74,20 @@
             this.label19 = new System.Windows.Forms.Label();
             this.butDetachProc = new Helianz.UI.Button();
             this.butAttachProc = new Helianz.UI.Button();
+            this.labelItemSale = new System.Windows.Forms.Label();
+            this.butItemSale = new Helianz.UI.Button();
+            this.labelDiscount = new System.Windows.Forms.Label();
+            this.comboDiscount = new System.Windows.Forms.ComboBox();
+            this.labelDiscountPct = new System.Windows.Forms.Label();
+            this.labelFinanceCharge = new System.Windows.Forms.Label();
+            this.comboFinanceCharge = new System.Windows.Forms.ComboBox();
+            this.labelFCPct = new System.Windows.Forms.Label();
+            this.textQty = new System.Windows.Forms.TextBox();
+            this.textPrice = new System.Windows.Forms.TextBox();
+            this.textProduct = new System.Windows.Forms.TextBox();
             this.groupProcedure.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // label1
             // 
             this.label1.Location = new System.Drawing.Point(4, 54);
@@ -555,7 +566,108 @@
             this.butAttachProc.TabIndex = 8;
             this.butAttachProc.Text = "Attach";
             this.butAttachProc.Click += new System.EventHandler(this.butAttachProc_Click);
-            // 
+            //
+            // labelItemSale
+            //
+            this.labelItemSale.Location = new System.Drawing.Point(12, 176);
+            this.labelItemSale.Name = "labelItemSale";
+            this.labelItemSale.Size = new System.Drawing.Size(100, 16);
+            this.labelItemSale.TabIndex = 170;
+            this.labelItemSale.Text = "Item Sale";
+            this.labelItemSale.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // butItemSale
+            //
+            this.butItemSale.Location = new System.Drawing.Point(112, 173);
+            this.butItemSale.Name = "butItemSale";
+            this.butItemSale.Size = new System.Drawing.Size(29, 24);
+            this.butItemSale.TabIndex = 171;
+            this.butItemSale.Text = "...";
+            this.butItemSale.Click += new System.EventHandler(this.butItemSale_Click);
+            //
+            // labelDiscount
+            //
+            this.labelDiscount.AutoSize = true;
+            this.labelDiscount.Location = new System.Drawing.Point(61, 398);
+            this.labelDiscount.Name = "labelDiscount";
+            this.labelDiscount.Size = new System.Drawing.Size(49, 13);
+            this.labelDiscount.TabIndex = 172;
+            this.labelDiscount.Text = "Discount";
+            //
+            // comboDiscount
+            //
+            this.comboDiscount.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboDiscount.Location = new System.Drawing.Point(112, 395);
+            this.comboDiscount.MaxDropDownItems = 30;
+            this.comboDiscount.Name = "comboDiscount";
+            this.comboDiscount.Size = new System.Drawing.Size(47, 21);
+            this.comboDiscount.TabIndex = 173;
+            this.comboDiscount.SelectedIndexChanged += new System.EventHandler(this.comboDiscount_SelectedIndexChanged);
+            //
+            // labelDiscountPct
+            //
+            this.labelDiscountPct.AutoSize = true;
+            this.labelDiscountPct.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelDiscountPct.Location = new System.Drawing.Point(160, 398);
+            this.labelDiscountPct.Name = "labelDiscountPct";
+            this.labelDiscountPct.Size = new System.Drawing.Size(16, 13);
+            this.labelDiscountPct.TabIndex = 174;
+            this.labelDiscountPct.Text = "%";
+            //
+            // labelFinanceCharge
+            //
+            this.labelFinanceCharge.AutoSize = true;
+            this.labelFinanceCharge.Location = new System.Drawing.Point(24, 426);
+            this.labelFinanceCharge.Name = "labelFinanceCharge";
+            this.labelFinanceCharge.Size = new System.Drawing.Size(86, 13);
+            this.labelFinanceCharge.TabIndex = 175;
+            this.labelFinanceCharge.Text = "Financial Charge";
+            //
+            // comboFinanceCharge
+            //
+            this.comboFinanceCharge.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboFinanceCharge.Location = new System.Drawing.Point(112, 423);
+            this.comboFinanceCharge.MaxDropDownItems = 30;
+            this.comboFinanceCharge.Name = "comboFinanceCharge";
+            this.comboFinanceCharge.Size = new System.Drawing.Size(47, 21);
+            this.comboFinanceCharge.TabIndex = 176;
+            this.comboFinanceCharge.SelectedIndexChanged += new System.EventHandler(this.comboFinanceCharge_SelectedIndexChanged);
+            //
+            // labelFCPct
+            //
+            this.labelFCPct.AutoSize = true;
+            this.labelFCPct.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelFCPct.Location = new System.Drawing.Point(160, 426);
+            this.labelFCPct.Name = "labelFCPct";
+            this.labelFCPct.Size = new System.Drawing.Size(16, 13);
+            this.labelFCPct.TabIndex = 177;
+            this.labelFCPct.Text = "%";
+            //
+            // textQty
+            //
+            this.textQty.Location = new System.Drawing.Point(113, 257);
+            this.textQty.Name = "textQty";
+            this.textQty.Size = new System.Drawing.Size(63, 20);
+            this.textQty.TabIndex = 178;
+            this.textQty.Visible = false;
+            //
+            // textPrice
+            //
+            this.textPrice.Location = new System.Drawing.Point(113, 282);
+            this.textPrice.Name = "textPrice";
+            this.textPrice.Size = new System.Drawing.Size(119, 20);
+            this.textPrice.TabIndex = 179;
+            this.textPrice.Visible = false;
+            //
+            // textProduct
+            //
+            this.textProduct.Location = new System.Drawing.Point(113, 306);
+            this.textProduct.Name = "textProduct";
+            this.textProduct.Size = new System.Drawing.Size(272, 20);
+            this.textProduct.TabIndex = 180;
+            this.textProduct.Visible = false;
+            this.textProduct.TextChanged += new System.EventHandler(this.textProduct_TextChanged);
+            //
             // FormAdjust
             // 
             this.ClientSize = new System.Drawing.Size(731, 504);
@@ -580,6 +692,17 @@
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label1);
+            this.Controls.Add(this.labelItemSale);
+            this.Controls.Add(this.butItemSale);
+            this.Controls.Add(this.labelDiscount);
+            this.Controls.Add(this.comboDiscount);
+            this.Controls.Add(this.labelDiscountPct);
+            this.Controls.Add(this.labelFinanceCharge);
+            this.Controls.Add(this.comboFinanceCharge);
+            this.Controls.Add(this.labelFCPct);
+            this.Controls.Add(this.textQty);
+            this.Controls.Add(this.textPrice);
+            this.Controls.Add(this.textProduct);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -645,5 +768,16 @@
 		private Helianz.UI.Button butEditAnyway;
 		private System.Windows.Forms.Label labelEditAnyway;
 		private System.Windows.Forms.Label labelProcDisabled;
+		private System.Windows.Forms.Label labelItemSale;
+		private Helianz.UI.Button butItemSale;
+		private System.Windows.Forms.Label labelDiscount;
+		private System.Windows.Forms.ComboBox comboDiscount;
+		private System.Windows.Forms.Label labelDiscountPct;
+		private System.Windows.Forms.Label labelFinanceCharge;
+		private System.Windows.Forms.ComboBox comboFinanceCharge;
+		private System.Windows.Forms.Label labelFCPct;
+		private System.Windows.Forms.TextBox textQty;
+		private System.Windows.Forms.TextBox textPrice;
+		private System.Windows.Forms.TextBox textProduct;
 	}
 }

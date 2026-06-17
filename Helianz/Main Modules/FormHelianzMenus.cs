@@ -386,6 +386,7 @@ namespace Helianz{
 			menuItemLists.Add("&Referrals",menuItemReferrals_Click);
 			_menuItemSites=new MenuItemOD("Sites",menuItemSites_Click);
 			menuItemLists.Add(_menuItemSites);
+			menuItemLists.Add("&Supplies",menuItemSupplies_Click);
 			menuItemLists.Add("State Abbreviations",menuItemStateAbbrs_Click);
 			if(CultureInfo.CurrentCulture.Name.EndsWith("CA")) {//Canadian. en-CA or fr-CA
 				menuItemLists.Add("Postal Codes",menuItemZipCodes_Click);

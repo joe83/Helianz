@@ -328,6 +328,39 @@ namespace HelianzBusiness{
 					#endregion
 					********************************************************************************************************/
 				}
+
+				//Save the user credentials to WCM (Windows Credential Manager) if necessary.
+				//This must be done BEFORE writing the XML file so that non-admin Windows users can still
+				//save their credentials to the Windows Credential Manager (which does not require admin
+				//rights), even if they cannot write to FreeDentalConfig.xml in the Program Files directory.
+				if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT
+					&& !string.IsNullOrWhiteSpace(centralConnection.ServiceURI)
+					&& centralConnection.IsAutomaticLogin)
+				{
+					bool isCredentialSaveRequired=true;//Assume credentials are not saved yet.
+					if(WindowsPasswordVaultWrapper.TryRetrieveUserName(centralConnection.ServiceURI,out string userName)) {//Found a saved OD MT UserName
+						//Update the credentials if the user or password is different.
+						if(centralConnection.OdUser!=userName
+							|| WindowsPasswordVaultWrapper.RetrievePassword(centralConnection.ServiceURI,userName)!=centralConnection.OdPassword)
+						{
+							//UserName or Password in the saved credentials does not match current password.  Delete the saved credentials and save the new
+							//credentials.  This will clear all the saved credentials from the PasswordVault for the currently logged in Windows User, which is
+							//desired behavior as each Windows User should only have one set of Helianz Middle Tier credentials.
+							WindowsPasswordVaultWrapper.ClearCredentials(centralConnection.ServiceURI);
+						}
+						else {
+							isCredentialSaveRequired=false;//Username and Password already saved and match current credentials.
+						}
+					}
+					if(isCredentialSaveRequired) {
+						if(!string.IsNullOrWhiteSpace(centralConnection.OdUser) && !string.IsNullOrWhiteSpace(centralConnection.OdPassword)) {
+							//Save the new credentials.
+							WindowsPasswordVaultWrapper.WritePassword(centralConnection.ServiceURI,centralConnection.OdUser,centralConnection.OdPassword);
+						}
+						//If credentials are empty/null, just skip saving to WCM — this is not a failure.
+						//The XML config will still be written below so the connection settings persist.
+					}
+				}
 				XmlWriterSettings xmlWriterSettings=new XmlWriterSettings();
 				xmlWriterSettings.Indent=true;
 				xmlWriterSettings.IndentChars=("    ");
@@ -426,36 +459,6 @@ namespace HelianzBusiness{
 				}
 				xmlWriter.WriteEndElement();
 				xmlWriter.Close();
-				//Input the user's credentials to WCM (Windows Credential Manager) if necessary.
-				if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT 
-					&& !string.IsNullOrWhiteSpace(centralConnection.ServiceURI) 
-					&& centralConnection.IsAutomaticLogin) 
-				{
-					bool isCredentialSaveRequired=true;//Assume credentials are not saved yet.
-					if(WindowsPasswordVaultWrapper.TryRetrieveUserName(centralConnection.ServiceURI,out string userName)) {//Found a saved OD MT UserName
-						//Update the credentials if the user or password is different.
-						if(centralConnection.OdUser!=userName 
-							|| WindowsPasswordVaultWrapper.RetrievePassword(centralConnection.ServiceURI,userName)!=centralConnection.OdPassword) 
-						{
-							//UserName or Password in the saved credentials does not match current password.  Delete the saved credentials and save the new 
-							//credentials.  This will clear all the saved credentials from the PasswordVault for the currently logged in Windows User, which is 
-							//desired behavior as each Windows User should only have one set of Helianz Middle Tier credentials.
-							WindowsPasswordVaultWrapper.ClearCredentials(centralConnection.ServiceURI);
-						}
-						else {
-							isCredentialSaveRequired=false;//Username and Password already saved and match current credentials.
-						}
-					}
-					if(isCredentialSaveRequired) { 
-						if(!string.IsNullOrWhiteSpace(centralConnection.OdUser) && !string.IsNullOrWhiteSpace(centralConnection.OdPassword)) {
-							//Save the new credentials.
-							WindowsPasswordVaultWrapper.WritePassword(centralConnection.ServiceURI,centralConnection.OdUser,centralConnection.OdPassword);
-						}
-						else {
-							return false;//Invalid username/password.
-						}
-					}
-				}
 			}
 			catch(Exception ex) {
 				Logger.LogToPath("TrySaveConnectionSettings failed: "+ex.Message,LogPath.Startup,LogPhase.Unspecified);
