@@ -2,6 +2,7 @@
 using DataConnectionBase;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -124,7 +125,118 @@ namespace HelianzBusiness {
 					Prefs.UpdateStringNoCache(PrefName.ProgramVersion,dbVer);
 				}
 			});
+			//Pre-17.1 conversion methods are skipped when the database version already exceeds the method's
+			//target version, which can leave some preferences missing from the preference table.
+			//This ensures all PrefName enum values (that should exist) have corresponding rows.
+			ODException.SwallowAnyException(() => EnsureAllPrefsExist());
 			DataConnection.CommandTimeout=3600;//Set back to default of 1 hour.
+		}
+
+		///<summary>Ensures all PrefName enum values (that should exist) have corresponding rows in the preference table.
+		///Pre-17.1 conversion methods are skipped when the database version already exceeds the method's target version,
+		///which can leave some preferences missing. This method fills in any gaps using sensible defaults.</summary>
+		///<summary>These prefs are intentionally not stored in the database for most installations (marked "Missing in general").</summary>
+		private static readonly HashSet<string> _missingInGeneralPrefs=new HashSet<string> {
+			"AsteriskConferenceApplication",
+			"AsteriskHighVolumeMode",
+			"ConnectionSettingsHQ",
+			"HelianzHelpCaptureFormName",
+			"IntrospectionItems",
+		};
+
+		private static void EnsureAllPrefsExist() {
+			//Get all PrefName enum values.
+			Array allPrefNames=Enum.GetValues(typeof(PrefName));
+			//Get all existing prefs from the database into a HashSet for fast lookup.
+			string cmd="SELECT PrefName FROM preference";
+			DataTable table=Db.GetTable(cmd);
+			HashSet<string> existingPrefs=new HashSet<string>();
+			foreach(DataRow row in table.Rows) {
+				existingPrefs.Add(row["PrefName"].ToString());
+			}
+			//Determine which prefs are missing.
+			List<string> missingPrefs=new List<string>();
+			foreach(PrefName prefName in allPrefNames) {
+				string name=prefName.ToString();
+				if(name=="NotApplicable") {
+					continue;//This pref is never stored in the database.
+				}
+				//Skip prefs intentionally not in the database (marked "Missing in general").
+				if(_missingInGeneralPrefs.Contains(name)) {
+					continue;
+				}
+				//Skip prefs marked with PrefValueType.NONE (like NotApplicable).
+				MemberInfo mi=typeof(PrefName).GetMember(name)[0];
+				PrefNameAttribute attr=mi.GetCustomAttribute<PrefNameAttribute>();
+				if(attr!=null && attr.ValueType==PrefValueType.NONE) {
+					continue;
+				}
+				//Skip obsolete prefs that are marked with error:true (they cause compile errors if used).
+				ObsoleteAttribute obs=mi.GetCustomAttribute<ObsoleteAttribute>();
+				if(obs!=null && obs.IsError) {
+					continue;
+				}
+				if(!existingPrefs.Contains(name)) {
+					missingPrefs.Add(name);
+				}
+			}
+			//Insert each missing pref with a sensible default value.
+			foreach(string prefName in missingPrefs) {
+				string defaultValue=GetDefaultValueForPref(prefName);
+				string insertCmd;
+				if(DataConnection.DBtype==DatabaseType.MySql) {
+					insertCmd="INSERT INTO preference (PrefName,ValueString) "
+						+"SELECT '"+POut.String(prefName)+"','"+POut.String(defaultValue)+"' "
+						+"FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM preference WHERE PrefName='"+POut.String(prefName)+"')";
+				}
+				else {//Oracle
+					insertCmd="INSERT INTO preference (PrefNum,PrefName,ValueString) "
+						+"SELECT (SELECT MAX(PrefNum)+1 FROM preference),'"+POut.String(prefName)+"','"+POut.String(defaultValue)+"' "
+						+"FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM preference WHERE PrefName='"+POut.String(prefName)+"')";
+				}
+				Db.NonQ(insertCmd);
+			}
+		}
+
+		///<summary>Returns a sensible default ValueString for a given PrefName based on its PrefValueType attribute.</summary>
+		private static string GetDefaultValueForPref(string prefName) {
+			MemberInfo mi=typeof(PrefName).GetMember(prefName)[0];
+			PrefNameAttribute attr=mi.GetCustomAttribute<PrefNameAttribute>();
+			if(attr==null) {
+				return "0";//Default for most prefs without an explicit attribute.
+			}
+			switch(attr.ValueType) {
+				case PrefValueType.NONE:
+					return "0";
+				case PrefValueType.BOOL:
+					return "0";
+				case PrefValueType.STRING:
+					return "";
+				case PrefValueType.ENUM:
+					return "0";
+				case PrefValueType.INT:
+					return "0";
+				case PrefValueType.LONG:
+					return "0";
+				case PrefValueType.LONG_NEG_ONE_AS_ZERO:
+					return "0";
+				case PrefValueType.LONG_NEG_ONE_AS_BLANK:
+					return "";
+				case PrefValueType.BYTE:
+					return "0";
+				case PrefValueType.DOUBLE:
+					return "0";
+				case PrefValueType.DATE:
+					return "0001-01-01";
+				case PrefValueType.DATETIME:
+					return "0001-01-01 00:00:00";
+				case PrefValueType.COLOR:
+					return "0";
+				case PrefValueType.YN_DEFAULT_TRUE:
+					return "1";
+				default:
+					return "0";
+			}
 		}
 	}
 

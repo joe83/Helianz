@@ -71,7 +71,7 @@ namespace HelianzBusiness{
 		private class ClinicCache : CacheListAbs<Clinic> {
 			protected override List<Clinic> GetCacheFromDb() {
 				string command="SELECT * FROM clinic ";
-				if(PrefC.GetBool(PrefName.ClinicListIsAlphabetical)) {
+				if(Prefs.GetBoolNoCache(PrefName.ClinicListIsAlphabetical)) {
 					command+="ORDER BY Abbr";
 				}
 				else {

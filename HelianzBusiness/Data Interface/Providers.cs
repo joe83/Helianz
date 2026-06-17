@@ -14,7 +14,7 @@ namespace HelianzBusiness{
 		private class ProviderCache : CacheListAbs<Provider> {
 			protected override List<Provider> GetCacheFromDb() {
 				string command="SELECT * FROM provider";
-				if(PrefC.GetBool(PrefName.EasyHideDentalSchools)) {
+				if(Prefs.GetBoolNoCache(PrefName.EasyHideDentalSchools)) {
 					command+=" ORDER BY ItemOrder";
 				}
 				return Crud.ProviderCrud.SelectMany(command);

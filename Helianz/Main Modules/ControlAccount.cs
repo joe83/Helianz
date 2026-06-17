@@ -2813,7 +2813,7 @@ namespace Helianz {
 				doMakeSecLog=true;
 				_patNumLast=patNum;
 			}
-			bool doGetAutoOrtho=PrefC.GetBool(PrefName.OrthoEnabled);
+			bool doGetAutoOrtho=PrefC.GetBoolSilent(PrefName.OrthoEnabled,false);
 			Action action=()=> _loadData=AccountModules.GetAll(patNum,dateFrom,dateTo,isSelectingFamily,checkShowDetail.Checked,true,true,doMakeSecLog,doGetAutoOrtho);
 			try {
 				Logger.LogAction("Patients.GetFamily",LogPath.AccountModule,action);
@@ -2854,7 +2854,7 @@ namespace Helianz {
 			//must be in this order.
 			Logger.LogAction("FillRepeatCharges",LogPath.AccountModule,() => FillRepeatCharges());//1
 			Logger.LogAction("FillPaymentPlans",LogPath.AccountModule,() => FillPaymentPlans());//2
-			if(PrefC.GetBool(PrefName.OrthoEnabled)) {
+			if(PrefC.GetBoolSilent(PrefName.OrthoEnabled,false)) {
 				FillAutoOrtho(false);
 			}
 			if(OrthoCases.HasOrthoCasesEnabled()) {
@@ -4254,7 +4254,7 @@ namespace Helianz {
 			gridPatInfo.Visible=_listDisplayFieldsPatInfo?.Count!=0;
 			//only show the auto ortho grid and tab control if they have the show feature enabled.
 			//otherwise, hide the tabs and re-size the account grid.
-			if(!PrefC.GetBool(PrefName.OrthoEnabled)) {
+			if(!PrefC.GetBoolSilent(PrefName.OrthoEnabled,false)) {
 				tabControlAccount.TabPages.Remove(tabPageAutoOrtho);
 			}
 			else if(!tabControlAccount.TabPages.Contains(tabPageAutoOrtho)) {

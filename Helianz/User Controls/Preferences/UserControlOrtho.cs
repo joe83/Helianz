@@ -108,7 +108,7 @@ namespace Helianz {
 		#region Methods - Public
 		public void FillOrtho() {
 			checkOrthoShowInChart.Checked=PrefC.GetBool(PrefName.OrthoShowInChart);
-			checkOrthoEnabled.Checked=PrefC.GetBool(PrefName.OrthoEnabled);
+			checkOrthoEnabled.Checked=PrefC.GetBoolSilent(PrefName.OrthoEnabled,false);
 			checkOrthoFinancialInfoInChart.Checked=PrefC.GetBool(PrefName.OrthoCaseInfoInOrthoChart);
 			checkOrthoClaimMarkAsOrtho.Checked=PrefC.GetBool(PrefName.OrthoClaimMarkAsOrtho);
 			checkOrthoClaimUseDatePlacement.Checked=PrefC.GetBool(PrefName.OrthoClaimUseDatePlacement);
