@@ -228,6 +228,63 @@ if (Test-Path $qrisApk) {
 }
 
 # ---------------------------------------------------------------------------
+# Step 6b: Copy Pangolin (VPN/tunnel client) into Release\ for packaging.
+# Mandatory for all Helianz client deployments.
+# ---------------------------------------------------------------------------
+Write-Host ""
+Write-Host "[STEP 6b/7] Copying Pangolin client for distribution..." -ForegroundColor Yellow
+
+$pangolinRepo   = "D:\Project\Dental\pangolin-client"
+$pangolinExeSrc = Join-Path $pangolinRepo "build\Pangolin.exe"
+$pangolinDestDir = Join-Path $installerReleaseDir "Pangolin"
+
+if (Test-Path $pangolinExeSrc) {
+	# Create destination folder
+	if (-not (Test-Path $pangolinDestDir)) {
+		New-Item -ItemType Directory -Path $pangolinDestDir -Force | Out-Null
+	}
+
+	# Pangolin.exe (built with 'make build-x86' for 32-bit matching Helianz client)
+	Copy-Item -Path $pangolinExeSrc -Destination (Join-Path $pangolinDestDir "Pangolin.exe") -Force
+	Write-Host "[INFO] Pangolin.exe copied (ensure it was built with: make build-x86)" -ForegroundColor Green
+
+	# wintun.dll — must match Pangolin.exe architecture.
+	# For x86 builds: download the 32-bit wintun.dll from https://www.wintun.net/
+	# and place it in pangolin-client\dll\  (overwriting any 64-bit version).
+	$wintunSrc = Join-Path $pangolinRepo "dll\wintun.dll"
+	if (-not (Test-Path $wintunSrc)) {
+		# Fallback: search known install locations
+		$fallbackDirs = @(
+			"${env:ProgramFiles(x86)}\Helianz\Pangolin",
+			"${env:ProgramFiles}\Pangolin"
+		)
+		foreach ($d in $fallbackDirs) {
+			$candidate = Join-Path $d "wintun.dll"
+			if (Test-Path $candidate) { $wintunSrc = $candidate; break }
+		}
+	}
+	if (Test-Path $wintunSrc) {
+		Copy-Item -Path $wintunSrc -Destination (Join-Path $pangolinDestDir "wintun.dll") -Force
+		Write-Host "[INFO] wintun.dll copied" -ForegroundColor Green
+	} else {
+		Write-Warning "wintun.dll not found. Download the 32-bit version from https://www.wintun.net/ and place in pangolin-client\dll\"
+	}
+
+	# icons/
+	$iconsSrc = Join-Path $pangolinRepo "icons"
+	if (Test-Path $iconsSrc) {
+		$iconsDest = Join-Path $pangolinDestDir "icons"
+		if (Test-Path $iconsDest) { Remove-Item -Recurse -Force $iconsDest }
+		Copy-Item -Path $iconsSrc -Destination $iconsDest -Recurse -Force
+		Write-Host "[INFO] icons\ copied" -ForegroundColor Green
+	}
+
+	Write-Host "[INFO] Pangolin staged to Release\Pangolin\" -ForegroundColor Green
+} else {
+	Write-Warning "Pangolin.exe not found at: $pangolinExeSrc. Run 'make build' in pangolin-client first."
+}
+
+# ---------------------------------------------------------------------------
 # Resolve version for the distribution package
 # (if not specified, detect from the built client exe)
 # ---------------------------------------------------------------------------

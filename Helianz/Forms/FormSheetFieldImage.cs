@@ -26,6 +26,11 @@ namespace Helianz {
 			Lan.F(this);
 		}
 
+		private bool IsLocalFileStorage() {
+			return PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ
+				|| PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid;
+		}
+
 		private void FormSheetFieldImage_Load(object sender,EventArgs e) {
 			textYPos.MaxVal=SheetDefCur.HeightTotal-1;//The maximum y-value of the sheet field must be within the page vertically.
 			if(IsReadOnly){
@@ -45,7 +50,7 @@ namespace Helianz {
 			if(PrefC.AtoZfolderUsed!=DataStorageType.InDatabase) {
 				comboFieldName.Items.Clear();
 				string[] files=null;
-				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+				if(IsLocalFileStorage()) {
 					files=Directory.GetFiles(SheetUtil.GetImagePath());
 				}
 				else {//Cloud
@@ -92,7 +97,7 @@ namespace Helianz {
 				return;
 			}
 			string newName=importFilePath;
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(IsLocalFileStorage()) {
 				newName=ODFileUtils.CombinePaths(SheetUtil.GetImagePath(),Path.GetFileName(importFilePath));
 				if(File.Exists(newName)) {
 					MsgBox.Show(this,"A file of that name already exists in SheetImages.  Please rename the file before importing.");
@@ -147,7 +152,7 @@ namespace Helianz {
 			else {
 				textFullPath.Text=ODFileUtils.CombinePaths(SheetUtil.GetImagePath(),comboFieldName.Text);
 			}
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && File.Exists(textFullPath.Text)){
+			if(IsLocalFileStorage() && File.Exists(textFullPath.Text)){
 				GC.Collect();
 				try {
 					pictureBox.Image=Image.FromFile(textFullPath.Text);
@@ -291,7 +296,7 @@ namespace Helianz {
 				if(comboFieldName.Text=="Patient Info.gif") {
 					pictureBox.Image=HelianzBusiness.Properties.Resources.Patient_Info;
 				}
-				else if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+				else if(IsLocalFileStorage()) {
 					GC.Collect();
 					if(!File.Exists(textFullPath.Text)) {
 						MsgBox.Show(this,"Image file does not exist.");

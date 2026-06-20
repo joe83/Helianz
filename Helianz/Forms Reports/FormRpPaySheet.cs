@@ -515,6 +515,59 @@ namespace Helianz{
 			report.AddGridLines();
 			report.AddPageFooterText("PageFooter","*Part of a bulk check, which can be located by going to the listed patient's account",font,0,
 				ContentAlignment.MiddleLeft);
+			#region Payment Type Summary (Report Footer)
+			if(tableIns.Rows.Count>0 || tablePat.Rows.Count>0) {
+				report.AddFooterText("PTSummary_Title","Payment Type Summary",fontBold,10,ContentAlignment.MiddleLeft);
+				decimal grandTotal=0;
+				//Insurance payment type totals
+				if(tableIns.Rows.Count>0) {
+					Dictionary<string,decimal> dictInsTotals=new Dictionary<string,decimal>();
+					foreach(DataRow row in tableIns.Rows) {
+						long payType=PIn.Long(row["PayType"].ToString());
+						string name=dictInsDefNames.ContainsKey(payType) ? dictInsDefNames[payType] : "Undefined";
+						decimal amt=PIn.Decimal(row["amt"].ToString());
+						if(dictInsTotals.ContainsKey(name)) dictInsTotals[name]+=amt;
+						else dictInsTotals[name]=amt;
+					}
+					report.AddFooterText("PTSummary_InsHeader","  Insurance Payment Types:",fontBold,3,ContentAlignment.MiddleLeft);
+					int i=0;
+					foreach(KeyValuePair<string,decimal> kvp in dictInsTotals.OrderBy(x => x.Key)) {
+						report.AddFooterText("PTSummary_Ins_"+i.ToString(),"    "+kvp.Key+": "+kvp.Value.ToString("N2"),font,1,ContentAlignment.MiddleLeft);
+						grandTotal+=kvp.Value;
+						i++;
+					}
+				}
+				//Patient payment type totals (includes online if shown separately)
+				if(tablePat.Rows.Count>0) {
+					Dictionary<string,decimal> dictPatTotals=new Dictionary<string,decimal>();
+					foreach(DataRow row in tablePat.Rows) {
+						long payType=PIn.Long(row["PayType"].ToString());
+						string name=dictPatDefNames.ContainsKey(payType) ? dictPatDefNames[payType] : "Undefined";
+						decimal amt=PIn.Decimal(row["amt"].ToString());
+						if(dictPatTotals.ContainsKey(name)) dictPatTotals[name]+=amt;
+						else dictPatTotals[name]=amt;
+					}
+					if(checkShowOnlinePatientPaymentsSeparately.Checked && tableOnlinePat.Rows.Count>0) {
+						foreach(DataRow row in tableOnlinePat.Rows) {
+							long payType=PIn.Long(row["PayType"].ToString());
+							string name=dictPatDefNames.ContainsKey(payType) ? dictPatDefNames[payType] : "Undefined";
+							decimal amt=PIn.Decimal(row["amt"].ToString());
+							if(dictPatTotals.ContainsKey(name)) dictPatTotals[name]+=amt;
+							else dictPatTotals[name]=amt;
+						}
+					}
+					report.AddFooterText("PTSummary_PatHeader","  Patient Payment Types:",fontBold,3,ContentAlignment.MiddleLeft);
+					int i=0;
+					foreach(KeyValuePair<string,decimal> kvp in dictPatTotals.OrderBy(x => x.Key)) {
+						report.AddFooterText("PTSummary_Pat_"+i.ToString(),"    "+kvp.Key+": "+kvp.Value.ToString("N2"),font,1,ContentAlignment.MiddleLeft);
+						grandTotal+=kvp.Value;
+						i++;
+					}
+				}
+				report.AddFooterText("PTSummary_Separator","  ---------------------------------",font,1,ContentAlignment.MiddleLeft);
+				report.AddFooterText("PTSummary_GrandTotal","  Grand Total: "+grandTotal.ToString("N2"),fontBold,2,ContentAlignment.MiddleLeft);
+			}
+			#endregion
 			//Try and fill out export tables for each query object, which will display on the report.
 			if(!report.SubmitQueries()) {
 				return;

@@ -197,6 +197,9 @@ namespace FreeDentalInstaller
         }
         if (this.checkODServer.Checked && !this.CheckServerHelper() || this.checkOD.Checked && !this.CheckODhelper() || this.checkDbmsServer.Checked && !this.IsDbmsServerValid() || (this.checkDbmsServer.Checked || this.checkGrant.Checked || this.checkmyini.Checked) && !this.TryRemoveService() || this.checkDbmsServer.Checked && !this.CheckDbmsHelper() || this.checkGrant.Checked && !this.CheckGrantHelper() || this.checkmyini.Checked && !this.CheckMyIniHelper())
           return;
+        // Pangolin is mandatory for all Helianz client deployments
+        if (this.checkOD.Checked && !this.CheckPangolinHelper())
+          return;
         string targetDB = "";
         if (this.checkDatabase.Checked && !this.CheckDatabaseHelper(out targetDB) || this.checkODImages.Checked && !this.CheckODImagesHelper())
           return;
@@ -458,6 +461,118 @@ namespace FreeDentalInstaller
     private bool HasClientSetup() => File.Exists(this._appPath + "\\Helianz Client Setup\\Setup.exe");
 
     private bool HasServerSetup() => File.Exists(this._appPath + "\\Helianz Server Setup\\Setup.exe");
+
+    private bool CheckPangolinHelper()
+    {
+      try
+      {
+        string sourceDir = Path.Combine(this._appPath, "Pangolin");
+        string sourceExe = Path.Combine(sourceDir, "Pangolin.exe");
+        if (!File.Exists(sourceExe))
+        {
+          MessageBox.Show("Pangolin.exe not found in the installer directory. Pangolin will not be installed.");
+          return true; // non-fatal — continue installation
+        }
+
+        // Install Pangolin under the Helianz client directory so the installer
+        // tracks it alongside the client — e.g. C:\Program Files (x86)\Helianz\Pangolin\
+        string pangolinDir = Path.Combine(this.textApplication.Text.TrimEnd('\\'), "Pangolin");
+        if (!Directory.Exists(pangolinDir))
+          Directory.CreateDirectory(pangolinDir);
+
+        // Copy Pangolin.exe
+        File.Copy(sourceExe, Path.Combine(pangolinDir, "Pangolin.exe"), true);
+
+        // Copy wintun.dll (WireGuard tunnel driver)
+        string wintunSrc = Path.Combine(sourceDir, "wintun.dll");
+        if (File.Exists(wintunSrc))
+          File.Copy(wintunSrc, Path.Combine(pangolinDir, "wintun.dll"), true);
+
+        // Copy icons folder
+        string iconsSrc = Path.Combine(sourceDir, "icons");
+        string iconsDest = Path.Combine(pangolinDir, "icons");
+        if (Directory.Exists(iconsSrc))
+        {
+          if (Directory.Exists(iconsDest))
+            Directory.Delete(iconsDest, true);
+          Directory.CreateDirectory(iconsDest);
+          foreach (string file in Directory.GetFiles(iconsSrc))
+          {
+            string dest = Path.Combine(iconsDest, Path.GetFileName(file));
+            File.Copy(file, dest, true);
+          }
+        }
+
+        // Helper to create a shortcut via WScript.Shell
+        Action<string, string> createShortcut = (linkPath, description) =>
+        {
+          try
+          {
+            Type shellType = Type.GetTypeFromProgID("WScript.Shell");
+            if (shellType == null) return;
+            object shell = Activator.CreateInstance(shellType);
+            object shortcut = shellType.InvokeMember("CreateShortcut",
+              System.Reflection.BindingFlags.InvokeMethod, null, shell, new object[] { linkPath });
+            Type shortcutType = shortcut.GetType();
+            shortcutType.InvokeMember("TargetPath",
+              System.Reflection.BindingFlags.SetProperty, null, shortcut,
+              new object[] { Path.Combine(pangolinDir, "Pangolin.exe") });
+            shortcutType.InvokeMember("WorkingDirectory",
+              System.Reflection.BindingFlags.SetProperty, null, shortcut,
+              new object[] { pangolinDir });
+            shortcutType.InvokeMember("Description",
+              System.Reflection.BindingFlags.SetProperty, null, shortcut,
+              new object[] { description });
+            shortcutType.InvokeMember("Save",
+              System.Reflection.BindingFlags.InvokeMethod, null, shortcut, null);
+          }
+          catch
+          {
+            // Shortcut creation is best-effort; don't block installation
+          }
+        };
+
+        // Desktop shortcut
+        createShortcut(
+          Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory), "Pangolin.lnk"),
+          "Pangolin VPN Client");
+
+        // Start Menu shortcut
+        createShortcut(
+          Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms), "Pangolin", "Pangolin.lnk"),
+          "Pangolin");
+
+        // Pre-install the Pangolin Manager Windows service so the user doesn't
+        // need a UAC prompt on first run.  The service handles device registration
+        // and tunnel management; without it Pangolin gets stuck at "Registering".
+        try
+        {
+          string pangolinExe = Path.Combine(pangolinDir, "Pangolin.exe");
+          Process installSvc = new Process();
+          installSvc.StartInfo.FileName = pangolinExe;
+          installSvc.StartInfo.Arguments = "/installmanagerservice";
+          installSvc.StartInfo.UseShellExecute = false;
+          installSvc.StartInfo.CreateNoWindow = true;
+          installSvc.Start();
+          if (!installSvc.WaitForExit(30000))
+          {
+            // If it hangs, don't block the installer — non-fatal
+            installSvc.Kill();
+          }
+        }
+        catch
+        {
+          // Service installation is best-effort; don't block installation
+        }
+
+        return true;
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show("Failed to install Pangolin client: " + ex.Message + "\r\nContinuing installation without Pangolin.");
+        return true; // non-fatal — continue installation
+      }
+    }
 
     private bool CheckServerHelper()
     {

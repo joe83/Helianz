@@ -163,13 +163,26 @@ namespace SparksToothChart {
 		///<summary>Must be called after the ToothChartDirectX control has been added to a form and should be called before it is drawn the first time.</summary>
 		public void InitializeGraphics(){
 			if(deviceFormat!=null){
-				device=deviceFormat.CreateDevice(this);
-				if(device==null){
-					//this happens when you turn off a monitor and the chart is moved by Windows to the other monitor.
-					return;
+				try{
+					device=deviceFormat.CreateDevice(this);
+					if(device==null){
+						//this happens when you turn off a monitor and the chart is moved by Windows to the other monitor.
+						return;
+					}
+					CleanupDirectX();
+					PrepareForDirectX();
 				}
-				CleanupDirectX();
-				PrepareForDirectX();
+				catch(Exception ex){
+					ex.DoNothing();
+					//This can happen when DirectX 9 is not installed (e.g. Windows Server without DirectX runtime),
+					//or when the graphics driver is unavailable (e.g. RDP session with limited resources).
+					//The chart will not render but the application remains stable.
+					CleanupDirectX();
+					if(device!=null && !device.IsDisposed){
+						device.Dispose();
+					}
+					device=null;
+				}
 			}
 		}
 
@@ -181,7 +194,18 @@ namespace SparksToothChart {
 				}
 				device=null;
 			}
-			InitializeGraphics();
+			try{
+				InitializeGraphics();
+			}
+			catch(Exception ex){
+				ex.DoNothing();
+				//DirectX initialization failed — likely missing runtime or driver issue.
+				CleanupDirectX();
+				if(device!=null && !device.IsDisposed){
+					device.Dispose();
+				}
+				device=null;
+			}
 		}
 
 		public void SetSize(Size size){
