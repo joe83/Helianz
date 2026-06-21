@@ -354,6 +354,7 @@ namespace Helianz {
 			}
 			formSheetDef.ShowDialog();
 			if(formSheetDef.DialogResult!=DialogResult.OK) {
+				panelMain.Invalidate();
 				return;
 			}
 			textDescription.Text=SheetDef_.Description;
@@ -2198,9 +2199,7 @@ namespace Helianz {
 				return false;
 			}
 			if(sheetFieldDefOne.FieldType==SheetFieldType.Image){
-				if(sheetFieldDefOne.ImageField==sheetFieldDefTwo.ImageField){
-					return true;
-				}
+				return true;
 			}
 			else{
 				if(sheetFieldDefOne.FieldValue==sheetFieldDefTwo.FieldValue){
@@ -2318,6 +2317,7 @@ namespace Helianz {
 						formSheetFieldImage.IsEditMobile=isEditMobile;
 						formSheetFieldImage.ShowDialog();
 						if(formSheetFieldImage.DialogResult!=DialogResult.OK) {
+							panelMain.Invalidate();
 							return;
 						}
 						//refreshBuffer=true;
@@ -2332,6 +2332,7 @@ namespace Helianz {
 						formSheetFieldPatImage.IsEditMobile=isEditMobile;
 						formSheetFieldPatImage.ShowDialog();
 						if(formSheetFieldPatImage.DialogResult!=DialogResult.OK) {
+							panelMain.Invalidate();
 							return;
 						}
 						//refreshBuffer=true;
@@ -2517,7 +2518,7 @@ namespace Helianz {
 				return;
 			}
 			string filePathAndName=ODFileUtils.CombinePaths(SheetUtil.GetImagePath(),sheetFieldDef.FieldName);
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && File.Exists(filePathAndName)) {
+			if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && File.Exists(filePathAndName)) {
 				Bitmap bitmap=(Bitmap)Image.FromFile(filePathAndName);
 				sheetFieldDef.ImageField=new Bitmap(bitmap,sheetFieldDef.Width,sheetFieldDef.Height);
 				bitmap?.Dispose();

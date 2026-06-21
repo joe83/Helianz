@@ -1050,6 +1050,7 @@ namespace HelianzBusiness {
 					case EnumStaticTextField.dateToday: staticTextReplacement.NewValue=DateTime.Today.ToShortDateString(); break;
 					case EnumStaticTextField.dateTodayLong: staticTextReplacement.NewValue=DateTime.Today.ToLongDateString(); break;
 					case EnumStaticTextField.practiceTitle: staticTextReplacement.NewValue=PrefC.GetString(PrefName.PracticeTitle); break;
+					case EnumStaticTextField.userName: staticTextReplacement.NewValue=Security.CurUser?.UserName??""; break;
 				}
 				if(patient==null && sheetType!=SheetTypeEnum.DepositSlip) {
 					listStaticTextReplacements.Add(staticTextReplacement);
@@ -3278,6 +3279,9 @@ namespace HelianzBusiness {
 						#endregion
 					case "StatementNum":
 						field.FieldValue+=" #"+Stmt.StatementNum.ToString();
+						break;
+					case "statement.EditorName":
+						field.FieldValue=Security.CurUser?.UserName??"";
 						break;
 				}
 			}

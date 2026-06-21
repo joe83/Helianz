@@ -170,7 +170,9 @@ namespace HelianzBusiness{
 
 		public SheetFieldDef Copy(){
 			//Not copying ImageField in order to reduce the likelihood of memory leaks.
-			return (SheetFieldDef)this.MemberwiseClone();
+			SheetFieldDef copy = (SheetFieldDef)this.MemberwiseClone();
+			copy.ImageField = null;
+			return copy;
 		}
 
 		public override string ToString() {

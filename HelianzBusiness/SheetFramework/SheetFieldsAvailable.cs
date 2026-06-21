@@ -673,6 +673,7 @@ namespace HelianzBusiness{
 				list.Add(NewOutput("statementURL"));
 				list.Add(NewOutput("statementShortURL"));
 				list.Add(NewOutput("StatementNum"));
+				list.Add(NewOutput("statement.EditorName"));
 			}
 			else if(outInCheck==OutInCheck.In) {
 			}

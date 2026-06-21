@@ -472,16 +472,23 @@ namespace HelianzBusiness{
 			List<SheetField> CreateFieldList(List<SheetFieldDef> listSheetFieldDefs,string language) {
 				List<SheetField> listSheetFields=new List<SheetField>();
 				//SheetDefs that are not setup with the desired language translation SheetFieldDefs should default to the non-translated SheetFieldDefs.
-				bool hasTranslationForLanguage=listSheetFieldDefs.Any(x => x.Language==language);
 				for(int i=0;i<listSheetFieldDefs.Count;i++) {
-					//Only use the SheetFieldDefs for the specified language if available.
-					if(hasTranslationForLanguage) {
+					//Skip translated fields that don't match the patient's language.
+					if(!string.IsNullOrWhiteSpace(listSheetFieldDefs[i].Language)) {
 						if(listSheetFieldDefs[i].Language!=language) {
 							continue;
 						}
 					}
-					//Otherwise, only use the SheetFieldDefs for the default language.
-					else if(!string.IsNullOrWhiteSpace(listSheetFieldDefs[i].Language)) {
+					//For default-language fields, only skip if a translation exists for this specific field.
+					else if(!string.IsNullOrWhiteSpace(language)
+						&& listSheetFieldDefs.Any(x =>
+							x!=listSheetFieldDefs[i]
+							&& x.Language==language
+							&& x.FieldType==listSheetFieldDefs[i].FieldType
+							&& x.FieldName==listSheetFieldDefs[i].FieldName
+							&& x.XPos==listSheetFieldDefs[i].XPos
+							&& x.YPos==listSheetFieldDefs[i].YPos))
+					{
 						continue;
 					}
 					if(hidePaymentOptions && FieldIsPaymentOptionHelper(listSheetFieldDefs[i])) {

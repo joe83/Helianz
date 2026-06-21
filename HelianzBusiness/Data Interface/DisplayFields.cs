@@ -450,10 +450,10 @@ namespace HelianzBusiness {
 				case DisplayFieldCategory.StatementMainGrid:
 					int i=0;
 					listDisplayFields.Add(new DisplayField {Category=displayFieldCategory,InternalName="date",Description="Date",ColumnWidth=75,ItemOrder=++i});
-					listDisplayFields.Add(new DisplayField {Category=displayFieldCategory,InternalName="patient",Description="Patient",ColumnWidth=100,ItemOrder=++i});
+					listDisplayFields.Add(new DisplayField {Category=displayFieldCategory,InternalName="prov",Description="Dentist",ColumnWidth=100,ItemOrder=++i});
 					listDisplayFields.Add(new DisplayField {Category=displayFieldCategory,InternalName="ProcCode",Description="Code",ColumnWidth=45,ItemOrder=++i});
 					listDisplayFields.Add(new DisplayField {Category=displayFieldCategory,InternalName="tth",Description="Tooth",ColumnWidth=45,ItemOrder=++i});
-					listDisplayFields.Add(new DisplayField {Category=displayFieldCategory,InternalName="description",Description="Description",ColumnWidth=275,ItemOrder=++i});
+					listDisplayFields.Add(new DisplayField {Category=displayFieldCategory,InternalName="description",Description="Description",ColumnWidth=270,ItemOrder=++i});
 					listDisplayFields.Add(new DisplayField {Category=displayFieldCategory,InternalName="charges",Description="Charges",ColumnWidth=60,ItemOrder=++i});
 					listDisplayFields.Add(new DisplayField {Category=displayFieldCategory,InternalName="credits",Description="Credits",ColumnWidth=60,ItemOrder=++i});
 					listDisplayFields.Add(new DisplayField {Category=displayFieldCategory,InternalName="balance",Description="Balance",ColumnWidth=60,ItemOrder=++i});

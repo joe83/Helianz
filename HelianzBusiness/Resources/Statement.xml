@@ -399,7 +399,7 @@
       <FontIsBold>false</FontIsBold>
       <XPos>65</XPos>
       <YPos>646</YPos>
-      <Width>720</Width>
+      <Width>715</Width>
       <Height>31</Height>
       <GrowthBehavior>DownGlobal</GrowthBehavior>
       <RadioButtonValue />
@@ -1115,6 +1115,37 @@
       <Width>510</Width>
       <Height>49</Height>
       <GrowthBehavior>DownGlobal</GrowthBehavior>
+      <RadioButtonValue />
+      <RadioButtonGroup />
+      <IsRequired>false</IsRequired>
+      <ImageData />
+      <TabOrder>0</TabOrder>
+      <ReportableName />
+      <TextAlign>Left</TextAlign>
+      <IsPaymentOption>false</IsPaymentOption>
+      <IsLocked>false</IsLocked>
+      <TabOrderMobile>0</TabOrderMobile>
+      <UiLabelMobile />
+      <UiLabelMobileRadioButton />
+      <LayoutMode>Default</LayoutMode>
+      <ItemColor>-16777216</ItemColor>
+      <Language />
+    </SheetFieldDef>
+    <SheetFieldDef>
+      <IsNew>false</IsNew>
+      <SheetFieldDefNum>0</SheetFieldDefNum>
+      <SheetDefNum>0</SheetDefNum>
+      <FieldType>OutputText</FieldType>
+      <FieldName>statement.EditorName</FieldName>
+      <FieldValue />
+      <FontSize>7</FontSize>
+      <FontName>Arial</FontName>
+      <FontIsBold>false</FontIsBold>
+      <XPos>50</XPos>
+      <YPos>733</YPos>
+      <Width>200</Width>
+      <Height>14</Height>
+      <GrowthBehavior>None</GrowthBehavior>
       <RadioButtonValue />
       <RadioButtonGroup />
       <IsRequired>false</IsRequired>
