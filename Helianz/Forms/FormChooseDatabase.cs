@@ -79,6 +79,7 @@ namespace Helianz {
 				groupDirect.Enabled=false;
 				groupServer.Enabled=true;
 				ParseServiceURIIntoFields(ChooseDatabaseInfo_.CentralConnectionCur.ServiceURI);
+				checkUseSSL.Checked=ChooseDatabaseInfo_.CentralConnectionCur.ServiceURI.StartsWith("https://",StringComparison.OrdinalIgnoreCase);
 				checkUsingEcw.Checked=ChooseDatabaseInfo_.CentralConnectionCur.WebServiceIsEcw;
 				checkDynamicMode.Checked=false;
 				checkDynamicMode.Enabled=false;
@@ -119,9 +120,11 @@ namespace Helianz {
 				return "";
 			}
 			string portStr=textPort.Text.Trim();
-			bool portIsDefault=string.IsNullOrEmpty(portStr) || portStr=="80";
+			string scheme=(checkUseSSL!=null && checkUseSSL.Checked) ? "https" : "http";
+			int defaultPort=(checkUseSSL!=null && checkUseSSL.Checked) ? 443 : 80;
+			bool portIsDefault=string.IsNullOrEmpty(portStr) || portStr==defaultPort.ToString();
 			string portPart=portIsDefault ? "" : ":"+portStr;
-			return "http://"+host+portPart+"/HelianzServer/ServiceMain.asmx";
+			return scheme+"://"+host+portPart+"/HelianzServer/ServiceMain.asmx";
 		}
 
 		///<summary>Parses a full service URI into the host and port fields.</summary>
@@ -129,7 +132,7 @@ namespace Helianz {
 			try {
 				Uri uri=new Uri(serviceURI);
 				textHost.Text=uri.Host;
-				textPort.Text=(uri.IsDefaultPort ? "80" : uri.Port.ToString());
+				textPort.Text=(uri.IsDefaultPort ? (uri.Scheme=="https" ? "443" : "80") : uri.Port.ToString());
 			}
 			catch {
 				textHost.Text=serviceURI;
@@ -173,6 +176,24 @@ namespace Helianz {
 				groupDirect.Enabled=true;
 				checkDynamicMode.Enabled=true;
 				textPEM.Enabled=true;
+			}
+		}
+
+		///<summary>Updates the port field when the HTTPS checkbox is toggled. Only changes the port
+		///if its current value is the default for the previous scheme (80→443 or 443→80).
+		///If the user entered a custom port, it is preserved.</summary>
+		private void CheckUseSSL_CheckedChanged(object sender,EventArgs e) {
+			if(checkUseSSL==null || textPort==null) {
+				return;
+			}
+			string currentPort=textPort.Text.Trim();
+			bool isDefaultHttp=string.IsNullOrEmpty(currentPort) || currentPort=="80";
+			bool isDefaultHttps=currentPort=="443";
+			if(checkUseSSL.Checked && isDefaultHttp) {
+				textPort.Text="443";
+			}
+			else if(!checkUseSSL.Checked && isDefaultHttps) {
+				textPort.Text="80";
 			}
 		}
 
@@ -231,6 +252,10 @@ namespace Helianz {
 			DialogResult=DialogResult.OK;
 		}
 
-	}
+        private void textPEM_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+    }
 
 }

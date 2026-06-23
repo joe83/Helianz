@@ -23,362 +23,374 @@ namespace Helianz{
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormChooseDatabase));
-			this.textConnectionString = new System.Windows.Forms.TextBox();
-			this.label8 = new System.Windows.Forms.Label();
-			this.listType = new Helianz.UI.ListBox();
-			this.label7 = new System.Windows.Forms.Label();
-			this.checkConnectServer = new Helianz.UI.CheckBox();
-			this.groupServer = new Helianz.UI.GroupBox();
-			this.checkBoxAutomaticLogin = new Helianz.UI.CheckBox();
-			this.checkUsingEcw = new Helianz.UI.CheckBox();
-			this.textHost = new System.Windows.Forms.TextBox();
-			this.textPort = new System.Windows.Forms.TextBox();
-			this.labelPort = new System.Windows.Forms.Label();
-			this.textUser2 = new System.Windows.Forms.TextBox();
-			this.textPassword2 = new System.Windows.Forms.TextBox();
-			this.label10 = new System.Windows.Forms.Label();
-			this.label11 = new System.Windows.Forms.Label();
-			this.label9 = new System.Windows.Forms.Label();
-			this.label6 = new System.Windows.Forms.Label();
-			this.groupDirect = new Helianz.UI.GroupBox();
-			this.textUser = new System.Windows.Forms.TextBox();
-			this.comboDatabase = new System.Windows.Forms.ComboBox();
-			this.checkNoShow = new Helianz.UI.CheckBox();
-			this.comboComputerName = new System.Windows.Forms.ComboBox();
-			this.label1 = new System.Windows.Forms.Label();
-			this.textPassword = new System.Windows.Forms.TextBox();
-			this.label2 = new System.Windows.Forms.Label();
-			this.label3 = new System.Windows.Forms.Label();
-			this.label4 = new System.Windows.Forms.Label();
-			this.butOK = new Helianz.UI.Button();
-			this.checkDynamicMode = new Helianz.UI.CheckBox();
-			this.textPEM = new System.Windows.Forms.TextBox();
-			this.label5 = new System.Windows.Forms.Label();
-			this.groupServer.SuspendLayout();
-			this.groupDirect.SuspendLayout();
-			this.SuspendLayout();
-			// 
-			// textConnectionString
-			// 
-			this.textConnectionString.Location = new System.Drawing.Point(376, 100);
-			this.textConnectionString.Multiline = true;
-			this.textConnectionString.Name = "textConnectionString";
-			this.textConnectionString.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textConnectionString.Size = new System.Drawing.Size(312, 130);
-			this.textConnectionString.TabIndex = 34;
-			// 
-			// label8
-			// 
-			this.label8.AutoSize = true;
-			this.label8.Location = new System.Drawing.Point(374, 82);
-			this.label8.Name = "label8";
-			this.label8.Size = new System.Drawing.Size(165, 13);
-			this.label8.TabIndex = 39;
-			this.label8.Text = "Advanced: Use connection string";
-			// 
-			// listType
-			// 
-			this.listType.Location = new System.Drawing.Point(376, 59);
-			this.listType.Name = "listType";
-			this.listType.Size = new System.Drawing.Size(99, 30);
-			this.listType.TabIndex = 38;
-			this.listType.Visible = false;
-			// 
-			// label7
-			// 
-			this.label7.Location = new System.Drawing.Point(373, 38);
-			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(223, 18);
-			this.label7.TabIndex = 37;
-			this.label7.Text = "Database Type";
-			this.label7.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			this.label7.Visible = false;
-			// 
-			// checkConnectServer
-			// 
-			this.checkConnectServer.Location = new System.Drawing.Point(28, 15);
-			this.checkConnectServer.Name = "checkConnectServer";
-			this.checkConnectServer.Size = new System.Drawing.Size(328, 18);
-			this.checkConnectServer.TabIndex = 33;
-			this.checkConnectServer.Text = "Connect to Middle Tier instead";
-			this.checkConnectServer.Click += new System.EventHandler(this.checkConnectServer_Click);
-			// 
-			// groupServer
-			// 
-			this.groupServer.Controls.Add(this.checkBoxAutomaticLogin);
-			this.groupServer.Controls.Add(this.checkUsingEcw);
-			this.groupServer.Controls.Add(this.textHost);
-			this.groupServer.Controls.Add(this.textPort);
-			this.groupServer.Controls.Add(this.labelPort);
-			this.groupServer.Controls.Add(this.textUser2);
-			this.groupServer.Controls.Add(this.textPassword2);
-			this.groupServer.Controls.Add(this.label10);
-			this.groupServer.Controls.Add(this.label11);
-			this.groupServer.Controls.Add(this.label9);
-			this.groupServer.Controls.Add(this.label6);
-			this.groupServer.Location = new System.Drawing.Point(28, 38);
-			this.groupServer.Name = "groupServer";
-			this.groupServer.Size = new System.Drawing.Size(336, 218);
-			this.groupServer.TabIndex = 32;
-			this.groupServer.Text = "Connect to Middle Tier";
-			// 
-			// checkBoxAutomaticLogin
-			// 
-			this.checkBoxAutomaticLogin.Location = new System.Drawing.Point(13, 195);
-			this.checkBoxAutomaticLogin.Name = "checkBoxAutomaticLogin";
-			this.checkBoxAutomaticLogin.Size = new System.Drawing.Size(145, 18);
-			this.checkBoxAutomaticLogin.TabIndex = 40;
-			this.checkBoxAutomaticLogin.Text = "Log me in automatically.";
-			// 
-			// checkUsingEcw
-			// 
-			this.checkUsingEcw.Location = new System.Drawing.Point(13, 176);
-			this.checkUsingEcw.Name = "checkUsingEcw";
-			this.checkUsingEcw.Size = new System.Drawing.Size(317, 18);
-			this.checkUsingEcw.TabIndex = 10;
-			this.checkUsingEcw.Text = "Using eClinicalWorks";
-			// 
-			// textHost
-			// 
-			this.textHost.Location = new System.Drawing.Point(13, 63);
-			this.textHost.Name = "textHost";
-			this.textHost.Size = new System.Drawing.Size(200, 20);
-			this.textHost.TabIndex = 7;
-			// 
-			// labelPort
-			// 
-			this.labelPort.AutoSize = true;
-			this.labelPort.Location = new System.Drawing.Point(217, 66);
-			this.labelPort.Name = "labelPort";
-			this.labelPort.TabIndex = 44;
-			this.labelPort.Text = "Port:";
-			// 
-			// textPort
-			// 
-			this.textPort.Location = new System.Drawing.Point(252, 63);
-			this.textPort.Name = "textPort";
-			this.textPort.Size = new System.Drawing.Size(60, 20);
-			this.textPort.TabIndex = 43;
-			this.textPort.Text = "80";
-			// 
-			// textUser2
-			// 
-			this.textUser2.Location = new System.Drawing.Point(13, 106);
-			this.textUser2.Name = "textUser2";
-			this.textUser2.Size = new System.Drawing.Size(309, 20);
-			this.textUser2.TabIndex = 8;
-			// 
-			// textPassword2
-			// 
-			this.textPassword2.Location = new System.Drawing.Point(13, 147);
-			this.textPassword2.Name = "textPassword2";
-			this.textPassword2.PasswordChar = '*';
-			this.textPassword2.Size = new System.Drawing.Size(309, 20);
-			this.textPassword2.TabIndex = 9;
-			this.textPassword2.UseSystemPasswordChar = true;
-			// 
-			// label10
-			// 
-			this.label10.Location = new System.Drawing.Point(11, 128);
-			this.label10.Name = "label10";
-			this.label10.Size = new System.Drawing.Size(281, 18);
-			this.label10.TabIndex = 11;
-			this.label10.Text = "Password";
-			this.label10.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			// 
-			// label11
-			// 
-			this.label11.Location = new System.Drawing.Point(11, 87);
-			this.label11.Name = "label11";
-			this.label11.Size = new System.Drawing.Size(295, 18);
-			this.label11.TabIndex = 14;
-			this.label11.Text = "Helianz User (not MySQL user)";
-			this.label11.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			// 
-			// label9
-			// 
-			this.label9.Location = new System.Drawing.Point(10, 42);
-			this.label9.Name = "label9";
-			this.label9.Size = new System.Drawing.Size(283, 18);
-			this.label9.TabIndex = 9;
-			this.label9.Text = "Server Host / IP";
-			this.label9.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			// 
-			// label6
-			// 
-			this.label6.Location = new System.Drawing.Point(9, 25);
-			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(297, 18);
-			this.label6.TabIndex = 0;
-			this.label6.Text = "Read the manual to learn how to install the middle tier.";
-			// 
-			// groupDirect
-			// 
-			this.groupDirect.Controls.Add(this.textUser);
-			this.groupDirect.Controls.Add(this.comboDatabase);
-			this.groupDirect.Controls.Add(this.checkNoShow);
-			this.groupDirect.Controls.Add(this.comboComputerName);
-			this.groupDirect.Controls.Add(this.label1);
-			this.groupDirect.Controls.Add(this.textPassword);
-			this.groupDirect.Controls.Add(this.label2);
-			this.groupDirect.Controls.Add(this.label3);
-			this.groupDirect.Controls.Add(this.label4);
-			this.groupDirect.Location = new System.Drawing.Point(28, 271);
-			this.groupDirect.Name = "groupDirect";
-			this.groupDirect.Size = new System.Drawing.Size(660, 246);
-			this.groupDirect.TabIndex = 31;
-			this.groupDirect.Text = "Connection Settings - These values will only be used on this computer.  They have" +
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormChooseDatabase));
+            this.textConnectionString = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.listType = new Helianz.UI.ListBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.checkConnectServer = new Helianz.UI.CheckBox();
+            this.groupServer = new Helianz.UI.GroupBox();
+            this.checkUseSSL = new Helianz.UI.CheckBox();
+            this.checkBoxAutomaticLogin = new Helianz.UI.CheckBox();
+            this.checkUsingEcw = new Helianz.UI.CheckBox();
+            this.textHost = new System.Windows.Forms.TextBox();
+            this.textPort = new System.Windows.Forms.TextBox();
+            this.labelPort = new System.Windows.Forms.Label();
+            this.textUser2 = new System.Windows.Forms.TextBox();
+            this.textPassword2 = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.groupDirect = new Helianz.UI.GroupBox();
+            this.textUser = new System.Windows.Forms.TextBox();
+            this.comboDatabase = new System.Windows.Forms.ComboBox();
+            this.checkNoShow = new Helianz.UI.CheckBox();
+            this.comboComputerName = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.textPassword = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.butOK = new Helianz.UI.Button();
+            this.checkDynamicMode = new Helianz.UI.CheckBox();
+            this.textPEM = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.groupServer.SuspendLayout();
+            this.groupDirect.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // textConnectionString
+            // 
+            this.textConnectionString.Location = new System.Drawing.Point(376, 100);
+            this.textConnectionString.Multiline = true;
+            this.textConnectionString.Name = "textConnectionString";
+            this.textConnectionString.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textConnectionString.Size = new System.Drawing.Size(312, 130);
+            this.textConnectionString.TabIndex = 34;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(374, 82);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(216, 17);
+            this.label8.TabIndex = 39;
+            this.label8.Text = "Advanced: Use connection string";
+            // 
+            // listType
+            // 
+            this.listType.Location = new System.Drawing.Point(376, 59);
+            this.listType.Name = "listType";
+            this.listType.Size = new System.Drawing.Size(99, 30);
+            this.listType.TabIndex = 38;
+            this.listType.Visible = false;
+            // 
+            // label7
+            // 
+            this.label7.Location = new System.Drawing.Point(373, 38);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(223, 18);
+            this.label7.TabIndex = 37;
+            this.label7.Text = "Database Type";
+            this.label7.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            this.label7.Visible = false;
+            // 
+            // checkConnectServer
+            // 
+            this.checkConnectServer.Location = new System.Drawing.Point(28, 15);
+            this.checkConnectServer.Name = "checkConnectServer";
+            this.checkConnectServer.Size = new System.Drawing.Size(328, 18);
+            this.checkConnectServer.TabIndex = 33;
+            this.checkConnectServer.Text = "Connect to Middle Tier instead";
+            this.checkConnectServer.Click += new System.EventHandler(this.checkConnectServer_Click);
+            // 
+            // groupServer
+            // 
+            this.groupServer.Controls.Add(this.checkUseSSL);
+            this.groupServer.Controls.Add(this.checkBoxAutomaticLogin);
+            this.groupServer.Controls.Add(this.checkUsingEcw);
+            this.groupServer.Controls.Add(this.textHost);
+            this.groupServer.Controls.Add(this.textPort);
+            this.groupServer.Controls.Add(this.labelPort);
+            this.groupServer.Controls.Add(this.textUser2);
+            this.groupServer.Controls.Add(this.textPassword2);
+            this.groupServer.Controls.Add(this.label10);
+            this.groupServer.Controls.Add(this.label11);
+            this.groupServer.Controls.Add(this.label9);
+            this.groupServer.Controls.Add(this.label6);
+            this.groupServer.Location = new System.Drawing.Point(28, 38);
+            this.groupServer.Name = "groupServer";
+            this.groupServer.Size = new System.Drawing.Size(336, 243);
+            this.groupServer.TabIndex = 32;
+            this.groupServer.Text = "Connect to Middle Tier";
+            // 
+            // checkUseSSL
+            // 
+            this.checkUseSSL.Location = new System.Drawing.Point(13, 87);
+            this.checkUseSSL.Name = "checkUseSSL";
+            this.checkUseSSL.Size = new System.Drawing.Size(145, 18);
+            this.checkUseSSL.TabIndex = 45;
+            this.checkUseSSL.Text = "Use HTTPS (port 443)";
+            this.checkUseSSL.CheckedChanged += new System.EventHandler(this.CheckUseSSL_CheckedChanged);
+            // 
+            // checkBoxAutomaticLogin
+            // 
+            this.checkBoxAutomaticLogin.Location = new System.Drawing.Point(13, 220);
+            this.checkBoxAutomaticLogin.Name = "checkBoxAutomaticLogin";
+            this.checkBoxAutomaticLogin.Size = new System.Drawing.Size(145, 18);
+            this.checkBoxAutomaticLogin.TabIndex = 40;
+            this.checkBoxAutomaticLogin.Text = "Log me in automatically.";
+            // 
+            // checkUsingEcw
+            // 
+            this.checkUsingEcw.Location = new System.Drawing.Point(13, 201);
+            this.checkUsingEcw.Name = "checkUsingEcw";
+            this.checkUsingEcw.Size = new System.Drawing.Size(317, 18);
+            this.checkUsingEcw.TabIndex = 10;
+            this.checkUsingEcw.Text = "Using eClinicalWorks";
+            // 
+            // textHost
+            // 
+            this.textHost.Location = new System.Drawing.Point(13, 63);
+            this.textHost.Name = "textHost";
+            this.textHost.Size = new System.Drawing.Size(200, 22);
+            this.textHost.TabIndex = 7;
+            // 
+            // textPort
+            // 
+            this.textPort.Location = new System.Drawing.Point(252, 63);
+            this.textPort.Name = "textPort";
+            this.textPort.Size = new System.Drawing.Size(60, 22);
+            this.textPort.TabIndex = 43;
+            this.textPort.Text = "80";
+            // 
+            // labelPort
+            // 
+            this.labelPort.AutoSize = true;
+            this.labelPort.Location = new System.Drawing.Point(217, 66);
+            this.labelPort.Name = "labelPort";
+            this.labelPort.Size = new System.Drawing.Size(38, 17);
+            this.labelPort.TabIndex = 44;
+            this.labelPort.Text = "Port:";
+            // 
+            // textUser2
+            // 
+            this.textUser2.Location = new System.Drawing.Point(13, 131);
+            this.textUser2.Name = "textUser2";
+            this.textUser2.Size = new System.Drawing.Size(309, 22);
+            this.textUser2.TabIndex = 8;
+            // 
+            // textPassword2
+            // 
+            this.textPassword2.Location = new System.Drawing.Point(13, 172);
+            this.textPassword2.Name = "textPassword2";
+            this.textPassword2.PasswordChar = '*';
+            this.textPassword2.Size = new System.Drawing.Size(309, 22);
+            this.textPassword2.TabIndex = 9;
+            this.textPassword2.UseSystemPasswordChar = true;
+            // 
+            // label10
+            // 
+            this.label10.Location = new System.Drawing.Point(11, 153);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(281, 18);
+            this.label10.TabIndex = 11;
+            this.label10.Text = "Password";
+            this.label10.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
+            // label11
+            // 
+            this.label11.Location = new System.Drawing.Point(11, 112);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(295, 18);
+            this.label11.TabIndex = 14;
+            this.label11.Text = "Helianz User (not MySQL user)";
+            this.label11.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
+            // label9
+            // 
+            this.label9.Location = new System.Drawing.Point(10, 42);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(283, 18);
+            this.label9.TabIndex = 9;
+            this.label9.Text = "Server Host / IP";
+            this.label9.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
+            // label6
+            // 
+            this.label6.Location = new System.Drawing.Point(9, 25);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(297, 18);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "Read the manual to learn how to install the middle tier.";
+            // 
+            // groupDirect
+            // 
+            this.groupDirect.Controls.Add(this.textUser);
+            this.groupDirect.Controls.Add(this.comboDatabase);
+            this.groupDirect.Controls.Add(this.checkNoShow);
+            this.groupDirect.Controls.Add(this.comboComputerName);
+            this.groupDirect.Controls.Add(this.label1);
+            this.groupDirect.Controls.Add(this.textPassword);
+            this.groupDirect.Controls.Add(this.label2);
+            this.groupDirect.Controls.Add(this.label3);
+            this.groupDirect.Controls.Add(this.label4);
+            this.groupDirect.Location = new System.Drawing.Point(28, 286);
+            this.groupDirect.Name = "groupDirect";
+            this.groupDirect.Size = new System.Drawing.Size(660, 246);
+            this.groupDirect.TabIndex = 31;
+            this.groupDirect.Text = "Connection Settings - These values will only be used on this computer.  They have" +
     " to be set on each computer";
-			// 
-			// textUser
-			// 
-			this.textUser.Location = new System.Drawing.Point(13, 140);
-			this.textUser.Name = "textUser";
-			this.textUser.Size = new System.Drawing.Size(280, 20);
-			this.textUser.TabIndex = 3;
-			// 
-			// comboDatabase
-			// 
-			this.comboDatabase.DropDownHeight = 390;
-			this.comboDatabase.IntegralHeight = false;
-			this.comboDatabase.Location = new System.Drawing.Point(13, 98);
-			this.comboDatabase.MaxDropDownItems = 100;
-			this.comboDatabase.Name = "comboDatabase";
-			this.comboDatabase.Size = new System.Drawing.Size(280, 21);
-			this.comboDatabase.TabIndex = 2;
-			this.comboDatabase.DropDown += new System.EventHandler(this.comboDatabase_DropDown);
-			// 
-			// checkNoShow
-			// 
-			this.checkNoShow.Location = new System.Drawing.Point(13, 211);
-			this.checkNoShow.Name = "checkNoShow";
-			this.checkNoShow.Size = new System.Drawing.Size(317, 18);
-			this.checkNoShow.TabIndex = 5;
-			this.checkNoShow.Text = "Do not show this window on startup (this computer only)";
-			// 
-			// comboComputerName
-			// 
-			this.comboComputerName.DropDownHeight = 390;
-			this.comboComputerName.IntegralHeight = false;
-			this.comboComputerName.Location = new System.Drawing.Point(13, 56);
-			this.comboComputerName.MaxDropDownItems = 100;
-			this.comboComputerName.Name = "comboComputerName";
-			this.comboComputerName.Size = new System.Drawing.Size(280, 21);
-			this.comboComputerName.TabIndex = 1;
-			// 
-			// label1
-			// 
-			this.label1.Location = new System.Drawing.Point(11, 15);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(582, 38);
-			this.label1.TabIndex = 0;
-			this.label1.Text = "Server Name: The name of the computer where the MySQL server and database are loc" +
+            // 
+            // textUser
+            // 
+            this.textUser.Location = new System.Drawing.Point(13, 140);
+            this.textUser.Name = "textUser";
+            this.textUser.Size = new System.Drawing.Size(280, 22);
+            this.textUser.TabIndex = 3;
+            // 
+            // comboDatabase
+            // 
+            this.comboDatabase.DropDownHeight = 390;
+            this.comboDatabase.IntegralHeight = false;
+            this.comboDatabase.Location = new System.Drawing.Point(13, 98);
+            this.comboDatabase.MaxDropDownItems = 100;
+            this.comboDatabase.Name = "comboDatabase";
+            this.comboDatabase.Size = new System.Drawing.Size(280, 24);
+            this.comboDatabase.TabIndex = 2;
+            this.comboDatabase.DropDown += new System.EventHandler(this.comboDatabase_DropDown);
+            // 
+            // checkNoShow
+            // 
+            this.checkNoShow.Location = new System.Drawing.Point(13, 211);
+            this.checkNoShow.Name = "checkNoShow";
+            this.checkNoShow.Size = new System.Drawing.Size(317, 18);
+            this.checkNoShow.TabIndex = 5;
+            this.checkNoShow.Text = "Do not show this window on startup (this computer only)";
+            // 
+            // comboComputerName
+            // 
+            this.comboComputerName.DropDownHeight = 390;
+            this.comboComputerName.IntegralHeight = false;
+            this.comboComputerName.Location = new System.Drawing.Point(13, 56);
+            this.comboComputerName.MaxDropDownItems = 100;
+            this.comboComputerName.Name = "comboComputerName";
+            this.comboComputerName.Size = new System.Drawing.Size(280, 24);
+            this.comboComputerName.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.Location = new System.Drawing.Point(11, 15);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(582, 38);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Server Name: The name of the computer where the MySQL server and database are loc" +
     "ated.  If you are running this program on a single computer only, then the compu" +
     "ter name may be localhost.";
-			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			// 
-			// textPassword
-			// 
-			this.textPassword.Location = new System.Drawing.Point(13, 181);
-			this.textPassword.Name = "textPassword";
-			this.textPassword.PasswordChar = '*';
-			this.textPassword.Size = new System.Drawing.Size(280, 20);
-			this.textPassword.TabIndex = 4;
-			this.textPassword.UseSystemPasswordChar = true;
-			this.textPassword.TextChanged += new System.EventHandler(this.textPassword_TextChanged);
-			this.textPassword.Leave += new System.EventHandler(this.textPassword_Leave);
-			// 
-			// label2
-			// 
-			this.label2.Location = new System.Drawing.Point(11, 162);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(509, 18);
-			this.label2.TabIndex = 2;
-			this.label2.Text = "MySQL Password:";
-			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			// 
-			// label3
-			// 
-			this.label3.Location = new System.Drawing.Point(11, 121);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(480, 18);
-			this.label3.TabIndex = 4;
-			this.label3.Text = "MySQL User:";
-			this.label3.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			// 
-			// label4
-			// 
-			this.label4.Location = new System.Drawing.Point(11, 79);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(582, 18);
-			this.label4.TabIndex = 6;
-			this.label4.Text = "Database: usually helianz unless you changed the name.";
-			this.label4.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			// 
-			// butOK
-			// 
-			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butOK.Location = new System.Drawing.Point(636, 580);
-			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(75, 25);
-			this.butOK.TabIndex = 35;
-			this.butOK.Text = "&OK";
-			this.butOK.Click += new System.EventHandler(this.butOK_Click);
-			// 
-			// checkDynamicMode
-			// 
-			this.checkDynamicMode.Location = new System.Drawing.Point(376, 233);
-			this.checkDynamicMode.Name = "checkDynamicMode";
-			this.checkDynamicMode.Size = new System.Drawing.Size(312, 29);
-			this.checkDynamicMode.TabIndex = 41;
-			this.checkDynamicMode.Text = "Dynamic Mode: Automatically downgrades or upgrades to server version.";
-			this.checkDynamicMode.CheckedChanged += new System.EventHandler(this.checkDynamicMode_CheckedChanged);
-			// 
-			// textPEM
-			// 
-			this.textPEM.Location = new System.Drawing.Point(42, 549);
-			this.textPEM.Name = "textPEM";
-			this.textPEM.Size = new System.Drawing.Size(527, 20);
-			this.textPEM.TabIndex = 8;
-			// 
-			// label5
-			// 
-			this.label5.Location = new System.Drawing.Point(40, 528);
-			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(509, 18);
-			this.label5.TabIndex = 7;
-			this.label5.Text = "(only if using MariaDB SkySQL) PEM path";
-			this.label5.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			// 
-			// FormChooseDatabase
-			// 
-			this.AcceptButton = this.butOK;
-			this.ClientSize = new System.Drawing.Size(723, 617);
-			this.Controls.Add(this.textPEM);
-			this.Controls.Add(this.checkDynamicMode);
-			this.Controls.Add(this.label5);
-			this.Controls.Add(this.textConnectionString);
-			this.Controls.Add(this.label8);
-			this.Controls.Add(this.listType);
-			this.Controls.Add(this.label7);
-			this.Controls.Add(this.checkConnectServer);
-			this.Controls.Add(this.groupServer);
-			this.Controls.Add(this.groupDirect);
-			this.Controls.Add(this.butOK);
-			this.HasHelpButton = false;
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-			this.MaximizeBox = false;
-			this.MinimizeBox = false;
-			this.Name = "FormChooseDatabase";
-			this.Text = "Choose Database";
-			this.Load += new System.EventHandler(this.FormChooseDatabase_Load);
-			this.groupServer.ResumeLayout(false);
-			this.groupServer.PerformLayout();
-			this.groupDirect.ResumeLayout(false);
-			this.groupDirect.PerformLayout();
-			this.ResumeLayout(false);
-			this.PerformLayout();
+            this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
+            // textPassword
+            // 
+            this.textPassword.Location = new System.Drawing.Point(13, 181);
+            this.textPassword.Name = "textPassword";
+            this.textPassword.PasswordChar = '*';
+            this.textPassword.Size = new System.Drawing.Size(280, 22);
+            this.textPassword.TabIndex = 4;
+            this.textPassword.UseSystemPasswordChar = true;
+            this.textPassword.TextChanged += new System.EventHandler(this.textPassword_TextChanged);
+            this.textPassword.Leave += new System.EventHandler(this.textPassword_Leave);
+            // 
+            // label2
+            // 
+            this.label2.Location = new System.Drawing.Point(11, 162);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(509, 18);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "MySQL Password:";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
+            // label3
+            // 
+            this.label3.Location = new System.Drawing.Point(11, 121);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(480, 18);
+            this.label3.TabIndex = 4;
+            this.label3.Text = "MySQL User:";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
+            // label4
+            // 
+            this.label4.Location = new System.Drawing.Point(11, 79);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(582, 18);
+            this.label4.TabIndex = 6;
+            this.label4.Text = "Database: usually helianz unless you changed the name.";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
+            // butOK
+            // 
+            this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.butOK.Location = new System.Drawing.Point(636, 580);
+            this.butOK.Name = "butOK";
+            this.butOK.Size = new System.Drawing.Size(75, 25);
+            this.butOK.TabIndex = 35;
+            this.butOK.Text = "&OK";
+            this.butOK.Click += new System.EventHandler(this.butOK_Click);
+            // 
+            // checkDynamicMode
+            // 
+            this.checkDynamicMode.Location = new System.Drawing.Point(376, 233);
+            this.checkDynamicMode.Name = "checkDynamicMode";
+            this.checkDynamicMode.Size = new System.Drawing.Size(312, 29);
+            this.checkDynamicMode.TabIndex = 41;
+            this.checkDynamicMode.Text = "Dynamic Mode: Automatically downgrades or upgrades to server version.";
+            this.checkDynamicMode.CheckedChanged += new System.EventHandler(this.checkDynamicMode_CheckedChanged);
+            // 
+            // textPEM
+            // 
+            this.textPEM.Location = new System.Drawing.Point(42, 564);
+            this.textPEM.Name = "textPEM";
+            this.textPEM.Size = new System.Drawing.Size(527, 22);
+            this.textPEM.TabIndex = 8;
+            // 
+            // label5
+            // 
+            this.label5.Location = new System.Drawing.Point(40, 543);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(509, 18);
+            this.label5.TabIndex = 7;
+            this.label5.Text = "(only if using MariaDB SkySQL) PEM path";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
+            // FormChooseDatabase
+            // 
+            this.AcceptButton = this.butOK;
+            this.ClientSize = new System.Drawing.Size(723, 617);
+            this.Controls.Add(this.textPEM);
+            this.Controls.Add(this.checkDynamicMode);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.textConnectionString);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.listType);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.checkConnectServer);
+            this.Controls.Add(this.groupServer);
+            this.Controls.Add(this.groupDirect);
+            this.Controls.Add(this.butOK);
+            this.HasHelpButton = false;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "FormChooseDatabase";
+            this.Text = "Choose Database";
+            this.Load += new System.EventHandler(this.FormChooseDatabase_Load);
+            this.groupServer.ResumeLayout(false);
+            this.groupServer.PerformLayout();
+            this.groupDirect.ResumeLayout(false);
+            this.groupDirect.PerformLayout();
+            this.ResumeLayout(false);
+            this.PerformLayout();
 
 		}
 
@@ -415,5 +427,6 @@ namespace Helianz{
 		private Helianz.UI.CheckBox checkDynamicMode;
 		private System.Windows.Forms.TextBox textPEM;
 		private System.Windows.Forms.Label label5;
-	}
+        private UI.CheckBox checkUseSSL;
+    }
 }
