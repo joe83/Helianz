@@ -280,9 +280,9 @@ namespace HelianzBusiness{
 			}
 			XmlDocument xmlDocument=new XmlDocument();
 			xmlDocument.Load(xmlPath);
-			RemotingClient.MidTierProxyAddress=xmlDocument.SelectSingleNode("//Address").InnerText;
-			RemotingClient.MidTierProxyUserName=xmlDocument.SelectSingleNode("//UserName").InnerText;
-			RemotingClient.MidTierProxyPassword=xmlDocument.SelectSingleNode("//Password").InnerText;
+			RemotingClient.MidTierProxyAddress=xmlDocument.SelectSingleNode("//Address")?.InnerText??"";
+			RemotingClient.MidTierProxyUserName=xmlDocument.SelectSingleNode("//UserName")?.InnerText??"";
+			RemotingClient.MidTierProxyPassword=xmlDocument.SelectSingleNode("//Password")?.InnerText??"";
 		}
 
 		///<summary>Returns true if the connection settings were successfully saved to the FreeDentalConfig file and/or Windows PasswordVault.  

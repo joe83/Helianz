@@ -115,6 +115,7 @@ namespace HelianzBusiness.Crud{
 				procedure.TaxAmt             = PIn.Double(row["TaxAmt"].ToString());
 				procedure.Urgency            = (HelianzBusiness.ProcUrgency)PIn.Int(row["Urgency"].ToString());
 				procedure.DiscountPlanAmt    = PIn.Double(row["DiscountPlanAmt"].ToString());
+				procedure.Share              = PIn.Double(row["Share"].ToString());
 				retVal.Add(procedure);
 			}
 			return retVal;
@@ -190,6 +191,7 @@ namespace HelianzBusiness.Crud{
 				TaxAmt             = PIn.Double(row["TaxAmt"].ToString()),
 				Urgency            = (HelianzBusiness.ProcUrgency)PIn.Int(row["Urgency"].ToString()),
 				DiscountPlanAmt    = PIn.Double(row["DiscountPlanAmt"].ToString()),
+				Share              = PIn.Double(row["Share"].ToString()),
 			};
 		}
 
@@ -266,6 +268,7 @@ namespace HelianzBusiness.Crud{
 			table.Columns.Add("TaxAmt");
 			table.Columns.Add("Urgency");
 			table.Columns.Add("DiscountPlanAmt");
+			table.Columns.Add("Share");
 			foreach(Procedure procedure in listProcedures) {
 				table.Rows.Add(new object[] {
 					POut.Long  (procedure.ProcNum),
@@ -335,6 +338,7 @@ namespace HelianzBusiness.Crud{
 					POut.Double(procedure.TaxAmt),
 					POut.Int   ((int)procedure.Urgency),
 					POut.Double(procedure.DiscountPlanAmt),
+				POut.Double(procedure.Share),
 				});
 			}
 			return table;
@@ -354,7 +358,7 @@ namespace HelianzBusiness.Crud{
 			if(useExistingPK || PrefC.RandomKeys) {
 				command+="ProcNum,";
 			}
-			command+="PatNum,AptNum,OldCode,ProcDate,ProcFee,Surf,ToothNum,ToothRange,Priority,ProcStatus,ProvNum,Dx,PlannedAptNum,PlaceService,Prosthesis,DateOriginalProsth,ClaimNote,DateEntryC,ClinicNum,MedicalCode,DiagnosticCode,IsPrincDiag,ProcNumLab,BillingTypeOne,BillingTypeTwo,CodeNum,CodeMod1,CodeMod2,CodeMod3,CodeMod4,RevCode,UnitQty,BaseUnits,StartTime,StopTime,DateTP,SiteNum,HideGraphics,CanadianTypeCodes,ProcTime,ProcTimeEnd,Prognosis,DrugUnit,DrugQty,UnitQtyType,StatementNum,IsLocked,BillingNote,RepeatChargeNum,DiagnosticCode2,DiagnosticCode3,DiagnosticCode4,Discount,SnomedBodySite,ProvOrderOverride,IsDateProsthEst,IcdVersion,IsCpoe,SecUserNumEntry,SecDateEntry,DateComplete,OrderingReferralNum,TaxAmt,Urgency,DiscountPlanAmt) VALUES(";
+			command+="PatNum,AptNum,OldCode,ProcDate,ProcFee,Surf,ToothNum,ToothRange,Priority,ProcStatus,ProvNum,Dx,PlannedAptNum,PlaceService,Prosthesis,DateOriginalProsth,ClaimNote,DateEntryC,ClinicNum,MedicalCode,DiagnosticCode,IsPrincDiag,ProcNumLab,BillingTypeOne,BillingTypeTwo,CodeNum,CodeMod1,CodeMod2,CodeMod3,CodeMod4,RevCode,UnitQty,BaseUnits,StartTime,StopTime,DateTP,SiteNum,HideGraphics,CanadianTypeCodes,ProcTime,ProcTimeEnd,Prognosis,DrugUnit,DrugQty,UnitQtyType,StatementNum,IsLocked,BillingNote,RepeatChargeNum,DiagnosticCode2,DiagnosticCode3,DiagnosticCode4,Discount,SnomedBodySite,ProvOrderOverride,IsDateProsthEst,IcdVersion,IsCpoe,SecUserNumEntry,SecDateEntry,DateComplete,OrderingReferralNum,TaxAmt,Urgency,DiscountPlanAmt,Share) VALUES(";
 			if(useExistingPK || PrefC.RandomKeys) {
 				command+=POut.Long(procedure.ProcNum)+",";
 			}
@@ -424,7 +428,8 @@ namespace HelianzBusiness.Crud{
 				+    POut.Long  (procedure.OrderingReferralNum)+","
 				+		 POut.Double(procedure.TaxAmt)+","
 				+    POut.Int   ((int)procedure.Urgency)+","
-				+		 POut.Double(procedure.DiscountPlanAmt)+")";
+				+		 POut.Double(procedure.DiscountPlanAmt)+","
+				+		 POut.Double(procedure.Share)+")";
 			if(useExistingPK || PrefC.RandomKeys) {
 				Db.NonQ(command);
 			}
@@ -460,7 +465,7 @@ namespace HelianzBusiness.Crud{
 						if(useExistingPK) {
 							sbCommands.Append("ProcNum,");
 						}
-						sbCommands.Append("PatNum,AptNum,OldCode,ProcDate,ProcFee,Surf,ToothNum,ToothRange,Priority,ProcStatus,ProvNum,Dx,PlannedAptNum,PlaceService,Prosthesis,DateOriginalProsth,ClaimNote,DateEntryC,ClinicNum,MedicalCode,DiagnosticCode,IsPrincDiag,ProcNumLab,BillingTypeOne,BillingTypeTwo,CodeNum,CodeMod1,CodeMod2,CodeMod3,CodeMod4,RevCode,UnitQty,BaseUnits,StartTime,StopTime,DateTP,SiteNum,HideGraphics,CanadianTypeCodes,ProcTime,ProcTimeEnd,Prognosis,DrugUnit,DrugQty,UnitQtyType,StatementNum,IsLocked,BillingNote,RepeatChargeNum,DiagnosticCode2,DiagnosticCode3,DiagnosticCode4,Discount,SnomedBodySite,ProvOrderOverride,IsDateProsthEst,IcdVersion,IsCpoe,SecUserNumEntry,SecDateEntry,DateComplete,OrderingReferralNum,TaxAmt,Urgency,DiscountPlanAmt) VALUES ");
+						sbCommands.Append("PatNum,AptNum,OldCode,ProcDate,ProcFee,Surf,ToothNum,ToothRange,Priority,ProcStatus,ProvNum,Dx,PlannedAptNum,PlaceService,Prosthesis,DateOriginalProsth,ClaimNote,DateEntryC,ClinicNum,MedicalCode,DiagnosticCode,IsPrincDiag,ProcNumLab,BillingTypeOne,BillingTypeTwo,CodeNum,CodeMod1,CodeMod2,CodeMod3,CodeMod4,RevCode,UnitQty,BaseUnits,StartTime,StopTime,DateTP,SiteNum,HideGraphics,CanadianTypeCodes,ProcTime,ProcTimeEnd,Prognosis,DrugUnit,DrugQty,UnitQtyType,StatementNum,IsLocked,BillingNote,RepeatChargeNum,DiagnosticCode2,DiagnosticCode3,DiagnosticCode4,Discount,SnomedBodySite,ProvOrderOverride,IsDateProsthEst,IcdVersion,IsCpoe,SecUserNumEntry,SecDateEntry,DateComplete,OrderingReferralNum,TaxAmt,Urgency,DiscountPlanAmt,Share) VALUES ");
 						countRows=0;
 					}
 					else {
@@ -534,7 +539,8 @@ namespace HelianzBusiness.Crud{
 					sbRow.Append(POut.Long(procedure.OrderingReferralNum)); sbRow.Append(",");
 					sbRow.Append(POut.Double(procedure.TaxAmt)); sbRow.Append(",");
 					sbRow.Append(POut.Int((int)procedure.Urgency)); sbRow.Append(",");
-					sbRow.Append(POut.Double(procedure.DiscountPlanAmt)); sbRow.Append(")");
+					sbRow.Append(POut.Double(procedure.DiscountPlanAmt)); sbRow.Append(",");
+							sbRow.Append(POut.Double(procedure.Share)); sbRow.Append(")");
 					if(sbCommands.Length+sbRow.Length+1 > TableBase.MaxAllowedPacketCount && countRows > 0) {
 						Db.NonQ(sbCommands.ToString());
 						sbCommands=null;
@@ -569,7 +575,7 @@ namespace HelianzBusiness.Crud{
 			if(isRandomKeys || useExistingPK) {
 				command+="ProcNum,";
 			}
-			command+="PatNum,AptNum,OldCode,ProcDate,ProcFee,Surf,ToothNum,ToothRange,Priority,ProcStatus,ProvNum,Dx,PlannedAptNum,PlaceService,Prosthesis,DateOriginalProsth,ClaimNote,DateEntryC,ClinicNum,MedicalCode,DiagnosticCode,IsPrincDiag,ProcNumLab,BillingTypeOne,BillingTypeTwo,CodeNum,CodeMod1,CodeMod2,CodeMod3,CodeMod4,RevCode,UnitQty,BaseUnits,StartTime,StopTime,DateTP,SiteNum,HideGraphics,CanadianTypeCodes,ProcTime,ProcTimeEnd,Prognosis,DrugUnit,DrugQty,UnitQtyType,StatementNum,IsLocked,BillingNote,RepeatChargeNum,DiagnosticCode2,DiagnosticCode3,DiagnosticCode4,Discount,SnomedBodySite,ProvOrderOverride,IsDateProsthEst,IcdVersion,IsCpoe,SecUserNumEntry,SecDateEntry,DateComplete,OrderingReferralNum,TaxAmt,Urgency,DiscountPlanAmt) VALUES(";
+			command+="PatNum,AptNum,OldCode,ProcDate,ProcFee,Surf,ToothNum,ToothRange,Priority,ProcStatus,ProvNum,Dx,PlannedAptNum,PlaceService,Prosthesis,DateOriginalProsth,ClaimNote,DateEntryC,ClinicNum,MedicalCode,DiagnosticCode,IsPrincDiag,ProcNumLab,BillingTypeOne,BillingTypeTwo,CodeNum,CodeMod1,CodeMod2,CodeMod3,CodeMod4,RevCode,UnitQty,BaseUnits,StartTime,StopTime,DateTP,SiteNum,HideGraphics,CanadianTypeCodes,ProcTime,ProcTimeEnd,Prognosis,DrugUnit,DrugQty,UnitQtyType,StatementNum,IsLocked,BillingNote,RepeatChargeNum,DiagnosticCode2,DiagnosticCode3,DiagnosticCode4,Discount,SnomedBodySite,ProvOrderOverride,IsDateProsthEst,IcdVersion,IsCpoe,SecUserNumEntry,SecDateEntry,DateComplete,OrderingReferralNum,TaxAmt,Urgency,DiscountPlanAmt,Share) VALUES(";
 			if(isRandomKeys || useExistingPK) {
 				command+=POut.Long(procedure.ProcNum)+",";
 			}
@@ -639,7 +645,8 @@ namespace HelianzBusiness.Crud{
 				+    POut.Long  (procedure.OrderingReferralNum)+","
 				+	   POut.Double(procedure.TaxAmt)+","
 				+    POut.Int   ((int)procedure.Urgency)+","
-				+	   POut.Double(procedure.DiscountPlanAmt)+")";
+				+	   POut.Double(procedure.DiscountPlanAmt)+","
+				+	   POut.Double(procedure.Share)+")";
 			if(useExistingPK || isRandomKeys) {
 				Db.NonQ(command);
 			}
@@ -717,7 +724,8 @@ namespace HelianzBusiness.Crud{
 				+"OrderingReferralNum=  "+POut.Long  (procedure.OrderingReferralNum)+", "
 				+"TaxAmt             =  "+POut.Double(procedure.TaxAmt)+", "
 				+"Urgency            =  "+POut.Int   ((int)procedure.Urgency)+", "
-				+"DiscountPlanAmt    =  "+POut.Double(procedure.DiscountPlanAmt)+" "
+				+"DiscountPlanAmt    =  "+POut.Double(procedure.DiscountPlanAmt)+", "
+				+"Share              =  "+POut.Double(procedure.Share)+" "
 				+"WHERE ProcNum = "+POut.Long(procedure.ProcNum);
 			Db.NonQ(command);
 		}
@@ -980,6 +988,10 @@ namespace HelianzBusiness.Crud{
 				if(command!="") { command+=",";}
 				command+="DiscountPlanAmt = "+POut.Double(procedure.DiscountPlanAmt)+"";
 			}
+					if(procedure.Share != oldProcedure.Share) {
+							if(command!="") { command+=",";}
+							command+="Share = "+POut.Double(procedure.Share)+"";
+					}
 			if(command=="") {
 				return false;
 			}
@@ -1184,7 +1196,10 @@ namespace HelianzBusiness.Crud{
 			if(procedure.DiscountPlanAmt != oldProcedure.DiscountPlanAmt) {
 				return true;
 			}
-			return false;
+					if(procedure.Share != oldProcedure.Share) {
+							return true;
+					}
+					return false;
 		}
 
 		//Delete not allowed for this table

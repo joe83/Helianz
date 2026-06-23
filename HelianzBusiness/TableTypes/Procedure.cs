@@ -177,6 +177,8 @@ namespace HelianzBusiness {
 		public ProcUrgency Urgency;
 		///<summary>The difference between the UCR fee and discount plan fee. Frequently recalculated when procedure is TP.</summary>
 		public double DiscountPlanAmt;
+		///<summary>Provider share amount for this procedure. Automatically calculated from Fee.ProviderShare when procedure is created.</summary>
+		public double Share;
 
 		private int _priorityOrder=int.MinValue;
 

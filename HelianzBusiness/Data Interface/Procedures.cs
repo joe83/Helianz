@@ -2416,6 +2416,9 @@ namespace HelianzBusiness {
 			//Get fee schedule and fee amount for dental or medical.
 			long feeSch=FeeScheds.GetFeeSched(pat,insPlanList,patPlanList,subList,provNum);
 			proc.ProcFee=Fees.GetAmount0(proc.CodeNum,feeSch,proc.ClinicNum,provNum);
+			//Calculate Share from Fee table's ProviderShare
+			Fee feeForShare=Fees.GetFee(proc.CodeNum,feeSch,proc.ClinicNum,provNum);
+			proc.Share=(feeForShare!=null ? feeForShare.ProviderShare : 0);
 			if(insPlanPrimary!=null && insPlanPrimary.PlanType=="p") {//PPO
 				double provFee=Fees.GetAmount0(proc.CodeNum,Providers.GetProv(provNum).FeeSched,proc.ClinicNum,provNum);
 				proc.ProcFee=Math.Max(proc.ProcFee,provFee);//use greater of standard fee or ins fee

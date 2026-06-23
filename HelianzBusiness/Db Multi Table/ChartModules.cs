@@ -2235,6 +2235,16 @@ namespace HelianzBusiness {
 			else {
 				procedure.MedicalCode=procedureCode.MedicalCode;
 				procedure.ProcFee=Procedures.GetProcFee(patientData.Patient,patientData.ListPatPlans,patientData.ListInsSubs,patientData.ListInsPlans,procedure,listFees:listFees);
+				//Calculate Share from Fee table's ProviderShare
+				long feeSchedForShare;
+				if(PrefC.GetBool(PrefName.MedicalFeeUsedForNewProcs) && !string.IsNullOrEmpty(procedure.MedicalCode)) {
+					feeSchedForShare=FeeScheds.GetMedFeeSched(patientData.Patient,patientData.ListInsPlans,patientData.ListPatPlans,patientData.ListInsSubs,procedure.ProvNum);
+				}
+				else {
+					feeSchedForShare=FeeScheds.GetFeeSched(patientData.Patient,patientData.ListInsPlans,patientData.ListPatPlans,patientData.ListInsSubs,procedure.ProvNum);
+				}
+				Fee feeForShare=Fees.GetFee(procedure.CodeNum,feeSchedForShare,procedure.ClinicNum,procedure.ProvNum,listFees);
+				procedure.Share=(feeForShare!=null ? feeForShare.ProviderShare : 0);
 			}
 			if(procStatNew==ProcStat.C 
 				&& !Security.IsAuthorized(EnumPermType.ProcComplCreate,procedure.ProcDate,procedure.CodeNum,procedure.ProcFee)) 

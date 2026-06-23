@@ -1,0 +1,1043 @@
+Date: 23/06/2026
+Date	Patient Name	Code	Tooth	Area	Description	Prov	Fee	Share
+02/06/2026	Apriliyani, Anita 	EN15	46		Open acces RCT/extirpasi	drg.Kristanti, Sp.KG	200.000	80.000
+02/06/2026	Apriliyani, Anita 	PE3		UL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+02/06/2026	Apriliyani, Anita 	PE3		LR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+02/06/2026	Apriliyani, Anita 	PE3		LL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+02/06/2026	Apriliyani, Anita 	PE3		UR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+02/06/2026	Khotimah, Khusnul 	BM1	16		Exo GP	drg Lintang	250.000	70.000
+02/06/2026	Lasdi, Lasdi 	KN1	31	I	Composite Anterior S/M	drg Lintang	350.000	100.000
+02/06/2026	Lasdi, Lasdi 	KN1	41	I	Composite Anterior S/M	drg Lintang	350.000	100.000
+02/06/2026	Lasdi, Lasdi 	KN1	12	V	Composite Anterior S/M	drg Lintang	350.000	100.000
+02/06/2026	Lasdi, Lasdi 	PE3		UL	Scalling per quadran Severe	drg Lintang	125.000	35.000
+02/06/2026	Lasdi, Lasdi 	PE3		LL	Scalling per quadran Severe	drg Lintang	125.000	35.000
+02/06/2026	Lasdi, Lasdi 	PE3		UR	Scalling per quadran Severe	drg Lintang	125.000	35.000
+02/06/2026	Lasdi, Lasdi 	PE3		LR	Scalling per quadran Severe	drg Lintang	125.000	35.000
+02/06/2026	Mahmud A, Ujang 	EN11	37		Aplikasi MTA, Sp KG	drg.Kristanti, Sp.KG	700.000	250.000
+02/06/2026	Mahmud A, Ujang 	EN16	37		Anestesi endo tambahan	drg.Kristanti, Sp.KG	100.000	35.000
+02/06/2026	Mahmud A, Ujang 	KN9	37	O	GIC Sp KG	drg.Kristanti, Sp.KG	400.000	150.000
+02/06/2026	Mahmud A, Ujang 	PE5	37		Gingivectomy manual	drg.Kristanti, Sp.KG	250.000	0
+02/06/2026	Mukholish Alal Ardli, Faris 	EX2			Medication	drg Lucky	50.000	30.000
+02/06/2026	Nur Gisella Ramadhani , Wili 	EN9	36		Preparasi dengan penyulit per canal, Sp KG	drg.Kristanti, Sp.KG	250.000	0
+02/06/2026	Sumiati, Sumiati 	001			Clinical Examination	drg Minda	0	0
+02/06/2026	Sumiati, Sumiati 	BM1	46		Exo GP	drg Minda	250.000	70.000
+02/06/2026	Widyaningtyas, Pangesti 	EN12	22		Pasak fiber	drg.Kristanti, Sp.KG	400.000	200.000
+02/06/2026	Widyaningtyas, Pangesti 	KN3	22	MF	Composite Anterior S/M, Sp KG	drg.Kristanti, Sp.KG	450.000	180.000
+03/06/2026	Abid Mumtaza, Akmal 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Abid Mumtaza, Akmal 	OR25	12		Crimpable hook	drg  Prima, Sp.Ort	50.000	15.000
+03/06/2026	Abid Mumtaza, Akmal 	OR7		U	Wire SS 16x16,16x25,18x25	drg  Prima, Sp.Ort	100.000	30.000
+03/06/2026	Adhyaksa Permatasari, Melinda 	OR14	32		Button	drg  Prima, Sp.Ort	50.000	15.000
+03/06/2026	Adhyaksa Permatasari, Melinda 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Alia Putri, Salwa 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Alia Putri, Salwa 	OR2		U	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+03/06/2026	Anglila Sphatika, Tanaya 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Anglila Sphatika, Tanaya 	OR19	41		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Anglila Sphatika, Tanaya 	OR2		L	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+03/06/2026	Anglila Sphatika, Tanaya 	OR44	47		Bonding porcelain	drg  Prima, Sp.Ort	70.000	17.500
+03/06/2026	Ardia Giarani, Nadine 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Ardia Giarani, Nadine 	OR19	15		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Ayu Dyan S, Tiara 	OR15	43		Open coil	drg  Prima, Sp.Ort	50.000	9.000
+03/06/2026	Ayu Dyan S, Tiara 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	0
+03/06/2026	Ayu Dyan S, Tiara 	OR3		U	Wire Cu-NiTi 13,16,18,20	drg  Prima, Sp.Ort	150.000	22.500
+03/06/2026	Ayu Dyan S, Tiara 	OR3		L	Wire Cu-NiTi 13,16,18,20	drg  Prima, Sp.Ort	150.000	22.500
+03/06/2026	Azzam Mufida, Naufal 	OR13	47		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+03/06/2026	Azzam Mufida, Naufal 	OR15	23		Open coil	drg  Prima, Sp.Ort	50.000	15.000
+03/06/2026	Azzam Mufida, Naufal 	OR22	45		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+03/06/2026	Azzam Mufida, Naufal 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+03/06/2026	Azzam Mufida, Naufal 	PE9	23		Gingivectomy electrosurgery	drg  Prima, Sp.Ort	300.000	100.000
+03/06/2026	Badra Ayu, Naya 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Bara Azzamza, Radhi 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Bara Azzamza, Radhi 	OR19	32		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Baskoro, Bayu 	OR22	25		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+03/06/2026	Baskoro, Bayu 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+03/06/2026	Baskoro, Bayu 	OR86			Insersi ulang TAD	drg  Prima, Sp.Ort	200.000	50.000
+03/06/2026	Baskoro, Bayu 	OR86			Insersi ulang TAD	drg  Prima, Sp.Ort	200.000	50.000
+03/06/2026	Buana Tungga Dewi, Galuh 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	C Nugraha, Fitriana 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Cahaya Tri, Farida 	OR13	37		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+03/06/2026	Cahaya Tri, Farida 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Danish Bisaid, Zibran 	KN4	26	O	Composite Posterior S/M	drg. Rizky	280.000	80.000
+03/06/2026	Danish Bisaid, Zibran 	KN4	36	O	Composite Posterior S/M	drg. Rizky	280.000	80.000
+03/06/2026	Danish Bisaid, Zibran 	KN4	35	O	Composite Posterior S/M	drg. Rizky	280.000	80.000
+03/06/2026	Danish Bisaid, Zibran 	KN4	45	O	Composite Posterior S/M	drg. Rizky	280.000	80.000
+03/06/2026	Danish Bisaid, Zibran 	KN4	16	O	Composite Posterior S/M	drg. Rizky	280.000	80.000
+03/06/2026	Danish Bisaid, Zibran 	KN4	46	O	Composite Posterior S/M	drg. Rizky	280.000	80.000
+03/06/2026	Dhewi, Citra 	KN10	28	OB	Dressing Eugenol/Cresophene/Iod	drg. Rizky	125.000	25.000
+03/06/2026	Dhewi, Citra 	KN10	17	MO	Dressing Eugenol/Cresophene/Iod	drg. Rizky	125.000	25.000
+03/06/2026	Dhina, Ayun 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Dian eka, Melany 	PE2		UR	Scalling per quadran Moderate	drg. Rizky	90.000	25.000
+03/06/2026	Dian eka, Melany 	PE2		LR	Scalling per quadran Moderate	drg. Rizky	90.000	25.000
+03/06/2026	Dian eka, Melany 	PE2		LL	Scalling per quadran Moderate	drg. Rizky	90.000	25.000
+03/06/2026	Dian eka, Melany 	PE3		UL	Scalling per quadran Severe	drg. Rizky	125.000	35.000
+03/06/2026	Dian Safitri, Anit 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Dwiastuti, Yustini 	OR14	12		Button	drg  Prima, Sp.Ort	50.000	15.000
+03/06/2026	Dwiastuti, Yustini 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+03/06/2026	Dwiastuti, Yustini 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+03/06/2026	Endah Sulistyawati , Nur  	OR46			Ortho kit	drg  Prima, Sp.Ort	150.000	0
+03/06/2026	Endah Sulistyawati , Nur  	OR48	27		Bite riser	drg  Prima, Sp.Ort	100.000	30.000
+03/06/2026	Endah Sulistyawati , Nur  	OR48	17		Bite riser	drg  Prima, Sp.Ort	100.000	30.000
+03/06/2026	Endah Sulistyawati , Nur  	OR55			Insersi Self Ligating Non Damon	drg  Prima, Sp.Ort	9.000.000	3.250.000
+03/06/2026	Eriawati, Dewi 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Eriawati, Dewi 	OR19	35		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Etika Dewi, Anisa 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Fathiah Mufidah, Zahra 	OR11	16		Buccal tube M1	drg  Prima, Sp.Ort	50.000	15.000
+03/06/2026	Fathiah Mufidah, Zahra 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Fatimah Az Zahra, Tiara 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Fawnia Indrasari, Firda 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Hamida, Hamida 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Hamida, Hamida 	OR2		U	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+03/06/2026	Hamida, Hamida 	OR2		L	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+03/06/2026	Hasifah, Hasifah 	BM1	46		Exo GP	drg Lucky	250.000	70.000
+03/06/2026	Hasifah, Hasifah 	OR19	45		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Hasifah, Hasifah 	OR19	45		Bonding bracket metal	drg Lucky	30.000	7.500
+03/06/2026	Hernan Dito, Sylvester 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+03/06/2026	Indah Puspitasari , Sekar  	PE3		LL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+03/06/2026	Indah Puspitasari , Sekar  	PE3		UR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+03/06/2026	Indah Puspitasari , Sekar  	PE3		UL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+03/06/2026	Indah Puspitasari , Sekar  	PE3		LR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+03/06/2026	Indah Puspitasari , Sekar  	PS2		U	Alginate impression	drg Lucky	50.000	12.500
+03/06/2026	Indah Puspitasari , Sekar  	PS2		L	Alginate impression	drg Lucky	50.000	12.500
+03/06/2026	Jatiningtyas, Lutviana 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Kezia Lael, Bernadetha 	OR13	47		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+03/06/2026	Kezia Lael, Bernadetha 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Kezia Lael, Bernadetha 	OR19	45		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Kufaini, Asrovi 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Kufaini, Asrovi 	OR19	43		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Kurnia Prastiwi, Wina 	OR13	17		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+03/06/2026	Kurnia Prastiwi, Wina 	OR13	47		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+03/06/2026	Kurnia Prastiwi, Wina 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Kurniawati, Fitria 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Kurniawati, Fitria 	OR19	35		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Kusumaning Tyas, Anggraini  	OR23			Insersi conven metal premium, Sp	drg  Prima, Sp.Ort	6.500.000	0
+03/06/2026	Kusumaning Tyas, Anggraini  	OR46			Ortho kit	drg  Prima, Sp.Ort	150.000	0
+03/06/2026	Kusumastutik, Devi 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Kusumastutik, Devi 	OR19	42		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Kusumastutik, Devi 	OR19	15		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Kusumastutik, Devi 	OR36	23		Replacement metal premium	drg  Prima, Sp.Ort	100.000	25.000
+03/06/2026	Mayasari, Fika Hanna  	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Mulyandari, Mulyandari 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Mustika Sari, Chelyana 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Mustika Sari, Chelyana 	OR19	45		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Nadia Putri, Oktaviani 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Nanda Safitri, Nova 	OR10		L	Wire ligature 0,2 mm	drg  Prima, Sp.Ort	20.000	5.000
+03/06/2026	Nanda Safitri, Nova 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Nanda Safitri, Nova 	OR19	22		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Nanda Safitri, Nova 	OR19	23		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Nandita Sari, Natalia 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Niswati M, An 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Niswati M, An 	OR2		L	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+03/06/2026	Niswati M, An 	OR2		U	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+03/06/2026	Novi P.R, Erna 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Novita Yuliastuti, Afifah 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Nudhita, Anky 	KN17	35	O	Devitalisasi Pulpa	drg Lucky	150.000	50.000
+03/06/2026	Nudhita, Anky 	PE3		UL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+03/06/2026	Nudhita, Anky 	PE3		LR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+03/06/2026	Nudhita, Anky 	PE3		LL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+03/06/2026	Nudhita, Anky 	PE3		UR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+03/06/2026	Nufika, Arina 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Nufika, Arina 	OR21	37		Bonding BT	drg  Prima, Sp.Ort	50.000	15.000
+03/06/2026	Nur C, Isnaeni 	OR21	17		Bonding BT	drg Lucky	50.000	9.000
+03/06/2026	Nur S, Anita 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Nur S, Anita 	OR25	22		Crimpable hook	drg  Prima, Sp.Ort	50.000	15.000
+03/06/2026	Nur S, Anita 	OR25	12		Crimpable hook	drg  Prima, Sp.Ort	50.000	15.000
+03/06/2026	Nur S, Anita 	OR7		U	Wire SS 16x16,16x25,18x25	drg  Prima, Sp.Ort	100.000	30.000
+03/06/2026	Nurviviana, Dian 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Nuryanti, Dwi 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Olivia Syahira, Chanika 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Olivia Syahira, Chanika 	OR19	12		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Pratiwi, Ketut 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Pratiwi, Ketut 	OR19	35		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Pratiwi, Ketut 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+03/06/2026	Pujining Rahayu, Desti 	OR13	27		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+03/06/2026	Pujining Rahayu, Desti 	OR13	17		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+03/06/2026	Pujining Rahayu, Desti 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Pujining Rahayu, Desti 	OR2		U	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+03/06/2026	Puspa Wardani, Ratih 	OR22	15		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+03/06/2026	Puspa Wardani, Ratih 	OR22	11		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+03/06/2026	Puspa Wardani, Ratih 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+03/06/2026	Putri, Naraya 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Putri, Naraya 	OR19	35		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Qa'yuko, Destya 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Qa'yuko, Destya 	OR19	24		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Qirana s, Alifia 	BM22	24		Exo premolar ortho GP	drg Lucky	200.000	55.000
+03/06/2026	Qirana s, Alifia 	BM22	14		Exo premolar ortho GP	drg Lucky	200.000	55.000
+03/06/2026	Raditya Pradana, Fathan 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Rahmawati, Melissa arum 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Rahmawati, Weny 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Rizki Marga Putri, Istimawati 	KN5	26	M	Composite Posterior L	drg Lucky	380.000	110.000
+03/06/2026	Rizki Marga Putri, Istimawati 	KN5	35	M	Composite Posterior L	drg Lucky	380.000	110.000
+03/06/2026	Rizki Marga Putri, Istimawati 	KN5	15	M	Composite Posterior L	drg Lucky	380.000	110.000
+03/06/2026	Rizki Marga Putri, Istimawati 	OR13	27		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+03/06/2026	Rizki Marga Putri, Istimawati 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Rizki Marga Putri, Istimawati 	OR2		U	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+03/06/2026	Rizki Marga Putri, Istimawati 	OR93	22		Reposisi bracket	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Rizki Marga Putri, Istimawati 	OR93	21		Reposisi bracket	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Rustiara, Oktavia 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Rustiara, Oktavia 	OR19	35		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Sariwibowo, Puspita 	OR21	17		Bonding BT	drg  Prima, Sp.Ort	50.000	15.000
+03/06/2026	Sariwibowo, Puspita 	OR22	35		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+03/06/2026	Sariwibowo, Puspita 	OR22	45		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+03/06/2026	Sariwibowo, Puspita 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+03/06/2026	Septiani Rahayu, Kintan 	BM11	36		Exo with complication GP	drg. Rizky	400.000	110.000
+03/06/2026	Setia Bakti, Qolun 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+03/06/2026	Setia Bakti, Qolun 	OR3		U	Wire Cu-NiTi 13,16,18,20	drg  Prima, Sp.Ort	150.000	37.500
+03/06/2026	Setia Bakti, Qolun 	OR4		U	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+03/06/2026	Subiyanto, Totok 	OR21	16		Bonding BT	drg  Prima, Sp.Ort	50.000	15.000
+03/06/2026	Subiyanto, Totok 	OR22	35		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+03/06/2026	Subiyanto, Totok 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+03/06/2026	Subiyanto, Totok 	OR36	33		Replacement metal premium	drg  Prima, Sp.Ort	100.000	25.000
+03/06/2026	Syifa Rahmananda, Mayshilaa 	PE3		UR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+03/06/2026	Syifa Rahmananda, Mayshilaa 	PE3		UL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+03/06/2026	Syifa Rahmananda, Mayshilaa 	PE3		LR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+03/06/2026	Syifa Rahmananda, Mayshilaa 	PE3		LL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+03/06/2026	Syifa Rahmananda, Mayshilaa 	PS2		U	Alginate impression	drg Lucky	50.000	12.500
+03/06/2026	Syifa Rahmananda, Mayshilaa 	PS2		L	Alginate impression	drg Lucky	50.000	12.500
+03/06/2026	Tri Rohmawati, Diah 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Tri utami, Ayu 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Tri utami, Ayu 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+03/06/2026	Wijayanto, Ferry 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Wilanten Dyah Pramunendya, Wulan 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Wintia Ningsih, Eka 	KN5	36	O	Composite Posterior L	drg Lucky	380.000	110.000
+03/06/2026	Wintia Ningsih, Eka 	KN5	48	B	Composite Posterior L	drg Lucky	380.000	110.000
+03/06/2026	Wulandari, Aprilia 	PE3		UR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+03/06/2026	Wulandari, Aprilia 	PE3		UL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+03/06/2026	Wulandari, Aprilia 	PE3		LR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+03/06/2026	Wulandari, Aprilia 	PE3		LL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+03/06/2026	Wulandari, Fransiska 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Wulandari, Fransiska 	OR19	23		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Wulandari, Fransiska 	OR19	31		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Yekti Utami Rivai, Sulastri 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Yekti Utami Rivai, Sulastri 	OR19	23		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+03/06/2026	Yuliana Putri, Wulan 	BM20	28		OD maxillary  GP	drg  Prima, Sp.Ort	750.000	0
+03/06/2026	Yuliana Putri, Wulan 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Zahra Sagita, Rasyifa 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+03/06/2026	Zahra Sagita, Rasyifa 	OR4		U	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+04/06/2026	Arthika Fadilla, Alifah 	OR18			Kontrol ortho conventional, Sp	drg.Afina,Sp.Ort	200.000	110.000
+04/06/2026	Astrid Gibran, Yolanda 	OR18			Kontrol ortho conventional, Sp	drg.Afina,Sp.Ort	200.000	110.000
+04/06/2026	Astrid Gibran, Yolanda 	OR19	42		Bonding bracket metal	drg.Afina,Sp.Ort	30.000	7.500
+04/06/2026	Bilqis, Silviani 	OR13	47		Buccal tube M2	drg.Afina,Sp.Ort	50.000	15.000
+04/06/2026	Bilqis, Silviani 	OR18			Kontrol ortho conventional, Sp	drg.Afina,Sp.Ort	200.000	110.000
+04/06/2026	Fauziah, Hazin 	OR18			Kontrol ortho conventional, Sp	drg.Afina,Sp.Ort	200.000	110.000
+04/06/2026	Fredi Handoko, Anton 	OR18			Kontrol ortho conventional, Sp	drg.Afina,Sp.Ort	200.000	110.000
+04/06/2026	Fredi Handoko, Anton 	OR19	41		Bonding bracket metal	drg.Afina,Sp.Ort	30.000	7.500
+04/06/2026	Gandes Maharani, Anggita 	OR10		U	Wire ligature 0,2 mm	drg.Afina,Sp.Ort	20.000	5.000
+04/06/2026	Gandes Maharani, Anggita 	OR18			Kontrol ortho conventional, Sp	drg.Afina,Sp.Ort	200.000	110.000
+04/06/2026	Gandes Maharani, Anggita 	OR4		U	Wire NiTi 16x16,16x22,17x25	drg.Afina,Sp.Ort	100.000	30.000
+04/06/2026	Kartika Puteri, Andanti 	OR18			Kontrol ortho conventional, Sp	drg.Afina,Sp.Ort	200.000	110.000
+04/06/2026	Kartika Puteri, Andanti 	OR2		L	Wire niti round 12,14,16,18,20	drg.Afina,Sp.Ort	50.000	13.750
+04/06/2026	Melania Kinanti Rahajeng, Clara 	OR21	46		Bonding BT	drg.Afina,Sp.Ort	50.000	15.000
+04/06/2026	Mutiara, Adinda 	OR18			Kontrol ortho conventional, Sp	drg.Afina,Sp.Ort	200.000	110.000
+04/06/2026	Mutiara, Adinda 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg.Afina,Sp.Ort	50.000	0
+04/06/2026	Niswati M, An 	OR21	17		Bonding BT	drg.Afina,Sp.Ort	50.000	15.000
+04/06/2026	Puji Astuti, Dwi 	OR10		U	Wire ligature 0,2 mm	drg.Afina,Sp.Ort	20.000	5.000
+04/06/2026	Puji Astuti, Dwi 	OR13	27		Buccal tube M2	drg.Afina,Sp.Ort	50.000	15.000
+04/06/2026	Puji Astuti, Dwi 	OR18			Kontrol ortho conventional, Sp	drg.Afina,Sp.Ort	200.000	110.000
+04/06/2026	Puji Astuti, Dwi 	OR2		U	Wire niti round 12,14,16,18,20	drg.Afina,Sp.Ort	50.000	13.750
+04/06/2026	Purnama, Yuliana 	OR18			Kontrol ortho conventional, Sp	drg.Afina,Sp.Ort	200.000	110.000
+04/06/2026	Purnama, Yuliana 	OR2		U	Wire niti round 12,14,16,18,20	drg.Afina,Sp.Ort	50.000	13.750
+04/06/2026	Rizky, Muhammad 	PE3		UR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+04/06/2026	Rizky, Muhammad 	PE3		UL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+04/06/2026	Rizky, Muhammad 	PE3		LR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+04/06/2026	Rizky, Muhammad 	PE3		LL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+04/06/2026	Romadhona W, Melania 	OR18			Kontrol ortho conventional, Sp	drg.Afina,Sp.Ort	200.000	110.000
+04/06/2026	Romadhona W, Melania 	OR19	13		Bonding bracket metal	drg.Afina,Sp.Ort	30.000	7.500
+04/06/2026	Sulasmi, Sukartini 	OR18			Kontrol ortho conventional, Sp	drg.Afina,Sp.Ort	200.000	110.000
+04/06/2026	Suryaningsih, Anik 	PE1		UR	Scalling per quadran Mild	drg Lucky	60.000	15.000
+04/06/2026	Suryaningsih, Anik 	PE1		UL	Scalling per quadran Mild	drg Lucky	60.000	15.000
+04/06/2026	Suryaningsih, Anik 	PE3		LL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+04/06/2026	Suryaningsih, Anik 	PE3		LR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+04/06/2026	Suryaningsih, Anik 	PS2		U	Alginate impression	drg Lucky	50.000	12.500
+04/06/2026	Suryaningsih, Anik 	PS2		L	Alginate impression	drg Lucky	50.000	12.500
+04/06/2026	Suryaningsih, Anik 	PS35		U	Valplast partial base	drg Lucky	1.750.000	400.000
+04/06/2026	Suryaningsih, Anik 	PS36	24		Valplast partial tooth	drg Lucky	200.000	43.500
+04/06/2026	Yudha Wibantara, David 	OR22	22		Bonding self lig	drg.Afina,Sp.Ort	75.000	25.000
+04/06/2026	Yudha Wibantara, David 	OR22	24		Bonding self lig	drg.Afina,Sp.Ort	75.000	25.000
+04/06/2026	Yudha Wibantara, David 	OR22	43		Bonding self lig	drg.Afina,Sp.Ort	75.000	25.000
+05/06/2026	Aga pramudita, Dionisius 	GA1	52		Exo CE / Topical anestesi	drg Lucky	150.000	37.500
+05/06/2026	Anayo Okafor, Kizito 	OR22	34		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+05/06/2026	Anayo Okafor, Kizito 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+05/06/2026	Arvin Margiansyah, Faisal 	OR15	45		Open coil	drg  Prima, Sp.Ort	50.000	15.000
+05/06/2026	Arvin Margiansyah, Faisal 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+05/06/2026	Arvin Margiansyah, Faisal 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+05/06/2026	Azizah Setiyawati, Nur 	KN2	11	MID	Composite Anterior L	drg Lintang	425.000	125.000
+05/06/2026	Choirun Nisak, Alfi 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Choirun Nisak, Alfi 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+05/06/2026	Damayanti, Evita 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Damayanti, Evita 	OR2		L	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+05/06/2026	Dian, Aprilia 	OR11	36		Buccal tube M1	drg  Prima, Sp.Ort	50.000	15.000
+05/06/2026	Dian, Aprilia 	OR13	17		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+05/06/2026	Dian, Aprilia 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Dian, Aprilia 	OR19	22		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+05/06/2026	Dian, Aprilia 	OR19	35		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+05/06/2026	Dian, Aprilia 	OR19	45		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+05/06/2026	Eka, Ayuningtyas 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Eka, Ayuningtyas 	OR21	36		Bonding BT	drg  Prima, Sp.Ort	50.000	15.000
+05/06/2026	Ernawati, Dwi 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Ernawati, Dwi 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg Minda	100.000	18.000
+05/06/2026	Fadhilah Az Zahra, Dhea 	OR10		U	Wire ligature 0,2 mm	drg  Prima, Sp.Ort	20.000	5.000
+05/06/2026	Fadhilah Az Zahra, Dhea 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Fadhilah Az Zahra, Dhea 	OR7		U	Wire SS 16x16,16x25,18x25	drg  Prima, Sp.Ort	100.000	30.000
+05/06/2026	Fadilah, Anisatul 	OR15	32		Open coil	drg  Prima, Sp.Ort	50.000	15.000
+05/06/2026	Fadilah, Anisatul 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Fadilah, Anisatul 	OR2		L	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+05/06/2026	Fadilah, Anisatul 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+05/06/2026	Fadilah, Anisatul 	OR4		U	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+05/06/2026	Handayani, Susi 	OR46			Ortho kit	drg  Prima, Sp.Ort	150.000	0
+05/06/2026	Handayani, Susi 	OR55			Insersi Self Ligating Non Damon	drg  Prima, Sp.Ort	9.000.000	3.250.000
+05/06/2026	Husna Attarila, Naura 	OR46			Ortho kit	drg  Prima, Sp.Ort	150.000	0
+05/06/2026	Husna Attarila, Naura 	OR55			Insersi Self Ligating Non Damon	drg  Prima, Sp.Ort	9.000.000	3.250.000
+05/06/2026	Ismawati, Dwi 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+05/06/2026	Ismawati, Dwi 	OR6		L	Wire Cu-NiTi 14x25,16x25,19x25	drg  Prima, Sp.Ort	150.000	37.500
+05/06/2026	Kanaya, Keenan 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Keysya, Michelle 	OR30		U	Retainer Essix 1 layer / rahang	drg Lintang	600.000	120.000
+05/06/2026	Keysya, Michelle 	OR30		L	Retainer Essix 1 layer / rahang	drg Lintang	600.000	120.000
+05/06/2026	Keysya, Michelle 	OR40			Aff braces dan scalling	drg Lintang	400.000	90.000
+05/06/2026	Keysya, Michelle 	PE9	22		Gingivectomy electrosurgery	drg  Prima, Sp.Ort	300.000	100.000
+05/06/2026	Keysya, Michelle 	PE9	23		Gingivectomy electrosurgery	drg  Prima, Sp.Ort	300.000	100.000
+05/06/2026	Keysya, Michelle 	PE9	13		Gingivectomy electrosurgery	drg  Prima, Sp.Ort	300.000	100.000
+05/06/2026	Keysya, Michelle 	PE9	12		Gingivectomy electrosurgery	drg  Prima, Sp.Ort	300.000	100.000
+05/06/2026	Keysya, Michelle 	PE9	11		Gingivectomy electrosurgery	drg  Prima, Sp.Ort	300.000	100.000
+05/06/2026	Keysya, Michelle 	PE9	21		Gingivectomy electrosurgery	drg  Prima, Sp.Ort	300.000	100.000
+05/06/2026	Keysya, Michelle 	PS2		U	Alginate impression	drg Lintang	50.000	12.500
+05/06/2026	Keysya, Michelle 	PS2		L	Alginate impression	drg Lintang	50.000	12.500
+05/06/2026	Khairunnisa Napitupulu , Salsabila 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+05/06/2026	Khairunnisa Napitupulu , Salsabila 	OR93	23		Reposisi bracket	drg  Prima, Sp.Ort	30.000	7.500
+05/06/2026	Koesrastyana, Rika 	OR102	46		Molar band recementation	drg  Prima, Sp.Ort	80.000	30.000
+05/06/2026	Koesrastyana, Rika 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Koesrastyana, Rika 	OR2		L	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+05/06/2026	Larasati, Kunthi 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Marenza Putriyana, Dhila 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Mawadati NS, Asqina 	KN4	37	O	Composite Posterior S/M	drg. Rizky	280.000	80.000
+05/06/2026	Mawadati NS, Asqina 	OR13	37		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+05/06/2026	Mawadati NS, Asqina 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Mawadati NS, Asqina 	OR4		U	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+05/06/2026	Mawadati NS, Asqina 	PE2		UR	Scalling per quadran Moderate	drg. Rizky	90.000	25.000
+05/06/2026	Mawadati NS, Asqina 	PE2		LR	Scalling per quadran Moderate	drg. Rizky	90.000	25.000
+05/06/2026	Mawadati NS, Asqina 	PE2		LL	Scalling per quadran Moderate	drg. Rizky	90.000	25.000
+05/06/2026	Mawadati NS, Asqina 	PE2		UL	Scalling per quadran Moderate	drg. Rizky	90.000	25.000
+05/06/2026	Miranda Damayanti , Akinta  	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Miranda Damayanti , Akinta  	OR2		U	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+05/06/2026	Miranda Damayanti , Akinta  	OR2		L	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+05/06/2026	Mubarokah, Kiki 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Muhammad S, Mada 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Muhammad S, Mada 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+05/06/2026	Muhammad S, Mada 	OR7		L	Wire SS 16x16,16x25,18x25	drg  Prima, Sp.Ort	100.000	30.000
+05/06/2026	Naswa agela, Allea 	PE3		LR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+05/06/2026	Naswa agela, Allea 	PE3		LL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+05/06/2026	Naswa agela, Allea 	PE3		UR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+05/06/2026	Naswa agela, Allea 	PE3		UL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+05/06/2026	Nayla, Akifah 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+05/06/2026	Nayla, Akifah 	OR9		L	Wire RCS niti recta	drg  Prima, Sp.Ort	180.000	35.000
+05/06/2026	Nur Fajri, Novita 	OR10		U	Wire ligature 0,2 mm	drg  Prima, Sp.Ort	20.000	5.000
+05/06/2026	Nur Fajri, Novita 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Nur Fajri, Novita 	OR19	25		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+05/06/2026	Purwaningsih, Ayuk 	KN1	22	M	Composite Anterior S/M	drg. Rizky	350.000	100.000
+05/06/2026	Purwaningsih, Ayuk 	KN1	11	M	Composite Anterior S/M	drg. Rizky	350.000	100.000
+05/06/2026	Purwaningsih, Ayuk 	KN2	21	MID	Composite Anterior L	drg. Rizky	425.000	125.000
+05/06/2026	Pusparani, Arita 	BM2		U	Frenectomy, SpBM	drg  Prima, Sp.Ort	1.200.000	500.000
+05/06/2026	Rahayu, Nita 	OR14	16		Button	drg  Prima, Sp.Ort	50.000	15.000
+05/06/2026	Rahayu, Nita 	OR14	15		Button	drg  Prima, Sp.Ort	50.000	15.000
+05/06/2026	Rahayu, Nita 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Rahayu, Tantriyani 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Rahayu, Tantriyani 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+05/06/2026	Resti Safarina, Elza 	OR11	16		Buccal tube M1	drg  Prima, Sp.Ort	50.000	15.000
+05/06/2026	Resti Safarina, Elza 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Resti Safarina, Elza 	OR19	45		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+05/06/2026	Resti Safarina, Elza 	OR4		U	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+05/06/2026	S.D, Oktivika 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	S.D, Oktivika 	OR19	31		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+05/06/2026	S.D, Oktivika 	OR19	41		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+05/06/2026	Sekar Bela, Amanda 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+05/06/2026	Sekar Bela, Amanda 	OR19	35		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+05/06/2026	Sekar Bela, Amanda 	OR36	12		Replacement metal premium	drg  Prima, Sp.Ort	100.000	25.000
+05/06/2026	Septiyanti, Ina 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+05/06/2026	Septiyanti, Ina 	OR36	43		Replacement metal premium	drg  Prima, Sp.Ort	100.000	25.000
+05/06/2026	Tsaqif Alhakiim, Muh 	OR14	35		Button	drg  Prima, Sp.Ort	50.000	15.000
+05/06/2026	Tsaqif Alhakiim, Muh 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+05/06/2026	Tsaqif Alhakiim, Muh 	OR6		U	Wire Cu-NiTi 14x25,16x25,19x25	drg  Prima, Sp.Ort	150.000	37.500
+05/06/2026	Yuliza, Novi 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+05/06/2026	Yuliza, Novi 	OR3		L	Wire Cu-NiTi 13,16,18,20	drg  Prima, Sp.Ort	150.000	37.500
+06/06/2026	Alfitri, Nur 	BM11	37		Exo with complication GP	drg Minda	400.000	110.000
+06/06/2026	Alifa Kusumawardani, Mutia 	OR18			Kontrol ortho conventional, Sp	drg.Erin	200.000	110.000
+06/06/2026	Alifa Kusumawardani, Mutia 	OR25	22		Crimpable hook	drg.Erin	50.000	15.000
+06/06/2026	Alifa Kusumawardani, Mutia 	OR25	12		Crimpable hook	drg.Erin	50.000	15.000
+06/06/2026	Alifa Kusumawardani, Mutia 	OR7		U	Wire SS 16x16,16x25,18x25	drg.Erin	100.000	30.000
+06/06/2026	Alifa Kusumawardani, Mutia 	OR7		L	Wire SS 16x16,16x25,18x25	drg.Erin	100.000	30.000
+06/06/2026	Arvin Margiansyah, Faisal 	OR22	23		Bonding self lig	drg.Erin	75.000	25.000
+06/06/2026	Atikawati, Farah 	EX0			Consultation GP	drg Lucky	50.000	30.000
+06/06/2026	Febriani, Putri 	OR13	27		Buccal tube M2	drg.Erin	50.000	15.000
+06/06/2026	Febriani, Putri 	OR13	17		Buccal tube M2	drg.Erin	50.000	15.000
+06/06/2026	Febriani, Putri 	OR15	34		Open coil	drg.Erin	50.000	15.000
+06/06/2026	Febriani, Putri 	OR18			Kontrol ortho conventional, Sp	drg.Erin	200.000	110.000
+06/06/2026	Febriani, Putri 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg.Erin	50.000	0
+06/06/2026	Febriani, Putri 	OR4		U	Wire NiTi 16x16,16x22,17x25	drg.Erin	100.000	30.000
+06/06/2026	Febriani, Putri 	OR7		L	Wire SS 16x16,16x25,18x25	drg.Erin	100.000	30.000
+06/06/2026	Indah Puspitasari , Sekar  	BM3	26		Affhecting / control	drg Lucky	100.000	30.000
+06/06/2026	Indah Puspitasari , Sekar  	KN4	45	D	Composite Posterior S/M	drg Lucky	280.000	80.000
+06/06/2026	Indah Puspitasari , Sekar  	KN5	36	OB	Composite Posterior L	drg Lucky	380.000	110.000
+06/06/2026	Indah Puspitasari , Sekar  	KN5	46	OB	Composite Posterior L	drg Lucky	380.000	110.000
+06/06/2026	Lusiyana, Ita 	BM22	44		Exo premolar ortho GP	drg Lucky	200.000	55.000
+06/06/2026	Lusiyana, Ita 	BM22	14		Exo premolar ortho GP	drg Lucky	200.000	55.000
+06/06/2026	Rafael Gunawan, Joseph 	EX1			Consultation SP	drg.Erin	100.000	0
+06/06/2026	Rahmalia, Annida 	OR11	36		Buccal tube M1	drg.Erin	50.000	15.000
+06/06/2026	Rahmalia, Annida 	OR18			Kontrol ortho conventional, Sp	drg.Erin	200.000	110.000
+06/06/2026	Rahmalia, Annida 	OR21	16		Bonding BT	drg.Erin	50.000	15.000
+06/06/2026	Rahmalia, Annida 	OR25	22		Crimpable hook	drg.Erin	50.000	15.000
+06/06/2026	Tian Oktavia, Putri 	PE9	43		Gingivectomy electrosurgery	drg.Erin	300.000	100.000
+06/06/2026	Widyastuti, Ika 	EX0			Consultation GP	drg Minda	50.000	30.000
+06/06/2026	Widyastuti, Ika 	EX1			Consultation SP	drg.Erin	100.000	80.000
+08/06/2026	Aditya Amewa, Celvin 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Aditya Amewa, Celvin 	OR19	45		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+08/06/2026	Aditya Amewa, Celvin 	OR2		L	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+08/06/2026	Aditya Amewa, Celvin 	OR36	33		Replacement metal premium	drg  Prima, Sp.Ort	100.000	25.000
+08/06/2026	Amara Kusumaningrum, Ridha 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Asmir Alhamdika, Adilla 	OR14	13		Button	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Asmir Alhamdika, Adilla 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Asmir Alhamdika, Adilla 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+08/06/2026	Atikaningsih, Atikaningsih 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Atikaningsih, Atikaningsih 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+08/06/2026	Ayu Claresta, Deandra 	OR14	45		Button	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Ayu Claresta, Deandra 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+08/06/2026	Ayu Claresta, Deandra 	OR3		U	Wire Cu-NiTi 13,16,18,20	drg  Prima, Sp.Ort	150.000	37.500
+08/06/2026	Ayu Claresta, Deandra 	OR93	42		Reposisi bracket	drg  Prima, Sp.Ort	30.000	7.500
+08/06/2026	Ayu Pitaloka, Diah 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Ayu Pitaloka, Diah 	OR19	45		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+08/06/2026	Ayu Pitaloka, Diah 	OR21	47		Bonding BT	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Ayu, Diska 	OR11	16		Buccal tube M1	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Ayu, Diska 	OR21	37		Bonding BT	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Ayu, Diska 	OR21	36		Bonding BT	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Ayu, Diska 	OR22	43		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+08/06/2026	Ayu, Diska 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+08/06/2026	Ayyasy, M daffa 	KN5	37	O	Composite Posterior L	drg. Rizky	380.000	110.000
+08/06/2026	Azka Rachmawati, Lusiana 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Azka Rachmawati, Lusiana 	OR19	33		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+08/06/2026	Berliana Dian Gumilang , Velysha 	OR14	41		Button	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Berliana Dian Gumilang , Velysha 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+08/06/2026	Cholisotun Nisa, Isnaini 	PE2		UL	Scalling per quadran Moderate	drg Minda	90.000	25.000
+08/06/2026	Cholisotun Nisa, Isnaini 	PE2		UR	Scalling per quadran Moderate	drg Minda	90.000	25.000
+08/06/2026	Cholisotun Nisa, Isnaini 	PE3		LR	Scalling per quadran Severe	drg Minda	125.000	35.000
+08/06/2026	Cholisotun Nisa, Isnaini 	PE3		LL	Scalling per quadran Severe	drg Minda	125.000	35.000
+08/06/2026	Cholisotun Nisa, Isnaini 	PS2		U	Alginate impression	drg Minda	50.000	12.500
+08/06/2026	Cholisotun Nisa, Isnaini 	PS2		L	Alginate impression	drg Minda	50.000	12.500
+08/06/2026	Ciptaningsih, Indah 	OR11	16		Buccal tube M1	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Ciptaningsih, Indah 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Ciptaningsih, Indah 	OR2		U	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+08/06/2026	Ciptaningsih, Indah 	OR36	32		Replacement metal premium	drg  Prima, Sp.Ort	100.000	25.000
+08/06/2026	Ciptaningsih, Indah 	OR36	15		Replacement metal premium	drg  Prima, Sp.Ort	100.000	25.000
+08/06/2026	Dian P, Evangelica 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Diska Diah, Mai 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Dwi Astuti, Al Vina 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Dwi Astuti, Al Vina 	OR7		L	Wire SS 16x16,16x25,18x25	drg  Prima, Sp.Ort	100.000	30.000
+08/06/2026	Dwiastuti, Apreliani 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Enik, Enik 	KN4	24	B	Composite Posterior S/M	drg. Rizky	280.000	80.000
+08/06/2026	Enik, Enik 	KN4	14	B	Composite Posterior S/M	drg. Rizky	280.000	80.000
+08/06/2026	Enik, Enik 	PE1		UL	Scalling per quadran Mild	drg. Rizky	60.000	15.000
+08/06/2026	Enik, Enik 	PE2		UR	Scalling per quadran Moderate	drg. Rizky	90.000	25.000
+08/06/2026	Enik, Enik 	PE3		LR	Scalling per quadran Severe	drg. Rizky	125.000	35.000
+08/06/2026	Enik, Enik 	PE3		LL	Scalling per quadran Severe	drg. Rizky	125.000	35.000
+08/06/2026	Erlinawati, Reza 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Erlinawati, Reza 	OR19	31		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+08/06/2026	Erlinawati, Reza 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+08/06/2026	Fany Wulandari, Septi 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Farah Labita, Annisa 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Farah Labita, Annisa 	OR4		U	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+08/06/2026	Farah Labita, Annisa 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+08/06/2026	Farahdiba, Gisela Alya	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Farahdiba, Gisela Alya	OR44	21		Bonding porcelain	drg  Prima, Sp.Ort	70.000	17.500
+08/06/2026	Fitri dwi puspitasari, Olvia 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Fitri Hardianti, Eva 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Fitri Hardianti, Eva 	OR21	47		Bonding BT	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Fitri Hardianti, Eva 	OR25	22		Crimpable hook	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Fitri Hardianti, Eva 	OR25	12		Crimpable hook	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Fitriyah, Yeni 	OR30		U	Retainer Essix 1 layer / rahang	drg  Prima, Sp.Ort	600.000	200.000
+08/06/2026	Fitriyah, Yeni 	OR30		L	Retainer Essix 1 layer / rahang	drg  Prima, Sp.Ort	600.000	200.000
+08/06/2026	Fitriyah, Yeni 	OR40			Aff braces dan scalling	drg. Rizky	400.000	90.000
+08/06/2026	Fitriyah, Yeni 	PS2		U	Alginate impression	drg. Rizky	50.000	12.500
+08/06/2026	Fitriyah, Yeni 	PS2		L	Alginate impression	drg. Rizky	50.000	12.500
+08/06/2026	Hanifah Haq, Justika 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Hanifah Haq, Justika 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+08/06/2026	Ika Fibriani, Vefti 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Ika Fibriani, Vefti 	OR36	12		Replacement metal premium	drg  Prima, Sp.Ort	100.000	25.000
+08/06/2026	Intan, Riyani 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Ivanova Sulistyaningrum, Berliana 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Ivanova Sulistyaningrum, Berliana 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+08/06/2026	Kuncoro, Donny 	OR22	14		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+08/06/2026	Kuncoro, Donny 	OR22	11		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+08/06/2026	Kuncoro, Donny 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+08/06/2026	Kurniawan, Akhmad 	PE3		UR	Scalling per quadran Severe	drg Minda	125.000	35.000
+08/06/2026	Kurniawan, Akhmad 	PE3		UL	Scalling per quadran Severe	drg Minda	125.000	35.000
+08/06/2026	Kurniawan, Akhmad 	PE3		LR	Scalling per quadran Severe	drg Minda	125.000	35.000
+08/06/2026	Kurniawan, Akhmad 	PE3		LL	Scalling per quadran Severe	drg Minda	125.000	35.000
+08/06/2026	Kusnindar, Isnaini 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Kusumaningtyas, Ratih 	OR13	37		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Kusumaningtyas, Ratih 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Kusumaningtyas, Ratih 	OR50			TAD mini screw	drg  Prima, Sp.Ort	1.600.000	350.000
+08/06/2026	Kusumaningtyas, Ratih 	OR50			TAD mini screw	drg  Prima, Sp.Ort	1.600.000	350.000
+08/06/2026	Laela Widyaningrum , Maya 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+08/06/2026	Laela Widyaningrum , Maya 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+08/06/2026	Latief, Tesa 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Latief, Tesa 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+08/06/2026	Leka, Chandra 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Leka, Chandra 	OR21	26		Bonding BT	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Leka, Chandra 	OR86			Insersi ulang TAD	drg  Prima, Sp.Ort	200.000	50.000
+08/06/2026	Maharani, Olga 	PE2		UR	Scalling per quadran Moderate	drg Minda	90.000	25.000
+08/06/2026	Maharani, Olga 	PE2		UL	Scalling per quadran Moderate	drg Minda	90.000	25.000
+08/06/2026	Maharani, Olga 	PE3		LR	Scalling per quadran Severe	drg Minda	125.000	35.000
+08/06/2026	Maharani, Olga 	PE3		LL	Scalling per quadran Severe	drg Minda	125.000	35.000
+08/06/2026	Maharani, Olga 	PS2		U	Alginate impression	drg Minda	50.000	12.500
+08/06/2026	Maharani, Olga 	PS2		L	Alginate impression	drg Minda	50.000	12.500
+08/06/2026	Maharsi, Nurulliana 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Maysha, Ellen 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Muflihah, Rohmawati 	EX0			Consultation GP	drg. Rizky	50.000	30.000
+08/06/2026	Mutiara, Kayla 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Nastiti Kauripan, Adzkia 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Nuril Armadhiya, Gabriel 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Nuril Armadhiya, Gabriel 	OR19	25		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+08/06/2026	Nurjanah, Karunia 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+08/06/2026	Nurjanah, Karunia 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+08/06/2026	Nurul Qani'ah, Azizah 	OR13	47		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Nurul Qani'ah, Azizah 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Nurul Qani'ah, Azizah 	OR2		L	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+08/06/2026	Prasetya, Gandi 	OR14	32		Button	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Prasetya, Gandi 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Prasetya, Gandi 	OR7		U	Wire SS 16x16,16x25,18x25	drg  Prima, Sp.Ort	100.000	30.000
+08/06/2026	Prasetyo Dewantoro, Angga 	OR13	47		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Prasetyo Dewantoro, Angga 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Prasetyo Dewantoro, Angga 	OR19	45		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+08/06/2026	Pratama Ramadhan, Adira 	OR15	23		Open coil	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Pratama Ramadhan, Adira 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+08/06/2026	Pratama Ramadhan, Adira 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+08/06/2026	Purnaning hapsari, Windya 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Purnaning hapsari, Windya 	OR19	43		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+08/06/2026	Putri Krisnaya, Aulia 	OR21	26		Bonding BT	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Putri Krisnaya, Aulia 	OR21	27		Bonding BT	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Putri Krisnaya, Aulia 	OR22	35		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+08/06/2026	Putri Krisnaya, Aulia 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+08/06/2026	Radheva, Raka 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Rahayu, Ristina Tri	CS3	13		Veneer Direct regular GP	drg. Rizky	500.000	150.000
+08/06/2026	Rahayu, Ristina Tri	EN16	11		Anestesi endo tambahan	drg  Prima, Sp.Ort	100.000	35.000
+08/06/2026	Rahayu, Ristina Tri	KN2	23	IDL	Composite Anterior L	drg. Rizky	425.000	125.000
+08/06/2026	Rahayu, Ristina Tri	KN5	14	DL	Composite Posterior L	drg. Rizky	380.000	110.000
+08/06/2026	Rahayu, Ristina Tri	PS28	36		Crown Zirconia Reguler (incl pre smnt	drg  Prima, Sp.Ort	3.000.000	1.000.000
+08/06/2026	Rahayu, Ristina Tri	PS45			Titanium Bar Medium	drg  Prima, Sp.Ort	2.000.000	0
+08/06/2026	Rahmawati, Ari 	OR23			Insersi conven metal premium, Sp	drg  Prima, Sp.Ort	6.500.000	2.750.000
+08/06/2026	Rahmawati, Ari 	OR46			Ortho kit	drg  Prima, Sp.Ort	150.000	0
+08/06/2026	Rarasati, Dewi 	OR15	13		Open coil	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Rarasati, Dewi 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Rarasati, Dewi 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+08/06/2026	Revi Silviani, Tria 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Riyanto, Reyhan 	OR15	22		Open coil	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Riyanto, Reyhan 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+08/06/2026	Riyanto, Reyhan 	OR36	13		Replacement metal premium	drg  Prima, Sp.Ort	100.000	25.000
+08/06/2026	Riyanto, Reyhan 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+08/06/2026	Serilda Daniswara, Reva 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Serilda Daniswara, Reva 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+08/06/2026	Setianingsih, Fery 	OR11	26		Buccal tube M1	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Setianingsih, Fery 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Setianingsih, Fery 	OR2		L	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+08/06/2026	Setianingsih, Fery 	OR36	35		Replacement metal premium	drg  Prima, Sp.Ort	100.000	25.000
+08/06/2026	Setianingsih, Fery 	OR44	36		Bonding porcelain	drg  Prima, Sp.Ort	70.000	17.500
+08/06/2026	Subekti, Wening 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Sukma, Khifatih 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Sukma, Khifatih 	OR7		U	Wire SS 16x16,16x25,18x25	drg  Prima, Sp.Ort	100.000	30.000
+08/06/2026	Susanti, Rini 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Wahyu Saputri, Cindy 	OR13	37		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Wahyu Saputri, Cindy 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Wahyuningsih, Sri Rejeki 	PE2		UR	Scalling per quadran Moderate	drg. Rizky	90.000	25.000
+08/06/2026	Wahyuningsih, Sri Rejeki 	PE2		UL	Scalling per quadran Moderate	drg. Rizky	90.000	25.000
+08/06/2026	Wahyuningsih, Sri Rejeki 	PE3		LL	Scalling per quadran Severe	drg. Rizky	125.000	35.000
+08/06/2026	Wahyuningsih, Sri Rejeki 	PE3		LR	Scalling per quadran Severe	drg. Rizky	125.000	35.000
+08/06/2026	Widayanti, Ari 	OR14	32		Button	drg  Prima, Sp.Ort	50.000	15.000
+08/06/2026	Widayanti, Ari 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Widayanti, Ari 	OR19	45		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+08/06/2026	Widya Royani, Ervina 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Wijaya, Annida 	OR2		L	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+08/06/2026	Wijaya, Annida 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+08/06/2026	Wijaya, Annida 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+08/06/2026	Wijaya, Annida 	OR6		U	Wire Cu-NiTi 14x25,16x25,19x25	drg  Prima, Sp.Ort	150.000	37.500
+08/06/2026	Wiyono, Agung 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+08/06/2026	Wulandari, Tika 	BM22	34		Exo premolar ortho GP	drg. Rizky	200.000	55.000
+08/06/2026	Wulandari, Tika 	BM22	44		Exo premolar ortho GP	drg. Rizky	200.000	55.000
+08/06/2026	Wulandari, Tika 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Wuri, Wuri 	001			Clinical Examination	drg Minda	0	0
+08/06/2026	Wuri, Wuri 	PE2		UR	Scalling per quadran Moderate	drg Minda	90.000	25.000
+08/06/2026	Wuri, Wuri 	PE2		UL	Scalling per quadran Moderate	drg Minda	90.000	25.000
+08/06/2026	Wuri, Wuri 	PE3		LR	Scalling per quadran Severe	drg Minda	125.000	35.000
+08/06/2026	Wuri, Wuri 	PE3		LL	Scalling per quadran Severe	drg Minda	125.000	35.000
+08/06/2026	Wuri, Wuri 	PS2		U	Alginate impression	drg Minda	50.000	12.500
+08/06/2026	Wuri, Wuri 	PS2		L	Alginate impression	drg Minda	50.000	12.500
+08/06/2026	Yesiana Setyaningrum, Dea 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Yunitaningrum, Devi 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Yunitaningrum, Devi 	OR50			TAD mini screw	drg  Prima, Sp.Ort	1.600.000	350.000
+08/06/2026	Zaldinay Asaku Muthea Audrin, Puan 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+08/06/2026	Zaldinay Asaku Muthea Audrin, Puan 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+09/06/2026	Anggraini, Rachel 	PE1		LL	Scalling per quadran Mild	drg Lintang	60.000	15.000
+09/06/2026	Anggraini, Rachel 	PE1		LR	Scalling per quadran Mild	drg Lintang	60.000	15.000
+09/06/2026	Anggraini, Rachel 	PE1		UR	Scalling per quadran Mild	drg Lintang	60.000	15.000
+09/06/2026	Anggraini, Rachel 	PE1		UL	Scalling per quadran Mild	drg Lintang	60.000	15.000
+09/06/2026	Apriliyani, Anita 	EN3	46		RCT one visit 3 canal, Sp	drg.Kristanti, Sp.KG	2.400.000	1.050.000
+09/06/2026	El Shaki, Haidar 	GA10	84	O	Gic S / M	drg Lintang	250.000	57.000
+09/06/2026	Gunawan Saputra, Rusli 	EN12	11		Pasak fiber	drg.Kristanti, Sp.KG	400.000	200.000
+09/06/2026	Gunawan Saputra, Rusli 	KN14	11	I	Rewalling komposit S/M	drg.Kristanti, Sp.KG	300.000	150.000
+09/06/2026	Lathifa, Davina 	EN15	37		Open acces RCT/extirpasi	drg.Kristanti, Sp.KG	200.000	80.000
+09/06/2026	Nur Azizah, Haniesya 	EX1			Consultation SP	drg.Kristanti, Sp.KG	100.000	0
+09/06/2026	Suryaningsih, Anik 	001			Clinical Examination	drg Lucky	0	0
+09/06/2026	Widyaningtyas, Pangesti 	EX1			Consultation SP	drg.Kristanti, Sp.KG	100.000	80.000
+09/06/2026	Zafran Said, Muhammad 	EX0			Consultation GP	drg Lucky	50.000	30.000
+10/06/2026	Adicandra Nugraha, Pradana 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Alfriliano, M.Andri 	OR13	47		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Alfriliano, M.Andri 	OR21	26		Bonding BT	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Alfriliano, M.Andri 	OR21	37		Bonding BT	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Alfriliano, M.Andri 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+10/06/2026	Alfriliano, M.Andri 	OR3		U	Wire Cu-NiTi 13,16,18,20	drg  Prima, Sp.Ort	150.000	37.500
+10/06/2026	Alfriliano, M.Andri 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+10/06/2026	Anindhita Dhaniswara Prabowo, Qorina 	OR11	16		Buccal tube M1	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Anindhita Dhaniswara Prabowo, Qorina 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Apryanti, Rizky 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Apryanti, Rizky 	OR21	36		Bonding BT	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Arvino, Michael 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Ashadewi, Katarina 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+10/06/2026	Ashadewi, Katarina 	OR93	41		Reposisi bracket	drg  Prima, Sp.Ort	30.000	7.500
+10/06/2026	Aulia Puspitasari, Resiana 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Ayu Puspitasari, Apriliana 	OR13	47		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Ayu Puspitasari, Apriliana 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Ayu Puspitasari, Apriliana 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+10/06/2026	Az Zahra Putri, Danisha 	PE2		UR	Scalling per quadran Moderate	drg Lucky	90.000	25.000
+10/06/2026	Az Zahra Putri, Danisha 	PE2		UL	Scalling per quadran Moderate	drg Lucky	90.000	25.000
+10/06/2026	Az Zahra Putri, Danisha 	PE2		LR	Scalling per quadran Moderate	drg Lucky	90.000	25.000
+10/06/2026	Az Zahra Putri, Danisha 	PE2		LL	Scalling per quadran Moderate	drg Lucky	90.000	25.000
+10/06/2026	Az Zahra Putri, Danisha 	PS2		U	Alginate impression	drg Lucky	50.000	12.500
+10/06/2026	Az Zahra Putri, Danisha 	PS2		L	Alginate impression	drg Lucky	50.000	12.500
+10/06/2026	Azzam Mufida, Naufal 	OR14	23		Button	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Azzam Mufida, Naufal 	OR22	45		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+10/06/2026	Azzam Mufida, Naufal 	OR3		U	Wire Cu-NiTi 13,16,18,20	drg  Prima, Sp.Ort	150.000	37.500
+10/06/2026	Azzam Mufida, Naufal 	OR3		L	Wire Cu-NiTi 13,16,18,20	drg  Prima, Sp.Ort	150.000	37.500
+10/06/2026	Azzam Mufida, Naufal 	OR93	14		Reposisi bracket	drg  Prima, Sp.Ort	30.000	7.500
+10/06/2026	Chasanah, Uswatun 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Chasanah, Uswatun 	OR4		U	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+10/06/2026	Christania, Omegani 	OR21	46		Bonding BT	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Christania, Omegani 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+10/06/2026	Devin A, Muh Albryan 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Devin A, Muh Albryan 	OR19	22		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+10/06/2026	Devin A, Muh Albryan 	OR19	35		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+10/06/2026	Devin A, Muh Albryan 	OR19	15		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+10/06/2026	Devin A, Muh Albryan 	OR34	45		Replacement metal reguler	drg  Prima, Sp.Ort	75.000	12.500
+10/06/2026	Dian almahri, Bilqis 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Dian almahri, Bilqis 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+10/06/2026	Diandra Felysia, Risdawati 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Diandra Felysia, Risdawati 	OR19	45		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+10/06/2026	Diandra Felysia, Risdawati 	OR2		U	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+10/06/2026	Diandra Felysia, Risdawati 	OR2		L	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+10/06/2026	Dwi Astuti, Dina 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Dwi ramadan, Kusnul 	OR14	11		Button	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Dwi ramadan, Kusnul 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+10/06/2026	Dyah Astuti, Novi 	OR13	37		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Dyah Astuti, Novi 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Ermawati, Yeni 	KN5	18	O	Composite Posterior L	drg. Rizky	380.000	110.000
+10/06/2026	Ermawati, Yeni 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Ervina, Yulita 	BM22	35		Exo premolar ortho GP	drg Lucky	200.000	55.000
+10/06/2026	Ervina, Yulita 	BM22	45		Exo premolar ortho GP	drg Lucky	200.000	55.000
+10/06/2026	Ervina, Yulita 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Farras Muthmainnah , Atiqah 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Fatimah, Siti 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Febria Hanifah, Intan 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Gustina, Sabila 	OR10		U	Wire ligature 0,2 mm	drg  Prima, Sp.Ort	20.000	5.000
+10/06/2026	Gustina, Sabila 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Gustina, Sabila 	OR90	34		Archwire sleeves	drg  Prima, Sp.Ort	20.000	7.500
+10/06/2026	Hamidah, Ruhul 	OR10		U	Wire ligature 0,2 mm	drg  Prima, Sp.Ort	20.000	5.000
+10/06/2026	Hamidah, Ruhul 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Hamidah, Ruhul 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+10/06/2026	Hamidah, Ruhul 	OR4		U	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+10/06/2026	Hasifah, Hasifah 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Hasifah, Hasifah 	OR19	13		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+10/06/2026	Hasifah, Hasifah 	OR2		U	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+10/06/2026	Hasifah, Hasifah 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+10/06/2026	Hening, Aninda 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Indah Puspitasari , Sekar  	OR23			Insersi conven metal premium, Sp	drg  Prima, Sp.Ort	6.500.000	2.750.000
+10/06/2026	Indah Puspitasari , Sekar  	OR46			Ortho kit	drg  Prima, Sp.Ort	150.000	0
+10/06/2026	Indah Puspitasari , Sekar  	OR48	27		Bite riser	drg  Prima, Sp.Ort	100.000	30.000
+10/06/2026	Indah Puspitasari , Sekar  	OR48	16		Bite riser	drg  Prima, Sp.Ort	100.000	30.000
+10/06/2026	Indarwati, Dwi 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Indarwati, Dwi 	OR19	25		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+10/06/2026	Indarwati, Dwi 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+10/06/2026	Indarwati, Dwi 	OR50			TAD mini screw	drg  Prima, Sp.Ort	1.600.000	350.000
+10/06/2026	Jefry Setiawan ,  Muhammad 	OR15	13		Open coil	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Jefry Setiawan ,  Muhammad 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+10/06/2026	Jefry Setiawan ,  Muhammad 	OR3		U	Wire Cu-NiTi 13,16,18,20	drg  Prima, Sp.Ort	150.000	37.500
+10/06/2026	Kartika sari, Maya 	OR14	24		Button	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Kartika sari, Maya 	OR15	11		Open coil	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Kartika sari, Maya 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+10/06/2026	Kartika sari, Maya 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+10/06/2026	Lintang Mikaela, Angelika 	OR22	31		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+10/06/2026	Lintang Mikaela, Angelika 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+10/06/2026	Lusiyana, Ita 	BM22	24		Exo premolar ortho GP	drg Lucky	200.000	55.000
+10/06/2026	Lusiyana, Ita 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Lusiyana, Ita 	OR19	22		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+10/06/2026	Maritza Humaira, Hana 	OR15	12		Open coil	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Maritza Humaira, Hana 	OR22	31		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+10/06/2026	Maritza Humaira, Hana 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+10/06/2026	Maritza Humaira, Hana 	OR3		U	Wire Cu-NiTi 13,16,18,20	drg  Prima, Sp.Ort	150.000	37.500
+10/06/2026	Naqiya Vidi, Iniesta 	OR10		U	Wire ligature 0,2 mm	drg  Prima, Sp.Ort	20.000	5.000
+10/06/2026	Naqiya Vidi, Iniesta 	OR22	25		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+10/06/2026	Naqiya Vidi, Iniesta 	OR22	42		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+10/06/2026	Naqiya Vidi, Iniesta 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+10/06/2026	Naqiya Vidi, Iniesta 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+10/06/2026	Naqiya Vidi, Iniesta 	OR7		U	Wire SS 16x16,16x25,18x25	drg  Prima, Sp.Ort	100.000	30.000
+10/06/2026	Novita, Vera 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Novita, Vera 	OR19	15		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+10/06/2026	Novita, Vera 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+10/06/2026	Novita, Vera 	OR44	36		Bonding porcelain	drg  Prima, Sp.Ort	70.000	17.500
+10/06/2026	Novita, Vera 	OR44	46		Bonding porcelain	drg  Prima, Sp.Ort	70.000	17.500
+10/06/2026	Nur Ainiy, Inayani 	KN10	14	B	Dressing Eugenol/Cresophene/Iod	drg. Rizky	125.000	25.000
+10/06/2026	Nurhana, Ipung 	BM11	45		Exo with complication GP	drg Lucky	400.000	110.000
+10/06/2026	Nurhana, Ipung 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Nurhana, Ipung 	OR2		U	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+10/06/2026	Nurhana, Ipung 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+10/06/2026	Nurma Nuridwan, Indah 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Nurma Nuridwan, Indah 	OR19	23		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+10/06/2026	Nurul Pratiyani, Alfiya 	BM22	34		Exo premolar ortho GP	drg Lucky	200.000	55.000
+10/06/2026	Nurul Pratiyani, Alfiya 	BM22	44		Exo premolar ortho GP	drg Lucky	200.000	55.000
+10/06/2026	Nurul Pratiyani, Alfiya 	OR11	16		Buccal tube M1	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Nurul Pratiyani, Alfiya 	OR13	27		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Nurul Pratiyani, Alfiya 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Nurul Pratiyani, Alfiya 	OR2		U	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+10/06/2026	Olivia Syahira, Chanika 	OR33		L	Retainer Lingual / rahang	drg  Prima, Sp.Ort	750.000	200.000
+10/06/2026	Olivia Syahira, Chanika 	OR33		U	Retainer Lingual / rahang	drg  Prima, Sp.Ort	750.000	200.000
+10/06/2026	Olivia Syahira, Chanika 	OR40			Aff braces dan scalling	drg Lucky	400.000	90.000
+10/06/2026	Pebrianti, Aqifa 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Puspa Anggraini, Diyah 	BM11	46		Exo with complication GP	drg. Rizky	400.000	110.000
+10/06/2026	Puspa Anggraini, Diyah 	OR14	25		Button	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Puspa Anggraini, Diyah 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Putri Hasna, Kinariyan 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Qirana s, Alifia 	OR14	23		Button	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Qirana s, Alifia 	OR14	33		Button	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Qirana s, Alifia 	OR14	43		Button	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Qirana s, Alifia 	OR14	13		Button	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Qirana s, Alifia 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Rajendra, Adib 	OR10		L	Wire ligature 0,2 mm	drg  Prima, Sp.Ort	20.000	5.000
+10/06/2026	Rajendra, Adib 	OR22	45		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+10/06/2026	Rajendra, Adib 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+10/06/2026	Rajendra, Adib 	OR36	25		Replacement metal premium	drg  Prima, Sp.Ort	100.000	25.000
+10/06/2026	Ramadhani , Amelia 	PE3		UR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+10/06/2026	Ramadhani , Amelia 	PE3		UL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+10/06/2026	Ramadhani , Amelia 	PE3		LR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+10/06/2026	Ramadhani , Amelia 	PE3		LL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+10/06/2026	Ramadhani , Amelia 	PS2		U	Alginate impression	drg Lucky	50.000	12.500
+10/06/2026	Ramadhani , Amelia 	PS2		L	Alginate impression	drg Lucky	50.000	12.500
+10/06/2026	Ramayanti, Ratih 	OR10		U	Wire ligature 0,2 mm	drg  Prima, Sp.Ort	20.000	5.000
+10/06/2026	Ramayanti, Ratih 	OR10		L	Wire ligature 0,2 mm	drg  Prima, Sp.Ort	20.000	5.000
+10/06/2026	Ramayanti, Ratih 	OR21	17		Bonding BT	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Ramayanti, Ratih 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+10/06/2026	Ramayanti, Ratih 	OR25	22		Crimpable hook	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Ramayanti, Ratih 	OR25	32		Crimpable hook	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Ramayanti, Ratih 	OR25	42		Crimpable hook	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Ramayanti, Ratih 	OR25	12		Crimpable hook	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Ramayanti, Ratih 	OR7		U	Wire SS 16x16,16x25,18x25	drg  Prima, Sp.Ort	100.000	30.000
+10/06/2026	Ramayanti, Ratih 	OR7		L	Wire SS 16x16,16x25,18x25	drg  Prima, Sp.Ort	100.000	30.000
+10/06/2026	Salma Anindya, Amalia 	EX1			Consultation SP	drg  Prima, Sp.Ort	100.000	80.000
+10/06/2026	Septiyanti Maharani, Dian 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+10/06/2026	Setyaningsih, Anik 	OR14	26		Button	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Setyaningsih, Anik 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Setyaningsih, Anik 	OR25	22		Crimpable hook	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Setyaningsih, Anik 	OR25	32		Crimpable hook	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Setyaningsih, Anik 	OR25	42		Crimpable hook	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Setyaningsih, Anik 	OR25	12		Crimpable hook	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Shafwan M, Ataya 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+10/06/2026	Shafwan M, Ataya 	OR25	22		Crimpable hook	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Shafwan M, Ataya 	OR36	15		Replacement metal premium	drg  Prima, Sp.Ort	100.000	25.000
+10/06/2026	Shafwan M, Ataya 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+10/06/2026	Shafwan M, Ataya 	OR6		U	Wire Cu-NiTi 14x25,16x25,19x25	drg  Prima, Sp.Ort	150.000	37.500
+10/06/2026	Sholihin, Muhajir 	KN10	26	O	Dressing Eugenol/Cresophene/Iod	drg Lucky	125.000	25.000
+10/06/2026	Sholihin, Muhajir 	PS2		L	Alginate impression	drg Lucky	50.000	12.500
+10/06/2026	Sholihin, Muhajir 	PS2		U	Alginate impression	drg Lucky	50.000	12.500
+10/06/2026	Sholihin, Muhajir 	PS35		U	Valplast partial base	drg Lucky	1.750.000	400.000
+10/06/2026	Sholihin, Muhajir 	PS36	16		Valplast partial tooth	drg Lucky	200.000	43.500
+10/06/2026	Siwi Hanani, Syafira 	BM22	34		Exo premolar ortho GP	drg. Rizky	200.000	55.000
+10/06/2026	Siwi Hanani, Syafira 	BM22	44		Exo premolar ortho GP	drg. Rizky	200.000	55.000
+10/06/2026	Siwi Hanani, Syafira 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Siwi Hanani, Syafira 	OR2		U	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+10/06/2026	Stefani, Gabriella 	OR13	37		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Stefani, Gabriella 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+10/06/2026	Susanti, Titien 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Syifa Rahmananda, Mayshilaa 	OR23			Insersi conven metal premium, Sp	drg  Prima, Sp.Ort	6.500.000	2.750.000
+10/06/2026	Syifa Rahmananda, Mayshilaa 	OR46			Ortho kit	drg  Prima, Sp.Ort	150.000	0
+10/06/2026	Tiara Listi, Anindya 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Tiara Listi, Anindya 	OR19	35		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+10/06/2026	Tiara Listi, Anindya 	OR21	47		Bonding BT	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Wiliyanto, Andika 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+10/06/2026	Wiliyanto, Andika 	OR6		U	Wire Cu-NiTi 14x25,16x25,19x25	drg  Prima, Sp.Ort	150.000	37.500
+10/06/2026	Wiliyanto, Andika 	OR7		L	Wire SS 16x16,16x25,18x25	drg  Prima, Sp.Ort	100.000	30.000
+10/06/2026	Wulandari, Ranti 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Wulandari, Ranti 	OR19	45		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+10/06/2026	Wulandari, Ranti 	OR2		L	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+10/06/2026	Yunarni, Yunarni 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Yuyun, Anastasya 	OR11	26		Buccal tube M1	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Yuyun, Anastasya 	OR13	27		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Yuyun, Anastasya 	OR13	17		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+10/06/2026	Yuyun, Anastasya 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+10/06/2026	Yuyun, Anastasya 	OR2		U	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+10/06/2026	Yuyun, Anastasya 	OR36	41		Replacement metal premium	drg  Prima, Sp.Ort	100.000	25.000
+10/06/2026	Zharifah, Hasna 	GA1	65		Exo CE / Topical anestesi	drg. Rizky	150.000	37.500
+10/06/2026	Zharifah, Hasna 	OR30		L	Retainer Essix 1 layer / rahang	drg  Prima, Sp.Ort	600.000	200.000
+10/06/2026	Zharifah, Hasna 	OR30		U	Retainer Essix 1 layer / rahang	drg  Prima, Sp.Ort	600.000	200.000
+10/06/2026	Zharifah, Hasna 	OR40			Aff braces dan scalling	drg. Rizky	400.000	90.000
+10/06/2026	Zharifah, Hasna 	PS2		U	Alginate impression	drg. Rizky	50.000	12.500
+10/06/2026	Zharifah, Hasna 	PS2		L	Alginate impression	drg. Rizky	50.000	12.500
+11/06/2026	Adhi pamingkas, Anang 	KN10	14	O	Dressing Eugenol/Cresophene/Iod	drg Lucky	125.000	25.000
+11/06/2026	Cahyaningtyas, Triana 	KN5	38	O	Composite Posterior L	drg Lucky	380.000	110.000
+11/06/2026	Dwi Wahyuniarti, Elia 	EX2			Medication	drg Lucky	50.000	30.000
+11/06/2026	Fitri, Nabiela 	OR11	46		Buccal tube M1	drg Lintang	50.000	9.000
+11/06/2026	Fitri, Nabiela 	OR3		U	Wire Cu-NiTi 13,16,18,20	drg Lintang	150.000	22.500
+11/06/2026	Fitri, Nabiela 	OR3		L	Wire Cu-NiTi 13,16,18,20	drg Lintang	150.000	22.500
+11/06/2026	Fitri, Nabiela 	OR98			Kontrol ortho SL GP	drg Lintang	200.000	70.000
+11/06/2026	Kurniawan Yoga P, Muh 	PE3		UR	Scalling per quadran Severe	drg Lintang	125.000	35.000
+11/06/2026	Kurniawan Yoga P, Muh 	PE3		UL	Scalling per quadran Severe	drg Lintang	125.000	35.000
+11/06/2026	Kurniawan Yoga P, Muh 	PE3		LR	Scalling per quadran Severe	drg Lintang	125.000	35.000
+11/06/2026	Kurniawan Yoga P, Muh 	PE3		LL	Scalling per quadran Severe	drg Lintang	125.000	35.000
+11/06/2026	Latief, Tesa 	OR19	13		Bonding bracket metal	drg Lintang	30.000	4.500
+11/06/2026	Mumtaza Azhari, Balqis 	KN5	36	B	Composite Posterior L	drg Lucky	380.000	110.000
+11/06/2026	Rahayu, Lestari 	OR11	36		Buccal tube M1	drg Lucky	50.000	15.000
+11/06/2026	Rahayu, Lestari 	OR19	34		Bonding bracket metal	drg Lucky	30.000	7.500
+11/06/2026	Rahayu, Lestari 	OR19	42		Bonding bracket metal	drg Lucky	30.000	7.500
+11/06/2026	Rahayu, Lestari 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg Lucky	100.000	30.000
+11/06/2026	Rahayu, Lestari 	OR88			Kontrol ortho konvensional GP	drg Lucky	130.000	40.000
+11/06/2026	Salma Anindya, Amalia 	PE3		LL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+11/06/2026	Salma Anindya, Amalia 	PE3		UR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+11/06/2026	Salma Anindya, Amalia 	PE3		UL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+11/06/2026	Salma Anindya, Amalia 	PE3		LR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+11/06/2026	Salma Anindya, Amalia 	PS2		U	Alginate impression	drg Lucky	50.000	12.500
+11/06/2026	Salma Anindya, Amalia 	PS2		L	Alginate impression	drg Lucky	50.000	12.500
+11/06/2026	Sukinten, Lucia 	KN4	24	D	Composite Posterior S/M	drg Lucky	280.000	80.000
+11/06/2026	Sukinten, Lucia 	KN4	25	M	Composite Posterior S/M	drg Lucky	280.000	80.000
+12/06/2026	Afritasari Nur Hidayah, Devi 	OR2		L	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+12/06/2026	Afritasari Nur Hidayah, Devi 	OR22	33		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+12/06/2026	Afritasari Nur Hidayah, Devi 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+12/06/2026	Aisyah Asri Ashari, Ayu 	OR11	46		Buccal tube M1	drg  Prima, Sp.Ort	50.000	15.000
+12/06/2026	Aisyah Asri Ashari, Ayu 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Aisyah Asri Ashari, Ayu 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+12/06/2026	Akbar Muhammad, Ghozi 	OR13	26		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+12/06/2026	Akbar Muhammad, Ghozi 	OR13	47		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+12/06/2026	Akbar Muhammad, Ghozi 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Aldenio iswara jati, Laurentius 	GA1	72		Exo CE / Topical anestesi	drg Lucky	150.000	37.500
+12/06/2026	Anggri Pramesti, Bernadetha 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Anggri Pramesti, Bernadetha 	OR19	13		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+12/06/2026	Anggri Pramesti, Bernadetha 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+12/06/2026	Arvin Margiansyah, Faisal 	OR13	27		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+12/06/2026	Arvin Margiansyah, Faisal 	OR36	23		Replacement metal premium	drg  Prima, Sp.Ort	100.000	25.000
+12/06/2026	Aryanti, Febry 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+12/06/2026	Aryanti, Febry 	OR3		U	Wire Cu-NiTi 13,16,18,20	drg  Prima, Sp.Ort	150.000	37.500
+12/06/2026	Assyaathir satriyo, M.Yassar 	OR11	16		Buccal tube M1	drg  Prima, Sp.Ort	50.000	15.000
+12/06/2026	Assyaathir satriyo, M.Yassar 	OR15	11		Open coil	drg  Prima, Sp.Ort	50.000	15.000
+12/06/2026	Assyaathir satriyo, M.Yassar 	OR22	13		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+12/06/2026	Assyaathir satriyo, M.Yassar 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+12/06/2026	Aulia Fitri Andini, Narez 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Aulia Izzah Janah, Putri 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Aulia Izzah Janah, Putri 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+12/06/2026	Aulia, Shahnaz 	OR30		U	Retainer Essix 1 layer / rahang	drg  Prima, Sp.Ort	600.000	200.000
+12/06/2026	Aulia, Shahnaz 	OR30		L	Retainer Essix 1 layer / rahang	drg  Prima, Sp.Ort	600.000	200.000
+12/06/2026	Aulia, Shahnaz 	OR40			Aff braces dan scalling	drg. Rizky	400.000	90.000
+12/06/2026	Aulia, Shahnaz 	PS2		U	Alginate impression	drg. Rizky	50.000	12.500
+12/06/2026	Aulia, Shahnaz 	PS2		L	Alginate impression	drg. Rizky	50.000	12.500
+12/06/2026	Az Zahra Putri, Danisha 	KN5	46	OB	Composite Posterior L	drg. Rizky	380.000	110.000
+12/06/2026	Az Zahra Putri, Danisha 	OR23			Insersi conven metal premium, Sp	drg  Prima, Sp.Ort	6.500.000	2.750.000
+12/06/2026	Az Zahra Putri, Danisha 	OR46			Ortho kit	drg  Prima, Sp.Ort	150.000	0
+12/06/2026	Az Zahra, Hanifah 	OR13	37		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+12/06/2026	Az Zahra, Hanifah 	OR13	47		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+12/06/2026	Az Zahra, Hanifah 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Az Zahra, Hanifah 	OR19	11		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+12/06/2026	Az Zahra, Hanifah 	OR2		L	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+12/06/2026	Azalia Kurnita, Nayza 	BM22	24		Exo premolar ortho GP	drg Lintang	200.000	55.000
+12/06/2026	Azalia Kurnita, Nayza 	BM22	14		Exo premolar ortho GP	drg Lintang	200.000	55.000
+12/06/2026	Azalia Kurnita, Nayza 	OR13	37		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+12/06/2026	Azalia Kurnita, Nayza 	OR22	45		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+12/06/2026	Azalia Kurnita, Nayza 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+12/06/2026	Dadiraka, Bagas 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Dirham Putra, Reydito 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Dirham Putra, Reydito 	OR7		L	Wire SS 16x16,16x25,18x25	drg  Prima, Sp.Ort	100.000	30.000
+12/06/2026	Dwi ramadan, Kusnul 	OR22	12		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+12/06/2026	Endria haqqu, Lathifani 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Endria haqqu, Lathifani 	OR19	15		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+12/06/2026	Endria haqqu, Lathifani 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+12/06/2026	Faaiq, Muhammad 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Faaiq, Muhammad 	OR19	23		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+12/06/2026	Faaiq, Muhammad 	OR44	11		Bonding porcelain	drg  Prima, Sp.Ort	70.000	17.500
+12/06/2026	Falicha, Ayu 	OR11	46		Buccal tube M1	drg  Prima, Sp.Ort	50.000	15.000
+12/06/2026	Falicha, Ayu 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Falicha, Ayu 	OR19	42		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+12/06/2026	Falicha, Ayu 	OR19	11		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+12/06/2026	Gunawan Saputra, Rusli 	BM20	18		OD maxillary  GP	drg Lintang	750.000	250.000
+12/06/2026	Gunawan Saputra, Rusli 	BM20	28		OD maxillary  GP	drg Lintang	750.000	250.000
+12/06/2026	Hadiyati, Nurrohmah 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Ika Yuliana, Destia 	OR14	16		Button	drg  Prima, Sp.Ort	50.000	15.000
+12/06/2026	Ika Yuliana, Destia 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Ika Yuliana, Destia 	OR36	42		Replacement metal premium	drg  Prima, Sp.Ort	100.000	25.000
+12/06/2026	Ikhsan M, Muhammad 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Ilham jati, Aldiaz 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+12/06/2026	Kaysa Rafida, Salwa 	PE1		UR	Scalling per quadran Mild	drg Lintang	60.000	15.000
+12/06/2026	Kaysa Rafida, Salwa 	PE1		LR	Scalling per quadran Mild	drg Lintang	60.000	15.000
+12/06/2026	Kaysa Rafida, Salwa 	PE1		UL	Scalling per quadran Mild	drg Lintang	60.000	15.000
+12/06/2026	Kaysa Rafida, Salwa 	PE1		LL	Scalling per quadran Mild	drg Lintang	60.000	15.000
+12/06/2026	Kaysa Rafida, Salwa 	PS2		L	Alginate impression	drg Lintang	50.000	12.500
+12/06/2026	Kaysa Rafida, Salwa 	PS2		U	Alginate impression	drg Lintang	50.000	12.500
+12/06/2026	Khotizah, Siti 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Khotizah, Siti 	OR19	45		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+12/06/2026	Khotizah, Siti 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+12/06/2026	Mahsamia, Ardelia 	OR11	46		Buccal tube M1	drg  Prima, Sp.Ort	50.000	15.000
+12/06/2026	Mahsamia, Ardelia 	OR13	47		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+12/06/2026	Mahsamia, Ardelia 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Mahsamia, Ardelia 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+12/06/2026	Mahsamia, Ardelia 	OR44	21		Bonding porcelain	drg  Prima, Sp.Ort	70.000	17.500
+12/06/2026	Maryanti, Rina Dwi 	OR62	32		Attachment Aligner per unit	drg  Prima, Sp.Ort	120.000	35.000
+12/06/2026	Mufida Salsabila, Sinta 	GA1	55		Exo CE / Topical anestesi	drg Lintang	150.000	37.500
+12/06/2026	Nailah Suryawan, Anindya 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Nailah Suryawan, Anindya 	OR19	41		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+12/06/2026	Novitasari, Mustika 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Novitasari, Mustika 	OR19	12		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+12/06/2026	Nur Azizah, Haniesya 	BM1	36		Exo GP	drg Lintang	250.000	70.000
+12/06/2026	Nur Azizah, Haniesya 	PE2		UR	Scalling per quadran Moderate	drg Lintang	90.000	25.000
+12/06/2026	Nur Azizah, Haniesya 	PE2		UL	Scalling per quadran Moderate	drg Lintang	90.000	25.000
+12/06/2026	Nur Azizah, Haniesya 	PE2		LL	Scalling per quadran Moderate	drg Lintang	90.000	25.000
+12/06/2026	Nur Azizah, Haniesya 	PE2		LR	Scalling per quadran Moderate	drg Lintang	90.000	25.000
+12/06/2026	Nur Azizah, Haniesya 	PS2		U	Alginate impression	drg Lintang	50.000	12.500
+12/06/2026	Nur Azizah, Haniesya 	PS2		L	Alginate impression	drg Lintang	50.000	12.500
+12/06/2026	Nurhalisa, Fanisa 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Nurhayati, Rina 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Paraswati, Berlian 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Pusparani, Arita 	BM3	11		Affhecting / control	drg  Prima, Sp.Ort	100.000	50.000
+12/06/2026	Putra arsy, Andhika 	OR10		U	Wire ligature 0,2 mm	drg  Prima, Sp.Ort	20.000	5.000
+12/06/2026	Putra arsy, Andhika 	OR11	16		Buccal tube M1	drg  Prima, Sp.Ort	50.000	15.000
+12/06/2026	Putra arsy, Andhika 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+12/06/2026	Rachma Dewi , Rizqi 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+12/06/2026	Rachma Dewi , Rizqi 	OR3		U	Wire Cu-NiTi 13,16,18,20	drg  Prima, Sp.Ort	150.000	37.500
+12/06/2026	Rachma Dewi , Rizqi 	OR3		L	Wire Cu-NiTi 13,16,18,20	drg  Prima, Sp.Ort	150.000	37.500
+12/06/2026	Rochmani Putri, Marsya 	OR14	33		Button	drg  Prima, Sp.Ort	50.000	15.000
+12/06/2026	Rochmani Putri, Marsya 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Salma Anindya, Amalia 	OR46			Ortho kit	drg  Prima, Sp.Ort	150.000	0
+12/06/2026	Salma Anindya, Amalia 	OR48	26		Bite riser	drg  Prima, Sp.Ort	100.000	30.000
+12/06/2026	Salma Anindya, Amalia 	OR48	16		Bite riser	drg  Prima, Sp.Ort	100.000	30.000
+12/06/2026	Salma Anindya, Amalia 	OR55			Insersi Self Ligating Non Damon	drg  Prima, Sp.Ort	9.000.000	3.250.000
+12/06/2026	Serilda Daniswara, Reva 	EX1			Consultation SP	drg  Prima, Sp.Ort	100.000	80.000
+12/06/2026	Sukinten, Lucia 	KN10	24	DB	Dressing Eugenol/Cresophene/Iod	drg Lucky	125.000	25.000
+12/06/2026	Swastika, Agustina 	OR10		U	Wire ligature 0,2 mm	drg  Prima, Sp.Ort	20.000	5.000
+12/06/2026	Swastika, Agustina 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+12/06/2026	Swastika, Agustina 	OR3		L	Wire Cu-NiTi 13,16,18,20	drg  Prima, Sp.Ort	150.000	37.500
+12/06/2026	Wahyundari, Zulfa 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+12/06/2026	Wahyuningsih, Sri Rejeki 	BM1	22		Exo GP	drg. Rizky	250.000	70.000
+12/06/2026	Wahyuningsih, Sri Rejeki 	BM1	13		Exo GP	drg. Rizky	250.000	70.000
+12/06/2026	Wahyuningsih, Sri Rejeki 	BM1	21		Exo GP	drg. Rizky	250.000	70.000
+12/06/2026	Widi, Linta 	EX1			Consultation SP	drg  Prima, Sp.Ort	100.000	80.000
+13/06/2026	Abdiel vito julianta, Samuel 	OR15	12		Open coil	drg  Prima, Sp.Ort	50.000	15.000
+13/06/2026	Abdiel vito julianta, Samuel 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+13/06/2026	Aldiansyah Warih K.B, Bintang 	OR11	36		Buccal tube M1	drg  Prima, Sp.Ort	50.000	15.000
+13/06/2026	Aldiansyah Warih K.B, Bintang 	OR11	46		Buccal tube M1	drg  Prima, Sp.Ort	50.000	15.000
+13/06/2026	Aldiansyah Warih K.B, Bintang 	OR13	37		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+13/06/2026	Aldiansyah Warih K.B, Bintang 	OR13	47		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+13/06/2026	Aldiansyah Warih K.B, Bintang 	OR14	31		Button	drg  Prima, Sp.Ort	50.000	15.000
+13/06/2026	Aldiansyah Warih K.B, Bintang 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+13/06/2026	Aldiansyah Warih K.B, Bintang 	OR19	23		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+13/06/2026	Aldiansyah Warih K.B, Bintang 	OR19	24		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+13/06/2026	Aldiansyah Warih K.B, Bintang 	OR19	32		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+13/06/2026	Aldiansyah Warih K.B, Bintang 	OR19	44		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+13/06/2026	Aldiansyah Warih K.B, Bintang 	OR19	45		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+13/06/2026	Aldiansyah Warih K.B, Bintang 	OR2		U	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+13/06/2026	Aldiansyah Warih K.B, Bintang 	OR2		L	Wire niti round 12,14,16,18,20	drg  Prima, Sp.Ort	50.000	13.750
+13/06/2026	Aldiansyah Warih K.B, Bintang 	OR48	27		Bite riser	drg  Prima, Sp.Ort	100.000	30.000
+13/06/2026	Aldiansyah Warih K.B, Bintang 	OR48	17		Bite riser	drg  Prima, Sp.Ort	100.000	30.000
+13/06/2026	Aldiansyah Warih K.B, Bintang 	PE3		LR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+13/06/2026	Aldiansyah Warih K.B, Bintang 	PE3		UR	Scalling per quadran Severe	drg Lucky	125.000	35.000
+13/06/2026	Aldiansyah Warih K.B, Bintang 	PE3		UL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+13/06/2026	Aldiansyah Warih K.B, Bintang 	PE3		LL	Scalling per quadran Severe	drg Lucky	125.000	35.000
+13/06/2026	Alfiana , Jessika 	OR36	22		Replacement metal premium	drg  Prima, Sp.Ort	100.000	25.000
+13/06/2026	Alfiana , Jessika 	PS14	22		Metal frame tooth	drg  Prima, Sp.Ort	200.000	72.500
+13/06/2026	Aritah Hidayati, Noor 	KN5	37	O	Composite Posterior L	drg Lucky	380.000	110.000
+13/06/2026	Atika Sari, Mirna 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+13/06/2026	Atika Sari, Mirna 	OR44	46		Bonding porcelain	drg  Prima, Sp.Ort	70.000	17.500
+13/06/2026	Devyyana, Chiva 	OR11	36		Buccal tube M1	drg Minda	50.000	15.000
+13/06/2026	Devyyana, Chiva 	OR19	34		Bonding bracket metal	drg Minda	30.000	7.500
+13/06/2026	Devyyana, Chiva 	OR19	13		Bonding bracket metal	drg Minda	30.000	7.500
+13/06/2026	Devyyana, Chiva 	OR21	37		Bonding BT	drg Minda	50.000	15.000
+13/06/2026	Devyyana, Chiva 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg Minda	100.000	30.000
+13/06/2026	Devyyana, Chiva 	OR88			Kontrol ortho konvensional GP	drg Minda	130.000	40.000
+13/06/2026	Diah Saputri, Tiara 	OR11	36		Buccal tube M1	drg  Prima, Sp.Ort	50.000	15.000
+13/06/2026	Diah Saputri, Tiara 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+13/06/2026	Dina Syintawati, Zulfa 	KN1	13	M	Composite Anterior S/M	drg Lucky	350.000	100.000
+13/06/2026	Dina Syintawati, Zulfa 	KN5	17	O	Composite Posterior L	drg Lucky	380.000	110.000
+13/06/2026	Eva, Anindya 	EX1			Consultation SP	drg  Prima, Sp.Ort	100.000	80.000
+13/06/2026	Fatha Hidayat, Alya 	OR22	25		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+13/06/2026	Fatha Hidayat, Alya 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+13/06/2026	Fatha Hidayat, Alya 	OR83	13		Drop in hook Mico one	drg  Prima, Sp.Ort	50.000	15.000
+13/06/2026	Febriani, Putri 	EX0			Consultation GP	drg Minda	50.000	30.000
+13/06/2026	Hidayah, Nurul 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+13/06/2026	Indra Prayoga, Raka 	OR11	16		Buccal tube M1	drg  Prima, Sp.Ort	50.000	15.000
+13/06/2026	Indra Prayoga, Raka 	OR13	37		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+13/06/2026	Indra Prayoga, Raka 	OR13	47		Buccal tube M2	drg  Prima, Sp.Ort	50.000	15.000
+13/06/2026	Indra Prayoga, Raka 	OR19	35		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+13/06/2026	Indra Prayoga, Raka 	OR22	34		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+13/06/2026	Indra Prayoga, Raka 	OR22	45		Bonding self lig	drg  Prima, Sp.Ort	75.000	25.000
+13/06/2026	Indra Prayoga, Raka 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+13/06/2026	Indra Prayoga, Raka 	OR3		U	Wire Cu-NiTi 13,16,18,20	drg  Prima, Sp.Ort	150.000	37.500
+13/06/2026	Indra Prayoga, Raka 	OR3		L	Wire Cu-NiTi 13,16,18,20	drg  Prima, Sp.Ort	150.000	37.500
+13/06/2026	Indra Prayoga, Raka 	OR36	33		Replacement metal premium	drg  Prima, Sp.Ort	100.000	25.000
+13/06/2026	Indra Prayoga, Raka 	OR48	27		Bite riser	drg  Prima, Sp.Ort	100.000	30.000
+13/06/2026	Indra Prayoga, Raka 	OR48	17		Bite riser	drg  Prima, Sp.Ort	100.000	30.000
+13/06/2026	Kurniati, Agustina 	OR14	33		Button	drg  Prima, Sp.Ort	50.000	15.000
+13/06/2026	Kurniati, Agustina 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+13/06/2026	Kurniati, Agustina 	OR39			Elastic 2,5 oz 4,5 oz ; 6,5 oz	drg  Prima, Sp.Ort	50.000	0
+13/06/2026	Maida Setiawan, Levina 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+13/06/2026	Maretta Suryaningtyas, Nadia 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+13/06/2026	Mega Utami, Rurin 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+13/06/2026	Muyek, Muyek 	KN2	22	F	Composite Anterior L	drg Lucky	425.000	125.000
+13/06/2026	Muyek, Muyek 	KN2	23	F	Composite Anterior L	drg Lucky	425.000	125.000
+13/06/2026	Muyek, Muyek 	KN2	43	F	Composite Anterior L	drg Lucky	425.000	125.000
+13/06/2026	Muyek, Muyek 	KN2	13	F	Composite Anterior L	drg Lucky	425.000	125.000
+13/06/2026	Muyek, Muyek 	KN5	24	B	Composite Posterior L	drg Lucky	380.000	110.000
+13/06/2026	Muyek, Muyek 	KN5	25	B	Composite Posterior L	drg Lucky	380.000	110.000
+13/06/2026	Muyek, Muyek 	KN5	26	MOB	Composite Posterior L	drg Lucky	380.000	110.000
+13/06/2026	Muyek, Muyek 	KN5	44	B	Composite Posterior L	drg Lucky	380.000	110.000
+13/06/2026	Muyek, Muyek 	KN5	45	B	Composite Posterior L	drg Lucky	380.000	110.000
+13/06/2026	Muyek, Muyek 	PE2		UR	Scalling per quadran Moderate	drg Lucky	90.000	25.000
+13/06/2026	Muyek, Muyek 	PE2		UL	Scalling per quadran Moderate	drg Lucky	90.000	25.000
+13/06/2026	Muyek, Muyek 	PE2		LR	Scalling per quadran Moderate	drg Lucky	90.000	25.000
+13/06/2026	Muyek, Muyek 	PE2		LL	Scalling per quadran Moderate	drg Lucky	90.000	25.000
+13/06/2026	Nur C, Isnaeni 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+13/06/2026	Nur C, Isnaeni 	OR6		U	Wire Cu-NiTi 14x25,16x25,19x25	drg  Prima, Sp.Ort	150.000	37.500
+13/06/2026	Nur Isnaini, Rita 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+13/06/2026	Pramesti Putri, Kartika 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+13/06/2026	Putri Kusuma P, Shafira 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+13/06/2026	Putri Kusuma P, Shafira 	OR19	35		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+13/06/2026	Putri Kusuma P, Shafira 	OR4		L	Wire NiTi 16x16,16x22,17x25	drg  Prima, Sp.Ort	100.000	30.000
+13/06/2026	Putri Kusuma P, Shafira 	OR7		U	Wire SS 16x16,16x25,18x25	drg  Prima, Sp.Ort	100.000	30.000
+13/06/2026	Rafiq N, Danendra 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+13/06/2026	Rahmini, Sumi 	OR23			Insersi conven metal premium, Sp	drg  Prima, Sp.Ort	6.500.000	2.750.000
+13/06/2026	Rahmini, Sumi 	OR46			Ortho kit	drg  Prima, Sp.Ort	150.000	0
+13/06/2026	Rahmini, Sumi 	OR48	26		Bite riser	drg  Prima, Sp.Ort	100.000	30.000
+13/06/2026	Rahmini, Sumi 	OR48	16		Bite riser	drg  Prima, Sp.Ort	100.000	30.000
+13/06/2026	Ristanto, Roni 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+13/06/2026	Rizki, Lutfia 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+13/06/2026	Roh Chayatun, Siti 	OR24			Kontrol ortho self ligating, Sp	drg  Prima, Sp.Ort	300.000	150.000
+13/06/2026	Roh Chayatun, Siti 	OR6		L	Wire Cu-NiTi 14x25,16x25,19x25	drg  Prima, Sp.Ort	150.000	37.500
+13/06/2026	Septriana, Alfina 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+13/06/2026	Septriana, Alfina 	OR7		U	Wire SS 16x16,16x25,18x25	drg  Prima, Sp.Ort	100.000	30.000
+13/06/2026	Septriana, Alfina 	OR77	22		Torqueing spring	drg  Prima, Sp.Ort	80.000	15.000
+13/06/2026	Septriana, Alfina 	OR77	12		Torqueing spring	drg  Prima, Sp.Ort	80.000	15.000
+13/06/2026	Sholihin, Muhajir 	001			Clinical Examination	drg Lucky	0	0
+13/06/2026	Sumiati, Sumiati 	BM1	46		Exo GP	drg Minda	250.000	70.000
+13/06/2026	Tatsumi Rizels K, Nehemia 	GA1	64		Exo CE / Topical anestesi	drg Lucky	150.000	37.500
+13/06/2026	Widya Puspitasari, Devita 	BM12	47		Tambah anestes i/ ampul	drg  Prima, Sp.Ort	50.000	0
+13/06/2026	Widya Puspitasari, Devita 	OR18			Kontrol ortho conventional, Sp	drg  Prima, Sp.Ort	200.000	110.000
+13/06/2026	Widya Puspitasari, Devita 	OR19	42		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+13/06/2026	Widya Puspitasari, Devita 	OR19	45		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+13/06/2026	Widya Puspitasari, Devita 	OR19	14		Bonding bracket metal	drg  Prima, Sp.Ort	30.000	7.500
+13/06/2026	Wiramutifa, Wiramutifa 	OR21	36		Bonding BT	drg Lucky	50.000	9.000
+13/06/2026	Wiramutifa, Wiramutifa 	OR88			Kontrol ortho konvensional GP	drg Lucky	130.000	40.000
+20/06/2026	 Aurelia, Fanisha 	KN11	33	M	Composite Anterior L, Sp KG	drg Lintang	550.000	0
+20/06/2026	Apri Utomo, Endru  	BM11	23		Exo with complication GP	drg Minda	400.000	0
+20/06/2026	Apri Utomo, Endru  	KN12	13	M	Composite Posterior L, Sp KG	drg Minda	480.000	0
+20/06/2026	Apri Utomo, Endru  	KN5	24	M	Composite Posterior L	drg Minda	380.000	0
+20/06/2026	Apri Utomo, Endru  	KN5	38	M	Composite Posterior L	drg Minda	380.000	0
+22/06/2026	Apri Utomo, Endru  	KN4	13	I	Composite Posterior S/M	drg  Prima, Sp.Ort	280.000	0
+22/06/2026	Wiryo, Wiryo 	EX0			Consultation GP	drg  Prima, Sp.Ort	50.000	0
+23/06/2026	 Adheanco P, M.Fatria  	KN15	18		Tindakan darurat pulpitis	drg  Prima, Sp.Ort	250.000	0
+23/06/2026	 Adheanco P, M.Fatria  	KN4	17	O	Composite Posterior S/M	drg  Prima, Sp.Ort	280.000	0
+23/06/2026	 Adheanco P, M.Fatria  	KN4	45	M	Composite Posterior S/M	drg Minda	280.000	0
+ 	 	 	 	 	 	 	243.800.000	87.771.250	
