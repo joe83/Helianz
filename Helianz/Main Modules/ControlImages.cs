@@ -775,7 +775,7 @@ namespace Helianz{
 			Mount mount=controlImageDisplay.GetMountShowing();
 			string text="";
 			if(nodeTypeAndKey!=null && nodeTypeAndKey.NodeType==EnumImageNodeType.Document && document!=null){
-				text=document.DateCreated.ToShortDateString()+": "+document.Description;
+				text=(document.DateCreated.Year<1880 ? "" : document.DateCreated.ToShortDateString()+": ")+document.Description;
 				//no need to show document note in title because it shows as bottom in separate panel.
 				if(document.ToothNumbers!=""){
 					if(document.ToothNumbers.Contains(",")){

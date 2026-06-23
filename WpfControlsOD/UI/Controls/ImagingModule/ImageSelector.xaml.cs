@@ -691,7 +691,7 @@ Only used once in Imaging module.
 				IconLibrary.DrawWpf(enumIcons,gridIcon);
 				TextBlock textBlock=new TextBlock();
 				System.Windows.Controls.Grid.SetColumn(textBlock,1);
-				textBlock.Text=listNodeObjTags[i].DateCreated.ToShortDateString()+": "+listNodeObjTags[i].Description;
+				textBlock.Text=(listNodeObjTags[i].DateCreated.Year<1880 ? "" : listNodeObjTags[i].DateCreated.ToShortDateString()+": ")+listNodeObjTags[i].Description;
 				textBlock.Margin=new Thickness(2,0,0,0);
 				textBlock.VerticalAlignment=VerticalAlignment.Center;
 				grid.Children.Add(textBlock);
@@ -759,7 +759,7 @@ Only used once in Imaging module.
 				grid.Children.Add(rectangle);*/
 				TextBlock textBlock=new TextBlock();
 				System.Windows.Controls.Grid.SetRow(textBlock,1);
-				textBlock.Text=listNodeObjTags[i].DateCreated.ToShortDateString();
+				textBlock.Text=listNodeObjTags[i].DateCreated.Year<1880 ? "" : listNodeObjTags[i].DateCreated.ToShortDateString();
 				textBlock.VerticalAlignment=VerticalAlignment.Center;
 				textBlock.HorizontalAlignment=HorizontalAlignment.Center;
 				grid.Children.Add(textBlock);
@@ -1365,7 +1365,20 @@ Only used once in Imaging module.
 				DocNum=PIn.Long(dataRow["DocNum"].ToString());
 				MountNum=PIn.Long(dataRow["MountNum"].ToString());
 				DocCategory=PIn.Long(dataRow["DocCategory"].ToString());
-				DateCreated=PIn.DateT(dataRow["DateCreated"].ToString());
+				if(dataRow["DateCreated"] is DateTime){
+					DateCreated=(DateTime)dataRow["DateCreated"];
+				}
+				else{
+					string dateStr=dataRow["DateCreated"].ToString();
+					DateCreated=PIn.DateT(dateStr);
+					//If parsing failed (MinValue), the server middle-tier may have serialized the date with
+					//culture-specific time separators (e.g. "00.00.00" instead of "00:00:00").
+					//Normalize the time portion and retry.
+					if(DateCreated.Year<1880 && dateStr!="") {
+						dateStr=System.Text.RegularExpressions.Regex.Replace(dateStr,@"(\d{2})\.(\d{2})\.(\d{2})$","$1:$2:$3");
+						DateCreated=PIn.DateT(dateStr);
+					}
+				}
 				Description=PIn.String(dataRow["Description"].ToString());
 				if(DocNum!=0){
 					NodeType=EnumImageNodeType.Document;

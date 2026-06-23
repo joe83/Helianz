@@ -674,12 +674,48 @@ namespace HelianzBusiness {
 				dataRow["DocNum"]=PIn.Long(tableRaw.Rows[i]["DocNum"].ToString());
 				dataRow["MountNum"]=0;
 				dataRow["DocCategory"]=PIn.Long(tableRaw.Rows[i]["DocCategory"].ToString());
-				dataRow["DateCreated"]=PIn.Date(tableRaw.Rows[i]["DateCreated"].ToString());
+				dataRow["DateCreated"]=PIn.DateT(tableRaw.Rows[i]["DateCreated"].ToString()).ToString("yyyy-MM-dd HH:mm:ss");//Store as invariant string to survive culture-specific middle-tier serialization.
 				dataRow["idxCategory"]=Defs.GetOrder(DefCat.ImageCats,PIn.Long(tableRaw.Rows[i]["DocCategory"].ToString()));
 				dataRow["description"]=//PIn.Date(raw.Rows[i]["DateCreated"].ToString()).ToString("d")+": "+
 					PIn.String(tableRaw.Rows[i]["Description"].ToString());
 				dataRow["ImgType"]=PIn.Long(tableRaw.Rows[i]["ImgType"].ToString());
 				listObjectsDataRows.Add(dataRow);
+			}
+			//For documents in the Statement category that have an invalid DateCreated (MinValue), pull the correct
+			//date from the statement table (DateSent) so that the imaging module displays the proper statement date.
+			if(listObjectsDataRows.Any(x => PIn.Long(((DataRow)x)["DocNum"].ToString())!=0 && PIn.DateT(((DataRow)x)["DateCreated"].ToString()).Year<1880)) {
+				List<long> listDefNumsForStmt=Defs.GetDefsForCategory(DefCat.ImageCats,true)
+					.FindAll(d => d.ItemValue.Contains("S")).Select(d => d.DefNum).ToList();
+				if(listDefNumsForStmt.Count>0) {
+					List<long> listDocNumsWithBadDate=listObjectsDataRows
+						.Where(x => PIn.DateT(((DataRow)x)["DateCreated"].ToString()).Year<1880 && PIn.Long(((DataRow)x)["DocNum"].ToString())!=0
+							&& listDefNumsForStmt.Contains(PIn.Long(((DataRow)x)["DocCategory"].ToString())))
+						.Select(x => PIn.Long(((DataRow)x)["DocNum"].ToString())).ToList();
+					if(listDocNumsWithBadDate.Count>0) {
+						string cmdStmt="SELECT DocNum,DateSent FROM statement WHERE DocNum IN("+string.Join(",",listDocNumsWithBadDate)+") AND DateSent IS NOT NULL";
+						DataTable tableStmt=dataConnection.GetTable(cmdStmt);
+						Dictionary<long,DateTime> dictStmtDates=new Dictionary<long,DateTime>();
+						for(int s=0;s<tableStmt.Rows.Count;s++) {
+							long docNumSt=PIn.Long(tableStmt.Rows[s]["DocNum"].ToString());
+							DateTime dateSentSt;
+								if(tableStmt.Rows[s]["DateSent"] is DateTime){
+									dateSentSt=(DateTime)tableStmt.Rows[s]["DateSent"];
+								}
+								else{
+									dateSentSt=PIn.DateT(tableStmt.Rows[s]["DateSent"].ToString());
+								}
+							if(dateSentSt.Year>=1880) {
+								dictStmtDates[docNumSt]=dateSentSt;
+							}
+						}
+						foreach(DataRow row in listObjectsDataRows) {
+							long docNumRow=PIn.Long(row["DocNum"].ToString());
+							if(dictStmtDates.ContainsKey(docNumRow)) {
+								row["DateCreated"]=dictStmtDates[docNumRow].ToString("yyyy-MM-dd HH:mm:ss");//Store as invariant string for middle-tier serialization.
+							}
+						}
+					}
+				}
 			}
 			//Move all mounts which are invisible to the first document category.
 			//Why would a DocCategory ever be set to -1?  Where does that happen?
@@ -710,7 +746,7 @@ namespace HelianzBusiness {
 				dataRow["DocNum"]=0;
 				dataRow["MountNum"]=PIn.Long(tableRaw.Rows[i]["MountNum"].ToString());
 				dataRow["DocCategory"]=PIn.Long(tableRaw.Rows[i]["DocCategory"].ToString());
-				dataRow["DateCreated"]=PIn.Date(tableRaw.Rows[i]["DateCreated"].ToString());
+				dataRow["DateCreated"]=PIn.DateT(tableRaw.Rows[i]["DateCreated"].ToString()).ToString("yyyy-MM-dd HH:mm:ss");//Store as invariant string to survive culture-specific middle-tier serialization.
 				dataRow["idxCategory"]=Defs.GetOrder(DefCat.ImageCats,PIn.Long(tableRaw.Rows[i]["DocCategory"].ToString()));
 				dataRow["description"]=//PIn.Date(raw.Rows[i]["DateCreated"].ToString()).ToString("d")+": "+
 					PIn.String(tableRaw.Rows[i]["Description"].ToString());
@@ -1306,9 +1342,14 @@ namespace HelianzBusiness {
 			}
 			document.ImgType=ImageType.Document;
 			document.Description=description;
-			//Some customers have wanted to sort their statements in the images module by date and time.
-			//We would need to enhance DateSent to include the time portion.
-			statement.DateSent=document.DateCreated;
+			//Set the document's DateCreated to match the statement's DateSent so that the imaging module
+			//displays the correct statement date. Fall back to the import file timestamp if DateSent is invalid.
+			if(statement.DateSent.Year>=1880) {
+				document.DateCreated=statement.DateSent;
+			}
+			else if(document.DateCreated.Year<1880) {
+				document.DateCreated=DateTime.Now;
+			}
 			statement.DocNum=document.DocNum;//this signals the calling class that the pdf was created successfully.
 			Statements.AttachDoc(statement.StatementNum,document);
 			Statements.SyncStatementProdsForStatement(dataSet,statement.StatementNum,statement.DocNum);

@@ -1003,6 +1003,14 @@ namespace HelianzBusiness {
 				return "";//Error saving the document
 			}
 			document.ImgType=ImageType.Document;
+			//Set the document's DateCreated to match the statement's DateSent so that the imaging module
+			//displays the correct statement date. Fall back to the import file timestamp if DateSent is invalid.
+			if(statementNew.DateSent.Year>=1880) {
+				document.DateCreated=statementNew.DateSent;
+			}
+			else if(document.DateCreated.Year<1880) {
+				document.DateCreated=DateTime.Now;
+			}
 			if(statementNew.IsInvoice) {
 				document.Description=Lans.g(nameof(Statements),"Invoice");
 			}

@@ -521,6 +521,9 @@ namespace HelianzBusiness {
 				doc.FileName = Path.GetExtension(pathImportFrom);
 			}
 			doc.DateCreated=File.GetLastWriteTime(pathImportFrom); // Per Jordan, use lastwritetime instead of DateTime.Now/Today.
+			if(doc.DateCreated.Year<1880) {
+				doc.DateCreated=DateTime.Now;//If the filesystem timestamp is invalid, fall back to the current time.
+			}
 			doc.PatNum = pat.PatNum;
 			if(HasImageExtension(doc.FileName)) {
 				doc.ImgType=ImageType.Photo;

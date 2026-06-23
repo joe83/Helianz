@@ -4403,6 +4403,14 @@ namespace Helianz {
 				return;
 			}
 			document.ImgType=ImageType.Document;
+			//Set the document's DateCreated to match the statement's DateSent so that the imaging module
+			//displays the correct statement date. Fall back to the import file timestamp if DateSent is invalid.
+			if(statement.DateSent.Year>=1880) {
+				document.DateCreated=statement.DateSent;
+			}
+			else if(document.DateCreated.Year<1880) {
+				document.DateCreated=DateTime.Now;
+			}
 			if(statement.IsInvoice) {
 				document.Description=Lan.g(this,"Invoice");
 			}
@@ -4414,7 +4422,6 @@ namespace Helianz {
 					document.Description=Lan.g(this,"Statement");
 				}
 			}
-			statement.DateSent=document.DateCreated;
 			statement.DocNum=document.DocNum;//this signals the calling class that the pdf was created successfully.
 			Statements.AttachDoc(statement.StatementNum,document);
 			//if(ImageStore.UpdatePatient == null) {
