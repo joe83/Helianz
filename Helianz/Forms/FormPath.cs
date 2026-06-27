@@ -42,11 +42,28 @@ namespace Helianz{
 		private ProgramProperty _progPropHybridSftpHost;
 		private ProgramProperty _progPropHybridSftpUser;
 		private ProgramProperty _progPropHybridSftpPass;
-		private ProgramProperty _progPropHybridKeyFile;
 		private const string PropDescHybridSftpHost = "Hybrid SFTP Host";
 		private const string PropDescHybridSftpUser = "Hybrid SFTP User";
 		private const string PropDescHybridSftpPass = "Hybrid SFTP Pass";
-		private const string PropDescHybridSftpKeyFile = "Hybrid Key File";
+		///<summary>Path to the SSH key file stored in the user's AppData folder.</summary>
+		private static readonly string HybridSshKeyAppDataPath = Path.Combine(
+			Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Helianz", "ssh_key");
+		///<summary>Returns the full path to the bundled rclone executable, or "rclone" as fallback.</summary>
+		private static string GetRclonePath() {
+			if(RcloneSync.IsBundledRcloneAvailable()) {
+				return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "rclone",
+					Environment.OSVersion.Platform==PlatformID.Unix?"rclone":"rclone.exe");
+			}
+			string prefPath=PrefC.GetStringSilent(PrefName.RclonePath);
+			if(!string.IsNullOrEmpty(prefPath)) {
+				return prefPath;
+			}
+			return "rclone";
+		}
+		///<summary>Returns the SSH key path if a key has been added to AppData, otherwise empty string.</summary>
+		private static string GetHybridSshKeyPath() {
+			return File.Exists(HybridSshKeyAppDataPath) ? HybridSshKeyAppDataPath : "";
+		}
 		#endregion
 
 		///<summary></summary>
@@ -58,6 +75,12 @@ namespace Helianz{
 			//Because the tab control is in "flat buttons" appearance and "fixed size" style the tabs will not show even if they are one pixel tall.
 			//0,0 does not work because some size is required.
 			tabControlDataStorageType.TabsAreCollapsed=true;
+		// rclone path is bundled in the Helianz program folder – hide the UI.
+		labelHybridRclonePath.Visible=false;
+		textHybridRclonePath.Visible=false;
+		// SSH Key File textbox is read-only – the Browse button copies the selected key
+		// into %AppData%\Helianz\ssh_key and displays that path here.
+		textHybridKeyFile.ReadOnly=true;
 		}
 
 		private void FormPath_Load(object sender, System.EventArgs e){
@@ -89,9 +112,16 @@ namespace Helianz{
 					//For example, if the primary folder path is wrong or has changed, the user can set the path override for this computer to get into OD, then
 					//can to to Setup | Data Paths to fix the primary path.
 					DisableMostControls();
-					textLocalPath.ReadOnly=false;
-					butBrowseLocal.Enabled=true;
-					ActiveControl=textLocalPath;//Focus on textLocalPath, since this is the only textbox the user can edit in this case.
+					if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
+						textHybridLocalPath.ReadOnly=false;
+						butHybridBrowseLocal.Enabled=true;
+						ActiveControl=textHybridLocalPath;
+					}
+					else {
+						textLocalPath.ReadOnly=false;
+						butBrowseLocal.Enabled=true;
+						ActiveControl=textLocalPath;//Focus on textLocalPath, since this is the only textbox the user can edit in this case.
+					}
 				}
 			}
 			if(ODEnvironment.IsCloudServer) {
@@ -148,6 +178,17 @@ namespace Helianz{
 			textSftpPassword.ReadOnly=true;
 			textSftpUsername.ReadOnly=true;
 			butSftpClear.Enabled=false;
+			radioHybrid.Enabled=false;
+			textHybridLocalPath.ReadOnly=true;
+			butHybridBrowseLocal.Enabled=false;
+			textHybridSftpHost.ReadOnly=true;
+			textHybridSftpUser.ReadOnly=true;
+			textHybridSftpPass.ReadOnly=true;
+			textHybridKeyFile.ReadOnly=true;
+			butHybridBrowseKey.Enabled=false;
+			textHybridServerPath.ReadOnly=true;
+			butHybridTestConnection.Enabled=false;
+			butHybridMigrate.Enabled=false;
 		}
 
 		private void SetRadioButtonChecked(DataStorageType dataStorageType) {
@@ -436,7 +477,6 @@ namespace Helianz{
 				_progPropHybridSftpHost=listProgProps.Find(x => x.PropertyDesc==PropDescHybridSftpHost);
 				_progPropHybridSftpUser=listProgProps.Find(x => x.PropertyDesc==PropDescHybridSftpUser);
 				_progPropHybridSftpPass=listProgProps.Find(x => x.PropertyDesc==PropDescHybridSftpPass);
-				_progPropHybridKeyFile=listProgProps.Find(x => x.PropertyDesc==PropDescHybridSftpKeyFile);
 				textHybridSftpHost.Text=_progPropHybridSftpHost?.PropertyValue??"";
 				textHybridSftpUser.Text=_progPropHybridSftpUser?.PropertyValue??"";
 				if(_progPropHybridSftpPass!=null && !string.IsNullOrEmpty(_progPropHybridSftpPass.PropertyValue)) {
@@ -448,19 +488,13 @@ namespace Helianz{
 				else {
 					textHybridSftpPass.Text="";
 				}
-				textHybridKeyFile.Text=_progPropHybridKeyFile?.PropertyValue??"";
 			}
-			// Auto-detect bundled rclone
-			if(RcloneSync.IsBundledRcloneAvailable()) {
-				textHybridRclonePath.Text=Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"rclone",
-					Environment.OSVersion.Platform==PlatformID.Unix?"rclone":"rclone.exe");
-			}
-			else {
-				textHybridRclonePath.Text=PrefC.GetStringSilent(PrefName.RclonePath);
-				if(string.IsNullOrEmpty(textHybridRclonePath.Text)) {
-					textHybridRclonePath.Text="rclone";
-				}
-			}
+		// SSH key is stored in AppData – show the path if a key has been added.
+		textHybridKeyFile.Text=GetHybridSshKeyPath();
+			// rclone is bundled – hide the UI, path is resolved by GetRclonePath().
+			labelHybridRclonePath.Visible=false;
+			textHybridRclonePath.Visible=false;
+			// Server media path
 			textHybridServerPath.Text=PrefC.GetStringSilent(PrefName.RcloneServerPath);
 			if(string.IsNullOrEmpty(textHybridServerPath.Text)) {
 				textHybridServerPath.Text="/media";
@@ -475,6 +509,17 @@ namespace Helianz{
 				return;
 			}
 			SetRadioButtonChecked(DataStorageType.LocalAtoZHybrid);
+			// Enable Hybrid tab controls (they may have been disabled by DisableMostControls)
+			textHybridLocalPath.ReadOnly=false;
+			butHybridBrowseLocal.Enabled=true;
+			textHybridSftpHost.ReadOnly=false;
+			textHybridSftpUser.ReadOnly=false;
+			textHybridSftpPass.ReadOnly=false;
+			textHybridKeyFile.ReadOnly=false;
+			butHybridBrowseKey.Enabled=true;
+			textHybridServerPath.ReadOnly=false;
+			butHybridTestConnection.Enabled=true;
+			butHybridMigrate.Enabled=true;
 		}
 
 		private void butHybridBrowseLocal_Click(object sender,EventArgs e) {
@@ -484,10 +529,7 @@ namespace Helianz{
 		}
 
 		private void butHybridTestConnection_Click(object sender,EventArgs e) {
-			string rclonePath=textHybridRclonePath.Text.Trim();
-			if(string.IsNullOrEmpty(rclonePath)) {
-				rclonePath="rclone";
-			}
+			string rclonePath=GetRclonePath();
 			// 1. Check rclone binary
 			try {
 				string ver=RcloneSync.RunRcloneCommand("version");
@@ -501,7 +543,7 @@ namespace Helianz{
 			string host=textHybridSftpHost.Text.Trim();
 			string user=textHybridSftpUser.Text.Trim();
 			string pass=textHybridSftpPass.Text;
-			string keyFile=textHybridKeyFile.Text.Trim();
+			string keyFile=GetHybridSshKeyPath();
 			if(string.IsNullOrEmpty(host) || string.IsNullOrEmpty(user)) {
 				MsgBox.Show(this,"SFTP host and username are required.");
 				return;
@@ -519,14 +561,26 @@ namespace Helianz{
 			}
 		}
 
+	///<summary>Browse for an SSH key file, copy it to AppData, and display the stored path.</summary>
 	private void butHybridBrowseKey_Click(object sender,EventArgs e) {
-			OpenFileDialog dlg=new OpenFileDialog();
-			dlg.Title="Select SSH Key File";
-			dlg.Filter="SSH Key Files|*.pem;*.key;id_rsa;id_rsa.pub|All Files|*.*";
-			if(dlg.ShowDialog()==System.Windows.Forms.DialogResult.OK) {
-				textHybridKeyFile.Text=dlg.FileName;
-			}
+		OpenFileDialog dlg=new OpenFileDialog();
+		dlg.Title="Select SSH Key File";
+		dlg.Filter="SSH Key Files|*.pem;*.key;id_rsa;id_rsa.pub;*.openssh|All Files|*.*";
+		if(dlg.ShowDialog()!=System.Windows.Forms.DialogResult.OK) {
+			return;
 		}
+		try {
+			string appDataDir=Path.GetDirectoryName(HybridSshKeyAppDataPath);
+			if(!Directory.Exists(appDataDir)) {
+				Directory.CreateDirectory(appDataDir);
+			}
+			File.Copy(dlg.FileName,HybridSshKeyAppDataPath,true);
+			textHybridKeyFile.Text=HybridSshKeyAppDataPath;
+		}
+		catch(Exception ex) {
+			MsgBox.Show(this,"Failed to copy SSH key: "+ex.Message);
+		}
+	}
 
 		private void butHybridMigrate_Click(object sender,EventArgs e) {
 			if(PrefC.AtoZfolderUsed!=DataStorageType.LocalAtoZHybrid) {
@@ -691,7 +745,7 @@ namespace Helianz{
 						encryptedPass=CDT.Class1.EncryptSftp(textHybridSftpPass.Text);
 					}
 					UpdateOrCreateProp(PropDescHybridSftpPass,encryptedPass);
-					UpdateOrCreateProp(PropDescHybridSftpKeyFile,textHybridKeyFile.Text.Trim());
+
 					DataValid.SetInvalid(InvalidType.Programs);
 				}
 				// Save local path so GetPreferredAtoZpath() returns the correct path
@@ -699,12 +753,12 @@ namespace Helianz{
 				HelianzBusiness.FileIO.FileAtoZ.LocalAtoZpath=textHybridLocalPath.Text.Trim();
 				ComputerPrefs.LocalComputer.AtoZpath=textHybridLocalPath.Text.Trim();
 				ComputerPrefs.Update(ComputerPrefs.LocalComputer);
-				// Save rclone and server path as Prefs
-				UpdatePrefSafe(PrefName.RclonePath,textHybridRclonePath.Text.Trim());
+				// Save rclone server path as Pref (rclone itself is bundled in the Helianz program folder)
 				UpdatePrefSafe(PrefName.RcloneRemoteName,"helianz-media");
 				UpdatePrefSafe(PrefName.RcloneServerPath,textHybridServerPath.Text.Trim());
+				DataValid.SetInvalid(InvalidType.Prefs);
 				// Write rclone config file
-				RcloneSync.WriteConfigFile(textHybridSftpHost.Text.Trim(),textHybridSftpUser.Text.Trim(),textHybridKeyFile.Text.Trim());
+				RcloneSync.WriteConfigFile(textHybridSftpHost.Text.Trim(),textHybridSftpUser.Text.Trim(),GetHybridSshKeyPath());
 				RcloneSync.InvalidateAvailabilityCache();
 			}
 
@@ -723,7 +777,9 @@ namespace Helianz{
 			}
 			isChanged=false;
 			isChanged|=Prefs.UpdateInt(PrefName.AtoZfolderUsed,(int)_dataStorageType);
-			isChanged|=Prefs.UpdateString(PrefName.DocPath,textDocPath.Text);
+			if(!radioHybrid.Checked) {
+				isChanged|=Prefs.UpdateString(PrefName.DocPath,textDocPath.Text);
+			}
 			isChanged|=Prefs.UpdateString(PrefName.ExportPath,textExportPath.Text);
 			isChanged|=Prefs.UpdateString(PrefName.LetterMergePath,textLetterMergePath.Text);
 			if(isChanged) { 

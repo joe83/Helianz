@@ -746,7 +746,7 @@ namespace Helianz {
 			this.labelHybridKeyFile.Name = "labelHybridKeyFile";
 			this.labelHybridKeyFile.Size = new System.Drawing.Size(130, 18);
 			this.labelHybridKeyFile.TabIndex = 170;
-			this.labelHybridKeyFile.Text = "SSH Key File (optional)";
+			this.labelHybridKeyFile.Text = "SSH Key";
 			this.labelHybridKeyFile.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// textHybridKeyFile
@@ -840,6 +840,7 @@ namespace Helianz {
 		private Label labelHybridKeyFile;
 		private TextBox textHybridKeyFile;
 		private Helianz.UI.Button butHybridBrowseKey;
+		private Helianz.UI.Button butHybridKeyAddOrChange;
 		private Helianz.UI.Button butHybridMigrate;
 	}
 }

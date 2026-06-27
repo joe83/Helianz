@@ -252,10 +252,6 @@ namespace Helianz {
 			DialogResult=DialogResult.OK;
 		}
 
-        private void textPEM_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-    }
+	}
 
 }

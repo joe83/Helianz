@@ -251,7 +251,6 @@ namespace Helianz{
 			menuItemSetup.Add(_menuItemFeeSchedGroups);
 			menuItemSetup.Add("Laboratories",menuItemLaboratories_Click);
 			menuItemSetup.Add("Practice",menuItemPractice_Click);
-			menuItemSetup.Add("Procedure Codes",menuItemSetupProcCodes_Click);
 			menuItemSetup.Add("Program Links",menuItemLinks_Click);
 			menuItemSetup.Add("Quick Paste Notes",menuItemQuickPasteNotes_Click);
 			menuItemSetup.Add("Reports",menuItemReports_Click);

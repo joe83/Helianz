@@ -53,6 +53,8 @@ Source: "{#SourceDir}\*"; DestDir: "{app}"; Excludes: "FreeDentalConfig.xml,Logg
 ; FreeDentalConfig.xml stores the user's database connection — never overwrite on upgrade
 ; Source is the installer-directory copy (not the build output), so it survives a clean build.
 Source: "FreeDentalConfig.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist
+; .NET Framework 4.8 offline installer — extracted to {tmp} and run only if needed
+Source: "NDP48-x86-x64-AllOS-ENU.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall nocompression
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
@@ -63,6 +65,85 @@ Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: 
 ; Maintenance mode — show Repair / Remove options when app is already installed
 ; ---------------------------------------------------------------------------
 [Code]
+
+// ---------------------------------------------------------------------------
+// .NET Framework 4.8 prerequisite check (Windows 7 minimum)
+// ---------------------------------------------------------------------------
+
+function IsDotNet48Installed: Boolean;
+var
+  Release: Cardinal;
+begin
+  // .NET 4.8 release DWORD >= 528040
+  Result := RegQueryDWordValue(HKLM, 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full', 'Release', Release);
+  if Result then
+    Result := (Release >= 528040);
+end;
+
+function InitializeSetup: Boolean;
+var
+  ResultCode: Integer;
+  NetFxPath: String;
+begin
+  // Minimum OS: Windows 7 (6.1)
+  if GetWindowsVersion < $06010000 then
+  begin
+    SuppressibleMsgBox('This application requires Windows 7 or later.', mbCriticalError, MB_OK, IDOK);
+    Result := False;
+    Exit;
+  end;
+
+  // Check for .NET Framework 4.8
+  if not IsDotNet48Installed then
+  begin
+    if SuppressibleMsgBox(
+      'Microsoft .NET Framework 4.8 is required but was not detected on this system.' + #13#10 + #13#10 +
+      'Click Yes to install it now (the computer may need to restart afterwards).' + #13#10 +
+      'Click No to cancel the installation.',
+      mbConfirmation, MB_YESNO, IDYES) = IDYES then
+    begin
+      ExtractTemporaryFile('NDP48-x86-x64-AllOS-ENU.exe');
+      NetFxPath := ExpandConstant('{tmp}\NDP48-x86-x64-AllOS-ENU.exe');
+      if Exec(NetFxPath, '/q /norestart', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
+      begin
+        // 0 = success, 1641 = reboot initiated, 3010 = reboot required
+        if (ResultCode = 0) or (ResultCode = 1641) or (ResultCode = 3010) then
+        begin
+          // Re-verify after install
+          if not IsDotNet48Installed then
+          begin
+            SuppressibleMsgBox('.NET Framework 4.8 installation completed but the system still reports it as missing.' + #13#10 +
+              'A system restart may be required before proceeding.', mbError, MB_OK, IDOK);
+            Result := False;
+          end
+          else
+            Result := True;
+        end
+        else
+        begin
+          SuppressibleMsgBox('.NET Framework 4.8 installation failed with exit code ' + IntToStr(ResultCode) + '.',
+            mbCriticalError, MB_OK, IDOK);
+          Result := False;
+        end;
+      end
+      else
+      begin
+        SuppressibleMsgBox('Failed to launch the .NET Framework 4.8 installer.', mbCriticalError, MB_OK, IDOK);
+        Result := False;
+      end;
+    end
+    else
+    begin
+      SuppressibleMsgBox('Cannot install Helianz without .NET Framework 4.8. Setup will now exit.',
+        mbCriticalError, MB_OK, IDOK);
+      Result := False;
+    end;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
 var
   MaintenancePage: TInputOptionWizardPage;
 

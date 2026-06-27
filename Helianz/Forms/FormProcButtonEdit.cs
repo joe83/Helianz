@@ -171,6 +171,19 @@ namespace Helianz{
 					return;
 				}
 			}
+			//Validate that all procedure codes exist and are not in hidden categories.
+			for(int i=0;i<listADA.Items.Count;i++){
+				string procCodeStr=listADA.Items.GetTextShowingAt(i);
+				long codeNum=ProcedureCodes.GetCodeNum(procCodeStr);
+				if(codeNum==0) {
+					MessageBox.Show(this,Lan.g(this,"Procedure code does not exist in database")+": "+procCodeStr);
+					return;
+				}
+				if(ProcedureCodes.AreAnyProcCodesHidden(codeNum)) {
+					MessageBox.Show(this,Lan.g(this,"Cannot use this procedure because it is in a hidden category")+": "+procCodeStr);
+					return;
+				}
+			}
 			//Point of no return.
 			_procButton.Description=textDescript.Text;
 			if(_procButton.Category != _listDefsProcButtonCat[comboCategory.SelectedIndex].DefNum){

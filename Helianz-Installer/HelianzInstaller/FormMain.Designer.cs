@@ -143,7 +143,7 @@ namespace FreeDentalInstaller{
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(534, 40);
             this.textBox3.TabIndex = 9;
-            this.textBox3.Text = "Contains the A-Z folders that hold patient images.";
+            this.textBox3.Text = "Contains numbered folders (0-99) for organizing patient images.";
             // 
             // textBox4
             // 

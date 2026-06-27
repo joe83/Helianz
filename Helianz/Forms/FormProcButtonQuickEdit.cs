@@ -61,7 +61,18 @@ namespace Helianz {
 			ProcButtonQuickCur.CodeValue=textProcedureCode.Text;
 			ProcButtonQuickCur.Surf=textSurfaces.Text;
 			ProcButtonQuickCur.IsLabel=checkIsLabel.Checked;
-			//TODO: Validation, if we need any.
+			if(!checkIsLabel.Checked && !string.IsNullOrWhiteSpace(textProcedureCode.Text)) {
+				//Validate that the procedure code exists and is not in a hidden category.
+				long codeNum=ProcedureCodes.GetCodeNum(textProcedureCode.Text);
+				if(codeNum==0) {
+					MessageBox.Show(this,Lan.g(this,"Procedure code does not exist in database")+": "+textProcedureCode.Text);
+					return;
+				}
+				if(ProcedureCodes.AreAnyProcCodesHidden(codeNum)) {
+					MessageBox.Show(this,Lan.g(this,"Cannot use this procedure because it is in a hidden category")+": "+textProcedureCode.Text);
+					return;
+				}
+			}
 			if(IsNew) {
 				ProcButtonQuicks.Insert(ProcButtonQuickCur);
 			}
