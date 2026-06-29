@@ -2600,7 +2600,15 @@ namespace HelianzBusiness {
 			command="INSERT INTO preference(PrefName,ValueString) VALUES('WebSchedNewPatRequestInsurance','0')";
 			Db.NonQ(command);
 			command="ALTER TABLE apptfielddef ADD ItemOrder int NOT NULL";
-			Db.NonQ(command);
+			try {
+				Db.NonQ(command);
+			}
+			catch {
+				//Column may already exist if EnsureItemOrderColumnsExist() added it earlier in the chain.
+				//Use AlterTable (MODIFY) as fallback since it's idempotent.
+				LargeTableHelper.AlterTable("apptfielddef","ApptFieldDefNum",
+					new ColNameAndDef("ItemOrder","int NOT NULL"));
+			}
 			command="SELECT * FROM apptfielddef ORDER BY FieldName";
 			table=Db.GetTable(command);
 			for(int i=0;i<table.Rows.Count;i++) {

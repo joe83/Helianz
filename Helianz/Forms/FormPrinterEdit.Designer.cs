@@ -36,12 +36,15 @@ namespace Helianz {
 			this.label11 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.labelExtensionNote = new System.Windows.Forms.Label();
+			this.labelPaper = new System.Windows.Forms.Label();
+			this.comboPaper = new Helianz.UI.ComboBox();
+			this.labelPaperHint = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// butSave
 			// 
 			this.butSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butSave.Location = new System.Drawing.Point(429, 237);
+			this.butSave.Location = new System.Drawing.Point(429, 255);
 			this.butSave.Name = "butSave";
 			this.butSave.Size = new System.Drawing.Size(75, 24);
 			this.butSave.TabIndex = 3;
@@ -153,9 +156,36 @@ namespace Helianz {
 			this.labelExtensionNote.TabIndex = 179;
 			this.labelExtensionNote.Text = "The file extension the selected virtual printer writes to (i.e. pdf, xps, etc.)";
 			// 
+			// labelPaper
+			// 
+			this.labelPaper.Location = new System.Drawing.Point(16, 200);
+			this.labelPaper.Name = "labelPaper";
+			this.labelPaper.Size = new System.Drawing.Size(99, 16);
+			this.labelPaper.TabIndex = 180;
+			this.labelPaper.Text = "Paper Size";
+			this.labelPaper.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// comboPaper
+			// 
+			this.comboPaper.Location = new System.Drawing.Point(117, 198);
+			this.comboPaper.Name = "comboPaper";
+			this.comboPaper.Size = new System.Drawing.Size(200, 21);
+			this.comboPaper.TabIndex = 181;
+			// 
+			// labelPaperHint
+			// 
+			this.labelPaperHint.Location = new System.Drawing.Point(323, 200);
+			this.labelPaperHint.Name = "labelPaperHint";
+			this.labelPaperHint.Size = new System.Drawing.Size(190, 16);
+			this.labelPaperHint.TabIndex = 182;
+			this.labelPaperHint.Text = "(local setting, this PC only)";
+			// 
 			// FormPrinterEdit
 			// 
-			this.ClientSize = new System.Drawing.Size(516, 273);
+			this.ClientSize = new System.Drawing.Size(516, 291);
+			this.Controls.Add(this.labelPaperHint);
+			this.Controls.Add(this.comboPaper);
+			this.Controls.Add(this.labelPaper);
 			this.Controls.Add(this.labelExtensionNote);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label11);
@@ -189,5 +219,8 @@ namespace Helianz {
 		private System.Windows.Forms.Label label11;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label labelExtensionNote;
+		private System.Windows.Forms.Label labelPaper;
+		private UI.ComboBox comboPaper;
+		private System.Windows.Forms.Label labelPaperHint;
 	}
 }

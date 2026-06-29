@@ -45,6 +45,7 @@ namespace Helianz{
 		private const string PropDescHybridSftpHost = "Hybrid SFTP Host";
 		private const string PropDescHybridSftpUser = "Hybrid SFTP User";
 		private const string PropDescHybridSftpPass = "Hybrid SFTP Pass";
+		private const string PropDescHybridSshKey = "Hybrid SSH Key";
 		///<summary>Path to the SSH key file stored in the user's AppData folder.</summary>
 		private static readonly string HybridSshKeyAppDataPath = Path.Combine(
 			Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Helianz", "ssh_key");
@@ -65,6 +66,25 @@ namespace Helianz{
 			return File.Exists(HybridSshKeyAppDataPath) ? HybridSshKeyAppDataPath : "";
 		}
 		#endregion
+
+		///<summary>Extracts a human-readable label from SSH key content (e.g. "OpenSSH key configured").</summary>
+		private static string GetSshKeyLabel(string keyContent) {
+			if(string.IsNullOrEmpty(keyContent)) {
+				return "";
+			}
+			string firstLine=keyContent.Split(new[] {'\r','\n'},StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()??"";
+			// Lines look like: -----BEGIN OPENSSH PRIVATE KEY-----
+			int beginIdx=firstLine.IndexOf("BEGIN ",StringComparison.OrdinalIgnoreCase);
+			int endIdx=firstLine.IndexOf(" PRIVATE KEY-----",StringComparison.OrdinalIgnoreCase);
+			if(beginIdx>=0 && endIdx>beginIdx) {
+				string keyType=firstLine.Substring(beginIdx+6,endIdx-beginIdx-6);
+				return keyType+" key configured";
+			}
+			return "SSH key configured";
+		}
+
+	///<summary>Holds the encrypted SSH key content to be saved to the database.</summary>
+		private string _hybridSshKeyEncrypted;
 
 		///<summary></summary>
 		public FormPath(){
@@ -488,9 +508,31 @@ namespace Helianz{
 				else {
 					textHybridSftpPass.Text="";
 				}
+				// SSH key is stored encrypted in DB. Write to AppData so rclone can use it.
+				ProgramProperty propSshKey=listProgProps.Find(x => x.PropertyDesc==PropDescHybridSshKey);
+				if(propSshKey!=null && !string.IsNullOrEmpty(propSshKey.PropertyValue)) {
+					string keyContent="";
+					if(CDT.Class1.DecryptSftp(propSshKey.PropertyValue,out keyContent)) {
+						string appDataDir=Path.GetDirectoryName(HybridSshKeyAppDataPath);
+						if(!Directory.Exists(appDataDir)) {
+							Directory.CreateDirectory(appDataDir);
+						}
+						File.WriteAllText(HybridSshKeyAppDataPath,keyContent);
+						textHybridKeyFile.Text=GetSshKeyLabel(keyContent);
+					}
+					else {
+						textHybridKeyFile.Text="";
+					}
+					// Preserve encrypted value for re-save if user doesn't browse again.
+					_hybridSshKeyEncrypted=propSshKey.PropertyValue;
+				}
+				else {
+					textHybridKeyFile.Text="";
+				}
 			}
-		// SSH key is stored in AppData – show the path if a key has been added.
-		textHybridKeyFile.Text=GetHybridSshKeyPath();
+			else {
+				textHybridKeyFile.Text="";
+			}
 			// rclone is bundled – hide the UI, path is resolved by GetRclonePath().
 			labelHybridRclonePath.Visible=false;
 			textHybridRclonePath.Visible=false;
@@ -549,6 +591,18 @@ namespace Helianz{
 				return;
 			}
 			try {
+				// Ensure SSH key is written to AppData before testing (may have been
+				// loaded from DB but the file was deleted – write it back from memory).
+				if(!string.IsNullOrEmpty(_hybridSshKeyEncrypted) && !File.Exists(HybridSshKeyAppDataPath)) {
+					string keyContent="";
+					if(CDT.Class1.DecryptSftp(_hybridSshKeyEncrypted,out keyContent)) {
+						string appDataDir=Path.GetDirectoryName(HybridSshKeyAppDataPath);
+						if(!Directory.Exists(appDataDir)) {
+							Directory.CreateDirectory(appDataDir);
+						}
+						File.WriteAllText(HybridSshKeyAppDataPath,keyContent);
+					}
+				}
 				RcloneSync.WriteConfigFile(host,user,keyFile);
 				string configPath=RcloneSync.GetConfigFilePath();
 				string args="lsf helianz-media: --config \""+configPath+"\" --max-depth 1";
@@ -561,7 +615,7 @@ namespace Helianz{
 			}
 		}
 
-	///<summary>Browse for an SSH key file, copy it to AppData, and display the stored path.</summary>
+	///<summary>Browse for an SSH key file, encrypt and store it in the database, and write to AppData for rclone.</summary>
 	private void butHybridBrowseKey_Click(object sender,EventArgs e) {
 		OpenFileDialog dlg=new OpenFileDialog();
 		dlg.Title="Select SSH Key File";
@@ -570,15 +624,18 @@ namespace Helianz{
 			return;
 		}
 		try {
+			string keyContent=File.ReadAllText(dlg.FileName);
 			string appDataDir=Path.GetDirectoryName(HybridSshKeyAppDataPath);
 			if(!Directory.Exists(appDataDir)) {
 				Directory.CreateDirectory(appDataDir);
 			}
-			File.Copy(dlg.FileName,HybridSshKeyAppDataPath,true);
-			textHybridKeyFile.Text=HybridSshKeyAppDataPath;
+			File.WriteAllText(HybridSshKeyAppDataPath,keyContent);
+		textHybridKeyFile.Text=GetSshKeyLabel(keyContent);
+			// Encrypt for database storage – will be saved on butSave_Click.
+			_hybridSshKeyEncrypted=CDT.Class1.EncryptSftp(keyContent);
 		}
 		catch(Exception ex) {
-			MsgBox.Show(this,"Failed to copy SSH key: "+ex.Message);
+			MsgBox.Show(this,"Failed to store SSH key: "+ex.Message);
 		}
 	}
 
@@ -745,6 +802,10 @@ namespace Helianz{
 						encryptedPass=CDT.Class1.EncryptSftp(textHybridSftpPass.Text);
 					}
 					UpdateOrCreateProp(PropDescHybridSftpPass,encryptedPass);
+					// Save SSH key if user browsed for one.
+					if(!string.IsNullOrEmpty(_hybridSshKeyEncrypted)) {
+						UpdateOrCreateProp(PropDescHybridSshKey,_hybridSshKeyEncrypted);
+					}
 
 					DataValid.SetInvalid(InvalidType.Programs);
 				}

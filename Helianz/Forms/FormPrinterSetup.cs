@@ -40,6 +40,8 @@ namespace Helianz{
 			gridPrinters.Columns.Add(col);
 			col=new GridColumn("File Extension",50,HorizontalAlignment.Center);
 			gridPrinters.Columns.Add(col);
+			col=new GridColumn("Paper Size",110);
+			gridPrinters.Columns.Add(col);
 			//Clear out the rows.
 			gridPrinters.ListGridRows.Clear();
 			GridRow row;
@@ -73,6 +75,18 @@ namespace Helianz{
 				}
 				else {
 					printerForSit=new Printer{PrintSit=listPrintSituations[i]};
+					row.Cells.Add("");//Printer
+					row.Cells.Add("");//Prompt
+					row.Cells.Add("");//Virtual
+					row.Cells.Add("");//File Extension
+				}
+				//Paper size from local JSON (per-workstation)
+				LocalPrintConfig localConfig=LocalPrintSettings.GetForSit(listPrintSituations[i]);
+				if(localConfig!=null && !localConfig.IsEmpty) {
+					row.Cells.Add(string.IsNullOrEmpty(localConfig.PaperName) ? "Custom" : localConfig.PaperName);
+				}
+				else {
+					row.Cells.Add("Default");
 				}
 				row.Tag=printerForSit;
 				gridPrinters.ListGridRows.Add(row);

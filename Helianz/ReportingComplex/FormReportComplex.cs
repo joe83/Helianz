@@ -110,7 +110,6 @@ namespace Helianz.ReportingComplex {
 			_printout=PrinterL.CreateODprintout(
 				pd2_PrintPage,
 				auditDescription:Lan.g(this,"Report printed ")+_myReport.ReportName,
-				paperSize: new PaperSize("default", 850, 1100),
                 printoutOrientation:(_myReport.IsLandscape?PrintoutOrientation.Landscape:PrintoutOrientation.Default),
 				margins:new Margins(0,0,0,0),
 				printoutOrigin:PrintoutOrigin.AtMargin,

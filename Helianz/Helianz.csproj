@@ -2904,6 +2904,7 @@
     <Compile Include="Logic\PatRestrictionL.cs" />
     <Compile Include="Logic\PrefL.cs" />
     <Compile Include="Logic\PrinterL.cs" />
+    <Compile Include="Logic\LocalPrintSettings.cs" />
     <Compile Include="Logic\ProcedureL.cs" />
     <Compile Include="Logic\ProgramL.cs" />
     <Compile Include="Logic\RefAttachL.cs" />
@@ -11230,8 +11231,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>copy /Y "$(ProjectDir)Properties\app.manifest" "$(TargetDir)$(TargetFileName).manifest"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

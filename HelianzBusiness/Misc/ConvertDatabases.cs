@@ -53,11 +53,48 @@ namespace HelianzBusiness {
 			return listConvertMethods;
 		}
 
+		///<summary>Ensures that ItemOrder columns exist on tables whose Data Interface cache classes
+		///query with ORDER BY ItemOrder. Without this, upgrading from very old databases (e.g., v11)
+		///can fail with "Unknown column 'ItemOrder' in 'order clause'" because the column was added
+		///much later in the conversion chain (e.g., apptfielddef.ItemOrder was added in v21.4.1).</summary>
+		private static void EnsureItemOrderColumnsExist() {
+			//Tables whose Data Interface cache queries ORDER BY ItemOrder, with the version at which
+			//ItemOrder was originally added. If the column already exists, ALTER is a no-op.
+			string[] tableNames=new string[] {
+				"apptfielddef",  //ItemOrder added in To21_4_1() (v21.4.1)
+				"clinic",        //ItemOrder added in ~To16_2_x() (v16.x)
+			};
+			foreach(string tableName in tableNames) {
+				try {
+					if(LargeTableHelper.ColumnExists(LargeTableHelper.GetCurrentDatabase(),tableName,"ItemOrder")) {
+						continue;//Already exists, nothing to do.
+					}
+					//Only add if the table actually exists in the database.
+					string command=$"SELECT COUNT(*) FROM information_schema.tables "
+						+$"WHERE table_schema='{LargeTableHelper.GetCurrentDatabase()}' AND table_name='{tableName}'";
+					if(Db.GetCount(command)=="0") {
+						continue;//Table doesn't exist yet, will be created with ItemOrder later.
+					}
+					command=$"ALTER TABLE {tableName} ADD ItemOrder int NOT NULL DEFAULT 0";
+					Db.NonQ(command);
+				}
+				catch(Exception ex) {
+					//Swallow - if the column couldn't be added, the original convert method will handle it.
+					Logger.LogVerbose($"EnsureItemOrderColumnsExist: Could not add ItemOrder to {tableName}: {ex.Message}");
+				}
+			}
+		}
+
 		///<summary>Uses reflection to invoke private methods of the ConvertDatabase class in order from least to greatest if needed.
 		///The old way of converting the database was to manually daisy chain methods together.
 		///The new way is to just add a method that follows a strict naming pattern which this method will invoke when needed.</summary>
 		public static void InvokeConvertMethods() {
 			DataConnection.CommandTimeout=43200;//12 hours, because conversion commands may take longer to run.
+			//Ensure ItemOrder column exists on tables that may be queried with ORDER BY ItemOrder
+			//by cached Data Interface classes during the conversion chain.
+			//This prevents "Unknown column 'ItemOrder' in 'order clause'" errors when upgrading
+			//from older databases (e.g. v11) where these columns were added much later (e.g. v21).
+			EnsureItemOrderColumnsExist();
 			ConvertDatabases.To2_8_2();//begins going through the chain of conversion steps
 			Logger.DoVerboseLoggingArgs doVerboseLogging=Logger.DoVerboseLogging;
 			ODException.SwallowAnyException(() => {

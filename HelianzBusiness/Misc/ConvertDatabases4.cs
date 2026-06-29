@@ -696,7 +696,14 @@ namespace HelianzBusiness {
 				}
 				if(DataConnection.DBtype==DatabaseType.MySql) {
 					command="ALTER TABLE clinic ADD ItemOrder int NOT NULL";
-					Db.NonQ(command);
+					try {
+						Db.NonQ(command);
+					}
+					catch {
+						//Column may already exist if EnsureItemOrderColumnsExist() added it earlier.
+						LargeTableHelper.AlterTable("clinic","ClinicNum",
+							new LargeTableHelper.ColNameAndDef("ItemOrder","int NOT NULL"));
+					}
 				}
 				else {//oracle
 					command="ALTER TABLE clinic ADD ItemOrder number(11)";

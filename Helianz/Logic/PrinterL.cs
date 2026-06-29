@@ -285,6 +285,11 @@ namespace Helianz {
 				printerSettings.PrintToFile=printerForSit.IsVirtualPrinter;
 				printerSettings.PrintFileName=printerFilePath;
 			}
+			#region 2.5 - Apply local paper size / margin / orientation preferences for this situation.
+			//These are stored per-workstation in %AppData%\Helianz\LocalPrintSettings.json.
+			//If no local setting exists, the printer driver's default paper size is used.
+			LocalPrintSettings.ApplyTo(printerSettings,printSituation);
+			#endregion 2.5
 			#region 3 - Present the dialog
 			//Remote print requests aren't expected to hit this code.
 			if(showPrompt && !ODEnvironment.IsCloudServer && !isRemotePrint) {
