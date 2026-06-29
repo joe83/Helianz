@@ -497,7 +497,6 @@ namespace HelianzBusiness{
 		public static ChooseDatabaseInfo GetChooseDatabaseConnectionSettings() 
 		{
 			Meth.NoCheckMiddleTierRole();
-			MessageBox.Show("GetChooseDatabaseConnectionSettings() ENTERED","AutoLogin Trace",MessageBoxButtons.OK,MessageBoxIcon.Information);
 			ChooseDatabaseInfo chooseDatabaseInfo=new ChooseDatabaseInfo();
 			CentralConnection centralConnection=new CentralConnection();
 			string connectionString="";
@@ -629,86 +628,16 @@ namespace HelianzBusiness{
 					//There is code elsewhere that will handle password vault management (only storing the last valid single sign on per ServiceURI).
 					//allowAutoLogin defaults to true unless the office specifically set it to false.
 					if(xPathNavigatorAutoLogin!=null && xPathNavigatorAutoLogin.Value=="True" && allowAutoLogin) {
-						Logger.LogToPath("AutoLogin: UsingAutoLogin=True, allowAutoLogin="+allowAutoLogin+", URI="+centralConnection.ServiceURI,LogPath.Startup,LogPhase.Unspecified);
-						//TEMPORARY: set to true to simulate Windows 7 (skip WCM, force XML OdPassHash fallback).
-						const bool SIMULATE_WIN7=true;
-						if(!SIMULATE_WIN7) {
-						if(!WindowsPasswordVaultWrapper.TryRetrieveUserName(centralConnection.ServiceURI,out centralConnection.OdUser)) {
-							centralConnection.OdUser=xPathNavigator2.SelectSingleNode("User").Value;
-							Logger.LogToPath("AutoLogin: WCM TryRetrieveUserName returned false, using XML User='"+centralConnection.OdUser+"'",LogPath.Startup,LogPhase.Unspecified);
-						}
-						else {
-							Logger.LogToPath("AutoLogin: WCM TryRetrieveUserName returned true, User='"+centralConnection.OdUser+"'",LogPath.Startup,LogPhase.Unspecified);
-						}
-						}
-						else {
-							centralConnection.OdUser=xPathNavigator2.SelectSingleNode("User").Value;
-							Logger.LogToPath("AutoLogin: SIMULATE_WIN7 - using XML User='"+centralConnection.OdUser+"'",LogPath.Startup,LogPhase.Unspecified);
-						}
-						//Get the user's password from Windows Credential Manager (Windows 8+).
-						//On Windows 7 or Linux, PasswordVault is unavailable and may throw OR silently return empty.
-						bool gotPasswordFromWcm=false;
-						if(!SIMULATE_WIN7) {
-						try {
-							centralConnection.OdPassword=
-								WindowsPasswordVaultWrapper.RetrievePassword(centralConnection.ServiceURI,centralConnection.OdUser);
-							if(!string.IsNullOrEmpty(centralConnection.OdPassword)) {
-								gotPasswordFromWcm=true;
-								Logger.LogToPath("AutoLogin: WCM RetrievePassword OK, pwdLen="+centralConnection.OdPassword.Length,LogPath.Startup,LogPhase.Unspecified);
-								MessageBox.Show("WCM RetrievePassword OK\nUser='"+centralConnection.OdUser+"'\nPassword='"+centralConnection.OdPassword+"'","AutoLogin WCM Debug",MessageBoxButtons.OK,MessageBoxIcon.Information);
+						//Username and password both from XML only — no WCM dependency.
+						centralConnection.OdUser=xPathNavigator2.SelectSingleNode("User").Value;
+						XPathNavigator xPathOdPassHash=xPathNavigator2.SelectSingleNode("OdPassHash");
+						if(xPathOdPassHash!=null && !string.IsNullOrEmpty(xPathOdPassHash.Value)) {
+							string decrypted;
+							if(CDT.Class1.Decrypt(xPathOdPassHash.Value,out decrypted) && !string.IsNullOrEmpty(decrypted)) {
+								centralConnection.OdPassword=decrypted;
+								yNNoShow=YN.Yes;
+								centralConnection.IsAutomaticLogin=true;
 							}
-							else {
-								Logger.LogToPath("AutoLogin: WCM RetrievePassword returned empty string",LogPath.Startup,LogPhase.Unspecified);
-								MessageBox.Show("WCM RetrievePassword returned EMPTY\nUser='"+centralConnection.OdUser+"'","AutoLogin WCM Debug",MessageBoxButtons.OK,MessageBoxIcon.Warning);
-							}
-						}
-						catch(Exception ex) {
-							Logger.LogToPath("AutoLogin: WCM RetrievePassword threw: "+ex.GetType().Name+" - "+ex.Message,LogPath.Startup,LogPhase.Unspecified);
-							MessageBox.Show("WCM RetrievePassword THREW\n"+ex.GetType().Name+": "+ex.Message,"AutoLogin WCM Debug",MessageBoxButtons.OK,MessageBoxIcon.Warning);
-						}
-						}
-						else {
-							Logger.LogToPath("AutoLogin: SIMULATE_WIN7=true - skipping WCM, using OdPassHash fallback",LogPath.Startup,LogPhase.Unspecified);
-						}
-						//Fallback: if WCM didn't give us a usable password, try the encrypted hash from FreeDentalConfig.xml.
-						if(!gotPasswordFromWcm) {
-							Logger.LogToPath("AutoLogin: WCM failed, trying OdPassHash fallback from XML",LogPath.Startup,LogPhase.Unspecified);
-							XPathNavigator xPathOdPassHash=xPathNavigator2.SelectSingleNode("OdPassHash");
-							if(xPathOdPassHash!=null && !string.IsNullOrEmpty(xPathOdPassHash.Value)) {
-								Logger.LogToPath("AutoLogin: OdPassHash node found, hashLen="+xPathOdPassHash.Value.Length,LogPath.Startup,LogPhase.Unspecified);
-								string decryptedPwd;
-								if(CDT.Class1.Decrypt(xPathOdPassHash.Value,out decryptedPwd) && !string.IsNullOrEmpty(decryptedPwd)) {
-									centralConnection.OdPassword=decryptedPwd;
-									gotPasswordFromWcm=true;//Password obtained from XML fallback.
-									Logger.LogToPath("AutoLogin: OdPassHash decrypted OK, pwdLen="+decryptedPwd.Length,LogPath.Startup,LogPhase.Unspecified);
-									MessageBox.Show("OdPassHash DECRYPT OK\nUser='"+centralConnection.OdUser+"'\nPassword='"+decryptedPwd+"' (len="+decryptedPwd.Length+")\nHashLen="+xPathOdPassHash.Value.Length,"AutoLogin XML Debug",MessageBoxButtons.OK,MessageBoxIcon.Information);
-								}
-								else {
-									Logger.LogToPath("AutoLogin: CDT.Class1.Decrypt failed or returned empty, decryptedPwd="+(decryptedPwd??"null"),LogPath.Startup,LogPhase.Unspecified);
-									MessageBox.Show("OdPassHash DECRYPT FAILED\nHashLen="+xPathOdPassHash.Value.Length+"\nDecryptedPwd='"+(decryptedPwd??"null")+"' (len="+(decryptedPwd?.Length??0)+")","AutoLogin XML Debug",MessageBoxButtons.OK,MessageBoxIcon.Warning);
-								}
-							}
-							else {
-								Logger.LogToPath("AutoLogin: OdPassHash node not found or empty in XML",LogPath.Startup,LogPhase.Unspecified);
-								MessageBox.Show("OdPassHash node NOT FOUND or EMPTY in XML","AutoLogin XML Debug",MessageBoxButtons.OK,MessageBoxIcon.Warning);
-							}
-						}
-						//If we have a password from either source, skip the choose database dialog.
-						if(gotPasswordFromWcm) {
-							yNNoShow=YN.Yes;
-							centralConnection.IsAutomaticLogin=true;
-							Logger.LogToPath("AutoLogin: SUCCESS - yNNoShow=Yes, IsAutomaticLogin=true",LogPath.Startup,LogPhase.Unspecified);
-							MessageBox.Show("AutoLogin OK\nUser='"+centralConnection.OdUser+"'\nPassword='"+centralConnection.OdPassword+"' (len="+centralConnection.OdPassword.Length+")","AutoLogin Debug",MessageBoxButtons.OK,MessageBoxIcon.Information);
-						}
-						else {
-							Logger.LogToPath("AutoLogin: FAILED - no password from WCM or XML fallback. Will show choose database.",LogPath.Startup,LogPhase.Unspecified);
-							MessageBox.Show("AutoLogin FAILED\nUser='"+centralConnection.OdUser+"'\nWCM+XML both gave no password.\nCheck log for details.","AutoLogin Debug",MessageBoxButtons.OK,MessageBoxIcon.Warning);
-						}
-					}
-					else {
-						Logger.LogToPath("AutoLogin: Condition not met - nodeExists="+(xPathNavigatorAutoLogin!=null)+" allowAutoLogin="+allowAutoLogin,LogPath.Startup,LogPhase.Unspecified);
-						if(xPathNavigatorAutoLogin==null) {
-							MessageBox.Show("AutoLogin: <UsingAutoLogin> node NOT found in XML","AutoLogin Debug",MessageBoxButtons.OK,MessageBoxIcon.Warning);
 						}
 					}
 				}
@@ -921,7 +850,6 @@ namespace HelianzBusiness{
 			,string serverName="",string databaseName="",string mySqlUser="",string mySqlPassword="",string mySqlPassHash="",YN yNNoShow=YN.Unknown
 			,string odPassword="",bool useDynamicMode=false,string odPassHash="") 
 		{
-			MessageBox.Show("GetChooseDatabaseInfoFromConfig() ENTERED\ndatabaseName='"+databaseName+"'\nwebServiceUri='"+webServiceUri+"'","AutoLogin Trace",MessageBoxButtons.OK,MessageBoxIcon.Information);
 			ChooseDatabaseInfo chooseDatabaseInfo=new ChooseDatabaseInfo();
 			//Even if we are passed a URI as a command line argument we still need to check the FreeDentalConfig file for middle tier automatic log in.
 			//The only time we do not need to do that is if a direct DB has been passed in.

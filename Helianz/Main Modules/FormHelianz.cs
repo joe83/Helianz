@@ -478,7 +478,6 @@ namespace Helianz{
 			FormSplash formSplash=new FormSplash();
 			ChooseDatabaseInfo chooseDatabaseInfo2=null;
 			while(true) {//Most users will loop through once.  If user tries to connect to a db with replication failure, they will loop through again.
-				MessageBox.Show("NoShow="+chooseDatabaseInfo.NoShow+"\nIsAutomaticLogin="+chooseDatabaseInfo.CentralConnectionCur.IsAutomaticLogin+"\nOdUser='"+chooseDatabaseInfo.CentralConnectionCur.OdUser+"'\nOdPassword len="+(chooseDatabaseInfo.CentralConnectionCur.OdPassword?.Length??0)+"\nServiceURI='"+chooseDatabaseInfo.CentralConnectionCur.ServiceURI+"'","AutoLogin Trace - FormHelianz",MessageBoxButtons.OK,MessageBoxIcon.Information);
 				using FormChooseDatabase formChooseDatabase=new FormChooseDatabase(chooseDatabaseInfo);
 				if(chooseDatabaseInfo.NoShow==YN.Yes) {
 					try {
