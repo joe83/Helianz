@@ -1,0 +1,54 @@
+# =============================================================================
+# docker-compose.replication.yml
+# =============================================================================
+# Docker Compose file that adds a MariaDB read-replica alongside the
+# existing HelianzServer + MySQL master setup.
+#
+# This demonstrates the replication architecture. For production, the
+# replica would typically run on a separate physical/virtual machine.
+#
+# Usage:
+#   docker compose -f docker-compose.mono.yml -f docker-compose.replication.yml up --build
+#
+# Architecture:
+#
+#   Helianz Clients ──→ HelianzServer:9390 ──→ mysql (master, port 3306)  WRITES
+#                                      └──→ mysql-replica (port 3307)     READS
+#
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # MySQL 8 Replica  –  Read-only copy of the Helianz database
+  # ---------------------------------------------------------------------------
+  mysql-replica:
+    image: mysql:8.0
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --sql-mode=ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+      --server-id=2
+      --relay-log=relay-bin
+      --read-only=ON
+      --log-slave-updates=ON
+      --gtid-mode=ON
+      --enforce-gtid-consistency=ON
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootrootroot}
+      MYSQL_DATABASE:      helianz
+      MYSQL_USER:          oduser_ro
+      MYSQL_PASSWORD:      ${RO_PASSWORD:-odpass_ro}
+    ports:
+      - "3308:3306"     # mapped to 3308 to avoid collision
+    volumes:
+      - od-mysql-replica-data:/var/lib/mysql
+      - ./docker/replica-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootrootroot"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+volumes:
+  od-mysql-replica-data:

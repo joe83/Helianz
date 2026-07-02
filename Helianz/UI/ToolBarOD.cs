@@ -55,6 +55,14 @@ Boilerplate for the new WpfControls.UI.ToolBar is over in ToolBar.xaml.cs
 		private ToolTip toolTip1;
 		///<summary>This can be set from anywhere to affect all toolbars simultaneously.</summary>
 		private ValidNum textPageNav;
+		///<summary>Rectangle for the connection status LED dot, used for hit-testing tooltip.</summary>
+		private Rectangle _rectConnectionDot;
+		///<summary>When true, this toolbar instance will draw the connection status LED dot at its right edge.
+		///Should only be set to true on the main application toolbar (FormHelianz.ToolBarMain).</summary>
+		[Category("OD")]
+		[Description("When true, draws a connection status LED dot at the right edge of the toolbar.")]
+		[DefaultValue(false)]
+		public bool ShowConnectionStatus { get; set; }
 		//These brushes all get disposed.
 		private LinearGradientBrush _brushTogglePushed=null;
 		private LinearGradientBrush _brushTogglePushError=null;
@@ -123,6 +131,7 @@ Boilerplate for the new WpfControls.UI.ToolBar is over in ToolBar.xaml.cs
 				_penTogglePushed?.Dispose();
 				_stringFormatCenter?.Dispose();
 				_stringFormatLeft?.Dispose();
+				toolTip1?.Dispose();
 				for(int i=0;i<Buttons.Count;i++){
 					Buttons[i].Dispose();
 				}
@@ -194,7 +203,13 @@ Boilerplate for the new WpfControls.UI.ToolBar is over in ToolBar.xaml.cs
 		private void timer_Tick(object sender,EventArgs e) {
 			//this happens soon after the last resize
 			Invalidate();
-			if(timer.Interval==1000){
+			//If showing connection status, keep the timer running continuously (every 1 second)
+			//so the LED updates promptly. Otherwise stop after two runs as before.
+			if(ShowConnectionStatus) {
+				timer.Interval=1000;
+				timer.Enabled=true;
+			}
+			else if(timer.Interval==1000){
 				timer.Enabled=false;//so it only runs twice
 			}
 			timer.Interval=1000;//set it back to the longer interval
@@ -279,6 +294,12 @@ Boilerplate for the new WpfControls.UI.ToolBar is over in ToolBar.xaml.cs
 				else{//Still hovering over the same button as before
 					//do nothing.
 				}
+			}
+			else if(!_rectConnectionDot.IsEmpty && _rectConnectionDot.Contains(e.X,e.Y)){
+				string tip=RemotingClient.HasMiddleTierConnectionFailed
+					? "Server connection lost — reconnecting..."
+					: "Connected to server";
+				toolTip1.SetToolTip(this,tip);
 			}
 			else{
 				toolTip1.SetToolTip(this,"");
@@ -374,6 +395,7 @@ Boilerplate for the new WpfControls.UI.ToolBar is over in ToolBar.xaml.cs
 				for(int i=0;i<buttons.Count;i++) {
 					DrawButton(e.Graphics,buttons[i]);
 				}
+				DrawConnectionStatus(e.Graphics);
 				e.Graphics.DrawLine(Pens.SlateGray,0,Height-1,Width-1,Height-1);
 				//For quite some time, the Paint event was never fired here.  Added by Sam and AndrewD so we can subscribe to the Paint event.
 				base.OnPaint(e);
@@ -777,6 +799,32 @@ Boilerplate for the new WpfControls.UI.ToolBar is over in ToolBar.xaml.cs
 			//_penOutline.Alignment=PenAlignment.Inset;
 			_penTogglePushed=new Pen(Color.FromArgb(50,120,200),_lineThickness);
 				//132,148,220),_lineThickness); //Compared to SlateGray(112,128,144)
+		}
+
+		///<summary>Draws a small colored LED dot at the right edge of the toolbar indicating Middle Tier connection status.
+		///Green = connected, blinking yellow/orange = reconnecting (only shown for ClientMT role).</summary>
+		private void DrawConnectionStatus(Graphics g) {
+			if(!ShowConnectionStatus || RemotingClient.MiddleTierRole!=MiddleTierRole.ClientMT) {
+				_rectConnectionDot=Rectangle.Empty;
+				return;
+			}
+			int dotSize=LayoutManager.Scale(10);
+			int margin=LayoutManager.Scale(8);
+			int x=Width-dotSize-margin;
+			int y=(Height-dotSize)/2;
+			_rectConnectionDot=new Rectangle(x,y,dotSize,dotSize);
+			Color color;
+			if(RemotingClient.HasMiddleTierConnectionFailed) {
+				//Blink between yellow and dark orange every second to indicate reconnecting.
+				color=(DateTime.Now.Second % 2==0) ? Color.Gold : Color.DarkOrange;
+			}
+			else {
+				color=Color.LimeGreen;
+			}
+			using(SolidBrush brush=new SolidBrush(color)) {
+				g.SmoothingMode=SmoothingMode.AntiAlias;
+				g.FillEllipse(brush,_rectConnectionDot);
+			}
 		}
 		#endregion Methods - Private
 

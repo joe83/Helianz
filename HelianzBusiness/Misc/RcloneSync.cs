@@ -315,6 +315,17 @@ namespace HelianzBusiness {
 
 		#region Process Execution
 
+		///<summary>On Windows, converts a local path (C:\... or \\server\...) to use forward slashes
+		///so rclone/Go doesn't internally add the \\?\ extended-path prefix that fails on Windows 7.
+		///Remote paths (containing ":/") already use forward slashes and are returned unchanged.</summary>
+		private static string NormalizeLocalPathForRclone(string path) {
+			if(string.IsNullOrEmpty(path)) { return path; }
+			// Remote paths have ":/" (e.g. helianz-media:/media/...) — already forward-slashed, leave alone.
+			if(path.Contains(":/")) { return path; }
+			// This is a local Windows path. Convert backslashes to forward slashes.
+			return path.Replace('\\','/');
+		}
+
 		///<summary>Runs an rclone command with the custom config file and optional password via environment variable.
 		///Throws on non-zero exit code.</summary>
 		private static void RunRclone(string operation,string sourcePath,string destPath) {
@@ -325,6 +336,14 @@ namespace HelianzBusiness {
 			// Trim trailing slashes to prevent backslash from escaping the closing quote
 			string src=sourcePath.TrimEnd('\\','/');
 			string dst=destPath.TrimEnd('\\','/');
+			// On Windows, normalize local paths to use forward slashes for rclone.
+			// Prevents Go 1.21+'s \\?\ extended-path prefix from breaking directory reads on Windows 7.
+			// Local paths: C:\... or \\server\... (drive letter colon at index 1, or UNC).
+			// Remote paths: helianz-media:/... (colon followed by slash, already uses forward slashes).
+			if(Environment.OSVersion.Platform==PlatformID.Win32NT) {
+				src=NormalizeLocalPathForRclone(src);
+				dst=NormalizeLocalPathForRclone(dst);
+			}
 			string args=operation+" \""+src+"\" \""+dst+"\" --config \""+configPath+"\" --verbose=1";
 			psi.Arguments=args;
 			psi.UseShellExecute=false;

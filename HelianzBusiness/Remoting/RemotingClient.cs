@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
 using CodeBase;
@@ -92,6 +93,10 @@ namespace HelianzBusiness {
 				}
 			}
 		}
+
+		///<summary>When true, connection-loss errors will NOT show the FormConnectionLost popup dialog.
+		///Instead, reconnection is handled silently in the background and the LED status dot in the toolbar is the only indicator.</summary>
+		public static bool HasSilentConnectionRetry { get; set; }
 
 		[ThreadStatic]
 		private static bool _isReportServer;
@@ -340,7 +345,13 @@ namespace HelianzBusiness {
 			}
 			string dtoString=dto.Serialize();
 			IHelianzServer service=HelianzBusiness.WebServices.HelianzServerProxy.GetHelianzServerInstance();
-			return SendAndReceiveRecursive(service,dtoString,hasConnectionLost);
+			string result=SendAndReceiveRecursive(service,dtoString,hasConnectionLost);
+			//If SendAndReceiveRecursive returned null, the connection was lost on the UI thread in silent mode.
+			//Throw ODException so the Meth layer can return a default value instead of crashing.
+			if(result==null && HasSilentConnectionRetry && HasMiddleTierConnectionFailed) {
+				throw new ODException("Middle Tier connection lost.",ODException.ErrorCodes.ConnectionLost);
+			}
+			return result;
 		}
 
 		///<summary>Tries to process the dto passed in.  If there was a web connection failure then this method will keep the calling thread here 
@@ -363,8 +374,22 @@ namespace HelianzBusiness {
 				//WebException class: https://docs.microsoft.com/en-us/dotnet/api/system.net.webexception?view=netframework-4.7.2
 				//WebException.Status property: https://docs.microsoft.com/en-us/dotnet/api/system.net.webexception.status?view=netframework-4.7.2
 				//Handling WebExceptions: https://docs.microsoft.com/en-us/dotnet/framework/network-programming/handling-errors?view=netframework-4.7.2
-				if(wex.Status!=WebExceptionStatus.ConnectFailure) {
+				if(!IsWebExceptionConnectionLost(wex)) {
 					throw;
+				}
+				//If we are on the UI thread, do NOT block it. Set the flag so the LED updates,
+				//start background reconnection, and return null so SendAndReceive throws ODException
+				//which the Meth layer catches and returns a default value.
+				if(System.Windows.Forms.Application.MessageLoop) {
+					RemotingClient.HasMiddleTierConnectionFailed=true;
+					//Start background reconnect thread that won't block the UI.
+					ODThread reconnectThread=new ODThread(0,(o) => {
+						RemoteConnectionFailed();
+					});
+					reconnectThread.Name="SilentReconnectThread";
+					reconnectThread.AddExceptionHandler((ex) => ex.DoNothing());
+					reconnectThread.Start();
+					return null;
 				}
 				//The calling method wants to automatically retry connecting to the Middle Tier until it comes back.
 				RemoteConnectionFailed();
@@ -384,12 +409,32 @@ namespace HelianzBusiness {
 			return (RemotingClient.MiddleTierRole==MiddleTierRole.ServerMT);
 		}
 
+		///<summary>Returns true if the WebException status indicates the connection was lost and a retry is appropriate.
+		///This covers keep-alive failures, connection resets, timeouts, and other transient network errors.</summary>
+		public static bool IsWebExceptionConnectionLost(WebException wex) {
+			switch(wex.Status) {
+				case WebExceptionStatus.ConnectFailure:
+				case WebExceptionStatus.KeepAliveFailure:
+				case WebExceptionStatus.ConnectionClosed:
+				case WebExceptionStatus.ReceiveFailure:
+				case WebExceptionStatus.SendFailure:
+				case WebExceptionStatus.Timeout:
+				case WebExceptionStatus.PipelineFailure:
+				case WebExceptionStatus.RequestCanceled:
+					return true;
+				default:
+					return false;
+			}
+		}
+
 		///<summary>Fires a MiddleTierConnectionEvent of type MiddleTierConnectionLost to notify the main thread that the Middle Tier connection has been lost.
 		///Wait here until the connection is restored.</summary>
 		private static void RemoteConnectionFailed() {
 			RemotingClient.HasMiddleTierConnectionFailed=true;
-			//Inform all threads that we've lost the MiddleTier connection, so they can handle this appropriately.
-			MiddleTierConnectionEvent.Fire(new MiddleTierConnectionEventArgs(false));
+			//Only fire the event (which triggers FormConnectionLost popup) if silent mode is not enabled.
+			if(!HasSilentConnectionRetry) {
+				MiddleTierConnectionEvent.Fire(new MiddleTierConnectionEventArgs(false));
+			}
 			//Keep the current thread stuck here while automatically retrying the connection up until the timeout specified.
 			DateTime beginning=DateTime.Now;
 			ODThread threadRetry=new ODThread(500,(o) => {

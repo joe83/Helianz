@@ -115,6 +115,8 @@ namespace Helianz.ReportingComplex {
 				printoutOrigin:PrintoutOrigin.AtMargin,
 				isErrorSuppressed:true//The error is handled by firing error event below.
 			);
+			//Apply local paper size so the preview renders with the correct page size, not the printer driver's default.
+			LocalPrintSettings.ApplyTo(_printout.PrintDoc.PrinterSettings,PrintSituation.Default);
 			if(_printout.SettingsErrorCode!=PrintoutErrorCode.Success) {
 				MsgBox.Show(PrinterL.GetErrorStringFromCode(_printout.SettingsErrorCode));
 				_myReport.CloseProgressBar();
@@ -976,12 +978,11 @@ namespace Helianz.ReportingComplex {
 
 		private void Print_Click() {
 			_totalNumberPagesPrinted=0;
-			int totalPages=_totalPages;//_totalPages gets set to _pagesProcessed in the RestedODPrintout function. 
+			int totalPages=_totalPages;
 			if(IsRetailStorePAndI || IsRetailStoreInventory){
 				PrinterL.HasComputerTable=false;
 			}
 			if(ResetODprintout() && PrinterL.TryPrint(_printout) && _totalNumberPagesPrinted!=totalPages) {
-				//We must refresh the window here or it will display the printout as missing any pages beyond ex.PageSettings.PrinterSettings.ToPage.
 				RefreshWindow();
 			}
 		}

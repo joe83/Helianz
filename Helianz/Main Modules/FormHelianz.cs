@@ -199,6 +199,7 @@ namespace Helianz{
 			ToolBarMain.Dock=DockStyle.Top;
 			ToolBarMain.ImageList=imageListMain;
 			ToolBarMain.ButtonClick+=new ODToolBarButtonClickEventHandler(toolBarMain_ButtonClick);
+			ToolBarMain.ShowConnectionStatus=true;
 			LayoutManager.Add(ToolBarMain,this);
 			//module bar
 			moduleBar=new ModuleBar();
@@ -475,6 +476,7 @@ namespace Helianz{
 			//Hook up MT connection lost event. Nothing prior to this point fires LostConnection events.
 			MiddleTierConnectionEvent.Fired+=MiddleTierConnection_ConnectionLost;
 			RemotingClient.HasAutomaticConnectionLostRetry=true;
+			RemotingClient.HasSilentConnectionRetry=true;
 			FormSplash formSplash=new FormSplash();
 			ChooseDatabaseInfo chooseDatabaseInfo2=null;
 			while(true) {//Most users will loop through once.  If user tries to connect to a db with replication failure, they will loop through again.
@@ -3576,8 +3578,16 @@ namespace Helianz{
 
 		private void timerTimeIndic_Tick(object sender,System.EventArgs e) {
 			//every minute:
-			if(WindowState!=FormWindowState.Minimized && controlAppt.Visible) {
-				controlAppt.TickRefresh();
+			try {
+				if(WindowState!=FormWindowState.Minimized && controlAppt.Visible) {
+					controlAppt.TickRefresh();
+				}
+			}
+			catch(WebException wex) {
+				//If the Middle Tier connection was lost during the tick, the connection-lost machinery
+				//(MiddleTierConnectionEvent → FormConnectionLost) handles it on a separate thread.
+				//Swallow here to prevent the UI thread from freezing or the app from becoming unresponsive.
+				Logger.LogToPath("timerTimeIndic_Tick WebException: "+wex.Message,LogPath.Signals,LogPhase.Unspecified);
 			}
 		}
 

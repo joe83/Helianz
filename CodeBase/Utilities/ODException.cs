@@ -179,6 +179,8 @@ namespace CodeBase {
 			//600-699 range. Values used by RemotingClient/MiddleTier
 			///<summary>After successfully logging in to Helianz, a middle tier call to Userods.CheckUserAndPassword returned an "Invalid user or password" error.</summary>
 			CheckUserAndPasswordFailed=600,
+			///<summary>The Middle Tier connection was lost. The UI should return default/empty values rather than throwing.</summary>
+			ConnectionLost=601,
 			//700-799 range. Values used by failed query exceptions.
 			///<summary>Generic database command failed to execute.</summary>
 			DbQueryError=700,

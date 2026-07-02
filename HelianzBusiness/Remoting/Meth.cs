@@ -70,8 +70,10 @@ So always triple check your parameters.
 				retval=RemotingClient.ProcessGetTable(dto);
 			}
 			catch(ODException ex) {
-				if(IsCredentailFailRetry(ex)) {
-					retval=GetTable(methodBase,parameters);
+			if(ex.ErrorCode==(int)ODException.ErrorCodes.ConnectionLost) {
+				//Connection lost — return default/empty value silently. LED status dot shows state.
+			}
+			else if(IsCredentailFailRetry(ex)) {
 				}
 				else {
 					throw;
@@ -99,7 +101,10 @@ So always triple check your parameters.
 				retval=RemotingClient.ProcessGetTableLow(dto);
 			}
 			catch(ODException ex) {
-				if(IsCredentailFailRetry(ex)) {
+				if(ex.ErrorCode==(int)ODException.ErrorCodes.ConnectionLost) {
+					//Connection lost — return default/empty value silently. LED status dot shows state.
+				}
+				else if(IsCredentailFailRetry(ex)) {
 					retval=GetTableLow(command);
 				}
 				else {
@@ -140,8 +145,10 @@ So always triple check your parameters.
 				retval=RemotingClient.ProcessGetDS(dto);
 			}
 			catch(ODException ex) {
-				if(IsCredentailFailRetry(ex)) {
-					retval=GetDS(methodBase,parameters);
+			if(ex.ErrorCode==(int)ODException.ErrorCodes.ConnectionLost) {
+				//Connection lost — return default/empty value silently.
+			}
+			else if(IsCredentailFailRetry(ex)) {
 				}
 				else {
 					throw;
@@ -181,8 +188,10 @@ So always triple check your parameters.
 				retval=RemotingClient.ProcessGetSerializableDictionary<K,V>(dto);
 			}
 			catch(ODException ex) {
-				if(IsCredentailFailRetry(ex)) {
-					retval=GetSerializableDictionary<K,V>(methodBase,parameters);
+			if(ex.ErrorCode==(int)ODException.ErrorCodes.ConnectionLost) {
+				//Connection lost — return default/empty value silently.
+			}
+			else if(IsCredentailFailRetry(ex)) {
 				}
 				else {
 					throw;
@@ -222,8 +231,10 @@ So always triple check your parameters.
 				retval=RemotingClient.ProcessGetLong(dto);
 			}
 			catch(ODException ex) {
-				if(IsCredentailFailRetry(ex)) {
-					retval=GetLong(methodBase,parameters);
+			if(ex.ErrorCode==(int)ODException.ErrorCodes.ConnectionLost) {
+				//Connection lost — return default/empty value silently.
+			}
+			else if(IsCredentailFailRetry(ex)) {
 				}
 				else {
 					throw;
@@ -263,8 +274,10 @@ So always triple check your parameters.
 				retval=RemotingClient.ProcessGetInt(dto);
 			}
 			catch(ODException ex) {
-				if(IsCredentailFailRetry(ex)) {
-					retval=GetInt(methodBase,parameters);
+			if(ex.ErrorCode==(int)ODException.ErrorCodes.ConnectionLost) {
+				//Connection lost — return default/empty value silently.
+			}
+			else if(IsCredentailFailRetry(ex)) {
 				}
 				else {
 					throw;
@@ -304,8 +317,10 @@ So always triple check your parameters.
 				retval=RemotingClient.ProcessGetDouble(dto);
 			}
 			catch(ODException ex) {
-				if(IsCredentailFailRetry(ex)) {
-					retval=GetDouble(methodBase,parameters);
+			if(ex.ErrorCode==(int)ODException.ErrorCodes.ConnectionLost) {
+				//Connection lost — return default/empty value silently.
+			}
+			else if(IsCredentailFailRetry(ex)) {
 				}
 				else {
 					throw;
@@ -344,8 +359,10 @@ So always triple check your parameters.
 				RemotingClient.ProcessGetVoid(dto);
 			}
 			catch(ODException ex) {
-				if(IsCredentailFailRetry(ex)) {
-					GetVoid(methodBase,parameters);
+			if(ex.ErrorCode==(int)ODException.ErrorCodes.ConnectionLost) {
+				//Connection lost — return silently. LED status dot shows state.
+			}
+			else if(IsCredentailFailRetry(ex)) {
 				}
 				else {
 					throw;
@@ -379,8 +396,11 @@ So always triple check your parameters.
 				retval=RemotingClient.ProcessGetObject<T>(dto);
 			}
 			catch(ODException ex) {
-				//GetObject does not invoke IsCredentailFailRetry() because it is used by Userods.CheckUserAndPassword() which is invoked when the user re-enters their credentials.
-				if(ex.ErrorCode==(int)ODException.ErrorCodes.CheckUserAndPasswordFailed && ODEvent.IsCredentialsFailedAfterLogin_EventSubscribed) {
+			if(ex.ErrorCode==(int)ODException.ErrorCodes.ConnectionLost) {
+				//Connection lost — return default value silently. LED status dot shows state.
+			}
+			//GetObject does not invoke IsCredentailFailRetry() because it is used by Userods.CheckUserAndPassword() which is invoked when the user re-enters their credentials.
+			else if(ex.ErrorCode==(int)ODException.ErrorCodes.CheckUserAndPasswordFailed && ODEvent.IsCredentialsFailedAfterLogin_EventSubscribed) {
 					if(RemotingClient.HasLoginFailed) {
 						//Login has already failed and we got another CheckUserAndPasswordFailed error, just throw.
 						//This can happen when the user re-enters invalid credentials. They need to be made aware of this failure and we should NOT keep the thread waiting here.
@@ -428,7 +448,10 @@ So always triple check your parameters.
 				retval=RemotingClient.ProcessGetString(dto);
 			}
 			catch(ODException ex) {
-				if(IsCredentailFailRetry(ex)) {
+				if(ex.ErrorCode==(int)ODException.ErrorCodes.ConnectionLost) {
+					//Connection lost — return default value silently.
+				}
+				else if(IsCredentailFailRetry(ex)) {
 					retval=GetString(methodBase,parameters);
 				}
 				else {
@@ -456,7 +479,10 @@ So always triple check your parameters.
 				retval=RemotingClient.ProcessGetBool(dto);
 			}
 			catch(ODException ex) {
-				if(IsCredentailFailRetry(ex)) {
+				if(ex.ErrorCode==(int)ODException.ErrorCodes.ConnectionLost) {
+					//Connection lost — return default value silently.
+				}
+				else if(IsCredentailFailRetry(ex)) {
 					retval=GetBool(methodBase,parameters);
 				}
 				else {

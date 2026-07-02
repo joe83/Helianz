@@ -52,6 +52,18 @@ namespace Helianz {
 				copies,
 				totalPages
 			);
+			if(printout.SettingsErrorCode==PrintoutErrorCode.Success) {
+				//Resolve the configured printer for this situation so preview renders at the correct printable area.
+				//This mirrors what SetPrinter does in regions 1 & 2, but without the dialogs.
+				if(HasComputerTable) {
+					Printer printerForSit=Printers.GetForSit(printSituation);
+					if(printerForSit!=null && Printers.PrinterIsInstalled(printerForSit.PrinterName)) {
+						printout.PrintDoc.PrinterSettings.PrinterName=printerForSit.PrinterName;
+					}
+				}
+				//Apply local paper size/margins/orientation from %AppData% so previews render correctly.
+				LocalPrintSettings.ApplyTo(printout.PrintDoc.PrinterSettings,printSituation);
+			}
 			if(!isErrorSuppressed && printout.SettingsErrorCode!=PrintoutErrorCode.Success) {
 				ShowError(printout);
 			}
@@ -152,6 +164,8 @@ namespace Helianz {
 			if(!TrySetPrinter(printout,isRemotePrint:isRemotePrint,printerNumOverride:printerNumOverride)) {
 				return false;
 			}
+			//Re-apply local paper size after the PrintDialog may have reset it to the printer driver's default.
+			LocalPrintSettings.ApplyTo(printout.PrintDoc.PrinterSettings,printout.Situation);
 			if(isRemotePrint){
 				return printout.TryPrintNoUI();
 			}
@@ -285,11 +299,6 @@ namespace Helianz {
 				printerSettings.PrintToFile=printerForSit.IsVirtualPrinter;
 				printerSettings.PrintFileName=printerFilePath;
 			}
-			#region 2.5 - Apply local paper size / margin / orientation preferences for this situation.
-			//These are stored per-workstation in %AppData%\Helianz\LocalPrintSettings.json.
-			//If no local setting exists, the printer driver's default paper size is used.
-			LocalPrintSettings.ApplyTo(printerSettings,printSituation);
-			#endregion 2.5
 			#region 3 - Present the dialog
 			//Remote print requests aren't expected to hit this code.
 			if(showPrompt && !ODEnvironment.IsCloudServer && !isRemotePrint) {
@@ -319,6 +328,10 @@ namespace Helianz {
 				}
 			}
 			#endregion 4
+			//Apply local paper size / margin / orientation preferences AFTER the dialogs,
+			//because PrintDialog resets paper size to the printer driver's default.
+			//These are stored per-workstation in %AppData%\Helianz\LocalPrintSettings.json.
+			LocalPrintSettings.ApplyTo(printerSettings,printSituation);
 			//Create audit log entry for printing.  PatNum can be 0.
 			if(!string.IsNullOrEmpty(auditDescription)){
 				SecurityLogs.MakeLogEntry(EnumPermType.Printing,patNum,auditDescription);
