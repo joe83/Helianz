@@ -176,9 +176,9 @@ namespace HelianzBusiness {
 					break;
 				#endregion 'None'
 				#region PatientSelect
-				case DisplayFieldCategory.PatientSelect:
-					listDisplayFields.Add(new DisplayField("LastName",75,displayFieldCategory));
+				case DisplayFieldCategory.PatientSelect:				
 					listDisplayFields.Add(new DisplayField("First Name",75,displayFieldCategory));
+					listDisplayFields.Add(new DisplayField("LastName",75,displayFieldCategory));
 					//listDisplayFields.Add(new DisplayField("MI",25,displayFieldCategory));
 					listDisplayFields.Add(new DisplayField("Pref Name",60,displayFieldCategory));
 					listDisplayFields.Add(new DisplayField("Age",30,displayFieldCategory));

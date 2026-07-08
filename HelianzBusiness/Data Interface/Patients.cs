@@ -4147,12 +4147,18 @@ namespace HelianzBusiness {
 			}
 		}
 
-		///<summary>LName, 'Preferred' FName M</summary>
+		///<summary>Returns a display name. For Indonesian locale (id-ID), returns First Last format (e.g. "Linggar Ayu Praditya").
+		///For all other locales, returns Last,First format (e.g. "Ayu Praditya, Linggar").</summary>
 		public static string GetNameLF(string LName,string FName,string Preferred,string MiddleI) {
 			Meth.NoCheckMiddleTierRole();
+			// Indonesian locale: use natural First-Last reading order, no comma.
+			if(Currency.IsIndonesianLocale()) {
+				return GetNameFL(LName,FName,Preferred,MiddleI);
+			}
 			string retVal="";
 			retVal+=LName;
-			if(FName!="" || MiddleI!="" || Preferred!="") {
+			// Only add comma if LName is not blank (handles single-name patients like many Indonesians).
+			if(retVal!="" && (FName!="" || MiddleI!="" || Preferred!="")) {
 				retVal+=",";
 			}
 			if(Preferred!="") {
@@ -4180,23 +4186,7 @@ namespace HelianzBusiness {
 
 		///<summary>Does not call DB to retrieve a patient, only uses the passed in object.</summary>
 		public static string GetNameLF(Patient pat) {
-			string retVal="";
-			retVal+=pat.LName;
-			if(pat.FName!="" || pat.MiddleI!="" || pat.Preferred!="") {
-				retVal+=",";
-			}
-			if(pat.Preferred!="") {
-				retVal+=" '"+pat.Preferred+"'";
-			}
-			if(pat.FName!="") {
-				retVal=AddSpaceIfNeeded(retVal);
-				retVal+=pat.FName;
-			}
-			if(pat.MiddleI!="") {
-				retVal=AddSpaceIfNeeded(retVal);
-				retVal+=pat.MiddleI;
-			}
-			return retVal;
+			return GetNameLF(pat.LName,pat.FName,pat.Preferred,pat.MiddleI);
 		}
 
 		///<summary>LName, FName M</summary>

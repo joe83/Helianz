@@ -125,6 +125,10 @@ namespace Helianz {
 		///<summary></summary>
 		public void FrmPatientSelect_Load(object sender,System.EventArgs e) {
 			Lang.F(this);
+			// Indonesian locale: swap search field positions and labels so First Name comes first.
+			if(Currency.IsIndonesianLocale()) {
+				SwapIndonesianSearchFields();
+			}
 			if(PatientInitial!=null) {
 				PreFillSearchBoxes();
 			}
@@ -208,6 +212,10 @@ namespace Helianz {
 			butPrevious.IsEnabled=false;
 			FillSearchOption();
 			SetGridCols();
+			// Indonesian locale: swap LastName and FirstName grid columns so First Name displays first.
+			if(Currency.IsIndonesianLocale()) {
+				SwapIndonesianGridCols();
+			}
 			if(ODEnvironment.IsCloudInstance) {
 				//Keyboard does not currently work with THINFINITY users.
 				//Disable keyboard for Appstream, help button launches URL on VM and options button can get to VM control panel.
@@ -550,9 +558,10 @@ namespace Helianz {
 			_tablePats=tablePats;
 			labelMatchingRecords.Text=$"{_tablePats.Rows.Count} Records Displayed{(_doLimitOnePage? " Out of Many" : "")}";
 			if(PatNumInitial!=0 && _doLimitOnePage) {
-				//The InitialPatNum will be at the top, so resort the list alphabetically
+				//The InitialPatNum will be at the top, so resort the list alphabetically.
+				//For Indonesian locale, sort by FirstName then LastName.
 				DataView dataView=_tablePats.DefaultView;
-				dataView.Sort="LName,FName";
+				dataView.Sort=Currency.IsIndonesianLocale() ? "FName,LName" : "LName,FName";
 				_tablePats=dataView.ToTable();
 			}
 			gridMain.BeginUpdate();
@@ -871,6 +880,37 @@ namespace Helianz {
 			}
 		}
 		#endregion
+
+		///<summary>Swaps search field positions and labels so First Name (Nama Lengkap) appears above Last Name (Nama Belakang).</summary>
+		private void SwapIndonesianSearchFields() {
+			// Swap the Y-position (Margin) of textLName and textFName.
+			Thickness marginLName=textLName.Margin;
+			Thickness marginFName=textFName.Margin;
+			textLName.Margin=new Thickness(marginLName.Left,marginFName.Top,marginLName.Right,marginLName.Bottom);
+			textFName.Margin=new Thickness(marginFName.Left,marginLName.Top,marginFName.Right,marginFName.Bottom);
+			// Swap the Y-position of the labels.
+			Thickness marginLabel1=label1.Margin;
+			Thickness marginLabel3=label3.Margin;
+			label1.Margin=new Thickness(marginLabel1.Left,marginLabel3.Top,marginLabel1.Right,marginLabel1.Bottom);
+			label3.Margin=new Thickness(marginLabel3.Left,marginLabel1.Top,marginLabel3.Right,marginLabel3.Bottom);
+			// Swap label text: "First Name" becomes "Nama Lengkap", "Last Name" becomes "Nama Belakang".
+			label1.Text="Nama Belakang";
+			label3.Text="Nama Depan";
+			// Swap tab indices so First Name (now on top) is TabIndex 0.
+			textLName.TabIndex=1;
+			textFName.TabIndex=0;
+		}
+
+		///<summary>Swaps LastName and FirstName columns in the display fields so First Name appears first in the grid.</summary>
+		private void SwapIndonesianGridCols() {
+			int idxLastName=_listDisplayFields.FindIndex(x => x.InternalName=="LastName");
+			int idxFirstName=_listDisplayFields.FindIndex(x => x.InternalName=="First Name");
+			if(idxLastName>=0 && idxFirstName>=0) {
+				DisplayField temp=_listDisplayFields[idxLastName];
+				_listDisplayFields[idxLastName]=_listDisplayFields[idxFirstName];
+				_listDisplayFields[idxFirstName]=temp;
+			}
+		}
 
 		private void butOK_Click(object sender, System.EventArgs e){
 			if(gridMain.GetSelectedIndex()==-1){
