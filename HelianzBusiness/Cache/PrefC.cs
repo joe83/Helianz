@@ -600,8 +600,28 @@ namespace HelianzBusiness {
 
 		///<summary>A helper class to get Read-Only Server preferences.</summary>
 		public static class ReadOnlyServer {
+			///<summary>Delegate that can be set by the client application to provide local (per-workstation) read-only server settings.
+			///Returns a LocalReadOnlyServerOverride if local settings are enabled and configured; null otherwise.
+			///When non-null, the local settings take precedence over global database preferences.</summary>
+			public static Func<LocalReadOnlyServerOverride> GetLocalOverride=() => null;
+
+			///<summary>Returns true if a local override is active and enabled.</summary>
+			private static bool HasLocalOverride() {
+				LocalReadOnlyServerOverride local=GetLocalOverride();
+				return local!=null && local.Enabled;
+			}
+
 			public static string DisplayStr {
 				get {
+					if(HasLocalOverride()) {
+						LocalReadOnlyServerOverride local=GetLocalOverride();
+						if(local.UseMiddleTier) {
+							return "Remote Server (Local)";
+						}
+						else {
+							return local.ServerName+": "+local.Database+" (Local)";
+						}
+					}
 					if(Server=="") {
 						if(URI!="") {
 							return "Remote Server"; //will be blank if there is no read-only server set up.
@@ -617,31 +637,60 @@ namespace HelianzBusiness {
 			}
 			public static string URI {
 				get {
+					if(HasLocalOverride()) {
+						LocalReadOnlyServerOverride local=GetLocalOverride();
+						return local.UseMiddleTier ? local.URI : "";
+					}
 					return PrefC.GetString(PrefName.ReadOnlyServerURI);
 				}
 			}
 			public static string Server {
 				get {
+					if(HasLocalOverride()) {
+						LocalReadOnlyServerOverride local=GetLocalOverride();
+						return local.UseMiddleTier ? "" : local.ServerName;
+					}
 					return PrefC.GetString(PrefName.ReadOnlyServerCompName);
 				}
 			}
 			public static string SslCa {
 				get {
+					if(HasLocalOverride()) {
+						LocalReadOnlyServerOverride local=GetLocalOverride();
+						return local.UseMiddleTier ? "" : local.SslCa;
+					}
 					return PrefC.GetStringSilent(PrefName.ReadOnlyServerSslCa);
 				}
 			}
 			public static string Database {
 				get {
+					if(HasLocalOverride()) {
+						LocalReadOnlyServerOverride local=GetLocalOverride();
+						return local.UseMiddleTier ? "" : local.Database;
+					}
 					return PrefC.GetString(PrefName.ReadOnlyServerDbName);
 				}
 			}
 			public static string MySqlUser {
 				get {
+					if(HasLocalOverride()) {
+						LocalReadOnlyServerOverride local=GetLocalOverride();
+						return local.UseMiddleTier ? "" : local.MySqlUser;
+					}
 					return PrefC.GetString(PrefName.ReadOnlyServerMySqlUser);
 				}
 			}
 			public static string MySqlPass {
 				get {
+					if(HasLocalOverride()) {
+						LocalReadOnlyServerOverride local=GetLocalOverride();
+						if(local.UseMiddleTier) {
+							return "";
+						}
+						string passLocal;
+						CDT.Class1.Decrypt(local.MySqlPassHash,out passLocal);
+						return passLocal;
+					}
 					string pass;
 					CDT.Class1.Decrypt(PrefC.GetString(PrefName.ReadOnlyServerMySqlPassHash),out pass);
 					return pass;
@@ -649,6 +698,9 @@ namespace HelianzBusiness {
 			}
 			public static bool IsMiddleTier {
 				get {
+					if(HasLocalOverride()) {
+						return GetLocalOverride().UseMiddleTier;
+					}
 					return URI!="";
 				}
 			}

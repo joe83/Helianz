@@ -398,6 +398,10 @@ So always triple check your parameters.
 			catch(ODException ex) {
 			if(ex.ErrorCode==(int)ODException.ErrorCodes.ConnectionLost) {
 				//Connection lost — return default value silently. LED status dot shows state.
+				//For List<T> types, create an empty list instead of null to prevent downstream NullReferenceExceptions.
+				if(typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition()==typeof(List<>)) {
+					retval=(T)Activator.CreateInstance(typeof(T));
+				}
 			}
 			//GetObject does not invoke IsCredentailFailRetry() because it is used by Userods.CheckUserAndPassword() which is invoked when the user re-enters their credentials.
 			else if(ex.ErrorCode==(int)ODException.ErrorCodes.CheckUserAndPasswordFailed && ODEvent.IsCredentialsFailedAfterLogin_EventSubscribed) {
@@ -474,7 +478,7 @@ So always triple check your parameters.
 			dto.Credentials.Username=Security.CurUser.UserName;
 			dto.Credentials.Password=Security.PasswordTyped;//.CurUser.Password;
 			dto.ComputerName=Security.CurComputerName;
-			bool retval;
+			bool retval=false;
 			try {
 				retval=RemotingClient.ProcessGetBool(dto);
 			}

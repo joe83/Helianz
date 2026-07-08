@@ -12,6 +12,8 @@
 ; NOTE: After copying files, the [Run] section automatically:
 ;   1. Installs IIS (if absent) via Install-IIS.ps1
 ;   2. Registers HelianzServer as an IIS Web Application under "Default Web Site" via Register-HelianzServerIIS.ps1.
+;   3. (Optional) Enables HTTPS with a self-signed certificate via Enable-HelianzServerHttps.ps1
+;      — only when the "Enable HTTPS" checkbox is selected during installation.
 ; ---------------------------------------------------------------------------
 
 #ifndef MyAppVersion
@@ -49,6 +51,12 @@ DisableFinishedPage=yes
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
+[Tasks]
+; Optional HTTPS configuration — generates a self-signed certificate and binds it in IIS.
+; The script can also import a user-provided PFX certificate (see Enable-HelianzServerHttps.ps1).
+; If the IIS URL Rewrite Module is installed, an HTTP->HTTPS redirect rule is added to Web.config.
+Name: "enableHttps"; Description: "Enable &HTTPS (generates self-signed SSL certificate)"; Flags: unchecked
+
 [Files]
 ; All web service files — always overwrite on upgrade
 Source: "{#SourceDir}\*"; DestDir: "{app}"; Excludes: "Web.config,HelianzServerConfig.xml"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -60,6 +68,8 @@ Source: "{#SourceDir}\HelianzServerConfig.xml"; DestDir: "{app}"; Flags: skipifs
 Source: "Install-IIS.ps1"; DestDir: "{app}"; Flags: ignoreversion
 ; IIS registration helper script
 Source: "Register-HelianzServerIIS.ps1"; DestDir: "{app}"; Flags: ignoreversion
+; HTTPS / SSL certificate configuration script
+Source: "Enable-HelianzServerHttps.ps1"; DestDir: "{app}"; Flags: ignoreversion
 ; .NET Framework 4.8 offline installer — extracted to {tmp} and run only if needed
 Source: "NDP48-x86-x64-AllOS-ENU.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall nocompression
 
@@ -71,6 +81,11 @@ Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -Fil
 ; Register the web service as an IIS application under Default Web Site.
 ; Runs even during silent installs (HelianzInstaller.exe uses /VERYSILENT).
 Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\Register-HelianzServerIIS.ps1"" -InstallDir ""{app}"""; Flags: runhidden; StatusMsg: "Registering HelianzServer in IIS..."
+; Enable HTTPS — only runs if the checkbox task was selected.
+; Generates a self-signed SSL certificate and binds it in IIS on port 443.
+; For production, replace with a CA-signed certificate by running
+; Enable-HelianzServerHttps.ps1 manually with -CertPath and -CertPassword.
+Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\Enable-HelianzServerHttps.ps1"" -InstallDir ""{app}"""; Tasks: enableHttps; Flags: runhidden waituntilterminated; StatusMsg: "Configuring HTTPS (generating self-signed certificate)..."
 
 [UninstallRun]
 ; Remove the IIS web application on uninstall

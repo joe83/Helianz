@@ -3583,11 +3583,10 @@ namespace Helianz{
 					controlAppt.TickRefresh();
 				}
 			}
-			catch(WebException wex) {
-				//If the Middle Tier connection was lost during the tick, the connection-lost machinery
-				//(MiddleTierConnectionEvent → FormConnectionLost) handles it on a separate thread.
-				//Swallow here to prevent the UI thread from freezing or the app from becoming unresponsive.
-				Logger.LogToPath("timerTimeIndic_Tick WebException: "+wex.Message,LogPath.Signals,LogPhase.Unspecified);
+			catch(Exception ex) {
+				//Connection loss can cause cascading null-reference errors when caches are empty.
+				//Swallow all exceptions to prevent the app from crashing. The LED dot shows status.
+				Logger.LogToPath("timerTimeIndic_Tick error: "+ex.Message,LogPath.Signals,LogPhase.Unspecified);
 			}
 		}
 
@@ -4428,7 +4427,8 @@ namespace Helianz{
 
 		///<summary>Sets the currently selected module based on the selectedIndex of the outlook bar. If selectedIndex is -1, which might happen if user does not have permission to any module, then this does nothing. The menuBarClicked variable should be set to true when a module button is clicked, and should be false when called for refresh purposes.</summary>
 		private void SetModuleSelected(bool menuBarClicked){
-			switch(moduleBar.SelectedModule){
+			try {
+				switch(moduleBar.SelectedModule){
 				case EnumModuleType.Appointments:
 					controlAppt.InitializeOnStartup();
 					controlAppt.Visible=true;
@@ -4513,6 +4513,12 @@ namespace Helianz{
 					this.ActiveControl=this.controlManage;
 					controlManage.ModuleSelected(PatNumCur);
 					break;
+			}
+			}
+			catch(Exception ex) {
+				//Connection loss can cause cascading null-reference errors in module loaders.
+				//Swallow to prevent app crash. LED dot shows connection status.
+				Logger.LogToPath("SetModuleSelected error: "+ex.Message,LogPath.Signals,LogPhase.Unspecified);
 			}
 		}
 

@@ -19,6 +19,11 @@ namespace HelianzBusiness.WebServices {
 			}
 			HelianzServerReal service=new HelianzServerReal();
 			service.Url=RemotingClient.ServerURI;
+			// If connecting over HTTPS, ensure the cert trust store and global SSL callback are initialized.
+			// This allows previously-trusted self-signed certificates to be accepted automatically.
+			if(service.Url!=null && service.Url.StartsWith("https://",StringComparison.OrdinalIgnoreCase)) {
+				HelianzBusiness.CertTrustManager.InitTrustStore();
+			}
 			if(RemotingClient.MidTierProxyAddress!=null && RemotingClient.MidTierProxyAddress!="") {
 				IWebProxy proxy=new WebProxy(RemotingClient.MidTierProxyAddress);
 				ICredentials cred=new NetworkCredential(RemotingClient.MidTierProxyUserName,RemotingClient.MidTierProxyPassword);

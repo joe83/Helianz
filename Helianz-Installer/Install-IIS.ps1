@@ -142,20 +142,34 @@ try {
         $featureList = $ServerFeatures -join ','
         Write-Log "Ensuring features are installed: $featureList"
 
-        $result = Install-WindowsFeature -Name $ServerFeatures -IncludeManagementTools -WarningAction SilentlyContinue
+        $result = Install-WindowsFeature -Name $ServerFeatures -IncludeManagementTools
+
+        # Log every feature's status for diagnostics
+        foreach ($feat in $result) {
+            Write-Log "  $($feat.Name): Success=$($feat.Success) Installed=$($feat.Installed) ExitCode=$($feat.ExitCode)"
+        }
 
         if ($result.RestartNeeded) {
             Write-Log "WARNING: A reboot is required to complete IIS installation."
         }
 
+        # A feature failed if it was not successfully installed AND not already present.
         $failed = $result | Where-Object { -not $_.Success -and (-not $_.Installed) }
         if ($failed) {
             $failedNames = ($failed | ForEach-Object { $_.Name }) -join ', '
+            Write-Log "ERROR: Failed features: $failedNames"
+            # On Server 2022+, try again one feature at a time — some may fail
+            # due to source media availability, but retrying individually helps.
+            Write-Log "Retrying failed features individually..."
+            foreach ($feat in $failed) {
+                Write-Log "  Retrying: $($feat.Name)"
+                $retry = Install-WindowsFeature -Name $feat.Name
+                Write-Log "    Result: Success=$($retry.Success) ExitCode=$($retry.ExitCode)"
+            }
             throw "Failed to install the following IIS features: $failedNames"
         }
 
-        # Log which features were newly installed vs already present
-        $alreadyInstalled = ($result | Where-Object { $_.Installed -and -not $_.Success }).Count
+        $alreadyInstalled = ($result | Where-Object { -not $_.Success -and $_.Installed }).Count
         $newlyInstalled  = ($result | Where-Object { $_.Success }).Count
         Write-Log "Features already installed: $alreadyInstalled"
         Write-Log "Features newly installed : $newlyInstalled"

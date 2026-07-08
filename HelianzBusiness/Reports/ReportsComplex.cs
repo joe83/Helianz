@@ -61,8 +61,8 @@ namespace HelianzBusiness {
 			}));
 			threadGetTable.AddExceptionHandler(new ODThread.ExceptionDelegate((Exception e) => {
 				ex=e;
-				if(!string.IsNullOrWhiteSpace(PrefC.GetString(PrefName.ReadOnlyServerCompName))
-					|| !string.IsNullOrWhiteSpace(PrefC.GetString(PrefName.ReadOnlyServerURI))) 
+				if(!string.IsNullOrWhiteSpace(PrefC.ReadOnlyServer.Server)
+					|| !string.IsNullOrWhiteSpace(PrefC.ReadOnlyServer.URI)) 
 				{ 
 					//add wording to the InnerException to let the user know that it's a problem with the Read-only server.
 					ex=new Exception("Read-Only Server Error",new Exception("An error occurred while trying to use the Read-Only Server.\n\n"+e.Message,e));

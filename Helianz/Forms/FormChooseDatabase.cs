@@ -220,6 +220,16 @@ namespace Helianz {
 		///Returns true if connection settings are valid. Otherwise, false.</summary>
 		private bool IsValidConnection() {
 			SyncInfoWithUI();
+			// If connecting to Middle Tier over HTTPS, validate the server certificate first.
+			// Give the user a chance to trust self-signed certificates (like SSH host-key prompting).
+			if(checkConnectServer.Checked && checkUseSSL!=null && checkUseSSL.Checked) {
+				string serviceUri=ChooseDatabaseInfo_.CentralConnectionCur.ServiceURI;
+				if(!string.IsNullOrEmpty(serviceUri) && serviceUri.StartsWith("https://",StringComparison.OrdinalIgnoreCase)) {
+					if(!CertTrustManager.HandleUntrustedCertificate(serviceUri)) {
+						return false;
+					}
+				}
+			}
 			try {
 				CentralConnections.TryToConnect(
 					ChooseDatabaseInfo_.CentralConnectionCur,

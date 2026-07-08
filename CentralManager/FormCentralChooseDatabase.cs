@@ -212,6 +212,37 @@ namespace Helianz {
 			string originalURI=RemotingClient.ServerURI;
 			RemotingClient.ServerURI=textURI.Text;
 			try {
+				// If connecting over HTTPS, validate the server certificate first.
+				// Give the user a chance to trust self-signed certificates (like SSH host-key prompting).
+				if(textURI.Text.StartsWith("https://",StringComparison.OrdinalIgnoreCase)) {
+					CertTrustManager.InitTrustStore();
+					Uri serverUri;
+					if(Uri.TryCreate(textURI.Text,UriKind.Absolute,out serverUri)) {
+						var certResult=CertTrustManager.PreviewServerCertificate(serverUri);
+						if(certResult!=null && certResult.Certificate!=null && !certResult.IsValid) {
+							// Check if already in local trust store
+							if(!CertTrustManager.IsTrusted(certResult.Thumbprint)) {
+								// Show the certificate warning dialog
+								DialogResult userChoice=MessageBox.Show(
+									"The server's security certificate is not trusted.\n\n"+
+									certResult.GetDisplayText()+"\n\n"+
+									"Do you want to trust this certificate and continue connecting?\n\n"+
+									"WARNING: Accepting an untrusted certificate could allow\n"+
+									"a third party to intercept your connection.",
+									"Certificate Trust Warning",
+									MessageBoxButtons.YesNo,
+									MessageBoxIcon.Warning);
+								if(userChoice==DialogResult.Yes) {
+									CertTrustManager.TrustCertificate(certResult.Thumbprint,certResult.HostName);
+								}
+								else {
+									RemotingClient.ServerURI=originalURI;
+									return false;
+								}
+							}
+						}
+					}
+				}
 				Userod user=Security.LogInWeb(username,password,"",Application.ProductVersion,false);
 				Security.CurUser=user;
 				Security.PasswordTyped=password;

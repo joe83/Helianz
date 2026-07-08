@@ -193,18 +193,20 @@ namespace Helianz {
 				groupBoxReadOnlyServerSetup.Enabled=false;
 			}
 			else {
-				checkUseReadOnlyServer.Checked=PrefC.GetString(PrefName.ReadOnlyServerCompName)!="" || PrefC.GetString(PrefName.ReadOnlyServerURI)!="";
-				radioReadOnlyServerDirect.Checked=PrefC.GetString(PrefName.ReadOnlyServerURI)=="";
-				radioReadOnlyServerMiddleTier.Checked=PrefC.GetString(PrefName.ReadOnlyServerURI)!="";
-				comboServerName.Text=PrefC.GetString(PrefName.ReadOnlyServerCompName);
-				comboDatabase.Text=PrefC.GetString(PrefName.ReadOnlyServerDbName);
-				textMysqlUser.Text=PrefC.GetString(PrefName.ReadOnlyServerMySqlUser);
+				//Load from local (per-workstation) settings first.
+				LocalReadOnlyServerData localData=LocalReadOnlyServerSettings.Load();
+				checkUseReadOnlyServer.Checked=localData.Enabled;
+				radioReadOnlyServerDirect.Checked=!localData.UseMiddleTier;
+				radioReadOnlyServerMiddleTier.Checked=localData.UseMiddleTier;
+				comboServerName.Text=localData.ServerName;
+				comboDatabase.Text=localData.Database;
+				textMysqlUser.Text=localData.MySqlUser;
 				string decryptedPass;
-				CDT.Class1.Decrypt(PrefC.GetString(PrefName.ReadOnlyServerMySqlPassHash),out decryptedPass);
+				CDT.Class1.Decrypt(localData.MySqlPassHash,out decryptedPass);
 				textMysqlPass.Text=decryptedPass;
 				textMysqlPass.PasswordChar='*';
-				textMiddleTierURI.Text=PrefC.GetString(PrefName.ReadOnlyServerURI);
-				textSkySQL.Text=PrefC.GetString(PrefName.ReadOnlyServerSslCa);
+				textMiddleTierURI.Text=localData.URI;
+				textSkySQL.Text=localData.SslCa;
 				FillComboComputers();
 				FillComboDatabases();
 				SetReadOnlyServerUIEnabled();
@@ -213,37 +215,42 @@ namespace Helianz {
 		}
 
 		public bool SaveServerConnections() {
+			LocalReadOnlyServerData data=new LocalReadOnlyServerData();
+			data.Enabled=checkUseReadOnlyServer.Checked;
 			if(!checkUseReadOnlyServer.Checked) {
-				Changed |=Prefs.UpdateString(PrefName.ReadOnlyServerCompName,"");
-				Changed |=Prefs.UpdateString(PrefName.ReadOnlyServerDbName,"");
-				Changed |=Prefs.UpdateString(PrefName.ReadOnlyServerMySqlUser,"");
-				Changed |=Prefs.UpdateString(PrefName.ReadOnlyServerMySqlPassHash,"");
-				Changed |=Prefs.UpdateString(PrefName.ReadOnlyServerURI,"");
-				Changed |=Prefs.UpdateString(PrefName.ReadOnlyServerSslCa,"");
+				//When disabled, clear all settings.
+				data.UseMiddleTier=false;
+				data.ServerName="";
+				data.Database="";
+				data.MySqlUser="";
+				data.MySqlPassHash="";
+				data.URI="";
+				data.SslCa="";
+			}
+			else if(radioReadOnlyServerDirect.Checked) {
+				data.UseMiddleTier=false;
+				data.ServerName=comboServerName.Text;
+				data.Database=comboDatabase.Text;
+				data.MySqlUser=textMysqlUser.Text;
+				string encryptedPass;
+				CDT.Class1.Encrypt(textMysqlPass.Text,out encryptedPass);
+				data.MySqlPassHash=encryptedPass;
+				data.URI="";
+				data.SslCa=textSkySQL.Text;
 			}
 			else {
-				if(radioReadOnlyServerDirect.Checked) {
-					string encryptedPass;
-					CDT.Class1.Encrypt(textMysqlPass.Text,out encryptedPass);
-					Changed |=Prefs.UpdateString(PrefName.ReadOnlyServerCompName,comboServerName.Text);
-					Changed |=Prefs.UpdateString(PrefName.ReadOnlyServerDbName,comboDatabase.Text);
-					Changed |=Prefs.UpdateString(PrefName.ReadOnlyServerMySqlUser,textMysqlUser.Text);
-					Changed |=Prefs.UpdateString(PrefName.ReadOnlyServerMySqlPassHash,encryptedPass);
-					Changed |=Prefs.UpdateString(PrefName.ReadOnlyServerURI,"");
-					Changed |=Prefs.UpdateString(PrefName.ReadOnlyServerSslCa,textSkySQL.Text);
-				}
-				else {
-					Changed |=Prefs.UpdateString(PrefName.ReadOnlyServerCompName,"");
-					Changed |=Prefs.UpdateString(PrefName.ReadOnlyServerDbName,"");
-					Changed |=Prefs.UpdateString(PrefName.ReadOnlyServerMySqlUser,"");
-					Changed |=Prefs.UpdateString(PrefName.ReadOnlyServerMySqlPassHash,"");
-					Changed |=Prefs.UpdateString(PrefName.ReadOnlyServerSslCa,"");
-					Changed |=Prefs.UpdateString(PrefName.ReadOnlyServerURI,textMiddleTierURI.Text);
-				}
+				data.UseMiddleTier=true;
+				data.ServerName="";
+				data.Database="";
+				data.MySqlUser="";
+				data.MySqlPassHash="";
+				data.URI=textMiddleTierURI.Text;
+				data.SslCa="";
 			}
-			if(Changed) {
-				DoClearConnectionDictionary=true;
-			}
+			LocalReadOnlyServerSettings.Save(data);
+			LocalReadOnlyServerSettings.ClearCache();
+			DoClearConnectionDictionary=true;
+			Changed=true;
 			return true;
 		}
 		#endregion Methods - Public

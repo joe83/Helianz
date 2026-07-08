@@ -292,6 +292,7 @@ namespace Helianz {
 			this.gridMain.EditableEnterMovesDown = true;
 			this.gridMain.Location = new System.Drawing.Point(170, 8);
 			this.gridMain.Name = "gridMain";
+			this.gridMain.HScrollVisible = true;
 			this.gridMain.SelectionMode = Helianz.UI.GridSelectionMode.OneCell;
 			this.gridMain.Size = new System.Drawing.Size(605, 675);
 			this.gridMain.TabIndex = 19;

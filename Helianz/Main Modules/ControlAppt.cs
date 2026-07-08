@@ -2029,6 +2029,7 @@ namespace Helianz {
 		}
 
 		private void timerWaitingRoom_Tick(object sender,EventArgs e) {
+			Logger.LogToPath("timerWaitingRoom_Tick fired",LogPath.Signals,LogPhase.Unspecified);
 			FillWaitingRoom();
 		}
 		#endregion Methods - Event Handlers LR Tabs
@@ -3315,7 +3316,10 @@ namespace Helianz {
 
 		///<summary>Always refreshes the _dtWaitingRoom table.</summary>
 		private void RefreshWaitingRoomTable() {
-			contrApptPanel.TableWaitingRoom=Appointments.GetPeriodWaitingRoomTable(DateTime.Now);
+			Logger.LogToPath("RefreshWaitingRoomTable called",LogPath.Signals,LogPhase.Start);
+			DataTable table=Appointments.GetPeriodWaitingRoomTable(DateTime.Now);
+			contrApptPanel.TableWaitingRoom=table;
+			Logger.LogToPath("RefreshWaitingRoomTable result: "+(table==null?"NULL":table.Rows.Count+" rows"),LogPath.Signals,LogPhase.End);
 		}
 		#endregion Methods - Private Refresh Data
 
@@ -3466,11 +3470,14 @@ namespace Helianz {
 		///<summary>Once per second, this grid refills itself in order to show the time ticking by.  This does not require a trip to the database.</summary>
 		private void FillWaitingRoom() {
 			if(!this.Visible){
+				Logger.LogToPath("FillWaitingRoom skipped: not visible",LogPath.Signals,LogPhase.Unspecified);
 				return;
 			}
 			if(contrApptPanel.TableWaitingRoom==null){
+				Logger.LogToPath("FillWaitingRoom skipped: TableWaitingRoom is NULL",LogPath.Signals,LogPhase.Unspecified);
 				return;
 			}
+			Logger.LogToPath("FillWaitingRoom running with "+contrApptPanel.TableWaitingRoom.Rows.Count+" rows",LogPath.Signals,LogPhase.Start);
 			TimeSpan timeSpanDeltaSinceRefresh=DateTime.Now-_dateTimeWaitingRmRefreshed;
 			DataTable table=contrApptPanel.TableWaitingRoom;
 			List<Operatory> listOperatoriesForClinic=new List<Operatory>();

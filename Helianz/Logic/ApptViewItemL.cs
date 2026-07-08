@@ -78,7 +78,9 @@ namespace Helianz{
 						if(apptView.OnlyScheduledProvs && !isWeekly) {
 							continue;//handled below in AddOpsForScheduledProvs 
 						}
-						Operatory operatory=Operatories.GetFirstOrDefault(x => x.OperatoryNum==listApptViewItems[i].OpNum,true);
+						Operatory operatory=Operatories.GetFirstOrDefault(x => x.OperatoryNum==listApptViewItems[i].OpNum
+							&& (!PrefC.HasClinicsEnabled || Clinics.ClinicNum==0 || x.ClinicNum==Clinics.ClinicNum)
+						,true);
 						if(operatory!=null) {
 							listOperatoriesVis.Add(operatory);
 						}

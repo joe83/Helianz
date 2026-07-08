@@ -2905,6 +2905,7 @@
     <Compile Include="Logic\PrefL.cs" />
     <Compile Include="Logic\PrinterL.cs" />
     <Compile Include="Logic\LocalPrintSettings.cs" />
+    <Compile Include="Logic\LocalReadOnlyServerSettings.cs" />
     <Compile Include="Logic\ProcedureL.cs" />
     <Compile Include="Logic\ProgramL.cs" />
     <Compile Include="Logic\RefAttachL.cs" />

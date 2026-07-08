@@ -1633,7 +1633,10 @@ namespace HelianzBusiness{
 		///<summary>Used to get the waiting room data table. Pass in the client date time to get the correct waiting time. The date time is also passed into middle tier so that it uses the correct client time.</summary>
 		public static DataTable GetPeriodWaitingRoomTable(DateTime dateTime) {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
-				return Meth.GetTable(MethodBase.GetCurrentMethod(),dateTime);
+				Logger.LogToPath("GetPeriodWaitingRoomTable via MT",LogPath.Signals,LogPhase.Start);
+				DataTable result=Meth.GetTable(MethodBase.GetCurrentMethod(),dateTime);
+				Logger.LogToPath("GetPeriodWaitingRoomTable MT returned: "+(result==null?"NULL":result.Rows.Count+" rows"),LogPath.Signals,LogPhase.End);
+				return result;
 			}
 			//DateTime dateStart=PIn.PDate(strDateStart);
 			//DateTime dateEnd=PIn.PDate(strDateEnd);
@@ -1717,6 +1720,9 @@ namespace HelianzBusiness{
 			table.Columns.Add("value");
 			string command="SELECT * FROM patient WHERE PatNum="+patNum;
 			DataTable tablePatRaw=Db.GetTable(command);
+			if(tablePatRaw.Rows.Count==0) {
+				return table;//Patient not found, return empty table.
+			}
 			DataRow dataRow;
 			//Patient Name--------------------------------------------------------------------------
 			dataRow=table.NewRow();
@@ -1783,12 +1789,14 @@ namespace HelianzBusiness{
 			//Patient family balance----------------------------------------------------------------
 			command="SELECT BalTotal,InsEst FROM patient WHERE PatNum="+POut.String(tablePatRaw.Rows[0]["Guarantor"].ToString())+"";
 			DataTable familyBalance=Db.GetTable(command);
-			dataRow=table.NewRow();
-			dataRow["field"]=Lans.g("FormApptEdit","Family Balance");
-			double balance=PIn.Double(familyBalance.Rows[0]["BalTotal"].ToString())
-				-PIn.Double(familyBalance.Rows[0]["InsEst"].ToString());
-			dataRow["value"]=balance.ToString("F");
-			table.Rows.Add(dataRow);
+			if(familyBalance.Rows.Count>0) {
+				dataRow=table.NewRow();
+				dataRow["field"]=Lans.g("FormApptEdit","Family Balance");
+				double balance=PIn.Double(familyBalance.Rows[0]["BalTotal"].ToString())
+					-PIn.Double(familyBalance.Rows[0]["InsEst"].ToString());
+				dataRow["value"]=balance.ToString("F");
+				table.Rows.Add(dataRow);
+			}
 			//Site----------------------------------------------------------------------------------
 			if(!PrefC.GetBool(PrefName.EasyHidePublicHealth)){
 				dataRow=table.NewRow();

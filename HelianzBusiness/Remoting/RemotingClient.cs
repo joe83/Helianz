@@ -98,6 +98,10 @@ namespace HelianzBusiness {
 		///Instead, reconnection is handled silently in the background and the LED status dot in the toolbar is the only indicator.</summary>
 		public static bool HasSilentConnectionRetry { get; set; }
 
+		///<summary>Timestamp of the last successful SOAP call. Used to skip the TCP reachability check
+		///when we know the connection was recently working (avoids unnecessary 3s waits).</summary>
+		private static DateTime _dateTimeLastSuccessfulCall=DateTime.MinValue;
+
 		[ThreadStatic]
 		private static bool _isReportServer;
 		///<summary>True if the RemotingClient connection is connecting to a report middle tier server.</summary>
@@ -358,43 +362,87 @@ namespace HelianzBusiness {
 		///until a connection to the Middle Tier can be established.  Set hasConnectionLost to false if a throw is desired when a connection cannot be made.
 		///E.g. Set hasConnectionLost to false when a user is trying to log in for the first time (don't want to try logging in forever).</summary>
 		private static string SendAndReceiveRecursive(IHelianzServer service,string dtoString,bool hasConnectionLost=true) {
+			//Fast-fail: if connection is already known to be dead and we're on the UI thread in silent
+			//mode, skip the SOAP call entirely. Don't wait 30 seconds for a timeout we already expect.
+			if(HasMiddleTierConnectionFailed && HasSilentConnectionRetry
+				&& System.Windows.Forms.Application.MessageLoop)
+			{
+				return null;
+			}
+			//On the UI thread in silent mode, do a quick TCP reachability check before making the SOAP
+			//call — but only if we haven't had a successful call in the last 10 seconds. This avoids
+			//adding TCP handshake overhead (~10-50ms) to every menu click during normal operation.
+			if(HasSilentConnectionRetry && System.Windows.Forms.Application.MessageLoop) {
+				bool needsCheck=(DateTime.Now-_dateTimeLastSuccessfulCall).TotalSeconds > 10;
+				if(needsCheck) {
+					bool isReachable=false;
+					try {
+						Uri serverUri=new Uri(RemotingClient.ServerURI);
+						using(System.Net.Sockets.TcpClient tcpCheck=new System.Net.Sockets.TcpClient()) {
+							var ar=tcpCheck.BeginConnect(serverUri.Host,serverUri.Port,null,null);
+							isReachable=ar.AsyncWaitHandle.WaitOne(3000);
+							if(isReachable) {
+								tcpCheck.EndConnect(ar);
+							}
+						}
+					}
+					catch {
+						isReachable=false;
+					}
+					if(!isReachable) {
+						StartSilentReconnect();
+						return null;
+					}
+				}
+				try {
+					string result=QueryMonitor.Monitor.ProcessMonitoredPayload(service.ProcessRequest,dtoString);
+					RemotingClient.HasMiddleTierConnectionFailed=false;
+					_dateTimeLastSuccessfulCall=DateTime.Now;
+					return result;
+				}
+				catch(WebException wex) {
+					if(IsWebExceptionConnectionLost(wex)) {
+						StartSilentReconnect();
+						return null;
+					}
+					throw;
+				}
+			}
+			//Background thread path: original blocking behavior with retry.
 			try {
 				return QueryMonitor.Monitor.ProcessMonitoredPayload(service.ProcessRequest,dtoString);
 			}
 			catch(WebException wex) {
-				//Check the global setting for automatically retrying the sending of payloads after a web connection failure.
 				if(!HasAutomaticConnectionLostRetry) {
 					throw;
 				}
-				//Check the local setting for automatically retrying. E.g. This will be false when a user is trying to log in for the first time.
 				if(!hasConnectionLost) {
 					throw;
 				}
-				//Check that this is a WebException that indicates a connection failure.
-				//WebException class: https://docs.microsoft.com/en-us/dotnet/api/system.net.webexception?view=netframework-4.7.2
-				//WebException.Status property: https://docs.microsoft.com/en-us/dotnet/api/system.net.webexception.status?view=netframework-4.7.2
-				//Handling WebExceptions: https://docs.microsoft.com/en-us/dotnet/framework/network-programming/handling-errors?view=netframework-4.7.2
 				if(!IsWebExceptionConnectionLost(wex)) {
 					throw;
 				}
-				//If we are on the UI thread, do NOT block it. Set the flag so the LED updates,
-				//start background reconnection, and return null so SendAndReceive throws ODException
-				//which the Meth layer catches and returns a default value.
+				//If we are on the UI thread (non-silent mode), handle gracefully.
 				if(System.Windows.Forms.Application.MessageLoop) {
-					RemotingClient.HasMiddleTierConnectionFailed=true;
-					//Start background reconnect thread that won't block the UI.
-					ODThread reconnectThread=new ODThread(0,(o) => {
-						RemoteConnectionFailed();
-					});
-					reconnectThread.Name="SilentReconnectThread";
-					reconnectThread.AddExceptionHandler((ex) => ex.DoNothing());
-					reconnectThread.Start();
+					StartSilentReconnect();
 					return null;
 				}
-				//The calling method wants to automatically retry connecting to the Middle Tier until it comes back.
 				RemoteConnectionFailed();
 				return SendAndReceiveRecursive(service,dtoString);
 			}
+		}
+
+		///<summary>Sets the connection-lost flag and starts a background thread that periodically retries
+		///the connection until it is restored. When restored, HasMiddleTierConnectionFailed is reset to false
+		///and the LED turns green again.</summary>
+		private static void StartSilentReconnect() {
+			RemotingClient.HasMiddleTierConnectionFailed=true;
+			ODThread reconnectThread=new ODThread(0,(o) => {
+				RemoteConnectionFailed();
+			});
+			reconnectThread.Name="SilentReconnectThread";
+			reconnectThread.AddExceptionHandler((ex) => ex.DoNothing());
+			reconnectThread.Start();
 		}
 
 		///<summary>This method will get invoked by clients that are having trouble connecting to the middle tier.
@@ -421,6 +469,8 @@ namespace HelianzBusiness {
 				case WebExceptionStatus.Timeout:
 				case WebExceptionStatus.PipelineFailure:
 				case WebExceptionStatus.RequestCanceled:
+				case WebExceptionStatus.NameResolutionFailure:
+				case WebExceptionStatus.ProxyNameResolutionFailure:
 					return true;
 				default:
 					return false;

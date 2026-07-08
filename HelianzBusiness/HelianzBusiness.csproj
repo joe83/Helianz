@@ -718,6 +718,7 @@
     <Compile Include="Logic\USlocales.cs" />
     <Compile Include="Misc\ConvertDatabases.cs" />
     <Compile Include="Misc\Authentication.cs" />
+    <Compile Include="Misc\CertTrustManager.cs" />
     <Compile Include="Misc\ConvertDatabases6.cs" />
     <Compile Include="InternalTools\WebChat\WebChatMessages.cs" />
     <Compile Include="InternalTools\WebChat\WebChatPrefs.cs" />
@@ -1931,6 +1932,7 @@
     <Compile Include="TableTypes\EhrNotPerformed.cs" />
     <Compile Include="TableTypes\EhrCode.cs" />
     <Compile Include="TableTypes\Loinc.cs" />
+    <Compile Include="TableTypes\LocalReadOnlyServerOverride.cs" />
     <Compile Include="TableTypes\SecurityLogHash.cs" />
     <Compile Include="TableTypes\FamilyHealth.cs" />
     <Compile Include="TableTypes\PatientRace.cs" />
