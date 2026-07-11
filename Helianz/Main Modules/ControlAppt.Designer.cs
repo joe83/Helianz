@@ -39,6 +39,7 @@
 			this.tabControl = new Helianz.UI.TabControl();
 			this.tabWaiting = new Helianz.UI.TabPage();
 			this.gridWaiting = new Helianz.UI.GridOD();
+			this.butResetQueue = new System.Windows.Forms.Button();
 			this.tabSched = new Helianz.UI.TabPage();
 			this.gridEmpSched = new Helianz.UI.GridOD();
 			this.tabProv = new Helianz.UI.TabPage();
@@ -268,6 +269,7 @@
 			// tabWaiting
 			// 
 			this.tabWaiting.Controls.Add(this.gridWaiting);
+			this.tabWaiting.Controls.Add(this.butResetQueue);
 			this.tabWaiting.Location = new System.Drawing.Point(4, 22);
 			this.tabWaiting.Margin = new System.Windows.Forms.Padding(0);
 			this.tabWaiting.Name = "tabWaiting";
@@ -281,10 +283,21 @@
 			this.gridWaiting.Location = new System.Drawing.Point(0, 0);
 			this.gridWaiting.Margin = new System.Windows.Forms.Padding(0);
 			this.gridWaiting.Name = "gridWaiting";
-			this.gridWaiting.Size = new System.Drawing.Size(211, 140);
+			this.gridWaiting.Size = new System.Drawing.Size(211, 117);
 			this.gridWaiting.TabIndex = 78;
 			this.gridWaiting.Title = "Waiting Room";
 			this.gridWaiting.TranslationName = "TableApptWaiting";
+			// 
+			// butResetQueue
+			// 
+			this.butResetQueue.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.butResetQueue.Location = new System.Drawing.Point(0, 117);
+			this.butResetQueue.Name = "butResetQueue";
+			this.butResetQueue.Size = new System.Drawing.Size(211, 23);
+			this.butResetQueue.TabIndex = 79;
+			this.butResetQueue.Text = "Reset Queue";
+			this.butResetQueue.UseVisualStyleBackColor = true;
+			this.butResetQueue.Click += new System.EventHandler(this.butResetQueue_Click);
 			// 
 			// tabSched
 			// 
@@ -994,6 +1007,7 @@
 		private Helianz.UI.TabControl tabControl;
 		private Helianz.UI.TabPage tabWaiting;
 		private UI.GridOD gridWaiting;
+		private System.Windows.Forms.Button butResetQueue;
 		private Helianz.UI.TabPage tabSched;
 		private UI.GridOD gridEmpSched;
 		private Helianz.UI.TabPage tabProv;

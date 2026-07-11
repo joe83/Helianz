@@ -1649,8 +1649,11 @@ namespace HelianzBusiness{
 			table.Columns.Add("LName");
 			table.Columns.Add("waitTime");
 			table.Columns.Add("OpNum");
+			table.Columns.Add("DateTimeArrived",typeof(DateTime));
+			table.Columns.Add("AptNum",typeof(long));
+			table.Columns.Add("QueueNum",typeof(int));
 			string strDateTime=POut.DateT(dateTime);
-			string command="SELECT DateTimeArrived,DateTimeSeated,LName,FName,Preferred,"+strDateTime+" dateTimeNow,Op "
+			string command="SELECT appointment.AptNum,DateTimeArrived,DateTimeSeated,LName,FName,Preferred,"+strDateTime+" dateTimeNow,Op "
 				+"FROM appointment "
 				+"JOIN patient ON appointment.PatNum=patient.PatNum "
 				+"WHERE "+DbHelper.DtimeToDate("AptDateTime")+" = "+POut.Date(DateTime.Now)+" "
@@ -1685,7 +1688,9 @@ namespace HelianzBusiness{
 				dataRow["LName"]=tableRaw.Rows[i]["LName"];
 				dataRow["patName"]=patient.GetNameLF();
 				dateTimeNow=PIn.DateT(tableRaw.Rows[i]["dateTimeNow"].ToString());
-				timeSpanArrived=(PIn.DateT(tableRaw.Rows[i]["DateTimeArrived"].ToString())).TimeOfDay;
+				DateTime dateTimeArrived=PIn.DateT(tableRaw.Rows[i]["DateTimeArrived"].ToString());
+				dataRow["DateTimeArrived"]=dateTimeArrived;
+				timeSpanArrived=dateTimeArrived.TimeOfDay;
 				dateTimeWait=dateTimeNow-timeSpanArrived;
 				dataRow["waitTime"]=dateTimeWait.ToString("H:mm:ss");
 				//minutes=waitTime.Minutes;
@@ -1695,6 +1700,8 @@ namespace HelianzBusiness{
 				//}
 				//row["waitTime"]+=waitTime.Minutes.ToString()+"m";
 				dataRow["OpNum"]=tableRaw.Rows[i]["Op"].ToString();
+				dataRow["AptNum"]=PIn.Long(tableRaw.Rows[i]["AptNum"].ToString());
+				dataRow["QueueNum"]=0;//assigned by FillWaitingRoom on the client
 				table.Rows.Add(dataRow);
 			}
 			return table;

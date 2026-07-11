@@ -24,10 +24,11 @@ namespace Helianz {
 		private long _opNumClickedBlockout;
 		///<summary>Used for blockouts.  Already handles week view.  Time is not rounded.</summary>
 		private DateTime _dateTimeClickedBlockout;
-		///<summary>The last dateTime that the waiting room was refreshed.  Local computer time.</summary>
-		private DateTime _dateTimeWaitingRmRefreshed;
 		///<summary></summary>
 		private bool _isPrintCardFamily;
+		///<summary>Tracks ALL patients ever seen in the waiting room since last reset. Key=AptNum, Value=DateTimeArrived.
+		///Never removes entries (only on reset) so queue numbers persist when patients leave.</summary>
+		private Dictionary<long,DateTime> _dictAllTimeArrived=new Dictionary<long,DateTime>();
 		private FormASAP _formASAP;
 		private FormConfirmList _formConfirmList;
 		private FormRecallList _formRecallList;
@@ -3293,7 +3294,6 @@ namespace Helianz {
 			RefreshSchedulesIfNeeded(contrApptPanel.DateStart,contrApptPanel.DateEnd,listOpNums,forceRefreshSchedules);
 			//no dependencies:
 			RefreshWaitingRoomTable();
-			_dateTimeWaitingRmRefreshed=DateTime.Now;
 			//SchedListPeriod=Schedules.ConvertTableToList(_dtSchedule);//happens internally in contrApptPanel when setting TableSchedule
 			//no dependencies:
 			ApptView apptView=GetApptViewCur(apptViewNumOverride:apptViewNum);
@@ -3478,7 +3478,6 @@ namespace Helianz {
 				return;
 			}
 			Logger.LogToPath("FillWaitingRoom running with "+contrApptPanel.TableWaitingRoom.Rows.Count+" rows",LogPath.Signals,LogPhase.Start);
-			TimeSpan timeSpanDeltaSinceRefresh=DateTime.Now-_dateTimeWaitingRmRefreshed;
 			DataTable table=contrApptPanel.TableWaitingRoom;
 			List<Operatory> listOperatoriesForClinic=new List<Operatory>();
 			List<Operatory> listOperatoriesForApptView=new List<Operatory>();
@@ -3497,15 +3496,17 @@ namespace Helianz {
 			gridWaiting.Columns.Clear();
 			GridColumn col=new GridColumn(Lan.g("TableApptWaiting","Patient"),130);
 			gridWaiting.Columns.Add(col);
+			bool hasQueueColumn=table.Columns.Contains("AptNum");
+			if(hasQueueColumn) {
+				col=new GridColumn(Lan.g("TableApptWaiting","Queue"),45,HorizontalAlignment.Center);
+				gridWaiting.Columns.Add(col);
+			}
 			col=new GridColumn(Lan.g("TableApptWaiting","Waited"),100,HorizontalAlignment.Center);
 			gridWaiting.Columns.Add(col);
 			gridWaiting.ListGridRows.Clear();
-			DateTime timeWait;
-			GridRow row;
-			int waitingRoomAlertTime=PrefC.GetInt(PrefName.WaitingRoomAlertTime);
-			Color waitingRoomAlertColor=PrefC.GetColor(PrefName.WaitingRoomAlertColor);
+			//First pass: collect rows that pass filtering.
+			List<DataRow> listFilteredRows=new List<DataRow>();
 			for(int i=0;i<table.Rows.Count;i++) {
-				//Always filter the waiting room by appointment view first, regardless of using clinics or not.
 				if(PrefC.GetBool(PrefName.WaitingRoomFilterByView)) {
 					bool isInView=false;
 					for(int j=0;j<listOperatoriesForApptView.Count;j++) {
@@ -3518,7 +3519,6 @@ namespace Helianz {
 						continue;
 					}
 				}
-				//We only want to filter the waiting room by the clinic's operatories when clinics are enabled and they are not using 'Headquarters' mode.
 				if(PrefC.HasClinicsEnabled && Clinics.ClinicNum!=0) {
 					bool isInView=false;
 					for(int j=0;j<listOperatoriesForClinic.Count;j++) {
@@ -3531,38 +3531,85 @@ namespace Helianz {
 						continue;
 					}
 				}
+				listFilteredRows.Add(table.Rows[i]);
+			}
+			if(hasQueueColumn) {
+				//Register new patients into the persistent dict (never removed — only on reset).
+				foreach(DataRow dataRow in listFilteredRows) {
+					long aptNum=PIn.Long(dataRow["AptNum"].ToString());
+					if(!_dictAllTimeArrived.ContainsKey(aptNum)) {
+						_dictAllTimeArrived[aptNum]=(DateTime)dataRow["DateTimeArrived"];
+					}
+				}
+			}
+			//Build a sorted snapshot of ALL patients ever seen (including those who left).
+			//Queue number = rank in this full list, which never changes for a given patient.
+			Dictionary<long,int> dictQueueNums=null;
+			if(hasQueueColumn) {
+				List<KeyValuePair<long,DateTime>> listAllSorted=_dictAllTimeArrived
+					.OrderBy(kvp => kvp.Value)
+					.ThenBy(kvp => kvp.Key)
+					.ToList();
+				dictQueueNums=new Dictionary<long,int>();
+				for(int i=0;i<listAllSorted.Count;i++) {
+					dictQueueNums[listAllSorted[i].Key]=i+1;
+				}
+			}
+			//Second pass: build grid rows.
+			GridRow row;
+			int waitingRoomAlertTime=PrefC.GetInt(PrefName.WaitingRoomAlertTime);
+			Color waitingRoomAlertColor=PrefC.GetColor(PrefName.WaitingRoomAlertColor);
+			foreach(DataRow dataRow in listFilteredRows) {
 				row=new GridRow();
 				string patName="";
 				ApptView apptView=GetApptViewCur();
 				if(apptView!=null) {
 					switch(apptView.WaitingRmName) {
 						case EnumWaitingRmName.LastFirst: 
-							patName=$"{table.Rows[i]["LName"]}, {table.Rows[i]["FName"]}";
+							patName=$"{dataRow["LName"]}, {dataRow["FName"]}";
 						break;
 						case EnumWaitingRmName.FirstLastI: 
-							patName=$"{table.Rows[i]["FName"]}, {table.Rows[i]["LName"].ToString().Substring(0,1)}";
+							patName=$"{dataRow["FName"]}, {dataRow["LName"].ToString().Substring(0,1)}";
 						break;
 						case EnumWaitingRmName.First: 
-							patName=$"{table.Rows[i]["FName"]}";
+							patName=$"{dataRow["FName"]}";
 						break;
 					}
 				} else {
-					patName=table.Rows[i]["patName"].ToString();
+					patName=dataRow["patName"].ToString();
 				}
 				row.Cells.Add(patName);
-				if(!DateTime.TryParse(table.Rows[i]["waitTime"].ToString(),out timeWait)) {
-					timeWait=DateTime.Today;//default to midnight if parsing fails
-				}//we ignore date
-				timeWait+=timeSpanDeltaSinceRefresh;
-				row.Cells.Add(timeWait.ToString("H:mm:ss"));
+				if(hasQueueColumn) {
+					long aptNum=PIn.Long(dataRow["AptNum"].ToString());
+					int queueNum=dictQueueNums[aptNum];
+					dataRow["QueueNum"]=queueNum;
+					row.Cells.Add(queueNum.ToString());
+				}
+				//Calculate elapsed time directly from DateTimeArrived using client's clock.
+				DateTime dateTimeArrived=(DateTime)dataRow["DateTimeArrived"];
+				TimeSpan elapsed=DateTime.Now-dateTimeArrived;
+				row.Cells.Add(string.Format("{0}:{1:D2}:{2:D2}",(int)elapsed.TotalHours,elapsed.Minutes,elapsed.Seconds));
 				row.Bold=false;
-				if(waitingRoomAlertTime>0 && waitingRoomAlertTime<=timeWait.Minute+(timeWait.Hour*60)) {
+				if(waitingRoomAlertTime>0 && waitingRoomAlertTime<=(int)elapsed.TotalMinutes) {
 					row.ColorText=waitingRoomAlertColor;
 					row.Bold=true;
 				}
 				gridWaiting.ListGridRows.Add(row);
 			}
 			gridWaiting.EndUpdate();
+		}
+
+		///<summary>Resets the waiting room queue numbers. Shows a confirmation popup before resetting.</summary>
+		private void butResetQueue_Click(object sender,EventArgs e) {
+			if(_dictAllTimeArrived.Count==0) {
+				MsgBox.Show(this,"No patients are currently in the waiting room queue.");
+				return;
+			}
+			if(!MsgBox.Show(this,MsgBoxButtons.YesNo,"Reset the waiting room queue?\r\nThis will clear all queue numbers and renumber patients starting from 1.")) {
+				return;
+			}
+			_dictAllTimeArrived.Clear();
+			FillWaitingRoom();
 		}
 
 		///<summary>Sets buttons at right to enabled/disabled. Sets value of listConfirmed. Was previously called RefreshModuleScreenPatient.</summary>
