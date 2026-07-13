@@ -254,7 +254,10 @@ namespace CodeBase {
 		Receipt,
 		///<summary>11</summary>
 		[Description("Multi Rx's")]
-		RxMulti
+		RxMulti,
+		///<summary>12- Waiting room queue ticket thermal printer</summary>
+		[Description("Queue Ticket")]
+		QueueTicket
 	}
 	
 	///<summary>Used to identify specific reasons that validation failed during construction.

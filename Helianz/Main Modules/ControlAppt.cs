@@ -26,9 +26,22 @@ namespace Helianz {
 		private DateTime _dateTimeClickedBlockout;
 		///<summary></summary>
 		private bool _isPrintCardFamily;
-		///<summary>Tracks ALL patients ever seen in the waiting room since last reset. Key=AptNum, Value=DateTimeArrived.
-		///Never removes entries (only on reset) so queue numbers persist when patients leave.</summary>
-		private Dictionary<long,DateTime> _dictAllTimeArrived=new Dictionary<long,DateTime>();
+		///<summary>Tracks ALL patients ever seen in the waiting room since last reset.
+		///Key=AptNum, Value=(DateTimeArrived, OpNum). Never removes entries (only on reset).</summary>
+		private Dictionary<long,(DateTime DateTimeArrived,long OpNum)> _dictAllTimeArrived
+			=new Dictionary<long,(DateTime DateTimeArrived,long OpNum)>();
+		///<summary>The AptNum of the currently selected patient in the waiting room grid, persisted across refreshes.</summary>
+		private long _selectedWaitingAptNum;
+		///<summary>Tracks AptNums for which we've already shown the queue-number popup, to avoid showing it again on refresh.</summary>
+		private HashSet<long> _setNotifiedAptNums=new HashSet<long>();
+		///<summary>Set to true after the first FillWaitingRoom completes, so popups only fire for arrivals during the session.</summary>
+		private bool _hasInitialWaitingRoomLoad;
+		///<summary>Set to true when the local PC triggers an "Arrived" status change, so only the acting PC shows the popup.</summary>
+		private bool _hasLocalArrivalTrigger;
+		///<summary>Column index currently sorting the waiting room grid, -1 if none or default (arrival time).</summary>
+		private int _waitingSortColumn=-1;
+		///<summary>True if the waiting room sort is ascending.</summary>
+		private bool _waitingSortAscending=true;
 		private FormASAP _formASAP;
 		private FormConfirmList _formConfirmList;
 		private FormRecallList _formRecallList;
@@ -1270,6 +1283,10 @@ namespace Helianz {
 			Appointment appointmentOld=appointment.Copy();
 			long newStatus=Defs.GetDefsForCategory(DefCat.ApptConfirmed,true)[listConfirmed.IndexFromPoint(e.X,e.Y)].DefNum;
 			Appointments.SetConfirmed(appointment,newStatus);//Appointments S-Class handles Signalods
+			//Flag that this PC triggered an arrival, so only this PC shows the queue popup.
+			if(newStatus==PrefC.GetLong(PrefName.AppointmentTimeArrivedTrigger)) {
+				_hasLocalArrivalTrigger=true;
+			}
 			if(newStatus!=appointmentOld.Confirmed) {
 				//Log confirmation status changes.
 				SecurityLogs.MakeLogEntry(EnumPermType.ApptConfirmStatusEdit,appointment.PatNum,Lan.g(this,"Appointment confirmation status changed from")+" "
@@ -3498,11 +3515,19 @@ namespace Helianz {
 			gridWaiting.Columns.Add(col);
 			bool hasQueueColumn=table.Columns.Contains("AptNum");
 			if(hasQueueColumn) {
-				col=new GridColumn(Lan.g("TableApptWaiting","Queue"),45,HorizontalAlignment.Center);
+				col=new GridColumn(Lan.g("TableApptWaiting","Queue"),55,HorizontalAlignment.Center);
+				col.SortingStrategy=GridSortingStrategy.StringCompare;
 				gridWaiting.Columns.Add(col);
 			}
 			col=new GridColumn(Lan.g("TableApptWaiting","Waited"),100,HorizontalAlignment.Center);
+			col.SortingStrategy=GridSortingStrategy.TimeParse;
 			gridWaiting.Columns.Add(col);
+			//Save the currently selected AptNum before clearing the grid.
+			int selectedIdx=gridWaiting.GetSelectedIndex();
+			_selectedWaitingAptNum=0;
+			if(selectedIdx>=0 && selectedIdx<gridWaiting.ListGridRows.Count) {
+				_selectedWaitingAptNum=(long)gridWaiting.ListGridRows[selectedIdx].Tag;
+			}
 			gridWaiting.ListGridRows.Clear();
 			//First pass: collect rows that pass filtering.
 			List<DataRow> listFilteredRows=new List<DataRow>();
@@ -3533,29 +3558,56 @@ namespace Helianz {
 				}
 				listFilteredRows.Add(table.Rows[i]);
 			}
+			List<long> listNewAptNums=new List<long>();
 			if(hasQueueColumn) {
 				//Register new patients into the persistent dict (never removed — only on reset).
 				foreach(DataRow dataRow in listFilteredRows) {
 					long aptNum=PIn.Long(dataRow["AptNum"].ToString());
 					if(!_dictAllTimeArrived.ContainsKey(aptNum)) {
-						_dictAllTimeArrived[aptNum]=(DateTime)dataRow["DateTimeArrived"];
+						_dictAllTimeArrived[aptNum]=(
+							DateTimeArrived:(DateTime)dataRow["DateTimeArrived"],
+							OpNum:PIn.Long(dataRow["OpNum"].ToString())
+						);
+						if(!_setNotifiedAptNums.Contains(aptNum)) {
+							listNewAptNums.Add(aptNum);
+						}
 					}
 				}
 			}
-			//Build a sorted snapshot of ALL patients ever seen (including those who left).
-			//Queue number = rank in this full list, which never changes for a given patient.
-			Dictionary<long,int> dictQueueNums=null;
+			//Build per-operatory queue numbers: each operatory gets a letter prefix (A, B, C...),
+			//and patients within each operatory get sequential numbers based on arrival order.
+			Dictionary<long,string> dictQueueLabels=null;
 			if(hasQueueColumn) {
-				List<KeyValuePair<long,DateTime>> listAllSorted=_dictAllTimeArrived
-					.OrderBy(kvp => kvp.Value)
-					.ThenBy(kvp => kvp.Key)
-					.ToList();
-				dictQueueNums=new Dictionary<long,int>();
-				for(int i=0;i<listAllSorted.Count;i++) {
-					dictQueueNums[listAllSorted[i].Key]=i+1;
+				dictQueueLabels=new Dictionary<long,string>();
+				//Build letter mapping: sort unique OpNums and assign A, B, C...
+				List<long> listOpNumsSorted=_dictAllTimeArrived.Values
+					.Select(v => v.OpNum).Distinct().OrderBy(op => op).ToList();
+				Dictionary<long,string> dictOpPrefix=new Dictionary<long,string>();
+				for(int i=0;i<listOpNumsSorted.Count;i++) {
+					dictOpPrefix[listOpNumsSorted[i]]=GetColumnLetter(i);
+				}
+				//Group all patients by OpNum, sort each group by DateTimeArrived, assign sequential numbers.
+				var groups=_dictAllTimeArrived
+					.GroupBy(kvp => kvp.Value.OpNum)
+					.OrderBy(g => g.Key);
+				foreach(var group in groups) {
+					string prefix=dictOpPrefix[group.Key];
+					var sorted=group.OrderBy(kvp => kvp.Value.DateTimeArrived).ThenBy(kvp => kvp.Key).ToList();
+					for(int i=0;i<sorted.Count;i++) {
+						dictQueueLabels[sorted[i].Key]=prefix+"-"+(i+1);
+					}
 				}
 			}
-			//Second pass: build grid rows.
+			//Show queue-number popup for newly arrived patients. Only on the PC that triggered the arrival.
+			if(_hasInitialWaitingRoomLoad && _hasLocalArrivalTrigger && hasQueueColumn && listNewAptNums.Count>0) {
+				_hasLocalArrivalTrigger=false;
+				ShowQueuePopupsForNewPatients(listNewAptNums,dictQueueLabels,listFilteredRows);
+			}
+			//Second pass: build grid rows (sorted by arrival time by default; header click toggles sort).
+			//Default sort: by DateTimeArrived, ascending (earliest first).
+			if(_waitingSortColumn<0) {
+				listFilteredRows.Sort((a,b) => ((DateTime)a["DateTimeArrived"]).CompareTo((DateTime)b["DateTimeArrived"]));
+			}
 			GridRow row;
 			int waitingRoomAlertTime=PrefC.GetInt(PrefName.WaitingRoomAlertTime);
 			Color waitingRoomAlertColor=PrefC.GetColor(PrefName.WaitingRoomAlertColor);
@@ -3579,12 +3631,14 @@ namespace Helianz {
 					patName=dataRow["patName"].ToString();
 				}
 				row.Cells.Add(patName);
+				long aptNumForRow=0;
 				if(hasQueueColumn) {
-					long aptNum=PIn.Long(dataRow["AptNum"].ToString());
-					int queueNum=dictQueueNums[aptNum];
-					dataRow["QueueNum"]=queueNum;
-					row.Cells.Add(queueNum.ToString());
+					aptNumForRow=PIn.Long(dataRow["AptNum"].ToString());
+					string queueLabel=dictQueueLabels[aptNumForRow];
+					dataRow["QueueNum"]=0;//keep column compatible; label is the display value
+					row.Cells.Add(queueLabel);
 				}
+				row.Tag=aptNumForRow;
 				//Calculate elapsed time directly from DateTimeArrived using client's clock.
 				DateTime dateTimeArrived=(DateTime)dataRow["DateTimeArrived"];
 				TimeSpan elapsed=DateTime.Now-dateTimeArrived;
@@ -3597,6 +3651,170 @@ namespace Helianz {
 				gridWaiting.ListGridRows.Add(row);
 			}
 			gridWaiting.EndUpdate();
+			_hasInitialWaitingRoomLoad=true;
+			//Re-apply saved sort after EndUpdate clears it.
+			if(_waitingSortColumn>=0) {
+				gridWaiting.SortForced(_waitingSortColumn,_waitingSortAscending);
+			}
+			//Restore selection to the previously selected patient (must be after EndUpdate — it clears selections).
+			if(_selectedWaitingAptNum!=0) {
+				for(int i=0;i<gridWaiting.ListGridRows.Count;i++) {
+					if((long)gridWaiting.ListGridRows[i].Tag==_selectedWaitingAptNum) {
+						gridWaiting.SetSelected(i);
+						break;
+					}
+				}
+			}
+			//Sync the waiting room selection to the main appointment selection so status buttons work.
+			SyncWaitingSelectionToAppointment();
+		}
+
+		///<summary>Syncs the selected waiting room patient's AptNum to the main appointment module selection,
+		///so the confirmation status buttons and other toolbar actions target the correct patient.</summary>
+		private void SyncWaitingSelectionToAppointment() {
+			int idx=gridWaiting.GetSelectedIndex();
+			if(idx>=0 && idx<gridWaiting.ListGridRows.Count) {
+				long aptNum=(long)gridWaiting.ListGridRows[idx].Tag;
+				if(aptNum==0) {
+					return;
+				}
+				bool isNewSelection=(_selectedWaitingAptNum!=aptNum);
+				_selectedWaitingAptNum=aptNum;
+				contrApptPanel.SelectedAptNum=aptNum;
+				//Try the fast in-memory lookup first (TableAppointments from the current view).
+				DataRow dataRow=contrApptPanel.GetDataRowForSelected();
+				if(dataRow!=null) {
+					listConfirmed.SelectedIndex=Defs.GetOrder(DefCat.ApptConfirmed,PIn.Long(dataRow["Confirmed"].ToString()));
+				}
+				else if(isNewSelection) {
+					//Fall back to DB lookup if the operatory isn't in the current appointment view.
+					Appointment appointment=Appointments.GetOneApt(aptNum);
+					if(appointment!=null) {
+						listConfirmed.SelectedIndex=Defs.GetOrder(DefCat.ApptConfirmed,appointment.Confirmed);
+					}
+				}
+				if(Security.IsAuthorized(EnumPermType.ApptConfirmStatusEdit,true)) {
+					listConfirmed.Enabled=true;
+				}
+			}
+		}
+
+		///<summary>Handles click on a waiting room row — syncs the selection to the appointment module.</summary>
+		private void gridWaiting_CellClick(object sender,UI.ODGridClickEventArgs e) {
+			SyncWaitingSelectionToAppointment();
+		}
+
+		///<summary>Handles column header click on the waiting room grid — saves sort preference.</summary>
+		private void gridWaiting_ColumnSortClick(object sender,EventArgs e) {
+			int sortedCol=gridWaiting.GetSortedByColumnIdx();
+			if(sortedCol<0) return;
+			if(_waitingSortColumn==sortedCol) {
+				_waitingSortAscending=!_waitingSortAscending;
+			}
+			else {
+				_waitingSortColumn=sortedCol;
+				_waitingSortAscending=true;
+			}
+		}
+
+		///<summary>Prints the queue slip for the selected patient to the default printer.</summary>
+		private void butPrintQueue_Click(object sender,EventArgs e) {
+			int idx=gridWaiting.GetSelectedIndex();
+			if(idx<0 || idx>=gridWaiting.ListGridRows.Count) {
+				MsgBox.Show(this,"Please select a patient in the waiting room first.");
+				return;
+			}
+			GridRow row=gridWaiting.ListGridRows[idx];
+			string patientName=row.Cells[0].Text;
+			string queueLabel=row.Cells.Count>2 ? row.Cells[1].Text : "";
+			long aptNum=(long)row.Tag;
+			string roomName="";
+			string clinicName=PrefC.GetString(PrefName.PracticeTitle);
+			if(aptNum!=0 && _dictAllTimeArrived.ContainsKey(aptNum)) {
+				long opNum=_dictAllTimeArrived[aptNum].OpNum;
+				Operatory operatory=Operatories.GetOperatory(opNum);
+				roomName=operatory?.OpName ?? opNum.ToString();
+				if(PrefC.HasClinicsEnabled && operatory!=null && operatory.ClinicNum!=0) {
+					Clinic clinic=Clinics.GetClinic(operatory.ClinicNum);
+					clinicName=clinic?.Description ?? clinicName;
+				}
+			}
+			PrintQueueTicket(queueLabel,patientName,roomName,clinicName);
+		}
+
+		///<summary>Converts a 0-based column index to an Excel-style column letter: 0→A, 1→B, ..., 25→Z, 26→AA, etc.</summary>
+		private static string GetColumnLetter(int index) {
+			string result="";
+			int n=index;
+			while(n>=0) {
+				result=(char)('A'+(n%26))+result;
+				n=n/26-1;
+			}
+			return result;
+		}
+
+		///<summary>Shows a popup for each newly arrived patient with their queue number, clinic info, and an option to print.</summary>
+		private void ShowQueuePopupsForNewPatients(List<long> listNewAptNums,Dictionary<long,string> dictQueueLabels,List<DataRow> listFilteredRows) {
+			foreach(long aptNum in listNewAptNums) {
+				_setNotifiedAptNums.Add(aptNum);
+				DataRow dataRow=listFilteredRows.FirstOrDefault(r => PIn.Long(r["AptNum"].ToString())==aptNum);
+				if(dataRow==null) continue;
+				string queueLabel=dictQueueLabels.ContainsKey(aptNum) ? dictQueueLabels[aptNum] : "";
+				string patName=$"{dataRow["FName"]} {dataRow["LName"]}";
+				//Get clinic/operatory info.
+				long opNum=PIn.Long(dataRow["OpNum"].ToString());
+				Operatory operatory=Operatories.GetOperatory(opNum);
+				string roomName=operatory?.OpName ?? opNum.ToString();
+				string clinicName="";
+				if(PrefC.HasClinicsEnabled && operatory!=null && operatory.ClinicNum!=0) {
+					Clinic clinic=Clinics.GetClinic(operatory.ClinicNum);
+					clinicName=clinic?.Description ?? "";
+				}
+				if(string.IsNullOrEmpty(clinicName)) {
+					clinicName=PrefC.GetString(PrefName.PracticeTitle);
+				}
+				string message=Lan.g(this,"Queue Number")+":  "+queueLabel+"\r\n"
+					+Lan.g(this,"Patient")+": "+patName+"\r\n"
+					+Lan.g(this,"Room")+": "+roomName+"\r\n"
+					+Lan.g(this,"Clinic")+": "+clinicName+"\r\n\r\n"
+					+Lan.g(this,"Print this queue ticket?");
+				if(MsgBox.Show(this,MsgBoxButtons.YesNo,message)) {
+					PrintQueueTicket(queueLabel,patName,roomName,clinicName);
+				}
+			}
+		}
+
+		///<summary>Prints a queue ticket for a patient using the configured Queue Ticket printer.</summary>
+		private void PrintQueueTicket(string queueLabel,string patientName,string roomName,string clinicName) {
+			DateTime now=DateTime.Now;
+			PrintDocument pd=new PrintDocument();
+			//Use the configured Queue Ticket printer if set, otherwise fall back to default.
+			Printer printerForSit=Printers.GetForSit(PrintSituation.QueueTicket);
+			if(printerForSit!=null && !string.IsNullOrEmpty(printerForSit.PrinterName)) {
+				pd.PrinterSettings.PrinterName=printerForSit.PrinterName;
+			}
+			pd.PrintPage+=(_,args) => {
+				using Font fontTitle=new Font("Arial",14,FontStyle.Bold);
+				using Font fontBody=new Font("Arial",10);
+				using Font fontQueue=new Font("Arial",24,FontStyle.Bold);
+				float y=10;
+				args.Graphics.DrawString(clinicName,fontTitle,Brushes.Black,10,y);
+				y+=25;
+				args.Graphics.DrawString(now.ToString("ddd, dd MMM yyyy  HH:mm"),fontBody,Brushes.Black,10,y);
+				y+=18;
+				args.Graphics.DrawString("Patient: "+patientName,fontBody,Brushes.Black,10,y);
+				y+=18;
+				args.Graphics.DrawString("Room: "+roomName,fontBody,Brushes.Black,10,y);
+				y+=22;
+				args.Graphics.DrawString("Queue: "+queueLabel,fontQueue,Brushes.Black,10,y);
+				args.HasMorePages=false;
+			};
+			try {
+				pd.Print();
+			}
+			catch(Exception ex) {
+				MsgBox.Show(this,"Print failed: "+ex.Message);
+			}
 		}
 
 		///<summary>Resets the waiting room queue numbers. Shows a confirmation popup before resetting.</summary>
@@ -3609,6 +3827,9 @@ namespace Helianz {
 				return;
 			}
 			_dictAllTimeArrived.Clear();
+			_setNotifiedAptNums.Clear();
+			_hasInitialWaitingRoomLoad=false;
+			_selectedWaitingAptNum=0;
 			FillWaitingRoom();
 		}
 

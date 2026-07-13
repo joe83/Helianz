@@ -40,6 +40,8 @@
 			this.tabWaiting = new Helianz.UI.TabPage();
 			this.gridWaiting = new Helianz.UI.GridOD();
 			this.butResetQueue = new System.Windows.Forms.Button();
+			this.butPrintQueue = new System.Windows.Forms.Button();
+			this.panelWaitingButtons = new System.Windows.Forms.Panel();
 			this.tabSched = new Helianz.UI.TabPage();
 			this.gridEmpSched = new Helianz.UI.GridOD();
 			this.tabProv = new Helianz.UI.TabPage();
@@ -269,7 +271,7 @@
 			// tabWaiting
 			// 
 			this.tabWaiting.Controls.Add(this.gridWaiting);
-			this.tabWaiting.Controls.Add(this.butResetQueue);
+			this.tabWaiting.Controls.Add(this.panelWaitingButtons);
 			this.tabWaiting.Location = new System.Drawing.Point(4, 22);
 			this.tabWaiting.Margin = new System.Windows.Forms.Padding(0);
 			this.tabWaiting.Name = "tabWaiting";
@@ -287,17 +289,41 @@
 			this.gridWaiting.TabIndex = 78;
 			this.gridWaiting.Title = "Waiting Room";
 			this.gridWaiting.TranslationName = "TableApptWaiting";
+			this.gridWaiting.AllowSortingByColumn = true;
+			this.gridWaiting.CellClick += new Helianz.UI.ODGridClickEventHandler(this.gridWaiting_CellClick);
+			this.gridWaiting.ColumnSortClick += new System.EventHandler(this.gridWaiting_ColumnSortClick);
+			// 
+			// panelWaitingButtons
+			// 
+			this.panelWaitingButtons.Controls.Add(this.butResetQueue);
+			this.panelWaitingButtons.Controls.Add(this.butPrintQueue);
+			this.panelWaitingButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.panelWaitingButtons.Location = new System.Drawing.Point(0, 117);
+			this.panelWaitingButtons.Name = "panelWaitingButtons";
+			this.panelWaitingButtons.Size = new System.Drawing.Size(211, 23);
+			this.panelWaitingButtons.TabIndex = 80;
 			// 
 			// butResetQueue
 			// 
-			this.butResetQueue.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.butResetQueue.Location = new System.Drawing.Point(0, 117);
+			this.butResetQueue.Dock = System.Windows.Forms.DockStyle.Right;
+			this.butResetQueue.Location = new System.Drawing.Point(108, 0);
 			this.butResetQueue.Name = "butResetQueue";
-			this.butResetQueue.Size = new System.Drawing.Size(211, 23);
+			this.butResetQueue.Size = new System.Drawing.Size(103, 23);
 			this.butResetQueue.TabIndex = 79;
 			this.butResetQueue.Text = "Reset Queue";
 			this.butResetQueue.UseVisualStyleBackColor = true;
 			this.butResetQueue.Click += new System.EventHandler(this.butResetQueue_Click);
+			// 
+			// butPrintQueue
+			// 
+			this.butPrintQueue.Dock = System.Windows.Forms.DockStyle.Left;
+			this.butPrintQueue.Location = new System.Drawing.Point(0, 0);
+			this.butPrintQueue.Name = "butPrintQueue";
+			this.butPrintQueue.Size = new System.Drawing.Size(103, 23);
+			this.butPrintQueue.TabIndex = 80;
+			this.butPrintQueue.Text = "Print Queue";
+			this.butPrintQueue.UseVisualStyleBackColor = true;
+			this.butPrintQueue.Click += new System.EventHandler(this.butPrintQueue_Click);
 			// 
 			// tabSched
 			// 
@@ -1008,6 +1034,8 @@
 		private Helianz.UI.TabPage tabWaiting;
 		private UI.GridOD gridWaiting;
 		private System.Windows.Forms.Button butResetQueue;
+		private System.Windows.Forms.Button butPrintQueue;
+		private System.Windows.Forms.Panel panelWaitingButtons;
 		private Helianz.UI.TabPage tabSched;
 		private UI.GridOD gridEmpSched;
 		private Helianz.UI.TabPage tabProv;

@@ -58,7 +58,8 @@ namespace Helianz{
 				PrintSituation.RxMulti, 
 				PrintSituation.Statement, 
 				PrintSituation.TPPerio, 
-				PrintSituation.Receipt};
+				PrintSituation.Receipt,
+				PrintSituation.QueueTicket};
 			//If simple only show the default row.
 			if(checkSimple.Checked){
 				listPrintSituations.RemoveAll(x=>x!=PrintSituation.Default);
