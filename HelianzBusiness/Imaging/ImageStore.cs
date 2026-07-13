@@ -281,6 +281,14 @@ namespace HelianzBusiness {
 			}
 			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				string srcFileName = ODFileUtils.CombinePaths(patFolder,doc.FileName);
+				// Hybrid mode: if file doesn't exist locally, pull from server synchronously
+				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid && !File.Exists(srcFileName)) {
+					string localBase=GetPreferredAtoZpath();
+					string pulledPath=HybridMediaResolver.EnsureFileAvailableLocally(doc.PatNum,localBase,doc.FileName);
+					if(!string.IsNullOrEmpty(pulledPath) && File.Exists(pulledPath)) {
+						srcFileName=pulledPath;
+					}
+				}
 				return DicomHelper.GetFromFile(srcFileName);
 			}
 			else if(CloudStorage.IsCloudStorage) {
@@ -328,7 +336,13 @@ namespace HelianzBusiness {
 			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				string srcFileName = ODFileUtils.CombinePaths(patFolder,doc.FileName);
 				if(HasImageExtension(srcFileName)) {
-					//if(File.Exists(srcFileName) && HasImageExtension(srcFileName)) {
+					// Hybrid mode: if file doesn't exist locally, pull it from server synchronously
+					if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid && !File.Exists(srcFileName)) {
+						// Extract PatNum from patFolder (format: {base}/{bucket}/{patNum}/)
+						long patNum=doc.PatNum;
+						string localBase=GetPreferredAtoZpath();
+						HybridMediaResolver.EnsureFileAvailableLocally(patNum,localBase,doc.FileName);
+					}
 					try {
 						return new Bitmap(srcFileName);
 					}
@@ -486,6 +500,11 @@ namespace HelianzBusiness {
 				return byteArray;
 			}
 			string path = ODFileUtils.CombinePaths(patFolder,doc.FileName);
+			// Hybrid mode: if file doesn't exist locally, pull from server synchronously
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid && !File.Exists(path)) {
+				string localBase=GetPreferredAtoZpath();
+				return HybridMediaResolver.GetFileBytes(doc.PatNum,localBase,doc.FileName);
+			}
 			if(!File.Exists(path)) {
 				return new byte[] { };
 			}

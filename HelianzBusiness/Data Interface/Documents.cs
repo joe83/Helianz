@@ -1005,6 +1005,14 @@ namespace HelianzBusiness {
 			string documentPath;
 			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				documentPath=ImageStore.GetFilePath(document,ImageStore.GetPatientFolder(patient,ImageStore.GetPreferredAtoZpath()));
+				// Hybrid mode: if file doesn't exist locally, pull from server synchronously
+				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid && !File.Exists(documentPath)) {
+					string localBase=ImageStore.GetPreferredAtoZpath();
+					string pulledPath=HybridMediaResolver.EnsureFileAvailableLocally(document.PatNum,localBase,document.FileName);
+					if(!string.IsNullOrEmpty(pulledPath) && File.Exists(pulledPath)) {
+						documentPath=pulledPath;
+					}
+				}
 			}
 			else if(PrefC.AtoZfolderUsed==DataStorageType.InDatabase) {
 				//Some programs require a file on disk and cannot open in memory files. Save to temp file from DB.

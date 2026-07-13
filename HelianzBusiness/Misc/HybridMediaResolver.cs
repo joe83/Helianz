@@ -101,5 +101,44 @@ namespace HelianzBusiness {
 			string localFolder=ODFileUtils.CombinePaths(localBase,bucket.ToString(),patNum.ToString());
 			return Directory.Exists(localFolder);
 		}
+
+		///<summary>Ensures a single file is available locally in hybrid mode.
+		///Checks if the file exists locally; if not, pulls it synchronously from the server.
+		///Returns the full local path to the file if it exists (or was successfully pulled),
+		///or empty string if the file could not be obtained.</summary>
+		public static string EnsureFileAvailableLocally(long patNum,string localBasePath,string fileName) {
+			if(PrefC.AtoZfolderUsed!=DataStorageType.LocalAtoZHybrid) {
+				// Not hybrid mode — just return the local path (caller handles existence check)
+				int bucket=(int)(patNum % 100);
+				return ODFileUtils.CombinePaths(localBasePath,bucket.ToString(),patNum.ToString(),fileName);
+			}
+			string localFilePath=RcloneSync.GetLocalFilePath(patNum,localBasePath,fileName);
+			// If file already exists locally, return it immediately
+			if(File.Exists(localFilePath)) {
+				return localFilePath;
+			}
+			// File not locally available — pull from server synchronously
+			bool pulled=RcloneSync.PullFile(patNum,localBasePath,fileName);
+			if(pulled && File.Exists(localFilePath)) {
+				return localFilePath;
+			}
+			return "";//File not available locally or on server
+		}
+
+		///<summary>Ensures a file is available and returns its bytes.
+		///For hybrid mode: checks local first, pulls from server if needed.
+		///Returns empty byte array if file cannot be obtained.</summary>
+		public static byte[] GetFileBytes(long patNum,string localBasePath,string fileName) {
+			string localPath=EnsureFileAvailableLocally(patNum,localBasePath,fileName);
+			if(string.IsNullOrEmpty(localPath) || !File.Exists(localPath)) {
+				return new byte[] { };
+			}
+			try {
+				return File.ReadAllBytes(localPath);
+			}
+			catch {
+				return new byte[] { };
+			}
+		}
 	}
 }

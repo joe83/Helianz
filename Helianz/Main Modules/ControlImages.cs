@@ -1288,8 +1288,18 @@ namespace Helianz{
 			}
 			//We allow anything which ends with a different extention to be viewed in the windows fax viewer.
 			//Specifically, multi-page faxes can be viewed more easily by one of our customers using the fax viewer.
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				string tempFile=ImageStore.GetFilePath(document,_patFolder);
+				// Hybrid mode: if file doesn't exist locally, pull from server synchronously
+				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid && !File.Exists(tempFile)) {
+					string localBase=ImageStore.GetPreferredAtoZpath();
+					string pulledPath=HybridMediaResolver.EnsureFileAvailableLocally(document.PatNum,localBase,document.FileName);
+					if(string.IsNullOrEmpty(pulledPath) || !File.Exists(pulledPath)) {
+						MessageBox.Show("File not found: "+document.FileName);
+						return;
+					}
+					tempFile=pulledPath;
+				}
 				if(ODBuild.IsThinfinity()) {
 					ThinfinityUtils.HandleFile(tempFile);
 				}
@@ -1298,8 +1308,7 @@ namespace Helianz{
 				}
 				else {
 					try {
-						string filePath=ImageStore.GetFilePath(document,_patFolder);
-						Process.Start(filePath);
+						Process.Start(tempFile);
 					}
 					catch(Exception ex) {
 						MessageBox.Show(ex.Message);

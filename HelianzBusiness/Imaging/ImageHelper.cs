@@ -507,7 +507,18 @@ namespace HelianzBusiness {
 			string fileNameFull=ODFileUtils.CombinePaths(patientFolder,shortFileName);
 			//If the document no longer exists, then there is no corresponding thumbnail image.
 			if((PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) && !File.Exists(fileNameFull)) {
-				throw new ODException("No image file found for document.");
+				// Hybrid mode: try to pull the file from server before giving up
+				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
+					string localBase=ImageStore.GetPreferredAtoZpath();
+					string pulledPath=HybridMediaResolver.EnsureFileAvailableLocally(document.PatNum,localBase,shortFileName);
+					if(string.IsNullOrEmpty(pulledPath) || !File.Exists(pulledPath)) {
+						throw new ODException("No image file found for document.");
+					}
+					fileNameFull=pulledPath;
+				}
+				else {
+					throw new ODException("No image file found for document.");
+				}
 			}
 			//If the specified document is not an image return 'not available'.
 			if(!ImageHelper.HasImageExtension(fileNameFull)) {

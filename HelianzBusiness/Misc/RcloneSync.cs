@@ -161,9 +161,15 @@ namespace HelianzBusiness {
 
 		///<summary>Returns the local patient folder path.
 		///Format: {localBase}/{PatNum%100}/{PatNum}/</summary>
-		private static string GetLocalPatientPath(long patNum,string localBasePath) {
+		public static string GetLocalPatientPath(long patNum,string localBasePath) {
 			int bucket=(int)(patNum % 100);
 			return ODFileUtils.CombinePaths(localBasePath,bucket.ToString(),patNum.ToString())+Path.DirectorySeparatorChar;
+		}
+
+		///<summary>Returns the full local path for a specific file in a patient's folder.
+		///Format: {localBase}/{PatNum%100}/{PatNum}/{fileName}</summary>
+		public static string GetLocalFilePath(long patNum,string localBasePath,string fileName) {
+			return ODFileUtils.CombinePaths(GetLocalPatientPath(patNum,localBasePath),fileName);
 		}
 
 		#endregion
@@ -242,6 +248,36 @@ namespace HelianzBusiness {
 			return System.Threading.Tasks.Task.Run(() => {
 				PullPatientFolder(patNum,localBasePath);
 			});
+		}
+
+		///<summary>Pulls a single file from server to local using rclone copyto.
+		///If the file doesn't exist on server, returns false. Otherwise returns true.
+		///Used as synchronous fallback when a file is needed but hasn't been synced yet.</summary>
+		public static bool PullFile(long patNum,string localBasePath,string fileName) {
+			if(!IsRcloneAvailable()) {
+				return false;
+			}
+			if(!ConfigFileExists()) {
+				return false;
+			}
+			try {
+				string localPath=GetLocalPatientPath(patNum,localBasePath);
+				string remotePath=GetRemotePatientPath(patNum);
+				// Ensure the local directory exists
+				string localDir=GetLocalPatientPath(patNum,localBasePath).TrimEnd(Path.DirectorySeparatorChar);
+				if(!Directory.Exists(localDir)) {
+					Directory.CreateDirectory(localDir);
+				}
+				string localFile=ODFileUtils.CombinePaths(localPath,fileName);
+				string remoteFile=remotePath+fileName;
+				// Use copyto for single-file pull
+				RunRclone("copyto",remoteFile,localFile);
+				return File.Exists(localFile);
+			}
+			catch(Exception ex) {
+				Logger.openlog.LogMB("rclone pull file failed for patient "+patNum+" file "+fileName+": "+ex.Message,Logger.Severity.WARNING);
+				return false;
+			}
 		}
 
 		///<summary>Checks whether a specific file exists in the local patient folder.</summary>

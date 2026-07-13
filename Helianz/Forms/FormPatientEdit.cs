@@ -242,14 +242,16 @@ End of Checklist================================================================
 			textSalutation.Text=Patient.Salutation;
 			textIceName.Text=_patientNote.ICEName;
 			textIcePhone.Text=_patientNote.ICEPhone;
+			/*
 			// Indonesian locale: relabel name fields to match local naming conventions.
-			if(Currency.IsIndonesianLocale()) {
-				labelLName.Text="Nama Belakang / Marga (opsional)";
-				labelFName.Text="Nama Lengkap";
-				labelPreferredAndMiddleI.Text="Nama Panggilan / Nama Tengah";
-				labelTitle.Text="Gelar";
+			if (Currency.IsIndonesianLocale()) {
+				labelLName.Text = "Nama Belakang / Marga (opsional)";
+				labelFName.Text = "Nama Lengkap";
+				labelPreferredAndMiddleI.Text = "Nama Panggilan / Nama Tengah";
+				labelTitle.Text = "Gelar";
 			}
-			_ehrPatient=EhrPatients.Refresh(Patient.PatNum);
+			*/
+			_ehrPatient =EhrPatients.Refresh(Patient.PatNum);
 			if(PrefC.GetBool(PrefName.ShowFeatureEhr)) {//Show mother's maiden name UI if using EHR.
 				labelMotherMaidenFname.Visible=true;
 				textMotherMaidenFname.Visible=true;

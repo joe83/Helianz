@@ -51,6 +51,8 @@ namespace Helianz {
 		private bool _ignoreRefresh=false;
 		///<summary>Used for determining the accept button. False means that the search button will be the accept button, and true means the OK button will be the accept button.</summary>
 		private bool _isGridRefreshed=false;
+		///<summary>Cached once at load time to ensure consistent Indonesian layout across search fields and grid.</summary>
+		private bool _isIndonesianLocale;
 
 		#region On Screen Keyboard Dll Imports
 		[System.Runtime.InteropServices.DllImport("kernel32.dll",SetLastError = true)]
@@ -125,10 +127,8 @@ namespace Helianz {
 		///<summary></summary>
 		public void FrmPatientSelect_Load(object sender,System.EventArgs e) {
 			Lang.F(this);
-			// Indonesian locale: swap search field positions and labels so First Name comes first.
-			if(Currency.IsIndonesianLocale()) {
-				SwapIndonesianSearchFields();
-			}
+			// Cache Indonesian locale once for consistent layout across all UI paths.
+			_isIndonesianLocale=Currency.IsIndonesianLocale();
 			if(PatientInitial!=null) {
 				PreFillSearchBoxes();
 			}
@@ -212,9 +212,9 @@ namespace Helianz {
 			butPrevious.IsEnabled=false;
 			FillSearchOption();
 			SetGridCols();
-			// Indonesian locale: swap LastName and FirstName grid columns so First Name displays first.
-			if(Currency.IsIndonesianLocale()) {
-				SwapIndonesianGridCols();
+			// Apply Indonesian search field labels before any early return paths.
+			if(_isIndonesianLocale) {
+				SwapIndonesianSearchFields();
 			}
 			if(ODEnvironment.IsCloudInstance) {
 				//Keyboard does not currently work with THINFINITY users.
@@ -510,9 +510,16 @@ namespace Helianz {
 				doShowMerged=checkShowMerged.Checked==true;
 			}
 			string LastName="";
-			Dispatcher.Invoke(()=>LastName=PIn.String(textLName.Text));
 			string FirstName="";
-			Dispatcher.Invoke(()=>FirstName=PIn.String(textFName.Text));
+			if(_isIndonesianLocale) {
+				// Labels were swapped: top field is "Nama Depan", bottom is "Nama Belakang".
+				Dispatcher.Invoke(()=>FirstName=PIn.String(textLName.Text));
+				Dispatcher.Invoke(()=>LastName=PIn.String(textFName.Text));
+			}
+			else {
+				Dispatcher.Invoke(()=>LastName=PIn.String(textLName.Text));
+				Dispatcher.Invoke(()=>FirstName=PIn.String(textFName.Text));
+			}
 			string Phone="";
 			Dispatcher.Invoke(()=>Phone=PIn.String(textPhone.Text));
 			string Address="";
@@ -561,7 +568,7 @@ namespace Helianz {
 				//The InitialPatNum will be at the top, so resort the list alphabetically.
 				//For Indonesian locale, sort by FirstName then LastName.
 				DataView dataView=_tablePats.DefaultView;
-				dataView.Sort=Currency.IsIndonesianLocale() ? "FName,LName" : "LName,FName";
+				dataView.Sort="LName,FName";
 				_tablePats=dataView.ToTable();
 			}
 			gridMain.BeginUpdate();
@@ -881,35 +888,10 @@ namespace Helianz {
 		}
 		#endregion
 
-		///<summary>Swaps search field positions and labels so First Name (Nama Lengkap) appears above Last Name (Nama Belakang).</summary>
+		///<summary>Relabels search fields for Indonesian locale.</summary>
 		private void SwapIndonesianSearchFields() {
-			// Swap the Y-position (Margin) of textLName and textFName.
-			Thickness marginLName=textLName.Margin;
-			Thickness marginFName=textFName.Margin;
-			textLName.Margin=new Thickness(marginLName.Left,marginFName.Top,marginLName.Right,marginLName.Bottom);
-			textFName.Margin=new Thickness(marginFName.Left,marginLName.Top,marginFName.Right,marginFName.Bottom);
-			// Swap the Y-position of the labels.
-			Thickness marginLabel1=label1.Margin;
-			Thickness marginLabel3=label3.Margin;
-			label1.Margin=new Thickness(marginLabel1.Left,marginLabel3.Top,marginLabel1.Right,marginLabel1.Bottom);
-			label3.Margin=new Thickness(marginLabel3.Left,marginLabel1.Top,marginLabel3.Right,marginLabel3.Bottom);
-			// Swap label text: "First Name" becomes "Nama Lengkap", "Last Name" becomes "Nama Belakang".
-			label1.Text="Nama Belakang";
-			label3.Text="Nama Depan";
-			// Swap tab indices so First Name (now on top) is TabIndex 0.
-			textLName.TabIndex=1;
-			textFName.TabIndex=0;
-		}
-
-		///<summary>Swaps LastName and FirstName columns in the display fields so First Name appears first in the grid.</summary>
-		private void SwapIndonesianGridCols() {
-			int idxLastName=_listDisplayFields.FindIndex(x => x.InternalName=="LastName");
-			int idxFirstName=_listDisplayFields.FindIndex(x => x.InternalName=="First Name");
-			if(idxLastName>=0 && idxFirstName>=0) {
-				DisplayField temp=_listDisplayFields[idxLastName];
-				_listDisplayFields[idxLastName]=_listDisplayFields[idxFirstName];
-				_listDisplayFields[idxFirstName]=temp;
-			}
+			label1.Text="Nama Depan";
+			label3.Text="Nama Belakang";
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e){

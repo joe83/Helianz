@@ -4692,6 +4692,17 @@ Here is the desired behavior:
 			string pdfFilePath="";
 			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				pdfFilePath=ODFileUtils.CombinePaths(atoZFolder,atoZFileName);
+				// Hybrid mode: if file doesn't exist locally, pull from server synchronously
+				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid && !File.Exists(pdfFilePath)) {
+					Document doc=GetDocumentShowing(0);
+					if(doc!=null) {
+						string localBase=ImageStore.GetPreferredAtoZpath();
+						string pulledPath=HybridMediaResolver.EnsureFileAvailableLocally(doc.PatNum,localBase,atoZFileName);
+						if(!string.IsNullOrEmpty(pulledPath) && File.Exists(pulledPath)) {
+							pdfFilePath=pulledPath;
+						}
+					}
+				}
 			}
 			else if(CloudStorage.IsCloudStorage) {
 				if(localPath!="") {
