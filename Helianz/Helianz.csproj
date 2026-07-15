@@ -625,6 +625,9 @@
     <Compile Include="Forms\FormPrinterEdit.Designer.cs">
       <DependentUpon>FormPrinterEdit.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FormQueueTicketPopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\FormTasksForAppt.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -1651,9 +1651,40 @@ namespace HelianzBusiness{
 			table.Columns.Add("OpNum");
 			table.Columns.Add("DateTimeArrived",typeof(DateTime));
 			table.Columns.Add("AptNum",typeof(long));
-			table.Columns.Add("QueueNum",typeof(int));
+			table.Columns.Add("QueueLabel");//e.g. "A-1", computed deterministically from DB data
+			table.Columns.Add("Note");
 			string strDateTime=POut.DateT(dateTime);
-			string command="SELECT appointment.AptNum,DateTimeArrived,DateTimeSeated,LName,FName,Preferred,"+strDateTime+" dateTimeNow,Op "
+			//Build OpNum → letter mapping from ALL operatories, so prefix is stable and synced across PCs.
+			Dictionary<long,string> dictOpPrefix=new Dictionary<long,string>();
+			DataTable tableOps=dcon.GetTable("SELECT OperatoryNum FROM operatory ORDER BY OperatoryNum");
+			for(int i=0;i<tableOps.Rows.Count;i++) {
+				long opNum=PIn.Long(tableOps.Rows[i]["OperatoryNum"].ToString());
+				dictOpPrefix[opNum]=GetColumnLetter(i);
+			}
+			//Query all today's arrivals (including those who left) to compute per-op queue numbers.
+			string commandArrivals="SELECT AptNum,Op,DateTimeArrived FROM appointment "
+				+"WHERE "+DbHelper.DtimeToDate("AptDateTime")+" = "+POut.Date(DateTime.Now)+" "
+				+"AND DateTimeArrived > "+POut.Date(DateTime.Now)+" "
+				+"AND AptStatus IN ("+POut.Int((int)ApptStatus.Complete)+","+POut.Int((int)ApptStatus.Scheduled)+") "
+				+"ORDER BY Op,DateTimeArrived";
+			DataTable tableArrivals=dcon.GetTable(commandArrivals);
+			Dictionary<long,List<long>> dictOpArrivals=new Dictionary<long,List<long>>();//OpNum → list of AptNums in arrival order
+			foreach(DataRow rowArrival in tableArrivals.Rows) {
+				long opNum=PIn.Long(rowArrival["Op"].ToString());
+				long aptNum=PIn.Long(rowArrival["AptNum"].ToString());
+				if(!dictOpArrivals.ContainsKey(opNum)) {
+					dictOpArrivals[opNum]=new List<long>();
+				}
+				dictOpArrivals[opNum].Add(aptNum);
+			}
+			Dictionary<long,string> dictQueueLabelsFromDb=new Dictionary<long,string>();
+			foreach(var kvp in dictOpArrivals) {
+				string prefix=dictOpPrefix.ContainsKey(kvp.Key) ? dictOpPrefix[kvp.Key] : kvp.Key.ToString();
+				for(int i=0;i<kvp.Value.Count;i++) {
+					dictQueueLabelsFromDb[kvp.Value[i]]=prefix+"-"+(i+1);
+				}
+			}
+			string command="SELECT appointment.AptNum,appointment.Note,DateTimeArrived,DateTimeSeated,LName,FName,Preferred,"+strDateTime+" dateTimeNow,Op "
 				+"FROM appointment "
 				+"JOIN patient ON appointment.PatNum=patient.PatNum "
 				+"WHERE "+DbHelper.DtimeToDate("AptDateTime")+" = "+POut.Date(DateTime.Now)+" "
@@ -1701,10 +1732,23 @@ namespace HelianzBusiness{
 				//row["waitTime"]+=waitTime.Minutes.ToString()+"m";
 				dataRow["OpNum"]=tableRaw.Rows[i]["Op"].ToString();
 				dataRow["AptNum"]=PIn.Long(tableRaw.Rows[i]["AptNum"].ToString());
-				dataRow["QueueNum"]=0;//assigned by FillWaitingRoom on the client
+				dataRow["Note"]=tableRaw.Rows[i]["Note"].ToString();
+				long aptNum=PIn.Long(tableRaw.Rows[i]["AptNum"].ToString());
+				dataRow["QueueLabel"]=dictQueueLabelsFromDb.ContainsKey(aptNum) ? dictQueueLabelsFromDb[aptNum] : "";
 				table.Rows.Add(dataRow);
 			}
 			return table;
+		}
+
+		///<summary>Converts a 0-based column index to an Excel-style column letter: 0→A, 1→B, ..., 25→Z, 26→AA, etc.</summary>
+		private static string GetColumnLetter(int index) {
+			string result="";
+			int n=index;
+			while(n>=0) {
+				result=(char)('A'+(n%26))+result;
+				n=n/26-1;
+			}
+			return result;
 		}
 
 		public static DataTable GetApptTable(long aptNum) {

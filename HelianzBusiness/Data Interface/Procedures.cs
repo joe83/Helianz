@@ -87,6 +87,23 @@ namespace HelianzBusiness {
 			return Db.GetList(command,Crud.ProcedureCrud.RowToObj);
 		}
 
+		///<summary>Returns the ProvNum from the most recent completed procedure for the given patient.
+		///Returns 0 if the patient has no completed procedures.</summary>
+		public static long GetProvNumFromLastCompletedProc(long patNum) {
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				return Meth.GetLong(MethodBase.GetCurrentMethod(),patNum);
+			}
+			string command="SELECT ProvNum FROM procedurelog"
+				+" WHERE ProcStatus="+POut.Int((int)ProcStat.C)
+				+" AND PatNum="+POut.Long(patNum)
+				+" ORDER BY DateComplete DESC LIMIT 1";
+			string result=Db.GetScalar(command);
+			if(string.IsNullOrWhiteSpace(result)) {
+				return 0;
+			}
+			return PIn.Long(result);
+		}
+
 		///<summary>Gets a list of distinct PatNums who have at least one completed procedure.</summary>
 		public static List<long> GetAllPatNumsWithCompletedProcs(List<long> listPatNums) {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {

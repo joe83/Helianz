@@ -19,6 +19,7 @@
 		private System.Windows.Forms.Label label11;
 		private System.Windows.Forms.TextBox textPaidBy;
 		private UI.ComboBoxClinicPicker comboClinic;
+		private System.Windows.Forms.Label labelProvider;
 		private Helianz.ValidDate textDateEntry;
 		private System.Windows.Forms.Label label12;
 		private System.Windows.Forms.Label labelDepositAccount;
@@ -362,6 +363,16 @@
 			this.comboClinic.Size = new System.Drawing.Size(235, 21);
 			this.comboClinic.TabIndex = 92;
 			this.comboClinic.SelectionChangeCommitted += new System.EventHandler(this.comboClinic_SelectionChangeCommitted);
+			// 
+			// labelProvider
+			// 
+			this.labelProvider = new System.Windows.Forms.Label();
+			this.labelProvider.Location = new System.Drawing.Point(310, 14);
+			this.labelProvider.Name = "labelProvider";
+			this.labelProvider.Size = new System.Drawing.Size(175, 16);
+			this.labelProvider.TabIndex = 93;
+			this.labelProvider.Text = "Provider:";
+			this.labelProvider.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// textDeposit
 			// 
@@ -1420,6 +1431,7 @@
 			this.Controls.Add(this.butShowHide);
 			this.Controls.Add(this.butSave);
 			this.Controls.Add(this.comboClinic);
+			this.Controls.Add(this.labelProvider);
 			this.Controls.Add(this.textDeposit);
 			this.Controls.Add(this.butDeletePayment);
 			this.Controls.Add(this.labelDepositAccount);

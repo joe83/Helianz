@@ -399,6 +399,7 @@ namespace Helianz {
 				HighlightChargesForSplits();
 			}
 			CheckUIState();
+			UpdateProviderLabel();
 			_originalHeight=Height;
 			if(PrefC.GetBool(PrefName.PaymentWindowDefaultHideSplits)) {
 				ToggleShowHideSplits();//set hidden
@@ -425,7 +426,12 @@ namespace Helianz {
 			paySplit.SplitAmt=0;
 			paySplit.DatePay=_payment.PayDate;
 			paySplit.PayNum=_payment.PayNum;
-			paySplit.ProvNum=Patients.GetProvNum(_patient);
+			//Prefer the provider from the patient's last completed procedure, falling back to PriProv.
+			long provNum=Procedures.GetProvNumFromLastCompletedProc(_patient.PatNum);
+			if(provNum==0) {
+				provNum=Patients.GetProvNum(_patient);
+			}
+			paySplit.ProvNum=provNum;
 			paySplit.ClinicNum=_payment.ClinicNum;
 			paySplit.IsNew=true;
 			using FormPaySplitEdit formPaySplitEdit=new FormPaySplitEdit(GetFamilyOrSuperFamily());
@@ -790,6 +796,12 @@ namespace Helianz {
 			paySplit.SplitAmt=PIn.Double(textAmount.Text);
 			paySplit.DatePay=DateTime.Now;
 			paySplit.ClinicNum=_payment.ClinicNum;
+			//Prefer the provider from the patient's last completed procedure, falling back to PriProv.
+			long provNum=Procedures.GetProvNumFromLastCompletedProc(_patient.PatNum);
+			if(provNum==0) {
+				provNum=Patients.GetProvNum(_patient);
+			}
+			paySplit.ProvNum=provNum;
 			paySplit.UnearnedType=PrefC.GetLong(PrefName.PrepaymentUnearnedType);
 			_listPaySplits.Add(paySplit);
 			Reinitialize();
@@ -1114,6 +1126,7 @@ namespace Helianz {
 				_listPaySplits.ForEach(x => x.ClinicNum=_payment.ClinicNum);
 				Reinitialize();
 			}
+			UpdateProviderLabel();
 			CheckUIState();
 		}
 
@@ -1185,6 +1198,33 @@ namespace Helianz {
 			return listProvNums.First();//default provNum to the first provider
 		}
 
+		///<summary>Updates the read-only provider label to show the provider(s) that the current payment splits are credited to.</summary>
+		private void UpdateProviderLabel() {
+			List<long> listProvNums=_listPaySplits.Where(x => x.ProvNum!=0).Select(x => x.ProvNum).Distinct().ToList();
+			if(listProvNums.Count==0) {
+				//No splits yet — show the provider from the patient's last completed procedure, falling back to PriProv.
+				long defaultProvNum=Procedures.GetProvNumFromLastCompletedProc(_patient.PatNum);
+				if(defaultProvNum==0) {
+					defaultProvNum=Patients.GetProvNum(_patient);
+				}
+				if(defaultProvNum!=0) {
+					Provider prov=Providers.GetProv(defaultProvNum);
+					labelProvider.Text="Provider: "+(prov!=null ? prov.Abbr : Lan.g(this,"Unknown"));
+				}
+				else {
+					labelProvider.Text="Provider: "+Lan.g(this,"None");
+				}
+				return;
+			}
+			List<Provider> listProviders=Providers.GetProvsByProvNums(listProvNums);
+			if(listProviders.Count==1) {
+				labelProvider.Text="Provider: "+listProviders[0].Abbr;
+			}
+			else {
+				labelProvider.Text="Provider: "+string.Join(", ",listProviders.Select(x => x.Abbr));
+			}
+		}
+
 		private void AddCreditCardsToCombo(List<CreditCard> listCreditCards,Func<CreditCard,bool> funcSelectCard = null) {
 			comboCreditCards.Items.Clear();
 			for(int i = 0;i<listCreditCards.Count;i++) {
@@ -1244,11 +1284,13 @@ namespace Helianz {
 			paySplit.PatNum=_patient.PatNum;
 			paySplit.PayNum=_payment.PayNum;
 			paySplit.DatePay=_payment.PayDate;//this may be updated upon closing
-			if(_rigorousAccounting==RigorousAccounting.DontEnforce) {
-				paySplit.ProvNum=Patients.GetProvNum(_patient);
+			//Prefer the provider from the patient's last completed procedure, falling back to PriProv.
+			long provNum=Procedures.GetProvNumFromLastCompletedProc(_patient.PatNum);
+			if(provNum==0) {
+				provNum=Patients.GetProvNum(_patient);
 			}
-			else {
-				paySplit.ProvNum=0;
+			paySplit.ProvNum=provNum;
+			if(_rigorousAccounting!=RigorousAccounting.DontEnforce) {
 				paySplit.UnearnedType=PrefC.GetLong(PrefName.PrepaymentUnearnedType);//Use default unallocated type
 			}
 			paySplit.ClinicNum=_payment.ClinicNum;
@@ -3005,6 +3047,7 @@ namespace Helianz {
 					checkPayTypeNone.Checked);
 			}
 			Init(doSelectAllSplits: doSelectAllSplits,doPreserveValues: true);
+			UpdateProviderLabel();
 		}
 
 		/// <summary>Helper for EdgeExpress.CleanString()</summary>

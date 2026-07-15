@@ -1575,7 +1575,9 @@ namespace HelianzBusiness {
 						long provNum=bucketProvPatClinic.ListAccountEntries.First().ProvNum;
 						long clinicNum=bucketProvPatClinic.ListAccountEntries.First().ClinicNum;
 						bucketProvPatClinic.ListInsPayAsTotal=listInsPayAsTotal.FindAll(x => x.PatNum==patNum && x.ProvNum==provNum && x.ClinicNum==clinicNum);
-						bucketProvPatClinic.ListPaySplits=listPaySplits.FindAll(x => x.PatNum==patNum && x.ProvNum==provNum && x.ClinicNum==clinicNum);
+						//Exclude unallocated splits from provider-specific layers — they should only be applied at patient-level
+						//layers (PatClinic, Pat) so they can pay ANY provider's charges, not just their own provider's.
+						bucketProvPatClinic.ListPaySplits=listPaySplits.FindAll(x => !x.IsUnallocated && x.PatNum==patNum && x.ProvNum==provNum && x.ClinicNum==clinicNum);
 					}
 					return listProvPatClinicBuckets;
 				case AccountBalancingLayers.ProvPat:
@@ -1587,7 +1589,7 @@ namespace HelianzBusiness {
 						long patNum=bucketProvPat.ListAccountEntries.First().PatNum;
 						long provNum=bucketProvPat.ListAccountEntries.First().ProvNum;
 						bucketProvPat.ListInsPayAsTotal=listInsPayAsTotal.FindAll(x => x.PatNum==patNum && x.ProvNum==provNum);
-						bucketProvPat.ListPaySplits=listPaySplits.FindAll(x => x.PatNum==patNum && x.ProvNum==provNum);
+						bucketProvPat.ListPaySplits=listPaySplits.FindAll(x => !x.IsUnallocated && x.PatNum==patNum && x.ProvNum==provNum);
 					}
 					return listProvPatBuckets;
 				case AccountBalancingLayers.ProvClinic:
@@ -1599,7 +1601,7 @@ namespace HelianzBusiness {
 						long provNum=bucketProvClinic.ListAccountEntries.First().ProvNum;
 						long clinicNum=bucketProvClinic.ListAccountEntries.First().ClinicNum;
 						bucketProvClinic.ListInsPayAsTotal=listInsPayAsTotal.FindAll(x => x.ProvNum==provNum && x.ClinicNum==clinicNum);
-						bucketProvClinic.ListPaySplits=listPaySplits.FindAll(x => x.ProvNum==provNum && x.ClinicNum==clinicNum);
+						bucketProvClinic.ListPaySplits=listPaySplits.FindAll(x => !x.IsUnallocated && x.ProvNum==provNum && x.ClinicNum==clinicNum);
 					}
 					return listProvClinicBuckets;
 				case AccountBalancingLayers.PatClinic:
@@ -1622,7 +1624,7 @@ namespace HelianzBusiness {
 					foreach(ImplicitLinkBucket bucketProv in listProvBuckets) {
 						long provNum=bucketProv.ListAccountEntries.First().ProvNum;
 						bucketProv.ListInsPayAsTotal=listInsPayAsTotal.FindAll(x => x.ProvNum==provNum);
-						bucketProv.ListPaySplits=listPaySplits.FindAll(x => x.ProvNum==provNum);
+						bucketProv.ListPaySplits=listPaySplits.FindAll(x => !x.IsUnallocated && x.ProvNum==provNum);
 					}
 					return listProvBuckets;
 				case AccountBalancingLayers.Pat:
@@ -2082,13 +2084,20 @@ namespace HelianzBusiness {
 					listAutoSplitAccountEntries.RemoveAll(x => x.PayPlanNum!=payPlanNum);
 				}
 			}
-			if(!listAccountEntriesPayFirst.IsNullOrEmpty()) {
-				//Shove all of the selected account entries to the top of listAutoSplitAccountEntries so that they are paid first.
-				listAutoSplitAccountEntries=listAutoSplitAccountEntries
-					.OrderByDescending(x => listAccountEntriesPayFirst.Any(y => y.PriKey==x.PriKey && y.GetType()==x.GetType()))
-					.ThenByDescending(x => listAccountEntriesPayFirst.Any(y => y.PayPlanNum > 0 && y.PayPlanNum==x.PayPlanNum))
-					.ToList();
-			}
+			//Order auto-split entries by priority:
+			//  1. Pay-plan entries (already ordered/filtered above)
+			//  2. User-selected "pay first" entries (if any)
+			//  3. Entries matching the provider of the patient's last completed procedure
+			//  4. Oldest date first (within each group)
+			bool hasPayFirst=!listAccountEntriesPayFirst.IsNullOrEmpty();
+			long lastCompletedProvNum=Procedures.GetProvNumFromLastCompletedProc(constructResults.PatNum);
+			listAutoSplitAccountEntries=listAutoSplitAccountEntries
+				.OrderByDescending(x => payPlanNum > 0 && x.PayPlanNum==payPlanNum)
+				.ThenByDescending(x => hasPayFirst && listAccountEntriesPayFirst.Any(y => y.PriKey==x.PriKey && y.GetType()==x.GetType()))
+				.ThenByDescending(x => hasPayFirst && listAccountEntriesPayFirst.Any(y => y.PayPlanNum > 0 && y.PayPlanNum==x.PayPlanNum))
+				.ThenByDescending(x => lastCompletedProvNum!=0 && x.ProvNum==lastCompletedProvNum)
+				.ThenBy(x => x.Date)
+				.ToList();
 			//Create a variable to keep track of the money that can be allocated for this payment.
 			double amtToAllocate=(autoSplitData.PayAmt - autoSplitData.ListPaySplitsSuggested.Sum(x => x.SplitAmt));
 			//Create as many auto splits as possible for account entries with positive AmountEnd values.
@@ -2119,7 +2128,13 @@ namespace HelianzBusiness {
 				amtToAllocate=0;
 				split.DatePay=autoSplitData.PayDate;
 				split.PatNum=autoSplitData.PatNum;
-				split.ProvNum=(PrefC.IsODHQ) ? 7 : 0;//Jordan's ProvNum for HQ.
+				//Default to the provider from the patient's last completed procedure, falling back to PriProv.
+				//Previously defaulted to 0 which caused blank provider entries on the daily payments report.
+				long provNum=Procedures.GetProvNumFromLastCompletedProc(autoSplitData.PatNum);
+				if(provNum==0) {
+					provNum=Patients.GetProvNum(autoSplitData.PatNum);
+				}
+				split.ProvNum=(PrefC.IsODHQ) ? 7 : provNum;
 				split.UnearnedType=PrefC.GetLong(PrefName.PrepaymentUnearnedType);
 				if(PrefC.HasClinicsEnabled) {
 					split.ClinicNum=autoSplitData.ClinicNum;
