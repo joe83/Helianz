@@ -96,6 +96,8 @@ namespace HelianzBusiness{
 		public string SecurityHash;
 		///<summary>One-indexed order of patnum specific planned appointments. Column moved from the deprecated table plannedappt.</summary>
 		public int ItemOrderPlanned;
+		///<summary>Waiting room queue label, e.g. "A-1". Set when DateTimeArrived is recorded. Stored in DB for cross-PC consistency.</summary>
+		public string QueueLabel;
 		//NOTE: If adding any more columns, be sure to add them to HistAppointment and to the constructor for HistAppointment.
 
 		///<summary>Used only for serialization purposes</summary>

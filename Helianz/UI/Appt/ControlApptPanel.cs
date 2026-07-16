@@ -1878,6 +1878,18 @@ namespace Helianz.UI{
 			Invalidate();
 		}
 
+		///<summary>Scrolls the appointment view to center on the given time of day.</summary>
+		public void ScrollToTime(TimeSpan timeOfDay) {
+			if(_heightLine==0 || _rowsPerHr==0) return;
+			//Convert time to scroll value: same formula used internally for vScrollBar1.
+			int scrollVal=(int)(timeOfDay.TotalHours * _heightLine * _rowsPerHr);
+			//Center the appointment in the view by subtracting half the visible height.
+			scrollVal-=(int)(_heightMainVisible * 0.5);
+			if(scrollVal<vScrollBar1.Minimum) scrollVal=vScrollBar1.Minimum;
+			if(scrollVal>vScrollBar1.Maximum-vScrollBar1.LargeChange+1) scrollVal=vScrollBar1.Maximum-vScrollBar1.LargeChange+1;
+			vScrollBar1.Value=scrollVal;
+		}
+
 		///<summary>Called on startup and if color prefs change.</summary>
 		public void SetColors(Color colorOpen,Color colorClosed,Color colorHoliday,Color colorBlockText,Color colorTimeLine){
 			//Example pseudocode hints used before calling this method:

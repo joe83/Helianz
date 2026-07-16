@@ -87,6 +87,7 @@ namespace HelianzBusiness.Crud{
 				histAppointment.PatternSecondary     = PIn.String(row["PatternSecondary"].ToString());
 				histAppointment.SecurityHash         = PIn.String(row["SecurityHash"].ToString());
 				histAppointment.ItemOrderPlanned     = PIn.Int   (row["ItemOrderPlanned"].ToString());
+				histAppointment.QueueLabel          = PIn.String(row["QueueLabel"].ToString());
 				retVal.Add(histAppointment);
 			}
 			return retVal;
@@ -138,6 +139,7 @@ namespace HelianzBusiness.Crud{
 			table.Columns.Add("PatternSecondary");
 			table.Columns.Add("SecurityHash");
 			table.Columns.Add("ItemOrderPlanned");
+			table.Columns.Add("QueueLabel");
 			foreach(HistAppointment histAppointment in listHistAppointments) {
 				table.Rows.Add(new object[] {
 					POut.Long  (histAppointment.HistApptNum),
@@ -180,6 +182,7 @@ namespace HelianzBusiness.Crud{
 					            histAppointment.PatternSecondary,
 					            histAppointment.SecurityHash,
 					POut.Int   (histAppointment.ItemOrderPlanned),
+					            histAppointment.QueueLabel,
 				});
 			}
 			return table;
@@ -199,7 +202,7 @@ namespace HelianzBusiness.Crud{
 			if(useExistingPK || PrefC.RandomKeys) {
 				command+="HistApptNum,";
 			}
-			command+="HistUserNum,HistDateTStamp,HistApptAction,ApptSource,AptNum,PatNum,AptStatus,Pattern,Confirmed,TimeLocked,Op,Note,ProvNum,ProvHyg,AptDateTime,NextAptNum,UnschedStatus,IsNewPatient,ProcDescript,Assistant,ClinicNum,IsHygiene,DateTimeArrived,DateTimeSeated,DateTimeDismissed,InsPlan1,InsPlan2,DateTimeAskedToArrive,ProcsColored,ColorOverride,AppointmentTypeNum,SecUserNumEntry,SecDateTEntry,Priority,ProvBarText,PatternSecondary,SecurityHash,ItemOrderPlanned) VALUES(";
+			command+="HistUserNum,HistDateTStamp,HistApptAction,ApptSource,AptNum,PatNum,AptStatus,Pattern,Confirmed,TimeLocked,Op,Note,ProvNum,ProvHyg,AptDateTime,NextAptNum,UnschedStatus,IsNewPatient,ProcDescript,Assistant,ClinicNum,IsHygiene,DateTimeArrived,DateTimeSeated,DateTimeDismissed,InsPlan1,InsPlan2,DateTimeAskedToArrive,ProcsColored,ColorOverride,AppointmentTypeNum,SecUserNumEntry,SecDateTEntry,Priority,ProvBarText,PatternSecondary,SecurityHash,ItemOrderPlanned,QueueLabel) VALUES(";
 			if(useExistingPK || PrefC.RandomKeys) {
 				command+=POut.Long(histAppointment.HistApptNum)+",";
 			}
@@ -242,7 +245,8 @@ namespace HelianzBusiness.Crud{
 				+"'"+POut.String(histAppointment.ProvBarText)+"',"
 				+"'"+POut.String(histAppointment.PatternSecondary)+"',"
 				+"'"+POut.String(histAppointment.SecurityHash)+"',"
-				+    POut.Int   (histAppointment.ItemOrderPlanned)+")";
+				+    POut.Int   (histAppointment.ItemOrderPlanned)+","
+				+"'"+POut.String(histAppointment.QueueLabel)+"')";
 			if(histAppointment.Note==null) {
 				histAppointment.Note="";
 			}
@@ -275,7 +279,7 @@ namespace HelianzBusiness.Crud{
 			if(isRandomKeys || useExistingPK) {
 				command+="HistApptNum,";
 			}
-			command+="HistUserNum,HistDateTStamp,HistApptAction,ApptSource,AptNum,PatNum,AptStatus,Pattern,Confirmed,TimeLocked,Op,Note,ProvNum,ProvHyg,AptDateTime,NextAptNum,UnschedStatus,IsNewPatient,ProcDescript,Assistant,ClinicNum,IsHygiene,DateTimeArrived,DateTimeSeated,DateTimeDismissed,InsPlan1,InsPlan2,DateTimeAskedToArrive,ProcsColored,ColorOverride,AppointmentTypeNum,SecUserNumEntry,SecDateTEntry,Priority,ProvBarText,PatternSecondary,SecurityHash,ItemOrderPlanned) VALUES(";
+			command+="HistUserNum,HistDateTStamp,HistApptAction,ApptSource,AptNum,PatNum,AptStatus,Pattern,Confirmed,TimeLocked,Op,Note,ProvNum,ProvHyg,AptDateTime,NextAptNum,UnschedStatus,IsNewPatient,ProcDescript,Assistant,ClinicNum,IsHygiene,DateTimeArrived,DateTimeSeated,DateTimeDismissed,InsPlan1,InsPlan2,DateTimeAskedToArrive,ProcsColored,ColorOverride,AppointmentTypeNum,SecUserNumEntry,SecDateTEntry,Priority,ProvBarText,PatternSecondary,SecurityHash,ItemOrderPlanned,QueueLabel) VALUES(";
 			if(isRandomKeys || useExistingPK) {
 				command+=POut.Long(histAppointment.HistApptNum)+",";
 			}
@@ -318,7 +322,8 @@ namespace HelianzBusiness.Crud{
 				+"'"+POut.String(histAppointment.ProvBarText)+"',"
 				+"'"+POut.String(histAppointment.PatternSecondary)+"',"
 				+"'"+POut.String(histAppointment.SecurityHash)+"',"
-				+    POut.Int   (histAppointment.ItemOrderPlanned)+")";
+				+    POut.Int   (histAppointment.ItemOrderPlanned)+","
+				+"'"+POut.String(histAppointment.QueueLabel)+"')";
 			if(histAppointment.Note==null) {
 				histAppointment.Note="";
 			}

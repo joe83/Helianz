@@ -3505,15 +3505,15 @@ namespace Helianz {
 			}
 			gridWaiting.BeginUpdate();
 			gridWaiting.Columns.Clear();
-			GridColumn col=new GridColumn(Lan.g("TableApptWaiting","Patient"),130);
+			GridColumn col=new GridColumn(Lan.g("TableApptWaiting","Patient"),120);
 			gridWaiting.Columns.Add(col);
 			bool hasQueueColumn=table.Columns.Contains("QueueLabel");
 			if(hasQueueColumn) {
-				col=new GridColumn(Lan.g("TableApptWaiting","Queue"),55,HorizontalAlignment.Center);
+				col=new GridColumn(Lan.g("TableApptWaiting","Queue"),45,HorizontalAlignment.Center);
 				col.SortingStrategy=GridSortingStrategy.StringCompare;
 				gridWaiting.Columns.Add(col);
 			}
-			col=new GridColumn(Lan.g("TableApptWaiting","Waited"),100,HorizontalAlignment.Center);
+			col=new GridColumn(Lan.g("TableApptWaiting","Waited"),45,HorizontalAlignment.Center);
 			col.SortingStrategy=GridSortingStrategy.TimeParse;
 			gridWaiting.Columns.Add(col);
 			//Save the currently selected AptNum before clearing the grid.
@@ -3631,12 +3631,21 @@ namespace Helianz {
 					}
 				}
 			}
-			//Sync the waiting room selection to the main appointment selection so status buttons work.
-			SyncWaitingSelectionToAppointment();
+			//Refresh the confirmation status for the waiting room selection without overwriting appointment view selection.
+			if(_selectedWaitingAptNum!=0 && hasQueueColumn) {
+				DataRow dataRow=contrApptPanel.GetDataRowForSelected();
+				if(dataRow!=null) {
+					listConfirmed.SelectedIndex=Defs.GetOrder(DefCat.ApptConfirmed,PIn.Long(dataRow["Confirmed"].ToString()));
+				}
+				if(Security.IsAuthorized(EnumPermType.ApptConfirmStatusEdit,true)) {
+					listConfirmed.Enabled=true;
+				}
+			}
 		}
 
 		///<summary>Syncs the selected waiting room patient's AptNum to the main appointment module selection,
-		///so the confirmation status buttons and other toolbar actions target the correct patient.</summary>
+		///so the confirmation status buttons and other toolbar actions target the correct patient.
+		///Only called on explicit user click, not on timer refresh.</summary>
 		private void SyncWaitingSelectionToAppointment() {
 			int idx=gridWaiting.GetSelectedIndex();
 			if(idx>=0 && idx<gridWaiting.ListGridRows.Count) {
@@ -3661,6 +3670,24 @@ namespace Helianz {
 				}
 				if(Security.IsAuthorized(EnumPermType.ApptConfirmStatusEdit,true)) {
 					listConfirmed.Enabled=true;
+				}
+				//Auto-scroll the appointment view to show the selected patient.
+				if(isNewSelection) {
+					DateTime? aptDateTime=null;
+					if(dataRow!=null && dataRow.Table.Columns.Contains("AptDateTime")) {
+						aptDateTime=(DateTime)dataRow["AptDateTime"];
+					}
+					else if(contrApptPanel.TableWaitingRoom!=null && contrApptPanel.TableWaitingRoom.Columns.Contains("DateTimeArrived")) {
+						foreach(DataRow wrRow in contrApptPanel.TableWaitingRoom.Rows) {
+							if(PIn.Long(wrRow["AptNum"].ToString())==aptNum) {
+								aptDateTime=(DateTime)wrRow["DateTimeArrived"];
+								break;
+							}
+						}
+					}
+					if(aptDateTime.HasValue) {
+						contrApptPanel.ScrollToTime(aptDateTime.Value.TimeOfDay);
+					}
 				}
 			}
 		}
@@ -3815,9 +3842,15 @@ namespace Helianz {
 				MsgBox.Show(this,"No patients are currently in the waiting room queue.");
 				return;
 			}
-			if(!MsgBox.Show(this,MsgBoxButtons.YesNo,"Reset the waiting room queue?\r\nThis will clear all queue numbers and renumber patients starting from 1.")) {
+			if(!MsgBox.Show(this,MsgBoxButtons.YesNo,"Reset the waiting room queue?\r\nThis will clear all queue labels and renumber patients by waiting time order.")) {
 				return;
 			}
+			//Clear and recompute all queue labels for today.
+			Appointments.ResetQueueLabels();
+			_setNotifiedAptNums.Clear();
+			_selectedWaitingAptNum=0;
+			RefreshWaitingRoomTable();
+			FillWaitingRoom();
 			_setNotifiedAptNums.Clear();
 			_selectedWaitingAptNum=0;
 			RefreshWaitingRoomTable();

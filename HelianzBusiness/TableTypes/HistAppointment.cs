@@ -111,6 +111,8 @@ namespace HelianzBusiness {
 		public string SecurityHash;
 		///<summary>Copied from Appointment.</summary>
 		public int ItemOrderPlanned;
+		///<summary>Copied from Appointment.</summary>
+		public string QueueLabel;
 		#endregion Copies of Task Fields
 
 		///<summary>Pass in the old appointment that needs to be recorded.</summary>

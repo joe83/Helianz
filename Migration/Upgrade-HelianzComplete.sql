@@ -389,6 +389,14 @@ DELETE FROM preference WHERE PrefName = 'RegistrationNumberClaim';
 SELECT CONCAT('Cdental artifacts removed: ', ROW_COUNT()) AS Status;
 
 -- ============================================================================
+-- STEP 9: HELIANZ-SPECIFIC SCHEMA ADDITIONS
+-- ============================================================================
+-- QueueLabel: waiting room queue ticket labels stored in appointment table for cross-PC consistency.
+ALTER TABLE appointment ADD COLUMN IF NOT EXISTS QueueLabel VARCHAR(20) NOT NULL DEFAULT '';
+ALTER TABLE histappointment ADD COLUMN IF NOT EXISTS QueueLabel VARCHAR(20) NOT NULL DEFAULT '';
+SELECT 'Schema additions applied (QueueLabel columns)' AS Status;
+
+-- ============================================================================
 -- VERIFICATION QUERIES
 -- ============================================================================
 SELECT '=== POST-UPGRADE VERIFICATION ===' AS '';
