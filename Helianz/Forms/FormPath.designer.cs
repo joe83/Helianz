@@ -89,7 +89,21 @@ namespace Helianz {
 			this.textHybridKeyFile = new System.Windows.Forms.TextBox();
 			this.butHybridBrowseKey = new Helianz.UI.Button();
 			this.butHybridMigrate = new Helianz.UI.Button();
-			this.radioDatabaseStorage = new System.Windows.Forms.RadioButton();
+		this.comboHybridBackend = new System.Windows.Forms.ComboBox();
+		this.labelHybridBackend = new System.Windows.Forms.Label();
+		this.labelHybridS3Provider = new System.Windows.Forms.Label();
+		this.textHybridS3Provider = new System.Windows.Forms.TextBox();
+		this.labelHybridS3Endpoint = new System.Windows.Forms.Label();
+		this.textHybridS3Endpoint = new System.Windows.Forms.TextBox();
+		this.labelHybridS3Region = new System.Windows.Forms.Label();
+		this.textHybridS3Region = new System.Windows.Forms.TextBox();
+		this.labelHybridS3Bucket = new System.Windows.Forms.Label();
+		this.textHybridS3Bucket = new System.Windows.Forms.TextBox();
+		this.labelHybridS3AccessKey = new System.Windows.Forms.Label();
+		this.textHybridS3AccessKey = new System.Windows.Forms.TextBox();
+		this.labelHybridS3SecretKey = new System.Windows.Forms.Label();
+		this.textHybridS3SecretKey = new System.Windows.Forms.TextBox();
+		this.radioDatabaseStorage = new System.Windows.Forms.RadioButton();
 			this.radioUseFolder = new System.Windows.Forms.RadioButton();
 			this.groupbox1.SuspendLayout();
 			this.tabControlDataStorageType.SuspendLayout();
@@ -203,7 +217,7 @@ namespace Helianz {
 			this.groupbox1.Controls.Add(this.radioUseFolder);
 			this.groupbox1.Location = new System.Drawing.Point(10, 12);
 			this.groupbox1.Name = "groupbox1";
-			this.groupbox1.Size = new System.Drawing.Size(624, 384);
+			this.groupbox1.Size = new System.Drawing.Size(624, 430);
 			this.groupbox1.TabIndex = 0;
 			this.groupbox1.Text = "A to Z Images Folder for storing images and documents";
 			// 
@@ -236,7 +250,7 @@ namespace Helianz {
 			this.tabControlDataStorageType.Controls.Add(this.tabHybrid);
 			this.tabControlDataStorageType.Location = new System.Drawing.Point(11, 119);
 			this.tabControlDataStorageType.Name = "tabControlDataStorageType";
-			this.tabControlDataStorageType.Size = new System.Drawing.Size(606, 256);
+			this.tabControlDataStorageType.Size = new System.Drawing.Size(606, 303);
 			this.tabControlDataStorageType.TabIndex = 97;
 			this.tabControlDataStorageType.TabStop = false;
 			// 
@@ -446,9 +460,23 @@ namespace Helianz {
 			this.tabHybrid.Controls.Add(this.textHybridKeyFile);
 			this.tabHybrid.Controls.Add(this.labelHybridKeyFile);
 			this.tabHybrid.Controls.Add(this.labelHybridDesc);
+			this.tabHybrid.Controls.Add(this.labelHybridBackend);
+			this.tabHybrid.Controls.Add(this.comboHybridBackend);
+			this.tabHybrid.Controls.Add(this.textHybridS3Provider);
+			this.tabHybrid.Controls.Add(this.labelHybridS3Provider);
+			this.tabHybrid.Controls.Add(this.textHybridS3Endpoint);
+			this.tabHybrid.Controls.Add(this.labelHybridS3Endpoint);
+			this.tabHybrid.Controls.Add(this.textHybridS3Region);
+			this.tabHybrid.Controls.Add(this.labelHybridS3Region);
+			this.tabHybrid.Controls.Add(this.textHybridS3Bucket);
+			this.tabHybrid.Controls.Add(this.labelHybridS3Bucket);
+			this.tabHybrid.Controls.Add(this.textHybridS3AccessKey);
+			this.tabHybrid.Controls.Add(this.labelHybridS3AccessKey);
+			this.tabHybrid.Controls.Add(this.textHybridS3SecretKey);
+			this.tabHybrid.Controls.Add(this.labelHybridS3SecretKey);
 			this.tabHybrid.Location = new System.Drawing.Point(2, 21);
 			this.tabHybrid.Name = "tabHybrid";
-			this.tabHybrid.Size = new System.Drawing.Size(602, 255);
+			this.tabHybrid.Size = new System.Drawing.Size(602, 350);
 			this.tabHybrid.TabIndex = 4;
 			this.tabHybrid.Text = "Hybrid";
 						// 
@@ -458,7 +486,7 @@ namespace Helianz {
 			this.labelHybridDesc.Name = "labelHybridDesc";
 			this.labelHybridDesc.Size = new System.Drawing.Size(588, 32);
 			this.labelHybridDesc.TabIndex = 150;
-			this.labelHybridDesc.Text = "Hybrid: local numbered folders (0-99) with rclone sync to SFTP server for multi-clinic.";
+			this.labelHybridDesc.Text = "Hybrid: local numbered folders (0-99) with rclone sync to SFTP/S3 server for multi-clinic.";
 			this.labelHybridDesc.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// labelHybridLocalPath
@@ -486,9 +514,43 @@ namespace Helianz {
 			this.butHybridBrowseLocal.Text = "Browse";
 			this.butHybridBrowseLocal.Click += new System.EventHandler(this.butHybridBrowseLocal_Click);
 			// 
+			// labelHybridBackend
+			// 
+			this.labelHybridBackend.Location = new System.Drawing.Point(6, 63);
+			this.labelHybridBackend.Name = "labelHybridBackend";
+			this.labelHybridBackend.Size = new System.Drawing.Size(130, 18);
+			this.labelHybridBackend.TabIndex = 173;
+			this.labelHybridBackend.Text = "Backend";
+			this.labelHybridBackend.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// comboHybridBackend
+			// 
+			this.comboHybridBackend.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboHybridBackend.Location = new System.Drawing.Point(140, 62);
+			this.comboHybridBackend.Name = "comboHybridBackend";
+			this.comboHybridBackend.Size = new System.Drawing.Size(260, 21);
+			this.comboHybridBackend.TabIndex = 174;
+			this.comboHybridBackend.SelectedIndexChanged += new System.EventHandler(this.comboHybridBackend_SelectedIndexChanged);
+			// 
+			// labelHybridS3Provider
+			// 
+			this.labelHybridS3Provider.Location = new System.Drawing.Point(6, 89);
+			this.labelHybridS3Provider.Name = "labelHybridS3Provider";
+			this.labelHybridS3Provider.Size = new System.Drawing.Size(130, 18);
+			this.labelHybridS3Provider.TabIndex = 190;
+			this.labelHybridS3Provider.Text = "S3 Provider";
+			this.labelHybridS3Provider.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textHybridS3Provider
+			// 
+			this.textHybridS3Provider.Location = new System.Drawing.Point(140, 88);
+			this.textHybridS3Provider.Name = "textHybridS3Provider";
+			this.textHybridS3Provider.Size = new System.Drawing.Size(370, 20);
+			this.textHybridS3Provider.TabIndex = 191;
+			// 
 			// labelHybridSftpHost
 			// 
-			this.labelHybridSftpHost.Location = new System.Drawing.Point(6, 66);
+			this.labelHybridSftpHost.Location = new System.Drawing.Point(6, 115);
 			this.labelHybridSftpHost.Name = "labelHybridSftpHost";
 			this.labelHybridSftpHost.Size = new System.Drawing.Size(130, 18);
 			this.labelHybridSftpHost.TabIndex = 154;
@@ -497,14 +559,14 @@ namespace Helianz {
 			// 
 			// textHybridSftpHost
 			// 
-			this.textHybridSftpHost.Location = new System.Drawing.Point(140, 65);
+			this.textHybridSftpHost.Location = new System.Drawing.Point(140, 114);
 			this.textHybridSftpHost.Name = "textHybridSftpHost";
 			this.textHybridSftpHost.Size = new System.Drawing.Size(370, 20);
 			this.textHybridSftpHost.TabIndex = 155;
 			// 
 			// labelHybridSftpUser
 			// 
-			this.labelHybridSftpUser.Location = new System.Drawing.Point(6, 92);
+			this.labelHybridSftpUser.Location = new System.Drawing.Point(6, 141);
 			this.labelHybridSftpUser.Name = "labelHybridSftpUser";
 			this.labelHybridSftpUser.Size = new System.Drawing.Size(130, 18);
 			this.labelHybridSftpUser.TabIndex = 156;
@@ -513,14 +575,14 @@ namespace Helianz {
 			// 
 			// textHybridSftpUser
 			// 
-			this.textHybridSftpUser.Location = new System.Drawing.Point(140, 91);
+			this.textHybridSftpUser.Location = new System.Drawing.Point(140, 140);
 			this.textHybridSftpUser.Name = "textHybridSftpUser";
 			this.textHybridSftpUser.Size = new System.Drawing.Size(370, 20);
 			this.textHybridSftpUser.TabIndex = 157;
 			// 
 			// labelHybridSftpPass
 			// 
-			this.labelHybridSftpPass.Location = new System.Drawing.Point(6, 118);
+			this.labelHybridSftpPass.Location = new System.Drawing.Point(6, 167);
 			this.labelHybridSftpPass.Name = "labelHybridSftpPass";
 			this.labelHybridSftpPass.Size = new System.Drawing.Size(130, 18);
 			this.labelHybridSftpPass.TabIndex = 158;
@@ -529,7 +591,7 @@ namespace Helianz {
 			// 
 			// textHybridSftpPass
 			// 
-			this.textHybridSftpPass.Location = new System.Drawing.Point(140, 117);
+			this.textHybridSftpPass.Location = new System.Drawing.Point(140, 166);
 			this.textHybridSftpPass.Name = "textHybridSftpPass";
 			this.textHybridSftpPass.Size = new System.Drawing.Size(370, 20);
 			this.textHybridSftpPass.TabIndex = 159;
@@ -537,7 +599,7 @@ namespace Helianz {
 			// 
 			// labelHybridRclonePath
 			// 
-			this.labelHybridRclonePath.Location = new System.Drawing.Point(6, 166);
+			this.labelHybridRclonePath.Location = new System.Drawing.Point(6, 193);
 			this.labelHybridRclonePath.Name = "labelHybridRclonePath";
 			this.labelHybridRclonePath.Size = new System.Drawing.Size(130, 18);
 			this.labelHybridRclonePath.TabIndex = 160;
@@ -546,14 +608,14 @@ namespace Helianz {
 			// 
 			// textHybridRclonePath
 			// 
-			this.textHybridRclonePath.Location = new System.Drawing.Point(140, 165);
+			this.textHybridRclonePath.Location = new System.Drawing.Point(140, 192);
 			this.textHybridRclonePath.Name = "textHybridRclonePath";
 			this.textHybridRclonePath.Size = new System.Drawing.Size(370, 20);
 			this.textHybridRclonePath.TabIndex = 161;
 			// 
 			// labelHybridServerPath
 			// 
-			this.labelHybridServerPath.Location = new System.Drawing.Point(6, 192);
+			this.labelHybridServerPath.Location = new System.Drawing.Point(6, 245);
 			this.labelHybridServerPath.Name = "labelHybridServerPath";
 			this.labelHybridServerPath.Size = new System.Drawing.Size(130, 18);
 			this.labelHybridServerPath.TabIndex = 162;
@@ -562,14 +624,14 @@ namespace Helianz {
 			// 
 			// textHybridServerPath
 			// 
-			this.textHybridServerPath.Location = new System.Drawing.Point(140, 191);
+			this.textHybridServerPath.Location = new System.Drawing.Point(140, 244);
 			this.textHybridServerPath.Name = "textHybridServerPath";
 			this.textHybridServerPath.Size = new System.Drawing.Size(370, 20);
 			this.textHybridServerPath.TabIndex = 163;
 			// 
 			// butHybridMigrate
 			// 
-			this.butHybridMigrate.Location = new System.Drawing.Point(200, 217);
+			this.butHybridMigrate.Location = new System.Drawing.Point(200, 270);
 			this.butHybridMigrate.Name = "butHybridMigrate";
 			this.butHybridMigrate.Size = new System.Drawing.Size(160, 26);
 			this.butHybridMigrate.TabIndex = 173;
@@ -578,7 +640,7 @@ namespace Helianz {
 			// 
 			// butHybridTestConnection
 			// 
-			this.butHybridTestConnection.Location = new System.Drawing.Point(370, 217);
+			this.butHybridTestConnection.Location = new System.Drawing.Point(370, 270);
 			this.butHybridTestConnection.Name = "butHybridTestConnection";
 			this.butHybridTestConnection.Size = new System.Drawing.Size(170, 26);
 			this.butHybridTestConnection.TabIndex = 164;
@@ -591,7 +653,7 @@ namespace Helianz {
 			this.radioHybrid.Name = "radioHybrid";
 			this.radioHybrid.Size = new System.Drawing.Size(569, 18);
 			this.radioHybrid.TabIndex = 104;
-			this.radioHybrid.Text = "Hybrid: local numbered folders + rclone sync to SFTP server (for multi-clinic)";
+			this.radioHybrid.Text = "Hybrid: local numbered folders + rclone sync to SFTP/S3 server (for multi-clinic)";
 			this.radioHybrid.UseVisualStyleBackColor = true;
 			this.radioHybrid.Click += new System.EventHandler(this.radioHybrid_Click);
 			// 
@@ -742,7 +804,7 @@ namespace Helianz {
 			// 
 			// labelHybridKeyFile
 			// 
-			this.labelHybridKeyFile.Location = new System.Drawing.Point(6, 144);
+			this.labelHybridKeyFile.Location = new System.Drawing.Point(6, 193);
 			this.labelHybridKeyFile.Name = "labelHybridKeyFile";
 			this.labelHybridKeyFile.Size = new System.Drawing.Size(130, 18);
 			this.labelHybridKeyFile.TabIndex = 170;
@@ -751,19 +813,101 @@ namespace Helianz {
 			// 
 			// textHybridKeyFile
 			// 
-			this.textHybridKeyFile.Location = new System.Drawing.Point(140, 143);
+			this.textHybridKeyFile.Location = new System.Drawing.Point(140, 192);
 			this.textHybridKeyFile.Name = "textHybridKeyFile";
 			this.textHybridKeyFile.Size = new System.Drawing.Size(370, 20);
 			this.textHybridKeyFile.TabIndex = 171;
 			// 
 			// butHybridBrowseKey
 			// 
-			this.butHybridBrowseKey.Location = new System.Drawing.Point(516, 141);
+			this.butHybridBrowseKey.Location = new System.Drawing.Point(516, 190);
 			this.butHybridBrowseKey.Name = "butHybridBrowseKey";
 			this.butHybridBrowseKey.Size = new System.Drawing.Size(75, 23);
 			this.butHybridBrowseKey.TabIndex = 172;
 			this.butHybridBrowseKey.Text = "Browse";
 			this.butHybridBrowseKey.Click += new System.EventHandler(this.butHybridBrowseKey_Click);
+			// 
+			// labelHybridS3Endpoint
+			// 
+			this.labelHybridS3Endpoint.Location = new System.Drawing.Point(6, 115);
+			this.labelHybridS3Endpoint.Name = "labelHybridS3Endpoint";
+			this.labelHybridS3Endpoint.Size = new System.Drawing.Size(130, 18);
+			this.labelHybridS3Endpoint.TabIndex = 180;
+			this.labelHybridS3Endpoint.Text = "S3 Endpoint";
+			this.labelHybridS3Endpoint.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textHybridS3Endpoint
+			// 
+			this.textHybridS3Endpoint.Location = new System.Drawing.Point(140, 114);
+			this.textHybridS3Endpoint.Name = "textHybridS3Endpoint";
+			this.textHybridS3Endpoint.Size = new System.Drawing.Size(370, 20);
+			this.textHybridS3Endpoint.TabIndex = 181;
+			// 
+			// labelHybridS3Region
+			// 
+			this.labelHybridS3Region.Location = new System.Drawing.Point(6, 141);
+			this.labelHybridS3Region.Name = "labelHybridS3Region";
+			this.labelHybridS3Region.Size = new System.Drawing.Size(130, 18);
+			this.labelHybridS3Region.TabIndex = 182;
+			this.labelHybridS3Region.Text = "S3 Region";
+			this.labelHybridS3Region.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textHybridS3Region
+			// 
+			this.textHybridS3Region.Location = new System.Drawing.Point(140, 140);
+			this.textHybridS3Region.Name = "textHybridS3Region";
+			this.textHybridS3Region.Size = new System.Drawing.Size(370, 20);
+			this.textHybridS3Region.TabIndex = 183;
+			// 
+			// labelHybridS3Bucket
+			// 
+			this.labelHybridS3Bucket.Location = new System.Drawing.Point(6, 167);
+			this.labelHybridS3Bucket.Name = "labelHybridS3Bucket";
+			this.labelHybridS3Bucket.Size = new System.Drawing.Size(130, 18);
+			this.labelHybridS3Bucket.TabIndex = 184;
+			this.labelHybridS3Bucket.Text = "S3 Bucket";
+			this.labelHybridS3Bucket.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textHybridS3Bucket
+			// 
+			this.textHybridS3Bucket.Location = new System.Drawing.Point(140, 166);
+			this.textHybridS3Bucket.Name = "textHybridS3Bucket";
+			this.textHybridS3Bucket.Size = new System.Drawing.Size(370, 20);
+			this.textHybridS3Bucket.TabIndex = 185;
+			// 
+			// labelHybridS3AccessKey
+			// 
+			this.labelHybridS3AccessKey.Location = new System.Drawing.Point(6, 193);
+			this.labelHybridS3AccessKey.Name = "labelHybridS3AccessKey";
+			this.labelHybridS3AccessKey.Size = new System.Drawing.Size(130, 18);
+			this.labelHybridS3AccessKey.TabIndex = 186;
+			this.labelHybridS3AccessKey.Text = "S3 Access Key";
+			this.labelHybridS3AccessKey.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textHybridS3AccessKey
+			// 
+			this.textHybridS3AccessKey.Location = new System.Drawing.Point(140, 192);
+			this.textHybridS3AccessKey.Name = "textHybridS3AccessKey";
+			this.textHybridS3AccessKey.Size = new System.Drawing.Size(370, 20);
+			this.textHybridS3AccessKey.TabIndex = 187;
+			this.textHybridS3AccessKey.UseSystemPasswordChar = true;
+			// 
+			// labelHybridS3SecretKey
+			// 
+			this.labelHybridS3SecretKey.Location = new System.Drawing.Point(6, 219);
+			this.labelHybridS3SecretKey.Name = "labelHybridS3SecretKey";
+			this.labelHybridS3SecretKey.Size = new System.Drawing.Size(130, 18);
+			this.labelHybridS3SecretKey.TabIndex = 188;
+			this.labelHybridS3SecretKey.Text = "S3 Secret Key";
+			this.labelHybridS3SecretKey.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textHybridS3SecretKey
+			// 
+			this.textHybridS3SecretKey.Location = new System.Drawing.Point(140, 218);
+			this.textHybridS3SecretKey.Name = "textHybridS3SecretKey";
+			this.textHybridS3SecretKey.Size = new System.Drawing.Size(370, 20);
+			this.textHybridS3SecretKey.TabIndex = 189;
+			this.textHybridS3SecretKey.UseSystemPasswordChar = true;
 			// 
 			this.tabHybrid.ResumeLayout(false);
 			this.tabHybrid.PerformLayout();
@@ -842,5 +986,19 @@ namespace Helianz {
 		private Helianz.UI.Button butHybridBrowseKey;
 		private Helianz.UI.Button butHybridKeyAddOrChange;
 		private Helianz.UI.Button butHybridMigrate;
+		private System.Windows.Forms.ComboBox comboHybridBackend;
+		private System.Windows.Forms.Label labelHybridBackend;
+		private System.Windows.Forms.Label labelHybridS3Provider;
+		private System.Windows.Forms.TextBox textHybridS3Provider;
+		private System.Windows.Forms.Label labelHybridS3Endpoint;
+		private System.Windows.Forms.TextBox textHybridS3Endpoint;
+		private System.Windows.Forms.Label labelHybridS3Region;
+		private System.Windows.Forms.TextBox textHybridS3Region;
+		private System.Windows.Forms.Label labelHybridS3Bucket;
+		private System.Windows.Forms.TextBox textHybridS3Bucket;
+		private System.Windows.Forms.Label labelHybridS3AccessKey;
+		private System.Windows.Forms.TextBox textHybridS3AccessKey;
+		private System.Windows.Forms.Label labelHybridS3SecretKey;
+		private System.Windows.Forms.TextBox textHybridS3SecretKey;
 	}
 }

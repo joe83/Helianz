@@ -65,6 +65,48 @@ namespace Helianz{
 		private static string GetHybridSshKeyPath() {
 			return File.Exists(HybridSshKeyAppDataPath) ? HybridSshKeyAppDataPath : "";
 		}
+
+		// S3 backend properties
+		private ProgramProperty _progPropHybridS3Endpoint;
+		private ProgramProperty _progPropHybridS3Region;
+		private ProgramProperty _progPropHybridS3Bucket;
+		private ProgramProperty _progPropHybridS3AccessKey;
+		private ProgramProperty _progPropHybridS3SecretKey;
+		private ProgramProperty _progPropHybridS3Provider;
+		private const string PropDescHybridS3Endpoint = "Hybrid S3 Endpoint";
+		private const string PropDescHybridS3Region = "Hybrid S3 Region";
+		private const string PropDescHybridS3Bucket = "Hybrid S3 Bucket";
+		private const string PropDescHybridS3AccessKey = "Hybrid S3 Access Key";
+		private const string PropDescHybridS3SecretKey = "Hybrid S3 Secret Key";
+		private const string PropDescHybridS3Provider = "Hybrid S3 Provider";
+
+		///<summary>Toggles visibility of SFTP-specific vs S3-specific fields based on the backend combo selection.</summary>
+		private void UpdateHybridBackendUI() {
+			bool isS3 = (comboHybridBackend.SelectedIndex == 1);
+			// SFTP fields
+			labelHybridSftpHost.Visible = !isS3;
+			textHybridSftpHost.Visible = !isS3;
+			labelHybridSftpUser.Visible = !isS3;
+			textHybridSftpUser.Visible = !isS3;
+			labelHybridSftpPass.Visible = !isS3;
+			textHybridSftpPass.Visible = !isS3;
+			labelHybridKeyFile.Visible = !isS3;
+			textHybridKeyFile.Visible = !isS3;
+			butHybridBrowseKey.Visible = !isS3;
+			// S3 fields
+			labelHybridS3Provider.Visible = isS3;
+			textHybridS3Provider.Visible = isS3;
+			labelHybridS3Endpoint.Visible = isS3;
+			textHybridS3Endpoint.Visible = isS3;
+			labelHybridS3Region.Visible = isS3;
+			textHybridS3Region.Visible = isS3;
+			labelHybridS3Bucket.Visible = isS3;
+			textHybridS3Bucket.Visible = isS3;
+			labelHybridS3AccessKey.Visible = isS3;
+			textHybridS3AccessKey.Visible = isS3;
+			labelHybridS3SecretKey.Visible = isS3;
+			textHybridS3SecretKey.Visible = isS3;
+		}
 		#endregion
 
 		///<summary>Extracts a human-readable label from SSH key content (e.g. "OpenSSH key configured").</summary>
@@ -101,6 +143,11 @@ namespace Helianz{
 		// SSH Key File textbox is read-only – the Browse button copies the selected key
 		// into %AppData%\Helianz\ssh_key and displays that path here.
 		textHybridKeyFile.ReadOnly=true;
+		// Backend type combo box
+		comboHybridBackend.Items.Clear();
+		comboHybridBackend.Items.Add("SFTP (SSH File Transfer)");
+		comboHybridBackend.Items.Add("S3 (AWS/MinIO/Wasabi/etc.)");
+		comboHybridBackend.SelectedIndex=0;//default SFTP
 		}
 
 		private void FormPath_Load(object sender, System.EventArgs e){
@@ -209,6 +256,13 @@ namespace Helianz{
 			textHybridServerPath.ReadOnly=true;
 			butHybridTestConnection.Enabled=false;
 			butHybridMigrate.Enabled=false;
+			comboHybridBackend.Enabled=false;
+			textHybridS3Provider.ReadOnly=true;
+			textHybridS3Endpoint.ReadOnly=true;
+			textHybridS3Region.ReadOnly=true;
+			textHybridS3Bucket.ReadOnly=true;
+			textHybridS3AccessKey.ReadOnly=true;
+			textHybridS3SecretKey.ReadOnly=true;
 		}
 
 		private void SetRadioButtonChecked(DataStorageType dataStorageType) {
@@ -488,12 +542,16 @@ namespace Helianz{
 
 		private void LoadHybridSetup() {
 			textHybridLocalPath.Text=PrefC.GetString(PrefName.DocPath);
+			// Determine backend type
+			HybridBackendType backendType=RcloneSync.GetBackendType();
+			comboHybridBackend.SelectedIndex=(backendType==HybridBackendType.S3) ? 1 : 0;
 			// Load SFTP credentials from ProgramProperties (where butSave_Click stores them)
 			if(_program==null) {
 				_program=Programs.GetCur(ProgramName.SFTP);
 			}
 			if(_program!=null) {
 				List<ProgramProperty> listProgProps=ProgramProperties.GetForProgram(_program.ProgramNum);
+				// SFTP
 				_progPropHybridSftpHost=listProgProps.Find(x => x.PropertyDesc==PropDescHybridSftpHost);
 				_progPropHybridSftpUser=listProgProps.Find(x => x.PropertyDesc==PropDescHybridSftpUser);
 				_progPropHybridSftpPass=listProgProps.Find(x => x.PropertyDesc==PropDescHybridSftpPass);
@@ -508,7 +566,7 @@ namespace Helianz{
 				else {
 					textHybridSftpPass.Text="";
 				}
-				// SSH key is stored encrypted in DB. Write to AppData so rclone can use it.
+				// SSH key
 				ProgramProperty propSshKey=listProgProps.Find(x => x.PropertyDesc==PropDescHybridSshKey);
 				if(propSshKey!=null && !string.IsNullOrEmpty(propSshKey.PropertyValue)) {
 					string keyContent="";
@@ -523,11 +581,35 @@ namespace Helianz{
 					else {
 						textHybridKeyFile.Text="";
 					}
-					// Preserve encrypted value for re-save if user doesn't browse again.
 					_hybridSshKeyEncrypted=propSshKey.PropertyValue;
 				}
 				else {
 					textHybridKeyFile.Text="";
+				}
+				// S3
+				_progPropHybridS3Endpoint=listProgProps.Find(x => x.PropertyDesc==PropDescHybridS3Endpoint);
+				_progPropHybridS3Region=listProgProps.Find(x => x.PropertyDesc==PropDescHybridS3Region);
+				_progPropHybridS3Bucket=listProgProps.Find(x => x.PropertyDesc==PropDescHybridS3Bucket);
+				_progPropHybridS3AccessKey=listProgProps.Find(x => x.PropertyDesc==PropDescHybridS3AccessKey);
+				_progPropHybridS3SecretKey=listProgProps.Find(x => x.PropertyDesc==PropDescHybridS3SecretKey);
+				_progPropHybridS3Provider=listProgProps.Find(x => x.PropertyDesc==PropDescHybridS3Provider);
+				textHybridS3Provider.Text=_progPropHybridS3Provider?.PropertyValue??"";
+				textHybridS3Endpoint.Text=_progPropHybridS3Endpoint?.PropertyValue??"";
+				textHybridS3Region.Text=_progPropHybridS3Region?.PropertyValue??"";
+				textHybridS3Bucket.Text=_progPropHybridS3Bucket?.PropertyValue??"";
+				textHybridS3AccessKey.Text="";
+				if(_progPropHybridS3AccessKey!=null && !string.IsNullOrEmpty(_progPropHybridS3AccessKey.PropertyValue)) {
+					string ak="";
+					if(CDT.Class1.DecryptSftp(_progPropHybridS3AccessKey.PropertyValue,out ak)) {
+						textHybridS3AccessKey.Text=ak;
+					}
+				}
+				textHybridS3SecretKey.Text="";
+				if(_progPropHybridS3SecretKey!=null && !string.IsNullOrEmpty(_progPropHybridS3SecretKey.PropertyValue)) {
+					string sk="";
+					if(CDT.Class1.DecryptSftp(_progPropHybridS3SecretKey.PropertyValue,out sk)) {
+						textHybridS3SecretKey.Text=sk;
+					}
 				}
 			}
 			else {
@@ -541,6 +623,57 @@ namespace Helianz{
 			if(string.IsNullOrEmpty(textHybridServerPath.Text)) {
 				textHybridServerPath.Text="/media";
 			}
+			// Toggle SFTP/S3 field visibility
+			UpdateHybridBackendUI();
+			// Auto-regenerate rclone config from server-stored credentials so every
+			// client gets a working config without needing to manually re-save.
+			RegenerateHybridConfig();
+		}
+
+		///<summary>Writes the rclone config file directly from database-stored credentials.
+		///Called on every LoadHybridSetup() so any client auto-generates its config from server data.
+		///Reads ProgramProperties and Prefs directly from DB — does NOT rely on member variables
+		///that may not be populated yet. Uses the DB-stored backend type preference.</summary>
+		private void RegenerateHybridConfig() {
+			try {
+				bool isS3=(RcloneSync.GetBackendType()==HybridBackendType.S3);
+				// Read credentials directly from ProgramProperties (DB), not member variables.
+				long progNum=Programs.GetProgramNum(ProgramName.SFTP);
+				if(isS3) {
+					string provider=ProgramProperties.GetPropVal(progNum,PropDescHybridS3Provider);
+					string endpoint=ProgramProperties.GetPropVal(progNum,PropDescHybridS3Endpoint);
+					string region=ProgramProperties.GetPropVal(progNum,PropDescHybridS3Region);
+					string bucket=ProgramProperties.GetPropVal(progNum,PropDescHybridS3Bucket);
+					string ak=DecryptPropVal(ProgramProperties.GetPropVal(progNum,PropDescHybridS3AccessKey));
+					string sk=DecryptPropVal(ProgramProperties.GetPropVal(progNum,PropDescHybridS3SecretKey));
+					if(!string.IsNullOrEmpty(endpoint) && !string.IsNullOrEmpty(bucket)) {
+						RcloneSync.WriteS3ConfigFile(endpoint,region,bucket,provider,ak,sk);
+					}
+				}
+				else {
+					string host=ProgramProperties.GetPropVal(progNum,PropDescHybridSftpHost);
+					string user=ProgramProperties.GetPropVal(progNum,PropDescHybridSftpUser);
+					if(!string.IsNullOrEmpty(host) && !string.IsNullOrEmpty(user)) {
+						RcloneSync.WriteConfigFile(host,user,GetHybridSshKeyPath());
+					}
+				}
+			}
+			catch(Exception ex) {
+				// Log but don't block — config will be written on explicit Save.
+				Logger.openlog.LogMB("Hybrid config regeneration failed: "+ex.Message,Logger.Severity.WARNING);
+			}
+		}
+
+		///<summary>Decrypts a property value string from the database. Returns empty string if null or decryption fails.</summary>
+		private static string DecryptPropVal(string encryptedVal) {
+			if(string.IsNullOrEmpty(encryptedVal)) {
+				return "";
+			}
+			string result="";
+			if(CDT.Class1.DecryptSftp(encryptedVal,out result)) {
+				return result;
+			}
+			return "";
 		}
 
 		private void radioHybrid_Click(object sender,EventArgs e) {
@@ -562,6 +695,14 @@ namespace Helianz{
 			textHybridServerPath.ReadOnly=false;
 			butHybridTestConnection.Enabled=true;
 			butHybridMigrate.Enabled=true;
+			comboHybridBackend.Enabled=true;
+			textHybridS3Provider.ReadOnly=false;
+			textHybridS3Endpoint.ReadOnly=false;
+			textHybridS3Region.ReadOnly=false;
+			textHybridS3Bucket.ReadOnly=false;
+			textHybridS3AccessKey.ReadOnly=false;
+			textHybridS3SecretKey.ReadOnly=false;
+			UpdateHybridBackendUI();
 		}
 
 		private void butHybridBrowseLocal_Click(object sender,EventArgs e) {
@@ -581,37 +722,66 @@ namespace Helianz{
 				MsgBox.Show(this,"rclone not found at: "+rclonePath+"\nPlease install rclone or place rclone.exe in the app rclone/ folder.");
 				return;
 			}
-			// 2. Write config and test SFTP connection
-			string host=textHybridSftpHost.Text.Trim();
-			string user=textHybridSftpUser.Text.Trim();
-			string pass=textHybridSftpPass.Text;
-			string keyFile=GetHybridSshKeyPath();
-			if(string.IsNullOrEmpty(host) || string.IsNullOrEmpty(user)) {
-				MsgBox.Show(this,"SFTP host and username are required.");
-				return;
-			}
-			try {
-				// Ensure SSH key is written to AppData before testing (may have been
-				// loaded from DB but the file was deleted – write it back from memory).
-				if(!string.IsNullOrEmpty(_hybridSshKeyEncrypted) && !File.Exists(HybridSshKeyAppDataPath)) {
-					string keyContent="";
-					if(CDT.Class1.DecryptSftp(_hybridSshKeyEncrypted,out keyContent)) {
-						string appDataDir=Path.GetDirectoryName(HybridSshKeyAppDataPath);
-						if(!Directory.Exists(appDataDir)) {
-							Directory.CreateDirectory(appDataDir);
-						}
-						File.WriteAllText(HybridSshKeyAppDataPath,keyContent);
-					}
+			bool isS3=(comboHybridBackend.SelectedIndex==1);
+			if(isS3) {
+				// Validate S3 fields
+				string s3Provider=textHybridS3Provider.Text.Trim();
+				string s3Endpoint=textHybridS3Endpoint.Text.Trim();
+				string s3Region=textHybridS3Region.Text.Trim();
+				string s3Bucket=textHybridS3Bucket.Text.Trim();
+				string s3AccessKey=textHybridS3AccessKey.Text;
+				string s3SecretKey=textHybridS3SecretKey.Text;
+				if(string.IsNullOrEmpty(s3Endpoint) || string.IsNullOrEmpty(s3Bucket)) {
+					MsgBox.Show(this,"S3 Endpoint and Bucket are required.");
+					return;
 				}
-				RcloneSync.WriteConfigFile(host,user,keyFile);
-				string configPath=RcloneSync.GetConfigFilePath();
-				string args="lsf helianz-media: --config \""+configPath+"\" --max-depth 1";
-				string output=RcloneSync.RunRcloneCommand(args,pass);
-				RcloneSync.InvalidateAvailabilityCache();
-				MsgBox.Show(this,"Connection successful!\nRemote root contents:\n"+output);
+				if(string.IsNullOrEmpty(s3AccessKey) || string.IsNullOrEmpty(s3SecretKey)) {
+					MsgBox.Show(this,"S3 Access Key and Secret Key are required.");
+					return;
+				}
+				try {
+					RcloneSync.WriteS3ConfigFile(s3Endpoint,s3Region,s3Bucket,s3Provider,s3AccessKey,s3SecretKey);
+					string configPath=RcloneSync.GetConfigFilePath();
+					string args="lsf helianz-media: --config \""+configPath+"\" --max-depth 1";
+					string output=RcloneSync.RunRcloneCommand(args);
+					RcloneSync.InvalidateAvailabilityCache();
+					MsgBox.Show(this,"S3 connection successful!\nBucket root contents:\n"+output);
+				}
+				catch(Exception ex) {
+					MsgBox.Show(this,"S3 connection failed: "+ex.Message);
+				}
 			}
-			catch(Exception ex) {
-				MsgBox.Show(this,"SFTP connection failed: "+ex.Message);
+			else {
+				// SFTP test (existing logic)
+				string host=textHybridSftpHost.Text.Trim();
+				string user=textHybridSftpUser.Text.Trim();
+				string pass=textHybridSftpPass.Text;
+				string keyFile=GetHybridSshKeyPath();
+				if(string.IsNullOrEmpty(host) || string.IsNullOrEmpty(user)) {
+					MsgBox.Show(this,"SFTP host and username are required.");
+					return;
+				}
+				try {
+					if(!string.IsNullOrEmpty(_hybridSshKeyEncrypted) && !File.Exists(HybridSshKeyAppDataPath)) {
+						string keyContent="";
+						if(CDT.Class1.DecryptSftp(_hybridSshKeyEncrypted,out keyContent)) {
+							string appDataDir=Path.GetDirectoryName(HybridSshKeyAppDataPath);
+							if(!Directory.Exists(appDataDir)) {
+								Directory.CreateDirectory(appDataDir);
+							}
+							File.WriteAllText(HybridSshKeyAppDataPath,keyContent);
+						}
+					}
+					RcloneSync.WriteConfigFile(host,user,keyFile);
+					string configPath=RcloneSync.GetConfigFilePath();
+					string args="lsf helianz-media: --config \""+configPath+"\" --max-depth 1";
+					string output=RcloneSync.RunRcloneCommand(args,pass);
+					RcloneSync.InvalidateAvailabilityCache();
+					MsgBox.Show(this,"Connection successful!\nRemote root contents:\n"+output);
+				}
+				catch(Exception ex) {
+					MsgBox.Show(this,"SFTP connection failed: "+ex.Message);
+				}
 			}
 		}
 
@@ -637,6 +807,11 @@ namespace Helianz{
 		catch(Exception ex) {
 			MsgBox.Show(this,"Failed to store SSH key: "+ex.Message);
 		}
+	}
+
+	///<summary>Toggles visibility of SFTP vs S3 fields when the user changes the backend type.</summary>
+	private void comboHybridBackend_SelectedIndexChanged(object sender,EventArgs e) {
+		UpdateHybridBackendUI();
 	}
 
 		private void butHybridMigrate_Click(object sender,EventArgs e) {
@@ -701,20 +876,23 @@ namespace Helianz{
 			}
 		}
 
-		///<summary>Safely updates a Pref value. If the pref does not exist in the DB yet,
-		///inserts it. This avoids the exception thrown by Prefs.UpdateString when
-		///a new PrefName enum value has no corresponding row in the preference table.</summary>
+		///<summary>Safely updates a Pref value. Prefs.UpdateString only does UPDATE — 
+		///if the row doesn't exist yet, it silently skips the DB write and the cache
+		///doesn't have the pref, causing "invalid pref name" errors. This method
+		///INSERTs the row and refreshes the cache so UpdateString succeeds.</summary>
 		private void UpdatePrefSafe(PrefName prefName,string newValue) {
-			try {
-				Prefs.UpdateString(prefName,newValue);
+			string checkCmd="SELECT COUNT(*) FROM preference WHERE PrefName='"+POut.String(prefName.ToString())+"'";
+			int count=int.Parse(DataCore.GetScalar(checkCmd));
+			if(count==0) {
+				string insertCmd="INSERT INTO preference (PrefName,ValueString) VALUES("
+					+"'"+POut.String(prefName.ToString())+"',"
+					+"'"+POut.String(newValue)+"')";
+				DataCore.NonQ(insertCmd);
+				// Refresh the in-memory cache so Prefs.UpdateString doesn't throw
+				// "invalid pref name" when it can't find the new pref in cache.
+				Prefs.RefreshCache();
 			}
-			catch {
-				// Pref does not exist in DB yet. Add to in-memory cache so it works immediately.
-				Pref pref=new Pref();
-				pref.PrefName=prefName.ToString();
-				pref.ValueString=newValue;
-				Prefs.UpdateValueForKey(pref);
-			}
+			Prefs.UpdateString(prefName,newValue);
 		}
 
 				#endregion
@@ -790,23 +968,41 @@ namespace Helianz{
 					MsgBox.Show(this,"The local path is invalid. The folder must exist.");
 					return;
 				}
-				// Save SFTP credentials as ProgramProperties
+				bool isS3=(comboHybridBackend.SelectedIndex==1);
 				if(_program==null) {
 					_program=Programs.GetCur(ProgramName.SFTP);
 				}
 				if(_program!=null) {
-					UpdateOrCreateProp(PropDescHybridSftpHost,textHybridSftpHost.Text.Trim());
-					UpdateOrCreateProp(PropDescHybridSftpUser,textHybridSftpUser.Text.Trim());
-					string encryptedPass="";
-					if(!string.IsNullOrEmpty(textHybridSftpPass.Text)) {
-						encryptedPass=CDT.Class1.EncryptSftp(textHybridSftpPass.Text);
+					if(isS3) {
+						// Save S3 credentials
+						UpdateOrCreateProp(PropDescHybridS3Provider,textHybridS3Provider.Text.Trim());
+						UpdateOrCreateProp(PropDescHybridS3Endpoint,textHybridS3Endpoint.Text.Trim());
+						UpdateOrCreateProp(PropDescHybridS3Region,textHybridS3Region.Text.Trim());
+						UpdateOrCreateProp(PropDescHybridS3Bucket,textHybridS3Bucket.Text.Trim());
+						string encryptedAk="";
+						if(!string.IsNullOrEmpty(textHybridS3AccessKey.Text)) {
+							encryptedAk=CDT.Class1.EncryptSftp(textHybridS3AccessKey.Text);
+						}
+						UpdateOrCreateProp(PropDescHybridS3AccessKey,encryptedAk);
+						string encryptedSk="";
+						if(!string.IsNullOrEmpty(textHybridS3SecretKey.Text)) {
+							encryptedSk=CDT.Class1.EncryptSftp(textHybridS3SecretKey.Text);
+						}
+						UpdateOrCreateProp(PropDescHybridS3SecretKey,encryptedSk);
 					}
-					UpdateOrCreateProp(PropDescHybridSftpPass,encryptedPass);
-					// Save SSH key if user browsed for one.
-					if(!string.IsNullOrEmpty(_hybridSshKeyEncrypted)) {
-						UpdateOrCreateProp(PropDescHybridSshKey,_hybridSshKeyEncrypted);
+					else {
+						// Save SFTP credentials
+						UpdateOrCreateProp(PropDescHybridSftpHost,textHybridSftpHost.Text.Trim());
+						UpdateOrCreateProp(PropDescHybridSftpUser,textHybridSftpUser.Text.Trim());
+						string encryptedPass="";
+						if(!string.IsNullOrEmpty(textHybridSftpPass.Text)) {
+							encryptedPass=CDT.Class1.EncryptSftp(textHybridSftpPass.Text);
+						}
+						UpdateOrCreateProp(PropDescHybridSftpPass,encryptedPass);
+						if(!string.IsNullOrEmpty(_hybridSshKeyEncrypted)) {
+							UpdateOrCreateProp(PropDescHybridSshKey,_hybridSshKeyEncrypted);
+						}
 					}
-
 					DataValid.SetInvalid(InvalidType.Programs);
 				}
 				// Save local path so GetPreferredAtoZpath() returns the correct path
@@ -814,12 +1010,28 @@ namespace Helianz{
 				HelianzBusiness.FileIO.FileAtoZ.LocalAtoZpath=textHybridLocalPath.Text.Trim();
 				ComputerPrefs.LocalComputer.AtoZpath=textHybridLocalPath.Text.Trim();
 				ComputerPrefs.Update(ComputerPrefs.LocalComputer);
-				// Save rclone server path as Pref (rclone itself is bundled in the Helianz program folder)
+				// Save backend type and rclone settings
+				string backendTypeStr=isS3 ? "S3" : "SFTP";
+				UpdatePrefSafe(PrefName.RcloneBackendType,backendTypeStr);
 				UpdatePrefSafe(PrefName.RcloneRemoteName,"helianz-media");
 				UpdatePrefSafe(PrefName.RcloneServerPath,textHybridServerPath.Text.Trim());
 				DataValid.SetInvalid(InvalidType.Prefs);
-				// Write rclone config file
-				RcloneSync.WriteConfigFile(textHybridSftpHost.Text.Trim(),textHybridSftpUser.Text.Trim(),GetHybridSshKeyPath());
+				// Write rclone config file based on backend type
+				if(isS3) {
+					RcloneSync.WriteS3ConfigFile(
+						textHybridS3Endpoint.Text.Trim(),
+						textHybridS3Region.Text.Trim(),
+						textHybridS3Bucket.Text.Trim(),
+						textHybridS3Provider.Text.Trim(),
+						textHybridS3AccessKey.Text,
+						textHybridS3SecretKey.Text);
+				}
+				else {
+					RcloneSync.WriteConfigFile(
+						textHybridSftpHost.Text.Trim(),
+						textHybridSftpUser.Text.Trim(),
+						GetHybridSshKeyPath());
+				}
 				RcloneSync.InvalidateAvailabilityCache();
 			}
 

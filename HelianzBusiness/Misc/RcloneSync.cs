@@ -4,10 +4,10 @@ using System.IO;
 using CodeBase;
 
 namespace HelianzBusiness {
-	///<summary>Wraps rclone CLI operations for hybrid media sync to/from a central SFTP server.
-	///Supports bundled rclone binary (in app's rclone/ subfolder) with a custom config file
-	///managed by the application. The config file is written ONLY when the user saves
-	///hybrid settings in FormPath — sync operations use the existing config file as-is.</summary>
+	///<summary>Wraps rclone CLI operations for hybrid media sync to/from a central server.
+	///Supports SFTP and S3 backends. Uses bundled rclone binary (in app's rclone/ subfolder)
+	///with a custom config file managed by the application. The config file is written ONLY
+	///when the user saves hybrid settings in FormPath — sync operations use the existing config as-is.</summary>
 	public static class RcloneSync {
 
 		///<summary>Set to true once availability has been checked this session.</summary>
@@ -94,7 +94,7 @@ namespace HelianzBusiness {
 
 		#region Config File Management
 
-		///<summary>Writes the rclone config file with the given parameters.
+		///<summary>Writes an SFTP rclone config file with the given parameters.
 		///This should ONLY be called from FormPath when the user saves hybrid settings.
 		///Password is NOT written to the config file — it is passed via environment variable at runtime.
 		///Uses UTF8 without BOM for maximum compatibility.</summary>
@@ -117,6 +117,37 @@ namespace HelianzBusiness {
 			}
 		}
 
+		///<summary>Writes an S3 rclone config file with the given parameters.
+		///Credentials are written to the config file for a self-contained setup.
+		///The config file is in the user's private AppData folder and access/secret keys
+		///are encrypted at rest in the database.
+		///Uses UTF8 without BOM for maximum compatibility.</summary>
+		public static void WriteS3ConfigFile(string endpoint,string region,string bucket,string provider="",string accessKey="",string secretKey="") {
+			string configPath=GetConfigFilePath();
+			string remoteName=GetRemoteName();
+			using(StreamWriter writer=new StreamWriter(configPath,false,new System.Text.UTF8Encoding(false))) {
+				writer.WriteLine("["+remoteName+"]");
+				writer.WriteLine("type = s3");
+				if(!string.IsNullOrEmpty(provider)) {
+					writer.WriteLine("provider = "+provider);
+				}
+				if(!string.IsNullOrEmpty(endpoint)) {
+					writer.WriteLine("endpoint = "+endpoint);
+				}
+				if(!string.IsNullOrEmpty(region)) {
+					writer.WriteLine("region = "+region);
+				}
+				writer.WriteLine("env_auth = false");
+				// Write credentials directly to the config for a self-contained setup.
+				if(!string.IsNullOrEmpty(accessKey)) {
+					writer.WriteLine("access_key_id = "+accessKey);
+				}
+				if(!string.IsNullOrEmpty(secretKey)) {
+					writer.WriteLine("secret_access_key = "+secretKey);
+				}
+			}
+		}
+
 		///<summary>Deletes the managed rclone config file if it exists.</summary>
 		public static void DeleteConfigFile() {
 			string configPath=GetConfigFilePath();
@@ -132,7 +163,7 @@ namespace HelianzBusiness {
 
 		#endregion
 
-		#region Remote Name and Server Path
+		#region Remote Name, Server Path, and Backend Type
 
 		///<summary>Gets the configured rclone remote name, defaulting to "helianz-media".</summary>
 		private static string GetRemoteName() {
@@ -143,13 +174,53 @@ namespace HelianzBusiness {
 			return name;
 		}
 
-		///<summary>Gets the server-side base path for media storage, defaulting to "/media".</summary>
+		///<summary>Gets the configured hybrid backend type, defaulting to SFTP for backward compatibility.</summary>
+		public static HybridBackendType GetBackendType() {
+			string typeStr=PrefC.GetStringSilent(PrefName.RcloneBackendType);
+			if(string.IsNullOrEmpty(typeStr)) {
+				return HybridBackendType.SFTP;
+			}
+			if(typeStr.Equals("S3",StringComparison.OrdinalIgnoreCase)) {
+				return HybridBackendType.S3;
+			}
+			return HybridBackendType.SFTP;
+		}
+
+		///<summary>Gets the server-side base path for media storage, defaulting to "/media".
+		///For S3 backend, the bucket name is prepended since rclone needs it in the path
+		///(bucket in config is not used for path routing by all providers).</summary>
 		private static string GetServerBasePath() {
 			string path=PrefC.GetStringSilent(PrefName.RcloneServerPath);
 			if(string.IsNullOrEmpty(path)) {
 				path="/media";
 			}
-			return path.TrimEnd('/');
+			if(GetBackendType()==HybridBackendType.S3) {
+				// S3: bucket must be in the path, not just the config.
+				// Format: {bucket}/{serverPath}
+				path=path.Trim('/');
+				string bucket=GetS3Bucket();
+				if(!string.IsNullOrEmpty(bucket)) {
+					path=bucket+"/"+path;
+				}
+			}
+			else {
+				path=path.TrimEnd('/');
+			}
+			return path;
+		}
+
+		///<summary>Gets the S3 bucket name from ProgramProperties.
+		///Returns empty string if not configured.</summary>
+		private static string GetS3Bucket() {
+			try {
+				long progNum=Programs.GetProgramNum(ProgramName.SFTP);
+				string bucket=ProgramProperties.GetPropVal(progNum,"Hybrid S3 Bucket");
+				if(!string.IsNullOrEmpty(bucket)) {
+					return bucket.Trim();
+				}
+			}
+			catch { }
+			return "";
 		}
 
 		///<summary>Returns the remote path for a patient folder on the server.
@@ -299,8 +370,6 @@ namespace HelianzBusiness {
 				string remotePath=GetRemotePatientPath(patNum);
 				string configPath=GetConfigFilePath();
 				string remoteName=GetRemoteName();
-				string envPassKey="RCLONE_CONFIG_"+remoteName.ToUpper().Replace("-","_")+"_PASS";
-				string password=GetSftpPass();
 				ProcessStartInfo psi=new ProcessStartInfo();
 				psi.FileName=GetRclonePath();
 				psi.Arguments="lsf \""+remotePath+"\" --config \""+configPath+"\" --max-depth 1";
@@ -309,8 +378,13 @@ namespace HelianzBusiness {
 				psi.RedirectStandardOutput=true;
 				psi.RedirectStandardError=true;
 				psi.Environment["RCLONE_CONFIG"]=configPath;
-				if(!string.IsNullOrEmpty(password)) {
-					psi.Environment[envPassKey]=password;
+				// S3 credentials are in the config file; SFTP password passed via env var.
+				string envPrefix="RCLONE_CONFIG_"+remoteName.ToUpper().Replace("-","_")+"_";
+				if(GetBackendType()!=HybridBackendType.S3) {
+					string password=GetSftpPass();
+					if(!string.IsNullOrEmpty(password)) {
+						psi.Environment[envPrefix+"PASS"]=password;
+					}
 				}
 				using(Process process=Process.Start(psi)) {
 					string output=process.StandardOutput.ReadToEnd();
@@ -347,6 +421,46 @@ namespace HelianzBusiness {
 			return "";
 		}
 
+		///<summary>Gets the S3 access key from ProgramProperties for passing via environment variable.
+		///Returns empty string if not configured or decryption fails.</summary>
+		private static string GetS3AccessKey() {
+			try {
+				long progNum=Programs.GetProgramNum(ProgramName.SFTP);
+				string keyEncrypted=ProgramProperties.GetPropVal(progNum,"Hybrid S3 Access Key")??"";
+				if(string.IsNullOrEmpty(keyEncrypted)) {
+					return "";
+				}
+				string keyDecrypted="";
+				if(CDT.Class1.DecryptSftp(keyEncrypted,out keyDecrypted)) {
+					return keyDecrypted;
+				}
+			}
+			catch {
+				// Property not found or decryption failed
+			}
+			return "";
+		}
+
+		///<summary>Gets the S3 secret key from ProgramProperties for passing via environment variable.
+		///Returns empty string if not configured or decryption fails.</summary>
+		private static string GetS3SecretKey() {
+			try {
+				long progNum=Programs.GetProgramNum(ProgramName.SFTP);
+				string keyEncrypted=ProgramProperties.GetPropVal(progNum,"Hybrid S3 Secret Key")??"";
+				if(string.IsNullOrEmpty(keyEncrypted)) {
+					return "";
+				}
+				string keyDecrypted="";
+				if(CDT.Class1.DecryptSftp(keyEncrypted,out keyDecrypted)) {
+					return keyDecrypted;
+				}
+			}
+			catch {
+				// Property not found or decryption failed
+			}
+			return "";
+		}
+
 		#endregion
 
 		#region Process Execution
@@ -362,7 +476,7 @@ namespace HelianzBusiness {
 			return path.Replace('\\','/');
 		}
 
-		///<summary>Runs an rclone command with the custom config file and optional password via environment variable.
+		///<summary>Runs an rclone command with the custom config file and credentials via environment variables.
 		///Throws on non-zero exit code.</summary>
 		private static void RunRclone(string operation,string sourcePath,string destPath) {
 			ProcessStartInfo psi=new ProcessStartInfo();
@@ -373,9 +487,6 @@ namespace HelianzBusiness {
 			string src=sourcePath.TrimEnd('\\','/');
 			string dst=destPath.TrimEnd('\\','/');
 			// On Windows, normalize local paths to use forward slashes for rclone.
-			// Prevents Go 1.21+'s \\?\ extended-path prefix from breaking directory reads on Windows 7.
-			// Local paths: C:\... or \\server\... (drive letter colon at index 1, or UNC).
-			// Remote paths: helianz-media:/... (colon followed by slash, already uses forward slashes).
 			if(Environment.OSVersion.Platform==PlatformID.Win32NT) {
 				src=NormalizeLocalPathForRclone(src);
 				dst=NormalizeLocalPathForRclone(dst);
@@ -388,19 +499,23 @@ namespace HelianzBusiness {
 			psi.RedirectStandardError=true;
 			// Override any system-wide RCLONE_CONFIG env var with our managed config
 			psi.Environment["RCLONE_CONFIG"]=configPath;
-			// Pass password via environment variable using rclone's naming convention:
-			// RCLONE_CONFIG_<REMOTENAME>_<PARAM> (remote name uppercased, - replaced with _)
-			string envPassKey="RCLONE_CONFIG_"+remoteName.ToUpper().Replace("-","_")+"_PASS";
-			string password=GetSftpPass();
-			if(!string.IsNullOrEmpty(password)) {
-				psi.Environment[envPassKey]=password;
+			// Pass SFTP password via env var if needed (S3 credentials are in the config file).
+			string envPrefix="RCLONE_CONFIG_"+remoteName.ToUpper().Replace("-","_")+"_";
+			if(GetBackendType()!=HybridBackendType.S3) {
+				string password=GetSftpPass();
+				if(!string.IsNullOrEmpty(password)) {
+					psi.Environment[envPrefix+"PASS"]=password;
+				}
 			}
 			using(Process process=Process.Start(psi)) {
 				string output=process.StandardOutput.ReadToEnd();
 				string error=process.StandardError.ReadToEnd();
 				process.WaitForExit(120000);//2 minute timeout
 				if(process.ExitCode!=0) {
-					throw new Exception("rclone "+operation+" failed (exit "+process.ExitCode+"): "+error+output);
+					string cmdLine="\""+GetRclonePath()+"\" "+args
+						+"\n[config: "+configPath+"]";
+					throw new Exception("rclone "+operation+" failed (exit "+process.ExitCode+"):\n"+error+output
+						+"\n\nFull command:\n"+cmdLine);
 				}
 			}
 		}
@@ -409,6 +524,46 @@ namespace HelianzBusiness {
 		///Used for test connectivity and version checks from the UI.</summary>
 		public static string RunRcloneCommand(string arguments) {
 			return RunRcloneCommand(arguments,null);
+		}
+
+		///<summary>Runs an rclone command with an explicit backend type override.
+		///Used by FormPath test connection when the backend preference hasn't been saved yet.</summary>
+		public static string RunRcloneCommandWithBackend(string arguments,HybridBackendType backendType) {
+			ProcessStartInfo psi=new ProcessStartInfo();
+			psi.FileName=GetRclonePath();
+			psi.Arguments=arguments;
+			psi.UseShellExecute=false;
+			psi.CreateNoWindow=true;
+			psi.RedirectStandardOutput=true;
+			psi.RedirectStandardError=true;
+			psi.Environment["RCLONE_CONFIG"]=GetConfigFilePath();
+			string remoteName=GetRemoteName();
+			string envPrefix="RCLONE_CONFIG_"+remoteName.ToUpper().Replace("-","_")+"_";
+			if(backendType==HybridBackendType.S3) {
+				string accessKey=GetS3AccessKey();
+				string secretKey=GetS3SecretKey();
+				if(!string.IsNullOrEmpty(accessKey)) {
+					psi.Environment[envPrefix+"ACCESS_KEY_ID"]=accessKey;
+				}
+				if(!string.IsNullOrEmpty(secretKey)) {
+					psi.Environment[envPrefix+"SECRET_ACCESS_KEY"]=secretKey;
+				}
+			}
+			else {
+				string password=GetSftpPass();
+				if(!string.IsNullOrEmpty(password)) {
+					psi.Environment[envPrefix+"PASS"]=password;
+				}
+			}
+			using(Process process=Process.Start(psi)) {
+				string output=process.StandardOutput.ReadToEnd();
+				string error=process.StandardError.ReadToEnd();
+				process.WaitForExit(30000);
+				if(process.ExitCode!=0) {
+					throw new Exception(error+output);
+				}
+				return output.Trim();
+			}
 		}
 
 		///<summary>Runs an rclone command with custom arguments and optional password via environment variable.
@@ -423,10 +578,20 @@ namespace HelianzBusiness {
 			psi.RedirectStandardError=true;
 			// Override any system-wide RCLONE_CONFIG env var with our managed config
 			psi.Environment["RCLONE_CONFIG"]=GetConfigFilePath();
-			if(!string.IsNullOrEmpty(password)) {
-				string remoteName=GetRemoteName();
-				string envPassKey="RCLONE_CONFIG_"+remoteName.ToUpper().Replace("-","_")+"_PASS";
-				psi.Environment[envPassKey]=password;
+			string remoteName=GetRemoteName();
+			string envPrefix="RCLONE_CONFIG_"+remoteName.ToUpper().Replace("-","_")+"_";
+			if(GetBackendType()==HybridBackendType.S3) {
+				string accessKey=GetS3AccessKey();
+				string secretKey=GetS3SecretKey();
+				if(!string.IsNullOrEmpty(accessKey)) {
+					psi.Environment[envPrefix+"ACCESS_KEY_ID"]=accessKey;
+				}
+				if(!string.IsNullOrEmpty(secretKey)) {
+					psi.Environment[envPrefix+"SECRET_ACCESS_KEY"]=secretKey;
+				}
+			}
+			else if(!string.IsNullOrEmpty(password)) {
+				psi.Environment[envPrefix+"PASS"]=password;
 			}
 			using(Process process=Process.Start(psi)) {
 				string output=process.StandardOutput.ReadToEnd();

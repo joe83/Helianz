@@ -1476,8 +1476,16 @@ namespace HelianzBusiness{
 		DropboxAtoZ,
 		///<summary>3</summary>
 		SftpAtoZ,
-		///<summary>4 - Hybrid local+server. Uses numbered folder scheme (PatNum%100/PatNum) with rclone sync to SFTP server.</summary>
+		///<summary>4 - Hybrid local+server. Uses numbered folder scheme (PatNum%100/PatNum) with rclone sync to SFTP or S3 server.</summary>
 		LocalAtoZHybrid
+	}
+
+	///<summary>Backend storage type used by the hybrid rclone sync system.</summary>
+	public enum HybridBackendType {
+		///<summary>0 - SFTP server (default).</summary>
+		SFTP,
+		///<summary>1 - S3-compatible object storage (AWS S3, MinIO, Wasabi, DigitalOcean Spaces, etc.).</summary>
+		S3
 	}
 
 	///<summary>Only used by the Signup Portal</summary>

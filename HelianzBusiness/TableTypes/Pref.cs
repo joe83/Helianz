@@ -1964,6 +1964,9 @@ namespace HelianzBusiness {
 		///<summary>String. Server-side base path for media storage. Default "/media".</summary>
 		[PrefName(ValueType=PrefValueType.STRING)]
 		RcloneServerPath,
+		///<summary>String. Backend storage type for hybrid rclone sync: "SFTP" (default) or "S3".</summary>
+		[PrefName(ValueType=PrefValueType.STRING)]
+		RcloneBackendType,
 		RecallAdjustDown,
 		RecallAdjustRight,
 		///<summary>Defaults to 12 for new customers.  The number in this field is considered adult.  Only used when automatically adding procedures to a new recall appointment.</summary>
