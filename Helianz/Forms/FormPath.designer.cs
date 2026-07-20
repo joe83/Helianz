@@ -116,7 +116,7 @@ namespace Helianz {
 			// butOK
 			// 
 			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butOK.Location = new System.Drawing.Point(588, 588);
+			this.butOK.Location = new System.Drawing.Point(588, 645);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 2;
@@ -132,14 +132,14 @@ namespace Helianz {
 			// 
 			// textExportPath
 			// 
-			this.textExportPath.Location = new System.Drawing.Point(19, 452);
+			this.textExportPath.Location = new System.Drawing.Point(19, 505);
 			this.textExportPath.Name = "textExportPath";
 			this.textExportPath.Size = new System.Drawing.Size(515, 20);
 			this.textExportPath.TabIndex = 1;
 			// 
 			// butBrowseExport
 			// 
-			this.butBrowseExport.Location = new System.Drawing.Point(538, 450);
+			this.butBrowseExport.Location = new System.Drawing.Point(538, 503);
 			this.butBrowseExport.Name = "butBrowseExport";
 			this.butBrowseExport.Size = new System.Drawing.Size(76, 25);
 			this.butBrowseExport.TabIndex = 91;
@@ -157,7 +157,7 @@ namespace Helianz {
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(20, 381);
+			this.label1.Location = new System.Drawing.Point(20, 435);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(596, 65);
 			this.label1.TabIndex = 92;
@@ -175,7 +175,7 @@ namespace Helianz {
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(20, 476);
+			this.label3.Location = new System.Drawing.Point(20, 530);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(596, 65);
 			this.label3.TabIndex = 96;
@@ -184,7 +184,7 @@ namespace Helianz {
 			// 
 			// butBrowseLetter
 			// 
-			this.butBrowseLetter.Location = new System.Drawing.Point(538, 545);
+			this.butBrowseLetter.Location = new System.Drawing.Point(538, 600);
 			this.butBrowseLetter.Name = "butBrowseLetter";
 			this.butBrowseLetter.Size = new System.Drawing.Size(76, 25);
 			this.butBrowseLetter.TabIndex = 95;
@@ -193,7 +193,7 @@ namespace Helianz {
 			// 
 			// textLetterMergePath
 			// 
-			this.textLetterMergePath.Location = new System.Drawing.Point(19, 548);
+			this.textLetterMergePath.Location = new System.Drawing.Point(19, 603);
 			this.textLetterMergePath.Name = "textLetterMergePath";
 			this.textLetterMergePath.Size = new System.Drawing.Size(515, 20);
 			this.textLetterMergePath.TabIndex = 94;
@@ -217,7 +217,7 @@ namespace Helianz {
 			this.groupbox1.Controls.Add(this.radioUseFolder);
 			this.groupbox1.Location = new System.Drawing.Point(10, 12);
 			this.groupbox1.Name = "groupbox1";
-			this.groupbox1.Size = new System.Drawing.Size(624, 430);
+			this.groupbox1.Size = new System.Drawing.Size(624, 440);
 			this.groupbox1.TabIndex = 0;
 			this.groupbox1.Text = "A to Z Images Folder for storing images and documents";
 			// 
@@ -250,7 +250,7 @@ namespace Helianz {
 			this.tabControlDataStorageType.Controls.Add(this.tabHybrid);
 			this.tabControlDataStorageType.Location = new System.Drawing.Point(11, 119);
 			this.tabControlDataStorageType.Name = "tabControlDataStorageType";
-			this.tabControlDataStorageType.Size = new System.Drawing.Size(606, 303);
+			this.tabControlDataStorageType.Size = new System.Drawing.Size(606, 313);
 			this.tabControlDataStorageType.TabIndex = 97;
 			this.tabControlDataStorageType.TabStop = false;
 			// 
@@ -631,7 +631,7 @@ namespace Helianz {
 			// 
 			// butHybridMigrate
 			// 
-			this.butHybridMigrate.Location = new System.Drawing.Point(200, 270);
+			this.butHybridMigrate.Location = new System.Drawing.Point(200, 275);
 			this.butHybridMigrate.Name = "butHybridMigrate";
 			this.butHybridMigrate.Size = new System.Drawing.Size(160, 26);
 			this.butHybridMigrate.TabIndex = 173;
@@ -640,7 +640,7 @@ namespace Helianz {
 			// 
 			// butHybridTestConnection
 			// 
-			this.butHybridTestConnection.Location = new System.Drawing.Point(370, 270);
+			this.butHybridTestConnection.Location = new System.Drawing.Point(370, 275);
 			this.butHybridTestConnection.Name = "butHybridTestConnection";
 			this.butHybridTestConnection.Size = new System.Drawing.Size(170, 26);
 			this.butHybridTestConnection.TabIndex = 164;
@@ -775,7 +775,7 @@ namespace Helianz {
 			// FormPath
 			// 
 			this.AcceptButton = this.butOK;
-			this.ClientSize = new System.Drawing.Size(675, 645);
+			this.ClientSize = new System.Drawing.Size(675, 700);
 			this.Controls.Add(this.groupbox1);
 			this.Controls.Add(this.butBrowseLetter);
 			this.Controls.Add(this.butBrowseExport);
