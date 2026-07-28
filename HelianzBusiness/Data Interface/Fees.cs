@@ -85,6 +85,9 @@ namespace HelianzBusiness{
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
 				return Meth.GetObject<Fee>(MethodBase.GetCurrentMethod(),codeNum,feeSchedNum,clinicNum,provNum,doGetExactMatch);
 			}
+			//When feeSched=0 (patient/provider have no fee schedule assigned), search across all schedules.
+			//This handles multi-clinic scenarios where the patient is from a different clinic.
+			string feeSchedFilter=feeSchedNum>0 ? "AND fee.FeeSched="+POut.Long(feeSchedNum)+"" : "";
 			if(FeeScheds.IsGlobal(feeSchedNum) && !doGetExactMatch) {
 				clinicNum=0;
 				provNum=0;
@@ -95,7 +98,7 @@ namespace HelianzBusiness{
 				@"SELECT fee.*
 				FROM fee
 				WHERE fee.CodeNum="+POut.Long(codeNum)+@"
-				AND fee.FeeSched="+POut.Long(feeSchedNum)+@"
+				"+feeSchedFilter+@"
 				AND fee.ClinicNum="+POut.Long(clinicNum)+@"
 				AND fee.ProvNum="+POut.Long(provNum);
 			if(doGetExactMatch) {
@@ -107,7 +110,7 @@ namespace HelianzBusiness{
 				SELECT fee.*
 				FROM fee
 				WHERE fee.CodeNum="+POut.Long(codeNum)+@"
-				AND fee.FeeSched="+POut.Long(feeSchedNum)+@"
+				"+feeSchedFilter+@"
 				AND fee.ClinicNum=0
 				AND fee.ProvNum="+POut.Long(provNum);
 			//Clinic override
@@ -116,7 +119,7 @@ namespace HelianzBusiness{
 				SELECT fee.*
 				FROM fee
 				WHERE fee.CodeNum="+POut.Long(codeNum)+@"
-				AND fee.FeeSched="+POut.Long(feeSchedNum)+@"
+				"+feeSchedFilter+@"
 				AND fee.ClinicNum="+POut.Long(clinicNum)+@"
 				AND fee.ProvNum=0";
 			//Unassigned clinic with no override
@@ -125,7 +128,7 @@ namespace HelianzBusiness{
 				SELECT fee.*
 				FROM fee
 				WHERE fee.CodeNum="+POut.Long(codeNum)+@"
-				AND fee.FeeSched="+POut.Long(feeSchedNum)+@"
+				"+feeSchedFilter+@"
 				AND fee.ClinicNum=0
 				AND fee.ProvNum=0";
 			return Crud.FeeCrud.SelectOne(command);

@@ -1632,7 +1632,7 @@ namespace Helianz{
 					if(!isSilentUpdate) {
 						MsgBox.Show("Report Server: "+ex.Message);
 					}
-					return false;
+					//Do not block startup — report server unreachable is not fatal.
 				}
 			}
 			if((!string.IsNullOrEmpty(message))) {

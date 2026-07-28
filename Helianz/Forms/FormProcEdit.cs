@@ -853,6 +853,11 @@ namespace Helianz {
 				}//forloop
 			}//if toothrange
 			textProcFee.Text=_procedure.ProcFee.ToString("n");
+			//Recalculate fee on load if zero (multi-clinic: patient from another clinic)
+			if(_procedure.ProcFee==0 && _procedure.ProcStatus!=ProcStat.C) {
+				_procedure.ProcFee=Procedures.GetProcFee(_patient,_listPatPlans,_listInsSubs,_listInsPlans,_procedure,_listBenefits,_listFees);
+				textProcFee.Text=_procedure.ProcFee.ToString("n");
+			}
 		}
 
 		/// <summary>Takes in a list of controls and loops through to disable the necesary components</summary>
@@ -2329,6 +2334,11 @@ namespace Helianz {
 				textRevCode.Text,(EnumProcDrugUnit)comboDrugUnit.SelectedIndex,PIn.Float(textDrugQty.Text),(checkIsEmergency.Checked?ProcUrgency.Emergency:ProcUrgency.Normal),
 				comboProv.GetSelectedProvNum(),comboClinic.ClinicNumSelected
 			);
+			//Recalculate fee if clinic changed or fee is zero (multi-clinic: patient from another clinic)
+			if(_procedure.ClinicNum!=_procedureOld.ClinicNum || _procedure.ProcFee==0) {
+				_procedure.ProcFee=Procedures.GetProcFee(_patient,_listPatPlans,_listInsSubs,_listInsPlans,_procedure,_listBenefits,_listFees);
+				textProcFee.Text=_procedure.ProcFee.ToString("n");
+			}
 			ClaimProcs.TrySetProvFromProc(_procedure,_listClaimProcs);
 			#endregion Sync UI with object fields.
 			#region Verify security authorization for provider change and completed proc status change. Can also change a few procedure field values.

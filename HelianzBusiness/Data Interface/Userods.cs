@@ -82,6 +82,26 @@ namespace HelianzBusiness {
 			return Db.GetListString(command);
 		}
 
+		///<summary>Returns a dictionary mapping non-hidden user names to their ClinicNum.  Set hasOnlyCEMT to true if you only want non-hidden CEMT users.
+		///Used by FormLogOn to filter users by clinic.</summary>
+		public static SerializableDictionary<string,long> GetUserClinicMapNoCache(bool hasOnlyCEMT) {
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				return Meth.GetSerializableDictionary<string,long>(MethodBase.GetCurrentMethod(),hasOnlyCEMT);
+			}
+			string command=$@"SELECT userod.UserName, userod.ClinicNum FROM userod 
+				WHERE userod.IsHidden=0 
+				{ (PrefC.GetBool(PrefName.UserNameManualEntry) ? " " : " AND userod.UserNumCEMT"+(hasOnlyCEMT ? "!=" : "=")+@"0 ") }
+				ORDER BY userod.UserName";
+			DataTable table=Db.GetTable(command);
+			SerializableDictionary<string,long> dict=new SerializableDictionary<string,long>();
+			for(int i=0;i<table.Rows.Count;i++) {
+				string userName=PIn.String(table.Rows[i]["UserName"].ToString());
+				long clinicNum=PIn.Long(table.Rows[i]["ClinicNum"].ToString());
+				dict[userName]=clinicNum;
+			}
+			return dict;
+		}
+
 		///<summary>Returns a list all user names from the database.</summary>
 		public static List<string> GetUserNamesAllNoCache(bool isHidden=false) {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
@@ -341,14 +361,15 @@ namespace HelianzBusiness {
 		}
 
 		///<summary>Gets the first user with the matching userName passed in.  Not case sensitive.  Returns null if not found.
-		///Does not use the cache to find a corresponding user with the passed in userName.  Every middle tier call passes through here.</summary>
+		///Does not use the cache to find a corresponding user with the passed in userName.  Every middle tier call passes through here.
+		///Hidden users are allowed to authenticate (IsHidden only controls visibility in login lists, not authentication).</summary>
 		public static Userod GetUserByNameNoCache(string userName) {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
 				return Meth.GetObject<Userod>(MethodBase.GetCurrentMethod(),userName);
 			}
 			string command="SELECT * FROM userod WHERE UserName='"+POut.String(userName)+"'";
 			List<Userod> listUserods=Crud.UserodCrud.TableToList(Db.GetTable(command));
-			return listUserods.FirstOrDefault(x => !x.IsHidden && x.UserName.ToLower()==userName.ToLower());
+			return listUserods.FirstOrDefault(x => x.UserName.ToLower()==userName.ToLower());
 		}
 
 		///<summary>Gets the user by usernum. Skips the cache.</summary>

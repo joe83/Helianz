@@ -30,92 +30,125 @@ namespace Helianz {
 		private DispatcherTimer _dispatcherTimer;
 		///<summary>Keeps track of keyboard inputs. Will be cleared if any input entered is not a number as it is looking for an employee badge Id. Will also be cleared if the key inputs come in too slow to prevent users from typing out an Id manually. The correct way to fill this string is by using a badge scanner.</summary>
 		private string _keyboardInput="";
+	///<summary>Stores the selected clinic filter. -2 = All, 0 = Unassigned, >0 = specific clinic.</summary>
+	private long _clinicNumFilter=-2;
+	///<summary>Stores the user-to-clinic mapping for the current CEMT filter state. Refreshed when CEMT filter changes.</summary>
+	private Dictionary<string,long> _dictUserClinic=null;
 
-		///<summary>Set userNumSelected to automatically select the corresponding user in the list (if available).  Set isSimpleSwitch true if temporarily switching users for some reason.  This will leave Security.CurUser alone and will instead indicate which user was chosen / successfully logged in via CurUserSimpleSwitch.</summary>
-		public FormLogOn(long userNumSelected=0,bool isSimpleSwitch=false,bool doRefreshSecurityCache=true,bool doClearCaches=false) {
-			InitializeComponent();
-			InitializeLayoutManager();
-			Plugins.HookAddCode(this,"FormLogOn.InitializeComponent_end");
-			Lan.F(this);
-			if(userNumSelected > 0) {
-				_userNameAutoSelect=Userods.GetUserNameNoCache(userNumSelected);
-			}
-			else if(Security.CurUser!=null) {
-				_userNameAutoSelect=Security.CurUser.UserName;
-			}
-			_isSimpleSwitch=isSimpleSwitch;
-			_doRefreshSecurityCache=doRefreshSecurityCache;
-			_doClearCaches=doClearCaches;
-			_dispatcherTimer=new DispatcherTimer();
-			_dispatcherTimer.Interval=TimeSpan.FromMilliseconds(300);
-			//Faster than someone could type 8 digits.
-			//The card typically completes its input in 120ms.
-			_dispatcherTimer.Tick+=_dispatcherTimer_Tick;
+	///<summary>Set userNumSelected to automatically select the corresponding user in the list (if available).  Set isSimpleSwitch true if temporarily switching users for some reason.  This will leave Security.CurUser alone and will instead indicate which user was chosen / successfully logged in via CurUserSimpleSwitch.</summary>
+	public FormLogOn(long userNumSelected=0,bool isSimpleSwitch=false,bool doRefreshSecurityCache=true,bool doClearCaches=false) {
+		InitializeComponent();
+		InitializeLayoutManager();
+		Plugins.HookAddCode(this,"FormLogOn.InitializeComponent_end");
+		Lan.F(this);
+		if(userNumSelected > 0) {
+			_userNameAutoSelect=Userods.GetUserNameNoCache(userNumSelected);
 		}
-
-		private void FormLogOn_Load(object sender,EventArgs e) {
-			TextBox textSelectOnLoad=textPassword;
-			if(PrefC.GetBool(PrefName.UserNameManualEntry)) {
-				listUser.Visible=false;
-				labelFilterName.Visible=false;
-				textFilterName.Visible=false;
-				textUser.Visible=true;
-				textSelectOnLoad=textUser;//Focus should start with user name text box.
-			}
-			else {//Show a list of users.
-				//Only show the show CEMT user check box if not manually typing user names and there are CEMT users present in the db.
-				checkShowCEMTUsers.Visible=Userods.HasUsersForCEMTNoCache();
-			}
-			if(PrefC.GetBool(PrefName.SecurityBadgesRequirePassword)) {
-				labelSwipeBadge.Visible=false;
-			}
-			if(ODEnvironment.IsCloudServer) {
-				timerShutdownInstance.Enabled=true;
-			}
-			FillListBox();
-			this.Focus();//Attempted fix, customers had issue with UI not defaulting focus to this form on startup.
-			textSelectOnLoad.Select();//Give focus to appropriate text box.
-			Plugins.HookAddCode(this,"FormLogOn.Load_end",_isSimpleSwitch);
-			if(_doClearCaches) {
-				Cache.ClearCaches();//Clear all caches, as requested by the calling method
-			}
+		else if(Security.CurUser!=null) {
+			_userNameAutoSelect=Security.CurUser.UserName;
 		}
+		_isSimpleSwitch=isSimpleSwitch;
+		_doRefreshSecurityCache=doRefreshSecurityCache;
+		_doClearCaches=doClearCaches;
+		_dispatcherTimer=new DispatcherTimer();
+		_dispatcherTimer.Interval=TimeSpan.FromMilliseconds(300);
+		//Faster than someone could type 8 digits.
+		//The card typically completes its input in 120ms.
+		_dispatcherTimer.Tick+=_dispatcherTimer_Tick;
+		//Initialize the clinic filter to "All" (-2)
+		_clinicNumFilter=-2;
+	}
 
-		private void listUser_MouseUp(object sender,MouseEventArgs e) {
-			textPassword.Focus();
+	private void FormLogOn_Load(object sender,EventArgs e) {
+		TextBox textSelectOnLoad=textPassword;
+		if(PrefC.GetBool(PrefName.UserNameManualEntry)) {
+			listUser.Visible=false;
+			labelFilterName.Visible=false;
+			textFilterName.Visible=false;
+			textUser.Visible=true;
+			textSelectOnLoad=textUser;//Focus should start with user name text box.
 		}
+		else {//Show a list of users.
+			//Only show the show CEMT user check box if not manually typing user names and there are CEMT users present in the db.
+			checkShowCEMTUsers.Visible=Userods.HasUsersForCEMTNoCache();
+		}
+		if(PrefC.GetBool(PrefName.SecurityBadgesRequirePassword)) {
+			labelSwipeBadge.Visible=false;
+		}
+		if(ODEnvironment.IsCloudServer) {
+			timerShutdownInstance.Enabled=true;
+		}
+		//At login time, Security.CurUser is null, which causes ComboBoxClinicPicker to fail silently
+		//because it calls Clinics.GetForUserod(null). Pass a non-restricted dummy user so all clinics show.
+		comboClinic.SetUser(new Userod{ ClinicIsRestricted=false, ClinicNum=0 });
+		//Restore the last clinic filter selection from ComputerPrefs (if a specific clinic was previously selected).
+		long lastClinicNum=ComputerPrefs.LocalComputer.ClinicNum;
+		if(lastClinicNum!=-2 && lastClinicNum>=0) {
+			comboClinic.ClinicNumSelected=lastClinicNum;
+			_clinicNumFilter=lastClinicNum;
+		}
+		FillListBox();
+		this.Focus();//Attempted fix, customers had issue with UI not defaulting focus to this form on startup.
+		textSelectOnLoad.Select();//Give focus to appropriate text box.
+		Plugins.HookAddCode(this,"FormLogOn.Load_end",_isSimpleSwitch);
+		if(_doClearCaches) {
+			Cache.ClearCaches();//Clear all caches, as requested by the calling method
+		}
+	}
 
-		///<summary>Fills the User list with non-hidden, non-CEMT user names.  Only shows non-hidden CEMT users if Show CEMT users is checked.</summary>
-		private void FillListBox() {
-			listUser.Items.Clear();
-			List<string> listUserNames=Userods.GetUserNamesNoCache(checkShowCEMTUsers.Checked);
-			for(int i=0;i<listUserNames.Count;i++) {
-				if(textFilterName.Text!="" && !listUserNames[i].ToLower().StartsWith(textFilterName.Text.Trim().ToLower())) {
+	///<summary>Fills the User list with non-hidden, non-CEMT user names.  Only shows non-hidden CEMT users if Show CEMT users is checked.
+	///Also filters by the selected clinic in comboClinic.</summary>
+	private void FillListBox() {
+		listUser.Items.Clear();
+		//Refresh the user-clinic mapping when the CEMT filter changes
+		_dictUserClinic=Userods.GetUserClinicMapNoCache(checkShowCEMTUsers.Checked);
+		List<string> listUserNames=Userods.GetUserNamesNoCache(checkShowCEMTUsers.Checked);
+		for(int i=0;i<listUserNames.Count;i++) {
+			if(textFilterName.Text!="" && !listUserNames[i].ToLower().StartsWith(textFilterName.Text.Trim().ToLower())) {
+				continue;
+			}
+			//Apply clinic filter (only if not "All")
+			if(_clinicNumFilter!=-2) {
+				long userClinicNum=0;
+				_dictUserClinic.TryGetValue(listUserNames[i],out userClinicNum);
+				if(userClinicNum!=_clinicNumFilter) {
 					continue;
 				}
-				listUser.Items.Add(listUserNames[i]);
-				if(_userNameAutoSelect!=null && _userNameAutoSelect.Trim().ToLower()==listUserNames[i].Trim().ToLower()) {
-					listUser.SelectedIndex=listUser.Items.Count-1;
-				}
 			}
-			if(listUser.SelectedIndex==-1 && listUser.Items.Count>0){//It is possible there are no users in the list if all users are CEMT users.
-				listUser.SelectedIndex=0;
+			listUser.Items.Add(listUserNames[i]);
+			if(_userNameAutoSelect!=null && _userNameAutoSelect.Trim().ToLower()==listUserNames[i].Trim().ToLower()) {
+				listUser.SelectedIndex=listUser.Items.Count-1;
 			}
 		}
-
-		private void checkShowCEMTUsers_CheckedChanged(object sender,EventArgs e) {
-			FillListBox();
+		if(listUser.SelectedIndex==-1 && listUser.Items.Count>0){//It is possible there are no users in the list if all users are CEMT users.
+			listUser.SelectedIndex=0;
 		}
+	}
 
-		private void textFilterName_TextChanged(object sender,EventArgs e) {
-			FillListBox();
-		}
+	private void checkShowCEMTUsers_CheckedChanged(object sender,EventArgs e) {
+		FillListBox();
+	}
 
-		private void timerShutdownInstance_Tick(object sender,EventArgs e) {
-			//If the timer ticks that means IsWeb() is enabled and the user has sat at the login window too long. We want this to behave exactly like
-			//the user clicked Exit to shut down the software.
-			DialogResult=DialogResult.Cancel;
+	private void comboClinic_SelectionChangeCommitted(object sender,EventArgs e) {
+		_clinicNumFilter=comboClinic.ClinicNumSelected;
+		//Persist the selected clinic to ComputerPrefs so it's remembered for next login.
+		//Only persist valid clinic numbers (skip "All" which is -2).
+		if(_clinicNumFilter!=-2) {
+			ComputerPrefs.LocalComputer.ClinicNum=_clinicNumFilter;
+			ComputerPrefs.Update(ComputerPrefs.LocalComputer);
 		}
+		FillListBox();
+	}
+
+	private void textFilterName_TextChanged(object sender,EventArgs e) {
+		FillListBox();
+	}
+
+	private void timerShutdownInstance_Tick(object sender,EventArgs e) {
+		//If the timer ticks that means IsWeb() is enabled and the user has sat at the login window too long. We want this to behave exactly like
+		//the user clicked Exit to shut down the software.
+		DialogResult=DialogResult.Cancel;
+	}
 
 		///<summary>Looks for input from badge reader. Will open FrmUserodHistory if there is a user matching the input ID. The timer interval should be faster a user could type.</summary>
 		private void _dispatcherTimer_Tick(object sender,EventArgs e) {

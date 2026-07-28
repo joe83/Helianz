@@ -47,12 +47,14 @@ namespace Helianz {
 			this.labelFilterName = new System.Windows.Forms.Label();
 			this.textFilterName = new System.Windows.Forms.TextBox();
 			this.labelSwipeBadge = new System.Windows.Forms.Label();
+			this.labelClinic = new System.Windows.Forms.Label();
+			this.comboClinic = new Helianz.UI.ComboBoxClinicPicker();
 			this.SuspendLayout();
 			// 
 			// butOK
 			// 
 			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butOK.Location = new System.Drawing.Point(445, 328);
+			this.butOK.Location = new System.Drawing.Point(445, 352);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 1;
@@ -62,7 +64,7 @@ namespace Helianz {
 			// butBack
 			//
 			this.butBack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.butBack.Location = new System.Drawing.Point(14, 328);
+			this.butBack.Location = new System.Drawing.Point(14, 352);
 			this.butBack.Name = "butBack";
 			this.butBack.Size = new System.Drawing.Size(75, 26);
 			this.butBack.TabIndex = 10;
@@ -71,15 +73,14 @@ namespace Helianz {
 			// 
 			// listUser
 			// 
-			this.listUser.Location = new System.Drawing.Point(74, 38);
+			this.listUser.Location = new System.Drawing.Point(74, 62);
 			this.listUser.Name = "listUser";
-			this.listUser.Size = new System.Drawing.Size(141, 316);
+			this.listUser.Size = new System.Drawing.Size(141, 292);
 			this.listUser.TabIndex = 2;
-			this.listUser.MouseUp += new System.Windows.Forms.MouseEventHandler(this.listUser_MouseUp);
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(14, 39);
+			this.label1.Location = new System.Drawing.Point(14, 63);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(59, 18);
 			this.label1.TabIndex = 6;
@@ -88,7 +89,7 @@ namespace Helianz {
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(222, 39);
+			this.label2.Location = new System.Drawing.Point(222, 63);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(68, 18);
 			this.label2.TabIndex = 7;
@@ -97,7 +98,7 @@ namespace Helianz {
 			// 
 			// textPassword
 			// 
-			this.textPassword.Location = new System.Drawing.Point(291, 38);
+			this.textPassword.Location = new System.Drawing.Point(291, 62);
 			this.textPassword.Name = "textPassword";
 			this.textPassword.PasswordChar = '*';
 			this.textPassword.Size = new System.Drawing.Size(215, 20);
@@ -105,7 +106,7 @@ namespace Helianz {
 			// 
 			// textUser
 			// 
-			this.textUser.Location = new System.Drawing.Point(74, 38);
+			this.textUser.Location = new System.Drawing.Point(74, 62);
 			this.textUser.Name = "textUser";
 			this.textUser.Size = new System.Drawing.Size(141, 20);
 			this.textUser.TabIndex = 8;
@@ -113,7 +114,7 @@ namespace Helianz {
 			// 
 			// checkShowCEMTUsers
 			// 
-			this.checkShowCEMTUsers.Location = new System.Drawing.Point(291, 95);
+			this.checkShowCEMTUsers.Location = new System.Drawing.Point(291, 119);
 			this.checkShowCEMTUsers.Name = "checkShowCEMTUsers";
 			this.checkShowCEMTUsers.Size = new System.Drawing.Size(213, 24);
 			this.checkShowCEMTUsers.TabIndex = 9;
@@ -145,17 +146,38 @@ namespace Helianz {
 			// 
 			// labelSwipeBadge
 			// 
-			this.labelSwipeBadge.Location = new System.Drawing.Point(288, 60);
+			this.labelSwipeBadge.Location = new System.Drawing.Point(288, 84);
 			this.labelSwipeBadge.Name = "labelSwipeBadge";
 			this.labelSwipeBadge.Size = new System.Drawing.Size(214, 18);
 			this.labelSwipeBadge.TabIndex = 28;
 			this.labelSwipeBadge.Text = "or swipe your badge";
 			this.labelSwipeBadge.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
+			// labelClinic
+			// 
+			this.labelClinic.Location = new System.Drawing.Point(22, 37);
+			this.labelClinic.Name = "labelClinic";
+			this.labelClinic.Size = new System.Drawing.Size(51, 18);
+			this.labelClinic.TabIndex = 29;
+			this.labelClinic.Text = "Clinic";
+			this.labelClinic.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// comboClinic
+			// 
+			this.comboClinic.IncludeAll = true;
+			this.comboClinic.IncludeUnassigned = true;
+			this.comboClinic.Location = new System.Drawing.Point(74, 35);
+			this.comboClinic.Name = "comboClinic";
+			this.comboClinic.Size = new System.Drawing.Size(141, 21);
+			this.comboClinic.TabIndex = 30;
+			this.comboClinic.SelectionChangeCommitted += new System.EventHandler(this.comboClinic_SelectionChangeCommitted);
+			// 
 			// FormLogOn
 			// 
 			this.AcceptButton = this.butOK;
-			this.ClientSize = new System.Drawing.Size(532, 367);
+			this.ClientSize = new System.Drawing.Size(532, 391);
+			this.Controls.Add(this.comboClinic);
+			this.Controls.Add(this.labelClinic);
 			this.Controls.Add(this.labelSwipeBadge);
 			this.Controls.Add(this.textFilterName);
 			this.Controls.Add(this.labelFilterName);
@@ -191,5 +213,7 @@ namespace Helianz {
 		private System.Windows.Forms.Label labelFilterName;
 		private System.Windows.Forms.TextBox textFilterName;
 		private System.Windows.Forms.Label labelSwipeBadge;
+	private System.Windows.Forms.Label labelClinic;
+	private Helianz.UI.ComboBoxClinicPicker comboClinic;
 	}
 }

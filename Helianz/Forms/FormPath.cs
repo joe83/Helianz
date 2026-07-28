@@ -625,43 +625,6 @@ namespace Helianz{
 			}
 			// Toggle SFTP/S3 field visibility
 			UpdateHybridBackendUI();
-			// Auto-regenerate rclone config from server-stored credentials so every
-			// client gets a working config without needing to manually re-save.
-			RegenerateHybridConfig();
-		}
-
-		///<summary>Writes the rclone config file directly from database-stored credentials.
-		///Called on every LoadHybridSetup() so any client auto-generates its config from server data.
-		///Reads ProgramProperties and Prefs directly from DB — does NOT rely on member variables
-		///that may not be populated yet. Uses the DB-stored backend type preference.</summary>
-		private void RegenerateHybridConfig() {
-			try {
-				bool isS3=(RcloneSync.GetBackendType()==HybridBackendType.S3);
-				// Read credentials directly from ProgramProperties (DB), not member variables.
-				long progNum=Programs.GetProgramNum(ProgramName.SFTP);
-				if(isS3) {
-					string provider=ProgramProperties.GetPropVal(progNum,PropDescHybridS3Provider);
-					string endpoint=ProgramProperties.GetPropVal(progNum,PropDescHybridS3Endpoint);
-					string region=ProgramProperties.GetPropVal(progNum,PropDescHybridS3Region);
-					string bucket=ProgramProperties.GetPropVal(progNum,PropDescHybridS3Bucket);
-					string ak=DecryptPropVal(ProgramProperties.GetPropVal(progNum,PropDescHybridS3AccessKey));
-					string sk=DecryptPropVal(ProgramProperties.GetPropVal(progNum,PropDescHybridS3SecretKey));
-					if(!string.IsNullOrEmpty(endpoint) && !string.IsNullOrEmpty(bucket)) {
-						RcloneSync.WriteS3ConfigFile(endpoint,region,bucket,provider,ak,sk);
-					}
-				}
-				else {
-					string host=ProgramProperties.GetPropVal(progNum,PropDescHybridSftpHost);
-					string user=ProgramProperties.GetPropVal(progNum,PropDescHybridSftpUser);
-					if(!string.IsNullOrEmpty(host) && !string.IsNullOrEmpty(user)) {
-						RcloneSync.WriteConfigFile(host,user,GetHybridSshKeyPath());
-					}
-				}
-			}
-			catch(Exception ex) {
-				// Log but don't block — config will be written on explicit Save.
-				Logger.openlog.LogMB("Hybrid config regeneration failed: "+ex.Message,Logger.Severity.WARNING);
-			}
 		}
 
 		///<summary>Decrypts a property value string from the database. Returns empty string if null or decryption fails.</summary>
@@ -713,7 +676,6 @@ namespace Helianz{
 
 		private void butHybridTestConnection_Click(object sender,EventArgs e) {
 			string rclonePath=GetRclonePath();
-			// 1. Check rclone binary
 			try {
 				string ver=RcloneSync.RunRcloneCommand("version");
 				MsgBox.Show(this,"rclone found: "+ver);
@@ -723,65 +685,18 @@ namespace Helianz{
 				return;
 			}
 			bool isS3=(comboHybridBackend.SelectedIndex==1);
-			if(isS3) {
-				// Validate S3 fields
-				string s3Provider=textHybridS3Provider.Text.Trim();
-				string s3Endpoint=textHybridS3Endpoint.Text.Trim();
-				string s3Region=textHybridS3Region.Text.Trim();
-				string s3Bucket=textHybridS3Bucket.Text.Trim();
-				string s3AccessKey=textHybridS3AccessKey.Text;
-				string s3SecretKey=textHybridS3SecretKey.Text;
-				if(string.IsNullOrEmpty(s3Endpoint) || string.IsNullOrEmpty(s3Bucket)) {
-					MsgBox.Show(this,"S3 Endpoint and Bucket are required.");
-					return;
-				}
-				if(string.IsNullOrEmpty(s3AccessKey) || string.IsNullOrEmpty(s3SecretKey)) {
-					MsgBox.Show(this,"S3 Access Key and Secret Key are required.");
-					return;
-				}
-				try {
-					RcloneSync.WriteS3ConfigFile(s3Endpoint,s3Region,s3Bucket,s3Provider,s3AccessKey,s3SecretKey);
-					string configPath=RcloneSync.GetConfigFilePath();
-					string args="lsf helianz-media: --config \""+configPath+"\" --max-depth 1";
-					string output=RcloneSync.RunRcloneCommand(args);
-					RcloneSync.InvalidateAvailabilityCache();
-					MsgBox.Show(this,"S3 connection successful!\nBucket root contents:\n"+output);
-				}
-				catch(Exception ex) {
-					MsgBox.Show(this,"S3 connection failed: "+ex.Message);
-				}
+			HybridBackendType backendType=isS3 ? HybridBackendType.S3 : HybridBackendType.SFTP;
+			try {
+				string args="lsf helianz-media: --max-depth 1";
+				string output=RcloneSync.RunRcloneCommandTest(args,backendType,
+					textHybridSftpHost.Text.Trim(),textHybridSftpUser.Text.Trim(),textHybridSftpPass.Text,
+					textHybridS3Provider.Text.Trim(),textHybridS3Endpoint.Text.Trim(),textHybridS3Region.Text.Trim(),
+					textHybridS3AccessKey.Text,textHybridS3SecretKey.Text);
+				RcloneSync.InvalidateAvailabilityCache();
+				MsgBox.Show(this,"Connection successful!\nRemote root contents:\n"+output);
 			}
-			else {
-				// SFTP test (existing logic)
-				string host=textHybridSftpHost.Text.Trim();
-				string user=textHybridSftpUser.Text.Trim();
-				string pass=textHybridSftpPass.Text;
-				string keyFile=GetHybridSshKeyPath();
-				if(string.IsNullOrEmpty(host) || string.IsNullOrEmpty(user)) {
-					MsgBox.Show(this,"SFTP host and username are required.");
-					return;
-				}
-				try {
-					if(!string.IsNullOrEmpty(_hybridSshKeyEncrypted) && !File.Exists(HybridSshKeyAppDataPath)) {
-						string keyContent="";
-						if(CDT.Class1.DecryptSftp(_hybridSshKeyEncrypted,out keyContent)) {
-							string appDataDir=Path.GetDirectoryName(HybridSshKeyAppDataPath);
-							if(!Directory.Exists(appDataDir)) {
-								Directory.CreateDirectory(appDataDir);
-							}
-							File.WriteAllText(HybridSshKeyAppDataPath,keyContent);
-						}
-					}
-					RcloneSync.WriteConfigFile(host,user,keyFile);
-					string configPath=RcloneSync.GetConfigFilePath();
-					string args="lsf helianz-media: --config \""+configPath+"\" --max-depth 1";
-					string output=RcloneSync.RunRcloneCommand(args,pass);
-					RcloneSync.InvalidateAvailabilityCache();
-					MsgBox.Show(this,"Connection successful!\nRemote root contents:\n"+output);
-				}
-				catch(Exception ex) {
-					MsgBox.Show(this,"SFTP connection failed: "+ex.Message);
-				}
+			catch(Exception ex) {
+				MsgBox.Show(this,"Connection failed: "+ex.Message);
 			}
 		}
 
@@ -876,23 +791,22 @@ namespace Helianz{
 			}
 		}
 
-		///<summary>Safely updates a Pref value. Prefs.UpdateString only does UPDATE — 
-		///if the row doesn't exist yet, it silently skips the DB write and the cache
-		///doesn't have the pref, causing "invalid pref name" errors. This method
-		///INSERTs the row and refreshes the cache so UpdateString succeeds.</summary>
+		///<summary>Safely updates a Pref value. Uses INSERT ... ON DUPLICATE KEY UPDATE
+		///to handle both new and existing rows in a single round-trip.
+		///Works correctly on MT mode (no blind catch that swallows ConnectionLost).</summary>
 		private void UpdatePrefSafe(PrefName prefName,string newValue) {
-			string checkCmd="SELECT COUNT(*) FROM preference WHERE PrefName='"+POut.String(prefName.ToString())+"'";
-			int count=int.Parse(DataCore.GetScalar(checkCmd));
-			if(count==0) {
-				string insertCmd="INSERT INTO preference (PrefName,ValueString) VALUES("
-					+"'"+POut.String(prefName.ToString())+"',"
-					+"'"+POut.String(newValue)+"')";
-				DataCore.NonQ(insertCmd);
-				// Refresh the in-memory cache so Prefs.UpdateString doesn't throw
-				// "invalid pref name" when it can't find the new pref in cache.
-				Prefs.RefreshCache();
-			}
-			Prefs.UpdateString(prefName,newValue);
+			// Use UPSERT: works whether the row exists or not, single DB round-trip.
+			// PrefName is the PK, so ON DUPLICATE KEY UPDATE triggers when row already exists.
+			string command="INSERT INTO preference (PrefName,ValueString) VALUES("
+				+"'"+POut.String(prefName.ToString())+"',"
+				+"'"+POut.String(newValue)+"') "
+				+"ON DUPLICATE KEY UPDATE ValueString='"+POut.String(newValue)+"'";
+			DataCore.NonQ(command);
+			// Update local cache so subsequent reads reflect the new value.
+			Pref pref=new Pref();
+			pref.PrefName=prefName.ToString();
+			pref.ValueString=newValue;
+			Prefs.UpdateValueForKey(pref);
 		}
 
 				#endregion
@@ -1016,22 +930,7 @@ namespace Helianz{
 				UpdatePrefSafe(PrefName.RcloneRemoteName,"helianz-media");
 				UpdatePrefSafe(PrefName.RcloneServerPath,textHybridServerPath.Text.Trim());
 				DataValid.SetInvalid(InvalidType.Prefs);
-				// Write rclone config file based on backend type
-				if(isS3) {
-					RcloneSync.WriteS3ConfigFile(
-						textHybridS3Endpoint.Text.Trim(),
-						textHybridS3Region.Text.Trim(),
-						textHybridS3Bucket.Text.Trim(),
-						textHybridS3Provider.Text.Trim(),
-						textHybridS3AccessKey.Text,
-						textHybridS3SecretKey.Text);
-				}
-				else {
-					RcloneSync.WriteConfigFile(
-						textHybridSftpHost.Text.Trim(),
-						textHybridSftpUser.Text.Trim(),
-						GetHybridSshKeyPath());
-				}
+				// Config is passed on-the-fly via env vars — no config file needed.
 				RcloneSync.InvalidateAvailabilityCache();
 			}
 

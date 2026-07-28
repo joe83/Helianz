@@ -4142,7 +4142,7 @@ namespace Helianz {
 			}
 			Procedure procedure=new Procedure();
 			procedure.ProcStatus=ProcStat.C;
-			procedure.ClinicNum=_patient.ClinicNum;
+			procedure.ClinicNum=Clinics.ClinicNum>0 ? Clinics.ClinicNum : _patient.ClinicNum;
 			procedure.CodeNum=procedurecode.CodeNum;
 			procedure.DateEntryC=DateTime.Now;
 			procedure.DateTP=DateTime.Now;

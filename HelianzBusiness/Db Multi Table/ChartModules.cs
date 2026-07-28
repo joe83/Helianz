@@ -270,6 +270,13 @@ namespace HelianzBusiness {
 					}
 					row["ProcDate"]=dateT;
 					double amt = PIn.Double(rowProc["ProcFee"].ToString());
+					//If stored fee is zero, do live lookup using current clinic (multi-clinic: patient from another clinic)
+					if(amt==0) {
+						long codeNum=PIn.Long(rowProc["CodeNum"].ToString());
+						long clinicNum=PIn.Long(rowProc["ClinicNum"].ToString());
+						long provNum=PIn.Long(rowProc["ProvNum"].ToString());
+						amt=Fees.GetAmount0(codeNum,0,clinicNum,provNum);
+					}
 					int qty = PIn.Int(rowProc["UnitQty"].ToString()) + PIn.Int(rowProc["BaseUnits"].ToString());
 					if(qty>0) {
 						amt *= qty;
@@ -2184,7 +2191,7 @@ namespace HelianzBusiness {
 			//This strategy for assigning procnum is consistent here, in the Chart Module, but it doesn't seem to be used anywhere else.
 			//For example, in the Appt Module, for recall, etc, the proc is simply whatever appointment we are in.
 			procedure.ProvNum=procedureCode.ProvNumDefault;//use proc default prov if set
-			procedure.ClinicNum=patientData.Patient.ClinicNum;
+			procedure.ClinicNum=Clinics.ClinicNum>0 ? Clinics.ClinicNum : patientData.Patient.ClinicNum;
 			if(procedure.ProvNum==0) {//no proc default prov set, check for appt prov, then use pri prov
 				long provPri=patientData.Patient.PriProv;
 				long provSec=patientData.Patient.SecProv;

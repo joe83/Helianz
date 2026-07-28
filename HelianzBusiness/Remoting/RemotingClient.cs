@@ -342,20 +342,47 @@ namespace HelianzBusiness {
 		///<summary>Optionally set hasConnectionLost true to keep the calling thread here until a connection to the Middle Tier connection can be established
 		///in the event of a web connection failure. Set hasConnectionLost to false if a throw is desired when a connection cannot be made.</summary>
 		internal static string SendAndReceive(DataTransferObject dto,bool hasConnectionLost=true) {
-			//Anyone trying to invoke a method other than CheckUserAndPassword must first check the current HasLoginFailed status as to not call the middle tier too often.
-			bool isCheckUserAndPassword=(dto.MethodName==nameof(HelianzBusiness)+"."+nameof(Userods)+"."+nameof(Userods.CheckUserAndPassword));
-			if(!isCheckUserAndPassword && HasLoginFailed) {
-				throw new ODException("Invalid username or password.",ODException.ErrorCodes.CheckUserAndPasswordFailed);
+			try {
+				//Anyone trying to invoke a method other than CheckUserAndPassword must first check the current HasLoginFailed status as to not call the middle tier too often.
+				bool isCheckUserAndPassword=(dto.MethodName==nameof(HelianzBusiness)+"."+nameof(Userods)+"."+nameof(Userods.CheckUserAndPassword));
+				if(!isCheckUserAndPassword && HasLoginFailed) {
+					throw new ODException("Invalid username or password.",ODException.ErrorCodes.CheckUserAndPasswordFailed);
+				}
+				string dtoString=dto.Serialize();
+				IHelianzServer service=HelianzBusiness.WebServices.HelianzServerProxy.GetHelianzServerInstance();
+				DiagLog("SendAndReceive",$"URL={ServerURI} method={dto.MethodName} hasConnectionLost={hasConnectionLost}");
+				string result=SendAndReceiveRecursive(service,dtoString,hasConnectionLost);
+				//If SendAndReceiveRecursive returned null, the connection was lost on the UI thread in silent mode.
+				//Throw ODException so the Meth layer can return a default value instead of crashing.
+				if(result==null && HasSilentConnectionRetry && HasMiddleTierConnectionFailed) {
+					throw new ODException("Middle Tier connection lost.",ODException.ErrorCodes.ConnectionLost);
+				}
+				return result;
 			}
-			string dtoString=dto.Serialize();
-			IHelianzServer service=HelianzBusiness.WebServices.HelianzServerProxy.GetHelianzServerInstance();
-			string result=SendAndReceiveRecursive(service,dtoString,hasConnectionLost);
-			//If SendAndReceiveRecursive returned null, the connection was lost on the UI thread in silent mode.
-			//Throw ODException so the Meth layer can return a default value instead of crashing.
-			if(result==null && HasSilentConnectionRetry && HasMiddleTierConnectionFailed) {
-				throw new ODException("Middle Tier connection lost.",ODException.ErrorCodes.ConnectionLost);
+			catch(SocketException sex) {
+				DiagLog("SocketException",$"URL={ServerURI} method={dto?.MethodName} msg={sex.Message}");
+				throw new WebException($"Socket error: {sex.Message}",sex,WebExceptionStatus.ConnectFailure,null);
 			}
-			return result;
+			catch(WebException wex) {
+				DiagLog("WebException",$"URL={ServerURI} method={dto?.MethodName} status={wex.Status} msg={wex.Message}");
+				throw;
+			}
+			catch(InvalidOperationException iox) {
+				DiagLog("InvalidOp",$"URL={ServerURI} method={dto?.MethodName} msg={iox.Message} inner={iox.InnerException?.Message}");
+				throw;
+			}
+			catch(Exception ex) when (!(ex is ODException)) {
+				DiagLog("FATAL",$"URL={ServerURI} method={dto?.MethodName} type={ex.GetType().FullName} msg={ex.Message} stack={ex.StackTrace}");
+				throw;
+			}
+		}
+
+		private static void DiagLog(string tag,string msg) {
+			try {
+				string path=Path.Combine(Path.GetTempPath(),"Helianz_Diag.log");
+				File.AppendAllText(path,$"{DateTime.Now:HH:mm:ss.fff} [Remoting.{tag}] {msg}\n");
+			}
+			catch { }
 		}
 
 		///<summary>Tries to process the dto passed in.  If there was a web connection failure then this method will keep the calling thread here 
