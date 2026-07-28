@@ -942,7 +942,9 @@ namespace Helianz {
 					}
 				}
 			}
-			Patient patient=Patients.CreateNewPatient(textLName.Text,textFName.Text,PIn.Date(textBirthdate.Text),priProv,Clinics.ClinicNum
+			string lNameAdd=_isIndonesianLocale ? textFName.Text : textLName.Text;
+			string fNameAdd=_isIndonesianLocale ? textLName.Text : textFName.Text;
+			Patient patient=Patients.CreateNewPatient(lNameAdd,fNameAdd,PIn.Date(textBirthdate.Text),priProv,Clinics.ClinicNum
 				,Lang.g(this,"Created from Select Patient window."),patStatus:PatientStatus.Deleted);
 			Family family=Patients.GetFamily(patient.PatNum);
 			if(Plugins.HookMethod(this,"FormPatientSelect.butAddPt_Click_showForm",patient,family)) {
@@ -977,11 +979,14 @@ namespace Helianz {
 				return;
 			}
 			FrmPatientAddAll frmPatientAddAll=new FrmPatientAddAll();
-			if(textLName.Text.Length>1){//eg Sp
-				frmPatientAddAll.LName=textLName.Text.Substring(0,1).ToUpper()+textLName.Text.Substring(1);
+			// When Indonesian locale, labels are swapped: textLName is "Nama Depan", textFName is "Nama Belakang".
+			string lNameAdd=_isIndonesianLocale ? textFName.Text : textLName.Text;
+			string fNameAdd=_isIndonesianLocale ? textLName.Text : textFName.Text;
+			if(lNameAdd.Length>1){
+				frmPatientAddAll.LName=lNameAdd.Substring(0,1).ToUpper()+lNameAdd.Substring(1);
 			}
-			if(textFName.Text.Length>1){
-				frmPatientAddAll.FName=textFName.Text.Substring(0,1).ToUpper()+textFName.Text.Substring(1);
+			if(fNameAdd.Length>1){
+				frmPatientAddAll.FName=fNameAdd.Substring(0,1).ToUpper()+fNameAdd.Substring(1);
 			}
 			if(textBirthdate.Text.Length>1) {
 				frmPatientAddAll.Birthdate=PIn.Date(textBirthdate.Text);

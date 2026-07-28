@@ -193,6 +193,10 @@ namespace Helianz {
 
 		private void FrmPatientAddAll_Load(object sender,EventArgs e) {
 			Lang.F(this);
+			// Indonesian locale: swap First Name above Last Name for all columns.
+			if(Currency.IsIndonesianLocale()) {
+				SwapIndonesianNameFields();
+			}
 			labelRequiredFields.Visible=false;
 			textPhone1.TextChanged+=PatientL.ValidPhone_TextChanged;
 			textPhone2.TextChanged+=PatientL.ValidPhone_TextChanged;
@@ -478,6 +482,10 @@ namespace Helianz {
 			_listRequiredFields.RemoveAll(x => x.FieldName==RequiredFieldName.EmergencyPhone);
 			_listRequiredFields.RemoveAll(x => x.FieldName==RequiredFieldName.SexualOrientation);
 			_listRequiredFields.RemoveAll(x => x.FieldName==RequiredFieldName.GenderIdentity);
+			// Indonesian locale: focus on First Name (textFName1) since it's now the first field.
+			if(Currency.IsIndonesianLocale()) {
+				textFName1.Focus();
+			}
 		}
 
 		//<summary>Puts an asterisk next to the label and highlights the textbox/listbox/combobox/radiobutton background for all RequiredFields that
@@ -3303,6 +3311,27 @@ namespace Helianz {
 			catch(Exception ex) {
 				MessageBox.Show(ex.Message);
 			}
+		}
+
+		///<summary>Swaps Y-positions so First Name appears above Last Name for all 5 patient columns.</summary>
+		private void SwapIndonesianNameFields() {
+			// Swap column labels (after swap, labelFName is on top, labelLName is on bottom)
+			SwapMargins(labelLName,labelFName);
+			labelFName.Text="Nama Depan";   // now at top position
+			labelLName.Text="Nama Belakang"; // now at bottom position
+			// Swap all 5 columns
+			SwapMargins(textLName1,textFName1);
+			SwapMargins(textLName2,textFName2);
+			SwapMargins(textLName3,textFName3);
+			SwapMargins(textLName4,textFName4);
+			SwapMargins(textLName5,textFName5);
+		}
+
+		private static void SwapMargins(System.Windows.FrameworkElement a,System.Windows.FrameworkElement b) {
+			double topA=a.Margin.Top;
+			double topB=b.Margin.Top;
+			a.Margin=new Thickness(a.Margin.Left,topB,a.Margin.Right,a.Margin.Bottom);
+			b.Margin=new Thickness(b.Margin.Left,topA,b.Margin.Right,b.Margin.Bottom);
 		}
 
 	}

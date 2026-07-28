@@ -242,16 +242,21 @@ End of Checklist================================================================
 			textSalutation.Text=Patient.Salutation;
 			textIceName.Text=_patientNote.ICEName;
 			textIcePhone.Text=_patientNote.ICEPhone;
-			/*
-			// Indonesian locale: relabel name fields to match local naming conventions.
-			if (Currency.IsIndonesianLocale()) {
-				labelLName.Text = "Nama Belakang / Marga (opsional)";
-				labelFName.Text = "Nama Lengkap";
-				labelPreferredAndMiddleI.Text = "Nama Panggilan / Nama Tengah";
-				labelTitle.Text = "Gelar";
+			// Indonesian locale: relabel and reorder name fields so First Name appears first.
+			if(Currency.IsIndonesianLocale()) {
+				labelLName.Text="Nama Belakang";
+				labelFName.Text="Nama Depan";
+				// Swap visual positions: First Name (textFName) above Last Name (textLName).
+				int yLName=textLName.Location.Y;
+				int yFName=textFName.Location.Y;
+				textLName.Location=new System.Drawing.Point(textLName.Location.X,yFName);
+				textFName.Location=new System.Drawing.Point(textFName.Location.X,yLName);
+				Point lblLocL=labelLName.Location;
+				Point lblLocF=labelFName.Location;
+				labelLName.Location=new System.Drawing.Point(lblLocL.X,lblLocF.Y);
+				labelFName.Location=new System.Drawing.Point(lblLocF.X,lblLocL.Y);
 			}
-			*/
-			_ehrPatient =EhrPatients.Refresh(Patient.PatNum);
+			_ehrPatient=EhrPatients.Refresh(Patient.PatNum);
 			if(PrefC.GetBool(PrefName.ShowFeatureEhr)) {//Show mother's maiden name UI if using EHR.
 				labelMotherMaidenFname.Visible=true;
 				textMotherMaidenFname.Visible=true;
@@ -600,7 +605,13 @@ End of Checklist================================================================
 			SetRequiredFields();
 			//Selecting textLName must happen at the end of load to avoid events from accessing class wide variables that have yet to be loaded.
 			//This was a bug because calling Select() was firing textBox_Leave which was accessing _listRequiredFields while it was null.
-			textLName.Select();
+			//For Indonesian locale, focus on Nama Lengkap (textFName) instead.
+			if(Currency.IsIndonesianLocale()) {
+				textFName.Select();
+			}
+			else {
+				textLName.Select();
+			}
 			FillSpecialty();
 			FillComboZip();
 			_isLoad=false;
