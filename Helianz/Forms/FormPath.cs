@@ -791,22 +791,18 @@ namespace Helianz{
 			}
 		}
 
-		///<summary>Safely updates a Pref value. Uses INSERT ... ON DUPLICATE KEY UPDATE
-		///to handle both new and existing rows in a single round-trip.
-		///Works correctly on MT mode (no blind catch that swallows ConnectionLost).</summary>
+		///<summary>Safely updates a Pref value. Ensures the row exists in DB first
+		///(via MT-safe RcloneSync.EnsurePrefRowExists), then updates via Prefs.UpdateString.</summary>
 		private void UpdatePrefSafe(PrefName prefName,string newValue) {
-			// Use UPSERT: works whether the row exists or not, single DB round-trip.
-			// PrefName is the PK, so ON DUPLICATE KEY UPDATE triggers when row already exists.
-			string command="INSERT INTO preference (PrefName,ValueString) VALUES("
-				+"'"+POut.String(prefName.ToString())+"',"
-				+"'"+POut.String(newValue)+"') "
-				+"ON DUPLICATE KEY UPDATE ValueString='"+POut.String(newValue)+"'";
-			DataCore.NonQ(command);
-			// Update local cache so subsequent reads reflect the new value.
-			Pref pref=new Pref();
-			pref.PrefName=prefName.ToString();
-			pref.ValueString=newValue;
-			Prefs.UpdateValueForKey(pref);
+			if(!Prefs.GetContainsKey(prefName.ToString())) {
+				// Add to cache + ensure DB row exists (MT-safe via RcloneSync).
+				Pref pref=new Pref();
+				pref.PrefName=prefName.ToString();
+				pref.ValueString=newValue;
+				Prefs.UpdateValueForKey(pref);
+				RcloneSync.EnsurePrefRowExists(prefName,newValue);
+			}
+			Prefs.UpdateString(prefName,newValue);
 		}
 
 				#endregion

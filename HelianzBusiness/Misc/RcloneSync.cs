@@ -1,7 +1,9 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using CodeBase;
+using DataConnectionBase;
 
 namespace HelianzBusiness {
 	///<summary>Wraps rclone CLI operations for hybrid media sync to/from a central server.
@@ -510,5 +512,22 @@ namespace HelianzBusiness {
 		}
 
 		#endregion
+
+		///<summary>Ensures a preference row exists in the database.
+		///Works on both direct DB and Middle Tier by routing through Meth/RemotingClient.
+		///Call this when a new PrefName enum value may not have a row in the preference table yet.</summary>
+		public static void EnsurePrefRowExists(PrefName prefName,string initialValue) {
+			string name=prefName.ToString();
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				Meth.GetVoid(MethodBase.GetCurrentMethod(),prefName,initialValue);
+				return;
+			}
+			string checkCmd="SELECT COUNT(*) FROM preference WHERE PrefName='"+POut.String(name)+"'";
+			if(Db.GetCount(checkCmd)=="0") {
+				string insertCmd="INSERT INTO preference (PrefName,ValueString) VALUES("
+					+"'"+POut.String(name)+"','"+POut.String(initialValue)+"')";
+				Db.NonQ(insertCmd);
+			}
+		}
 	}
 }
