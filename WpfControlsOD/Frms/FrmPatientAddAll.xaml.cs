@@ -482,9 +482,10 @@ namespace Helianz {
 			_listRequiredFields.RemoveAll(x => x.FieldName==RequiredFieldName.EmergencyPhone);
 			_listRequiredFields.RemoveAll(x => x.FieldName==RequiredFieldName.SexualOrientation);
 			_listRequiredFields.RemoveAll(x => x.FieldName==RequiredFieldName.GenderIdentity);
-			// Indonesian locale: focus on First Name (textFName1) since it's now the first field.
+			// Indonesian locale: focus on First Name (textFName1) since it's now the first field, cursor at end.
 			if(Currency.IsIndonesianLocale()) {
 				textFName1.Focus();
+				textFName1.SelectionStart=textFName1.Text.Length;
 			}
 		}
 

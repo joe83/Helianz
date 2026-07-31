@@ -605,9 +605,10 @@ End of Checklist================================================================
 			SetRequiredFields();
 			//Selecting textLName must happen at the end of load to avoid events from accessing class wide variables that have yet to be loaded.
 			//This was a bug because calling Select() was firing textBox_Leave which was accessing _listRequiredFields while it was null.
-			//For Indonesian locale, focus on Nama Lengkap (textFName) instead.
+			//For Indonesian locale, focus on Nama Depan (textFName) instead, cursor at end.
 			if(Currency.IsIndonesianLocale()) {
 				textFName.Select();
+				textFName.SelectionStart=textFName.Text.Length;
 			}
 			else {
 				textLName.Select();
