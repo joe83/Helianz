@@ -542,7 +542,12 @@ namespace Helianz{
 
 		private void LoadHybridSetup() {
 			textHybridLocalPath.Text=PrefC.GetString(PrefName.DocPath);
-			// Determine backend type
+			if(string.IsNullOrEmpty(textHybridLocalPath.Text)) {
+				// Default: per-user LocalAppData — always writable, no admin needed.
+				textHybridLocalPath.Text=Path.Combine(
+					Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+					"Helianz","AtoZ");
+			}
 			HybridBackendType backendType=RcloneSync.GetBackendType();
 			comboHybridBackend.SelectedIndex=(backendType==HybridBackendType.S3) ? 1 : 0;
 			// Load SFTP credentials from ProgramProperties (where butSave_Click stores them)

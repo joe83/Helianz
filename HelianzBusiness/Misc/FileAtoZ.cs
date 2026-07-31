@@ -44,7 +44,19 @@ namespace HelianzBusiness.FileIO {
 					return GetValidPathFromString(replicationAtoZ)?.Trim();
 				}
 				//use this to handle possible multiple paths separated by semicolons.
-				return GetValidPathFromString(PrefC.GetString(PrefName.DocPath))?.Trim();
+				string docPath=PrefC.GetString(PrefName.DocPath);
+				if(!string.IsNullOrEmpty(docPath)) {
+					return GetValidPathFromString(docPath)?.Trim();
+				}
+				// Hybrid mode fallback: use per-user LocalAppData — always writable, no admin needed.
+				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
+					string defaultPath=Path.Combine(
+						Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+						"Helianz","AtoZ");
+					Directory.CreateDirectory(defaultPath);
+					return defaultPath;
+				}
+				return null;
 			}
 			//If you got here you are using a cloud storage method.
 			return CloudStorage.AtoZPath?.Trim();
