@@ -2241,7 +2241,7 @@ namespace HelianzBusiness {
 			}
 			else {
 				procedure.MedicalCode=procedureCode.MedicalCode;
-				procedure.ProcFee=Procedures.GetProcFee(patientData.Patient,patientData.ListPatPlans,patientData.ListInsSubs,patientData.ListInsPlans,procedure,listFees:listFees);
+				procedure.ProcFee=Procedures.GetProcFee(patientData.Patient,patientData.ListPatPlans,patientData.ListInsSubs,patientData.ListInsPlans,procedure);//Do NOT pass listFees - it may not include the procedure provider's FeeSched (listProvNumsTreat was null when listFees was built).
 				//Calculate Share from Fee table's ProviderShare
 				long feeSchedForShare;
 				if(PrefC.GetBool(PrefName.MedicalFeeUsedForNewProcs) && !string.IsNullOrEmpty(procedure.MedicalCode)) {
@@ -2250,7 +2250,7 @@ namespace HelianzBusiness {
 				else {
 					feeSchedForShare=FeeScheds.GetFeeSched(patientData.Patient,patientData.ListInsPlans,patientData.ListPatPlans,patientData.ListInsSubs,procedure.ProvNum);
 				}
-				Fee feeForShare=Fees.GetFee(procedure.CodeNum,feeSchedForShare,procedure.ClinicNum,procedure.ProvNum,listFees);
+				Fee feeForShare=Fees.GetFee(procedure.CodeNum,feeSchedForShare,procedure.ClinicNum,procedure.ProvNum);//Do NOT pass listFees - it may not include the procedure provider's FeeSched (listProvNumsTreat was null when listFees was built).
 				procedure.Share=(feeForShare!=null ? feeForShare.ProviderShare : 0);
 			}
 			if(procStatNew==ProcStat.C 

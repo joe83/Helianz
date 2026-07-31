@@ -2,14 +2,56 @@
 -- Helianz Post-Upgrade Completer Script
 -- ============================================================================
 -- Purpose: Converts an "incomplete" helianz database (freshly auto-upgraded 
---          from cdental/OD11 → OD24) into a fully functional Helianz database
+--          from cdental/OD11 -> OD24) into a fully functional Helianz database
 --          with proper groups, permissions, branding, and user assignments.
 --
 -- Use: Run this AFTER the Helianz app has completed its automatic schema 
---      upgrade (ConvertDatabases chain from 11.0.36 → 24.3.49).
+--      upgrade (ConvertDatabases chain from 11.0.36 -> 24.3.49).
 --
+-- IMPORTANT: This script is idempotent - safe to run multiple times.
 -- Run: mysql -u root -p"password" helianz < Upgrade-HelianzComplete.sql
 -- ============================================================================
+
+-- ============================================================================
+-- STEP 0: ENSURE IDEMPOTENCY - add unique indexes to prevent duplicate inserts
+-- ============================================================================
+-- grouppermission and usergroupattach have auto-increment PKs but no unique
+-- constraint on their business keys. Without a unique index, INSERT IGNORE
+-- cannot detect duplicates. We add business-key indexes so INSERT IGNORE
+-- will skip rows that already exist on subsequent runs.
+-- If duplicates already exist from prior runs, we clean only those exact
+-- duplicates (keeping the oldest row) so the index can be created.
+
+-- grouppermission: deduplicate then add unique index
+DELETE g1 FROM grouppermission g1
+INNER JOIN grouppermission g2 
+WHERE g1.GroupPermNum > g2.GroupPermNum 
+  AND g1.UserGroupNum = g2.UserGroupNum 
+  AND g1.PermType = g2.PermType 
+  AND g1.FKey = g2.FKey;
+SET @sql_gp = IF(
+    (SELECT COUNT(*) FROM information_schema.statistics 
+     WHERE table_schema=DATABASE() AND table_name='grouppermission' AND index_name='idx_gp_bizkey') = 0,
+    'ALTER TABLE grouppermission ADD UNIQUE INDEX idx_gp_bizkey (UserGroupNum, PermType, FKey)',
+    'SELECT ''idx_gp_bizkey already exists'' AS msg'
+);
+PREPARE stmt FROM @sql_gp; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- usergroupattach: deduplicate then add unique index
+DELETE ua1 FROM usergroupattach ua1
+INNER JOIN usergroupattach ua2
+WHERE ua1.UserGroupAttachNum > ua2.UserGroupAttachNum
+  AND ua1.UserNum = ua2.UserNum
+  AND ua1.UserGroupNum = ua2.UserGroupNum;
+SET @sql_ua = IF(
+    (SELECT COUNT(*) FROM information_schema.statistics
+     WHERE table_schema=DATABASE() AND table_name='usergroupattach' AND index_name='idx_ua_bizkey') = 0,
+    'ALTER TABLE usergroupattach ADD UNIQUE INDEX idx_ua_bizkey (UserNum, UserGroupNum)',
+    'SELECT ''idx_ua_bizkey already exists'' AS msg'
+);
+PREPARE stmt FROM @sql_ua; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SELECT 'Idempotency indexes ensured' AS Status;
 
 -- ============================================================================
 -- STEP 1: ADD MISSING USER GROUPS (5-12)
@@ -395,6 +437,42 @@ SELECT CONCAT('Cdental artifacts removed: ', ROW_COUNT()) AS Status;
 ALTER TABLE appointment ADD COLUMN IF NOT EXISTS QueueLabel VARCHAR(20) NOT NULL DEFAULT '';
 ALTER TABLE histappointment ADD COLUMN IF NOT EXISTS QueueLabel VARCHAR(20) NOT NULL DEFAULT '';
 SELECT 'Schema additions applied (QueueLabel columns)' AS Status;
+
+-- ============================================================================
+-- STEP 10: MT_SERVICE GROUP (for HelianzServer middle-tier)
+-- ============================================================================
+-- This group exists solely so the 'helianz' service user can log in via
+-- FormCentralChooseDatabase. No grouppermission entries are needed —
+-- CheckUserAndPassword only validates credentials, not permissions.
+INSERT IGNORE INTO usergroup (UserGroupNum, Description) VALUES (13, 'MT_Service');
+SELECT 'MT_Service group created' AS Status;
+
+-- ============================================================================
+-- STEP 11: DEFAULT USERS (Admin + helianz)
+-- ============================================================================
+-- Password for both users: 12345
+-- Hash generated with SHA3-512 (same format as Authentication.GenerateLoginDetails)
+SET @pw_hash = 'SHA3_512$l0Wg6gEuHbHwVW94JAWoMnn6xEm+VPPwozZ6TeHl0dSRWpi3RyB1rPsbbJlGgWPdGEglIpiwZiEAPDYvJSG9cg==$BRcdWig1xZCHeXOFhmitOZyTXDZtkosgJMZB0jPxUTgIyJ5PUOAlIULuvL8naYZOHS5doV0xl9jJEOJ1cKxZOg==';
+
+-- Admin user (full permissions, group 1)
+SET @admin_exists = (SELECT COUNT(*) FROM userod WHERE UserName = 'Admin');
+SET @next_num = (SELECT COALESCE(MAX(UserNum),0) + 1 FROM userod);
+INSERT IGNORE INTO userod (UserNum, UserName, Password, UserGroupNum, IsHidden, PasswordIsStrong)
+SELECT @next_num, 'Admin', @pw_hash, 1, 0, 1 WHERE @admin_exists = 0;
+UPDATE userod SET Password = @pw_hash, PasswordIsStrong = 1, IsHidden = 0 WHERE UserName = 'Admin';
+INSERT IGNORE INTO usergroupattach (UserNum, UserGroupNum)
+SELECT UserNum, 1 FROM userod WHERE UserName = 'Admin';
+
+-- helianz service user (MT_Service group 13, choose-database only)
+SET @helianz_exists = (SELECT COUNT(*) FROM userod WHERE UserName = 'helianz');
+SET @next_num = (SELECT COALESCE(MAX(UserNum),0) + 1 FROM userod);
+INSERT IGNORE INTO userod (UserNum, UserName, Password, UserGroupNum, IsHidden, PasswordIsStrong)
+SELECT @next_num, 'helianz', @pw_hash, 13, 0, 1 WHERE @helianz_exists = 0;
+UPDATE userod SET Password = @pw_hash, PasswordIsStrong = 1, IsHidden = 0 WHERE UserName = 'helianz';
+INSERT IGNORE INTO usergroupattach (UserNum, UserGroupNum)
+SELECT UserNum, 13 FROM userod WHERE UserName = 'helianz';
+
+SELECT CONCAT('Users ready: Admin + helianz (password=12345)') AS Status;
 
 -- ============================================================================
 -- VERIFICATION QUERIES
