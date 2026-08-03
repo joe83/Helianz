@@ -20,32 +20,37 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.odmobile.domain.ScheduleViewModel
 import com.example.odmobile.ui.theme.*
+import org.koin.androidx.compose.koinViewModel
 
 data class Appointment(
-    val time: String,
-    val patient: String,
-    val procedure: String,
-    val status: String,
-    val statusColor: Color,
-    val duration: String
+    val time: String, val patient: String, val procedure: String,
+    val status: String, val statusColor: Color, val duration: String
 )
 
 @Composable
-fun ScheduleScreen() {
+fun ScheduleScreen(vm: ScheduleViewModel = koinViewModel()) {
+    val state by vm.state.collectAsState()
     val scrollState = rememberScrollState()
-    var selectedDay by remember { mutableStateOf(3) } // Today is the 3rd
+    var selectedDay by remember { mutableStateOf(3) }
 
-    val appointments = listOf(
-        Appointment("8:00 AM", "John Barker", "New Patient Exam", "Confirmed", Success, "60m"),
-        Appointment("9:00 AM", "Maria Garcia", "Filling #30", "In Chair", Warning, "45m"),
-        Appointment("10:00 AM", "David Lee", "Crown Seat #19", "Scheduled", Primary, "60m"),
-        Appointment("11:00 AM", "BREAK", "", "Break", TextSecondary, "30m"),
-        Appointment("1:00 PM", "Sarah Mitchell", "Crown Prep #14", "Here", Warning, "90m"),
-        Appointment("2:45 PM", "James Rodriguez", "Cleaning, Exam", "Confirmed", Success, "45m"),
-        Appointment("3:30 PM", "Emily Chen", "Root Canal #19", "Scheduled", Primary, "90m"),
-        Appointment("5:00 PM", "Robert Kim", "Crown Delivery", "Scheduled", Primary, "60m")
-    )
+    LaunchedEffect(Unit) { vm.loadToday() }
+
+    val appointments = state.appointments.map { apt ->
+        val time = apt.aptDateTime.let { if (it.length >= 16) it.substring(11, 16) else "" }
+        val hour = if (time.isNotEmpty()) time.substring(0, 2).toIntOrNull() ?: 0 else 0
+        val ampm = if (hour >= 12) "PM" else "AM"
+        val displayHour = if (hour > 12) hour - 12 else if (hour == 0) 12 else hour
+        Appointment(
+            "$displayHour:${if (time.length >= 5) time.substring(3, 5) else "00"} $ampm",
+            apt.patientName,
+            apt.appointmentTypeName ?: apt.note ?: "Appointment",
+            when (apt.aptStatus) { 1 -> "Scheduled"; 2 -> "Complete"; else -> "Pending" },
+            when (apt.aptStatus) { 1 -> Primary; 2 -> Success; else -> Warning },
+            "${apt.length}m"
+        )
+    }
 
     Column(
         modifier = Modifier

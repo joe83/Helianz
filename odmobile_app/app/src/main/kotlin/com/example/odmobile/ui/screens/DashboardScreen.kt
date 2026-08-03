@@ -10,7 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,11 +22,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.odmobile.Screen
+import com.example.odmobile.domain.DashboardViewModel
 import com.example.odmobile.ui.theme.*
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun DashboardScreen(navController: NavController) {
+fun DashboardScreen(navController: NavController, vm: DashboardViewModel = koinViewModel()) {
+    val state by vm.state.collectAsState()
     val scrollState = rememberScrollState()
+
+    LaunchedEffect(Unit) { vm.load() }
 
     Column(
         modifier = Modifier
@@ -58,11 +63,12 @@ fun DashboardScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         // Stats
+        val kpi = state.kpi
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            StatCard("12", "Today's Appts")
-            StatCard("3", "Waiting Room")
-            StatCard("$4.2k", "Production")
-            StatCard("5", "Pending Rx")
+            StatCard("${state.todayAppointments.size}", "Today's Appts")
+            StatCard("${kpi?.waitingRoom ?: 0}", "Waiting Room")
+            StatCard("Rp ${"%,.0f".format(kpi?.todayProduction ?: 0.0)}", "Production")
+            StatCard("${kpi?.pendingRx ?: 0}", "Pending Rx")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -70,25 +76,29 @@ fun DashboardScreen(navController: NavController) {
         // Up Next
         Card(shape = RoundedCornerShape(16.dp)) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically) {
                     Text("Up Next", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
-                    Badge(containerColor = Color(0xFFDBEAFE), contentColor = Primary) {
-                        Text("2:15 PM", fontSize = 11.sp)
-                    }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                AppointmentItem("2:15", "PM", "Sarah Mitchell", "Crown Prep #14, X-rays", "Here", Warning) {
-                    navController.navigate("patient_detail/Sarah Mitchell")
-                }
-                AppointmentItem("2:45", "PM", "James Rodriguez", "Cleaning, Exam", "Confirmed", Success) {
-                    navController.navigate("patient_detail/James Rodriguez")
-                }
-                AppointmentItem("3:30", "PM", "Emily Chen", "Root Canal #19", "Scheduled", Primary) {
-                    navController.navigate("patient_detail/Emily Chen")
+                if (state.todayAppointments.isEmpty()) {
+                    Text("No appointments today", color = TextSecondary)
+                } else {
+                    state.todayAppointments.take(5).forEach { apt ->
+                        val time = apt.aptDateTime.let {
+                            if (it.length >= 16) it.substring(11, 16) else ""
+                        }
+                        val hour = if (time.isNotEmpty()) time.substring(0, 2).toIntOrNull() ?: 0 else 0
+                        AppointmentItem(
+                            time = if (hour > 12) "${hour - 12}" else if (hour == 0) "12" else "$hour",
+                            ampm = if (hour >= 12) "PM" else "AM",
+                            name = apt.patientName,
+                            proc = apt.appointmentTypeName ?: apt.note ?: "Appointment",
+                            status = when (apt.aptStatus) { 1 -> "Scheduled"; 2 -> "Complete"; else -> "Pending" },
+                            statusColor = when (apt.aptStatus) { 1 -> Primary; 2 -> Success; else -> Warning },
+                            onClick = { navController.navigate("patient_detail/${apt.patientName}#${apt.patNum}") }
+                        )
+                    }
                 }
             }
         }

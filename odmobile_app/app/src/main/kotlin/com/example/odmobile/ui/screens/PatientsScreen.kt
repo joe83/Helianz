@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,33 +22,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.odmobile.domain.PatientsViewModel
 import com.example.odmobile.ui.theme.*
+import org.koin.androidx.compose.koinViewModel
 
-data class Patient(
-    val name: String,
-    val dob: String,
-    val id: String,
-    val avatarGradient: List<Color>
+// Gradients for avatar circles
+private val avatarGradients = listOf(
+    listOf(Color(0xFF667EEA), Color(0xFF764BA2)),
+    listOf(Color(0xFFF093FB), Color(0xFFF5576C)),
+    listOf(Color(0xFF4FACFE), Color(0xFF00F2FE)),
+    listOf(Color(0xFF43E97B), Color(0xFF38F9D7)),
+    listOf(Color(0xFFFA709A), Color(0xFFFEE140)),
+    listOf(Color(0xFFA8EDEA), Color(0xFFFED6E3)),
 )
 
 @Composable
-fun PatientsScreen(navController: NavController) {
+fun PatientsScreen(navController: NavController, vm: PatientsViewModel = koinViewModel()) {
+    val state by vm.state.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     var selectedFilter by remember { mutableStateOf("All") }
     val filters = listOf("All", "Today", "Recall Due", "Outstanding")
 
-    val patients = listOf(
-        Patient("Sarah Mitchell", "05/12/1985", "#10421", listOf(Color(0xFF667EEA), Color(0xFF764BA2))),
-        Patient("James Rodriguez", "11/23/1972", "#10422", listOf(Color(0xFFF093FB), Color(0xFFF5576C))),
-        Patient("Emily Chen", "03/08/1990", "#10423", listOf(Color(0xFF4FACFE), Color(0xFF00F2FE))),
-        Patient("Robert Kim", "07/19/1965", "#10424", listOf(Color(0xFF43E97B), Color(0xFF38F9D7))),
-        Patient("Lisa Wang", "09/30/1988", "#10425", listOf(Color(0xFFFA709A), Color(0xFFFEE140))),
-        Patient("Michael Torres", "01/14/1978", "#10426", listOf(Color(0xFFA8EDEA), Color(0xFFFED6E3)))
-    )
-
-    val filtered = patients.filter {
-        it.name.contains(searchQuery, ignoreCase = true)
-    }
+    LaunchedEffect(searchQuery) { vm.search(searchQuery.ifBlank { null }) }
+    LaunchedEffect(Unit) { vm.search() }
 
     Column(
         modifier = Modifier
@@ -56,7 +53,7 @@ fun PatientsScreen(navController: NavController) {
             .padding(16.dp)
     ) {
         Text("Patients", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        Text("1,247 active patients", color = TextSecondary, fontSize = 14.sp)
+        Text("${state.totalCount} active patients", color = TextSecondary, fontSize = 14.sp)
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -90,17 +87,27 @@ fun PatientsScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(12.dp))
 
         // Patient List
-        filtered.forEach { patient ->
-            PatientListItem(patient) {
-                navController.navigate("patient_detail/${patient.name}")
+        if (state.isLoading) {
+            Box(Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
             }
-            Spacer(modifier = Modifier.height(8.dp))
+        } else {
+            state.patients.forEachIndexed { idx, patient ->
+                val initials = "${patient.fName.take(1)}${patient.lName.take(1)}"
+                val dob = patient.birthdate.take(10)
+                val id = "#${patient.patNum}"
+                val gradient = avatarGradients[idx % avatarGradients.size]
+                PatientListItem(initials, "${patient.lName}, ${patient.fName}", dob, id, gradient) {
+                    navController.navigate("patient_detail/${patient.lName}, ${patient.fName}#${patient.patNum}")
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
         }
     }
 }
 
 @Composable
-fun PatientListItem(patient: Patient, onClick: () -> Unit) {
+fun PatientListItem(initials: String, name: String, dob: String, id: String, gradient: List<Color>, onClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier
@@ -111,24 +118,14 @@ fun PatientListItem(patient: Patient, onClick: () -> Unit) {
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(CircleShape)
-                    .background(Brush.linearGradient(patient.avatarGradient)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    patient.name.split(" ").map { it[0] }.joinToString(""),
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
+            Box(modifier = Modifier.size(44.dp).clip(CircleShape)
+                .background(Brush.linearGradient(gradient)), contentAlignment = Alignment.Center) {
+                Text(initials, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
             }
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(patient.name, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
-                Text("DOB: ${patient.dob} • ID: ${patient.id}", fontSize = 12.sp, color = TextSecondary)
+                Text(name, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                Text("DOB: $dob • ID: $id", fontSize = 12.sp, color = TextSecondary)
             }
             Icon(Icons.Default.ChevronRight, null, tint = TextSecondary)
         }

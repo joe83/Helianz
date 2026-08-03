@@ -19,10 +19,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.odmobile.domain.PatientDetailViewModel
 import com.example.odmobile.ui.theme.*
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun PatientDetailScreen(patientName: String, navController: NavController) {
+fun PatientDetailScreen(patientName: String, navController: NavController, patNum: Long = 0L,
+                        vm: PatientDetailViewModel = koinViewModel()) {
+    val state by vm.state.collectAsState()
+
+    LaunchedEffect(patNum) { if (patNum > 0) vm.load(patNum) }
+
+    val patient = state.patient
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Info", "Treatment", "Chart", "Account")
     val initials = patientName.split(" ").map { it[0] }.joinToString("")
