@@ -1,3 +1,45 @@
 {
-    "cmake.ignoreCMakeListsMissing": true
+    "cmake.ignoreCMakeListsMissing": true,
+
+    // ── Java & Kotlin ──────────────────────────────────────────
+    "java.jdt.ls.java.home": "C:\\Users\\MJO\\jdk17\\jdk-17.0.17+10",
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-17",
+            "path": "C:\\Users\\MJO\\jdk17\\jdk-17.0.17+10",
+            "default": true
+        }
+    ],
+    "java.import.gradle.java.home": "C:\\Users\\MJO\\jdk17\\jdk-17.0.17+10",
+    "java.import.gradle.enabled": true,
+    "java.import.gradle.wrapper.enabled": true,
+    "java.import.gradle.arguments": "-Dorg.gradle.jvmargs=-Xmx2048M",
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.configuration.updateBuildConfiguration": "automatic",
+
+    // ── Kotlin Language Server ─────────────────────────────────
+    "kotlin.languageServer.enabled": true,
+    "kotlin.languageServer.path": "",
+    "kotlin.javaHome": "C:\\Users\\MJO\\jdk17\\jdk-17.0.17+10",
+    "kotlin.debug.enabled": true,
+
+    // ── Gradle ─────────────────────────────────────────────────
+    "gradle.nestedProjects": true,
+    "gradle.reuseTerminals": "all",
+    "gradle.javaDebug.cleanOutput": true,
+
+    // ── Android ────────────────────────────────────────────────
+    "java.import.gradle.offline.enabled": false,
+
+    // ── Files ──────────────────────────────────────────────────
+    "files.exclude": {
+        "**/.gradle": true,
+        "**/build": true,
+        "**/.kotlin": true
+    },
+    "files.watcherExclude": {
+        "**/.gradle/**": true,
+        "**/build/**": true,
+        "**/.kotlin/**": true
+    }
 }

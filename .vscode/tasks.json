@@ -1,0 +1,203 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        // ────────────────────────────────────────────────────────
+        // helianz_mobile  (KMP Compose Multiplatform)
+        // ────────────────────────────────────────────────────────
+        {
+            "label": "mobile: assembleDebug",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["assembleDebug"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_mobile" },
+            "group": { "kind": "build", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+        {
+            "label": "mobile: installDebug",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["installDebug"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_mobile" },
+            "group": { "kind": "build", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+        {
+            "label": "mobile: clean",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["clean"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_mobile" },
+            "group": { "kind": "build", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+        {
+            "label": "mobile: test",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["test"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_mobile" },
+            "group": { "kind": "test", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+
+        // ────────────────────────────────────────────────────────
+        // helianz_mobile_app  (KMP Compose Multiplatform)
+        // ────────────────────────────────────────────────────────
+        {
+            "label": "app: assembleDebug",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["assembleDebug"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_mobile_app" },
+            "group": { "kind": "build", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+        {
+            "label": "app: installDebug",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["installDebug"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_mobile_app" },
+            "group": { "kind": "build", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+        {
+            "label": "app: clean",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["clean"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_mobile_app" },
+            "group": { "kind": "build", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+        {
+            "label": "app: test",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["test"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_mobile_app" },
+            "group": { "kind": "test", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+
+        // ────────────────────────────────────────────────────────
+        // helianz_qris_mirror_kotlin  (Standard Android)
+        // ────────────────────────────────────────────────────────
+        {
+            "label": "qris: assembleDebug",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["assembleDebug"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_qris_mirror_kotlin" },
+            "group": { "kind": "build", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+        {
+            "label": "qris: installDebug",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["installDebug"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_qris_mirror_kotlin" },
+            "group": { "kind": "build", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+        {
+            "label": "qris: clean",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["clean"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_qris_mirror_kotlin" },
+            "group": { "kind": "build", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+        {
+            "label": "qris: test",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["test"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_qris_mirror_kotlin" },
+            "group": { "kind": "test", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+
+        // ────────────────────────────────────────────────────────
+        // odmobile_app  (Jetpack Compose - ODMobile template)
+        // ────────────────────────────────────────────────────────
+        {
+            "label": "odmobile: assembleDebug",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["assembleDebug"],
+            "options": { "cwd": "${workspaceFolder}\\odmobile_app" },
+            "group": { "kind": "build", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+        {
+            "label": "odmobile: installDebug",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["installDebug"],
+            "options": { "cwd": "${workspaceFolder}\\odmobile_app" },
+            "group": { "kind": "build", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+        {
+            "label": "odmobile: clean",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["clean"],
+            "options": { "cwd": "${workspaceFolder}\\odmobile_app" },
+            "group": { "kind": "build", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+        {
+            "label": "odmobile: test",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["test"],
+            "options": { "cwd": "${workspaceFolder}\\odmobile_app" },
+            "group": { "kind": "test", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+
+        // ────────────────────────────────────────────────────────
+        // ADB helpers
+        // ────────────────────────────────────────────────────────
+        {
+            "label": "adb: list devices",
+            "type": "shell",
+            "command": "D:\\Android\\SDK\\platform-tools\\adb.exe",
+            "args": ["devices", "-l"],
+            "problemMatcher": []
+        },
+        {
+            "label": "adb: launch mobile",
+            "type": "shell",
+            "command": "D:\\Android\\SDK\\platform-tools\\adb.exe",
+            "args": ["shell", "am", "start", "-n", "com.helianz.dashboard/.MainActivity"],
+            "problemMatcher": []
+        },
+        {
+            "label": "adb: launch app",
+            "type": "shell",
+            "command": "D:\\Android\\SDK\\platform-tools\\adb.exe",
+            "args": ["shell", "am", "start", "-n", "com.helianz.app/.MainActivity"],
+            "problemMatcher": []
+        },
+        {
+            "label": "adb: launch qris",
+            "type": "shell",
+            "command": "D:\\Android\\SDK\\platform-tools\\adb.exe",
+            "args": ["shell", "am", "start", "-n", "com.helianz.qrismirror/.MainActivity"],
+            "problemMatcher": []
+        },
+        {
+            "label": "adb: launch odmobile",
+            "type": "shell",
+            "command": "D:\\Android\\SDK\\platform-tools\\adb.exe",
+            "args": ["shell", "am", "start", "-n", "com.example.odmobile/.MainActivity"],
+            "problemMatcher": []
+        }
+    ]
+}

@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug helianz_mobile (attach)",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": 8700,
+            "preLaunchTask": "mobile: installDebug",
+            "postDebugTask": "adb: launch mobile"
+        },
+        {
+            "type": "java",
+            "name": "Debug helianz_mobile_app (attach)",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": 8701,
+            "preLaunchTask": "app: installDebug",
+            "postDebugTask": "adb: launch app"
+        },
+        {
+            "type": "java",
+            "name": "Debug QRIS Mirror (attach)",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": 8702,
+            "preLaunchTask": "qris: installDebug",
+            "postDebugTask": "adb: launch qris"
+        }
+    ]
+}
