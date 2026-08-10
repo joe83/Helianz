@@ -16,24 +16,24 @@ public class ReferenceDataService
         using var conn = _db.CreateConnection();
 
         var providers = (await conn.QueryAsync<Provider>(@"
-            SELECT ProvNum, Abbr, FName, LName, ClinicNum, IsHidden, IsSecondary, Specialty
+            SELECT ProvNum, Abbr, FName, LName, 0 AS ClinicNum, IsHidden, IsSecondary, Specialty
             FROM provider WHERE IsHidden = 0 ORDER BY LName")).ToList();
 
         var operatories = (await conn.QueryAsync<Operatory>(@"
-            SELECT OperatoryNum, OpName, ClinicNum, ProvDentist, ProvHygienist, IsHidden, SetOrder
-            FROM operatory WHERE IsHidden = 0 ORDER BY SetOrder")).ToList();
+            SELECT OperatoryNum, OpName, ClinicNum, ProvDentist, ProvHygienist, IsHidden, ItemOrder AS SetOrder
+            FROM operatory WHERE IsHidden = 0 ORDER BY ItemOrder")).ToList();
 
         var procedureCodes = (await conn.QueryAsync<ProcedureCode>(@"
             SELECT pc.CodeNum, pc.ProcCode, pc.Descript, pc.AbbrDesc,
-                   pc.ProcCat, def.ItemName AS ProcCatName, pc.ProcFee,
-                   pc.IsHygiene, pc.PaintType, pc.TreatmentArea
+                   pc.ProcCat, def.ItemName AS ProcCatName, 0 AS ProcFee,
+                   pc.IsHygiene, pc.PaintType, '' AS TreatmentArea
             FROM procedurecode pc
             LEFT JOIN definition def ON pc.ProcCat = def.DefNum
             ORDER BY pc.ProcCode")).ToList();
 
         var appointmentTypes = (await conn.QueryAsync<AppointmentType>(@"
             SELECT AppointmentTypeNum, AppointmentTypeName, Pattern,
-                   CodeStr, CodeStrRequired, Length
+                   CodeStr, CodeStrRequired, 0 AS Length
             FROM appointmenttype ORDER BY AppointmentTypeName")).ToList();
 
         var paymentTypes = (await conn.QueryAsync<Definition>(@"
@@ -44,6 +44,14 @@ public class ReferenceDataService
             SELECT DefNum, ItemName, Category, ItemOrder
             FROM definition WHERE Category = 2 ORDER BY ItemOrder")).ToList();
 
+        var clinics = (await conn.QueryAsync<ClinicInfo>(@"
+            SELECT ClinicNum, Description, Address, City, Phone, IsHidden
+            FROM clinic WHERE IsHidden = 0 ORDER BY Description")).ToList();
+
+        var confirmedStatuses = (await conn.QueryAsync<Definition>(@"
+            SELECT DefNum, ItemName, Category, ItemOrder
+            FROM definition ORDER BY Category, ItemOrder")).ToList();
+
         return new ReferenceData
         {
             Providers = providers,
@@ -51,7 +59,9 @@ public class ReferenceDataService
             ProcedureCodes = procedureCodes,
             AppointmentTypes = appointmentTypes,
             PaymentTypes = paymentTypes,
-            CommTypes = commTypes
+            CommTypes = commTypes,
+            ConfirmedStatuses = confirmedStatuses,
+            Clinics = clinics
         };
     }
 }

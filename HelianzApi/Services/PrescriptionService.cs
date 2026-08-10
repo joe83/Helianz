@@ -35,12 +35,12 @@ public class PrescriptionService
         }
         if (req.DateFrom.HasValue)
         {
-            conditions.Add("rx.DateRx >= @DateFrom");
+            conditions.Add("rx.RxDate >= @DateFrom");
             parameters.Add("DateFrom", req.DateFrom.Value.Date);
         }
         if (req.DateTo.HasValue)
         {
-            conditions.Add("rx.DateRx < @DateTo");
+            conditions.Add("rx.RxDate < @DateTo");
             parameters.Add("DateTo", req.DateTo.Value.Date.AddDays(1));
         }
 
@@ -57,16 +57,16 @@ public class PrescriptionService
                    CONCAT(p.LName, ', ', p.FName) AS PatientName,
                    rx.ClinicNum, rx.ProvNum,
                    prov.Abbr AS ProvName,
-                   rx.Drug, rx.Sig, rx.Disp, rx.Refills, rx.Note,
-                   rx.DateRx, rx.IsControlled,
-                   rx.PharmacyNum, ph.PharmacyName,
+                   rx.Drug, rx.Sig, rx.Disp, rx.Refills, rx.Notes AS Note,
+                   rx.RxDate, rx.IsControlled,
+                   rx.PharmacyNum, ph.StoreName AS PharmacyName,
                    rx.DateTStamp
             FROM rxpat rx
             LEFT JOIN patient p ON rx.PatNum = p.PatNum
             LEFT JOIN provider prov ON rx.ProvNum = prov.ProvNum
             LEFT JOIN pharmacy ph ON rx.PharmacyNum = ph.PharmacyNum
             {where}
-            ORDER BY rx.DateRx DESC
+            ORDER BY rx.RxDate DESC
             LIMIT @PageSize OFFSET @Offset";
 
         var prescriptions = (await conn.QueryAsync<Prescription>(sql, parameters)).ToList();
@@ -89,9 +89,9 @@ public class PrescriptionService
                    CONCAT(p.LName, ', ', p.FName) AS PatientName,
                    rx.ClinicNum, rx.ProvNum,
                    prov.Abbr AS ProvName,
-                   rx.Drug, rx.Sig, rx.Disp, rx.Refills, rx.Note,
-                   rx.DateRx, rx.IsControlled,
-                   rx.PharmacyNum, ph.PharmacyName,
+                   rx.Drug, rx.Sig, rx.Disp, rx.Refills, rx.Notes AS Note,
+                   rx.RxDate, rx.IsControlled,
+                   rx.PharmacyNum, ph.StoreName AS PharmacyName,
                    rx.DateTStamp
             FROM rxpat rx
             LEFT JOIN patient p ON rx.PatNum = p.PatNum
@@ -109,7 +109,7 @@ public class PrescriptionService
             INSERT INTO rxpat (
                 PatNum, ClinicNum, ProvNum,
                 Drug, Sig, Disp, Refills, Notes,
-                DateRx, IsControlled, PharmacyNum, DateTStamp
+                RxDate, IsControlled, PharmacyNum, DateTStamp
             ) VALUES (
                 @PatNum, @ClinicNum, @ProvNum,
                 @Drug, @Sig, @Disp, @Refills, @Note,

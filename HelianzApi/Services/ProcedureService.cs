@@ -98,25 +98,27 @@ public class ProcedureService
     {
         using var conn = _db.CreateConnection();
 
-        var clinicFilter = allowedClinics.Count > 0
+        var effectiveClinics = allowedClinics.Where(c => c != 0).ToList();
+        var clinicFilter = effectiveClinics.Count > 0
             ? "AND pl.ClinicNum IN @AllowedClinics" : "";
 
-        var patient = await conn.QueryFirstOrDefaultAsync<(string name, long patNum)>($@"
+        // Verify patient exists (no clinic filter on patient — procedurelog has it)
+        var patient = await conn.QueryFirstOrDefaultAsync<(string name, long patNum)>(@"
             SELECT CONCAT(LName, ', ', FName), PatNum FROM patient
-            WHERE PatNum = @PatNum {clinicFilter}",
-            new { PatNum = patNum, AllowedClinics = allowedClinics });
+            WHERE PatNum = @PatNum",
+            new { PatNum = patNum });
 
         if (patient.patNum == 0)
             return new ToothChart();
 
-        var procedures = (await conn.QueryAsync<Procedure>($@"
+        var procedures = (await conn.QueryAsync<Procedure>(@$"
             SELECT pl.ProcNum, pl.PatNum, '' AS PatientName,
                    pl.ClinicNum, pl.ProvNum, prov.Abbr AS ProvName,
                    pl.CodeNum, pc.ProcCode, pc.Descript,
                    pl.ToothNum, pl.Surf,
                    pl.ProcStatus, pl.ProcDate, pl.DateEntryC,
-                   pl.ProcFee, pl.Priority, pl.Note,
-                   pl.AptNum, pl.DxNum, pl.MedicalOrderCodeNum,
+                   pl.ProcFee, pl.Priority, pl.ClaimNote AS Note,
+                   pl.AptNum, pl.Dx, 0 AS MedicalOrderCodeNum,
                    CASE pl.ProcStatus
                        WHEN 1 THEN 'Treatment Plan'
                        WHEN 2 THEN 'Complete'
@@ -130,7 +132,7 @@ public class ProcedureService
             WHERE pl.PatNum = @PatNum {clinicFilter}
               AND pl.ProcStatus IN (1, 2, 3, 4)
             ORDER BY pl.ToothNum, pl.ProcDate DESC",
-            new { PatNum = patNum, AllowedClinics = allowedClinics })).ToList();
+            new { PatNum = patNum, AllowedClinics = effectiveClinics })).ToList();
 
         var chart = new ToothChart
         {

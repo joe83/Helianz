@@ -18,10 +18,11 @@ public class PaymentService
         var conditions = new List<string>();
         var parameters = new DynamicParameters();
 
-        if (allowedClinics.Count > 0)
+        var effectiveClinics = allowedClinics.Where(c => c != 0).ToList();
+        if (effectiveClinics.Count > 0)
         {
             conditions.Add("p.ClinicNum IN @AllowedClinics");
-            parameters.Add("AllowedClinics", allowedClinics);
+            parameters.Add("AllowedClinics", effectiveClinics);
         }
         if (req.PatNum.HasValue)
         {
@@ -61,11 +62,10 @@ public class PaymentService
                    p.ClinicNum, p.PayDate, p.PayAmt, p.PayType,
                    def.ItemName AS PayTypeName,
                    p.CheckNum, p.BankBranch, p.PayNote AS Note,
-                   p.ProvNum, prov.Abbr AS ProvName,
+                   0 AS ProvNum, '' AS ProvName,
                    p.SecUserNumEntry, p.DateEntry
             FROM payment p
             LEFT JOIN patient pat ON p.PatNum = pat.PatNum
-            LEFT JOIN provider prov ON p.ProvNum = prov.ProvNum
             LEFT JOIN definition def ON p.PayType = def.DefNum
             {where}
             ORDER BY p.PayDate DESC
@@ -93,11 +93,10 @@ public class PaymentService
                    p.ClinicNum, p.PayDate, p.PayAmt, p.PayType,
                    def.ItemName AS PayTypeName,
                    p.CheckNum, p.BankBranch, p.PayNote AS Note,
-                   p.ProvNum, prov.Abbr AS ProvName,
+                   0 AS ProvNum, '' AS ProvName,
                    p.SecUserNumEntry, p.DateEntry
             FROM payment p
             LEFT JOIN patient pat ON p.PatNum = pat.PatNum
-            LEFT JOIN provider prov ON p.ProvNum = prov.ProvNum
             LEFT JOIN definition def ON p.PayType = def.DefNum
             WHERE p.PayNum = @PayNum {clinicFilter}",
             new { PayNum = payNum, AllowedClinics = allowedClinics });
@@ -129,17 +128,17 @@ public class PaymentService
             var payNum = await conn.ExecuteScalarAsync<long>(@"
                 INSERT INTO payment (
                     PatNum, ClinicNum, PayDate, PayAmt, PayType,
-                    CheckNum, PayNote, ProvNum, SecUserNumEntry, DateEntry
+                    CheckNum, PayNote, SecUserNumEntry, DateEntry
                 ) VALUES (
                     @PatNum, @ClinicNum, @PayDate, @PayAmt, @PayType,
-                    @CheckNum, @Note, @ProvNum, @SecUserNumEntry, NOW()
+                    @CheckNum, @Note, @SecUserNumEntry, NOW()
                 );
                 SELECT LAST_INSERT_ID();",
                 new
                 {
                     req.PatNum, req.ClinicNum, req.PayDate,
                     req.PayAmt, req.PayType, req.CheckNum,
-                    req.Note, req.ProvNum,
+                    req.Note,
                     SecUserNumEntry = userId
                 }, tx);
 
@@ -148,15 +147,15 @@ public class PaymentService
             {
                 await conn.ExecuteAsync(@"
                     INSERT INTO paysplit (
-                        PayNum, PatNum, ProvNum, ClinicNum,
+                        PayNum, PatNum, ClinicNum,
                         DatePay, SplitAmt, ProcNum
                     ) VALUES (
-                        @PayNum, @PatNum, @ProvNum, @ClinicNum,
+                        @PayNum, @PatNum, @ClinicNum,
                         @DatePay, @SplitAmt, @ProcNum
                     )",
                     new
                     {
-                        PayNum = payNum, req.PatNum, req.ProvNum,
+                        PayNum = payNum, req.PatNum,
                         req.ClinicNum, DatePay = req.PayDate,
                         split.SplitAmt, split.ProcNum
                     }, tx);

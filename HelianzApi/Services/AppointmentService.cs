@@ -194,16 +194,15 @@ public class AppointmentService
     /// <summary>Get today's appointments for a clinic/provider</summary>
     public async Task<List<Appointment>> GetTodayAsync(long? clinicNum, long? provNum, List<long> allowedClinics)
     {
-        var today = DateTime.UtcNow.Date;
-        var tomorrow = today.AddDays(1);
+        var today = DateTime.Now.Date;
 
         var req = new AppointmentSearchRequest
         {
             DateFrom = today,
-            DateTo = tomorrow,
+            DateTo = today,   // SearchAsync adds +1 for exclusive range
             ClinicNum = clinicNum,
             ProvNum = provNum,
-            AptStatus = 1, // Scheduled only
+            AptStatus = 1,
             PageSize = 500
         };
         var result = await SearchAsync(req, allowedClinics);

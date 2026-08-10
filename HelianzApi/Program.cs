@@ -8,6 +8,9 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ── Windows Service support ─────────────────────────
+builder.Host.UseWindowsService();
+
 // ── Database ──────────────────────────────────────────
 builder.Services.Configure<DatabaseConfig>(
     builder.Configuration.GetSection("Database"));

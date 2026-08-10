@@ -62,8 +62,25 @@ public class AuthService
         if (clinicNums.Count == 0)
             clinicNums.Add(user.ClinicNum);
 
-        // Build JWT token
-        var token = GenerateToken(user.UserNum, user.UserName, clinicNums);
+        // Get user's group memberships
+        var userGroupNums = (await conn.QueryAsync<long>(@"
+            SELECT UserGroupNum FROM usergroupattach WHERE UserNum = @UserNum",
+            new { user.UserNum })).ToList();
+
+        // Query permissions for all groups the user belongs to
+        var permissions = new List<UserPermission>();
+        if (userGroupNums.Count > 0)
+        {
+            permissions = (await conn.QueryAsync<UserPermission>(@"
+                SELECT DISTINCT gp.PermType, gp.FKey, gp.NewerDate, gp.NewerDays
+                FROM grouppermission gp
+                WHERE gp.UserGroupNum IN @UserGroupNums
+                ORDER BY gp.PermType, gp.FKey",
+                new { UserGroupNums = userGroupNums })).ToList();
+        }
+
+        // Build JWT token with permission claims
+        var token = GenerateToken(user.UserNum, user.UserName, clinicNums, userGroupNums, permissions);
 
         return new LoginResponse
         {
@@ -72,16 +89,8 @@ public class AuthService
             UserNum = user.UserNum,
             ClinicNum = user.ClinicNum,
             ClinicNums = clinicNums,
-            Modules = new List<UserModule>
-            {
-                new() { Name = "Patients", Enabled = true },
-                new() { Name = "Appointments", Enabled = true },
-                new() { Name = "Charting", Enabled = true },
-                new() { Name = "Billing", Enabled = true },
-                new() { Name = "Prescriptions", Enabled = true },
-                new() { Name = "Notes", Enabled = true },
-                new() { Name = "Reports", Enabled = true }
-            }
+            UserGroupNums = userGroupNums,
+            Permissions = permissions
         };
     }
     catch (Exception ex)
@@ -91,7 +100,12 @@ public class AuthService
     }
 }
 
-    private string GenerateToken(long userNum, string username, List<long> clinicNums)
+    /// <summary>Generate a token without password verification (debug only).</summary>
+    public string GenerateDebugToken(long userNum, string username, List<long> clinicNums)
+        => GenerateToken(userNum, username, clinicNums, new(), new());
+
+    private string GenerateToken(long userNum, string username, List<long> clinicNums,
+        List<long> userGroupNums, List<UserPermission> permissions)
     {
         var claims = new List<Claim>
         {
@@ -99,6 +113,13 @@ public class AuthService
             new(ClaimTypes.Name, username),
         };
         claims.AddRange(clinicNums.Select(c => new Claim("ClinicNum", c.ToString())));
+        claims.AddRange(userGroupNums.Select(g => new Claim("UserGroupNum", g.ToString())));
+        // Store key permission types as claims for quick server-side checks
+        foreach (var gp in permissions.GroupBy(p => p.PermType))
+        {
+            var fkeys = string.Join(",", gp.Select(p => p.FKey));
+            claims.Add(new Claim($"Perm_{gp.Key}", fkeys));
+        }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -166,8 +187,18 @@ public class AuthService
     {
         if (string.IsNullOrEmpty(input)) return "";
         var bytes = Encoding.Unicode.GetBytes(input);      // UTF-16 LE
-        var hashBytes = SHA3_512.HashData(bytes);
-        return Convert.ToBase64String(hashBytes);
+        try
+        {
+            var hashBytes = System.Security.Cryptography.SHA3_512.HashData(bytes);
+            return Convert.ToBase64String(hashBytes);
+        }
+        catch (PlatformNotSupportedException)
+        {
+            // Windows Server 2022 lacks CNG SHA3 support — use managed implementation
+            using var sha3 = SHA3.Net.Sha3.Sha3512();
+            var hashBytes = sha3.ComputeHash(bytes);
+            return Convert.ToBase64String(hashBytes);
+        }
     }
 
     private static string HashMD5(string input)

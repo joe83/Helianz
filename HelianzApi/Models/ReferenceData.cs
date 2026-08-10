@@ -41,7 +41,7 @@ public class AppointmentType
 {
     public long AppointmentTypeNum { get; set; }
     public string AppointmentTypeName { get; set; } = "";
-    public int Pattern { get; set; }
+    public string? Pattern { get; set; }
     public string? CodeStr { get; set; }
     public string? CodeStrRequired { get; set; }
     public int Length { get; set; }
@@ -55,6 +55,16 @@ public class Definition
     public int ItemOrder { get; set; }
 }
 
+public class ClinicInfo
+{
+    public long ClinicNum { get; set; }
+    public string Description { get; set; } = "";
+    public string? Address { get; set; }
+    public string? City { get; set; }
+    public string? Phone { get; set; }
+    public bool IsHidden { get; set; }
+}
+
 public class ReferenceData
 {
     public List<Provider> Providers { get; set; } = new();
@@ -62,5 +72,7 @@ public class ReferenceData
     public List<ProcedureCode> ProcedureCodes { get; set; } = new();
     public List<AppointmentType> AppointmentTypes { get; set; } = new();
     public List<Definition> PaymentTypes { get; set; } = new();
-    public List<Definition> CommTypes { get; set; } = new();      // Note/comm types
+    public List<Definition> CommTypes { get; set; } = new();
+    public List<Definition> ConfirmedStatuses { get; set; } = new();
+    public List<ClinicInfo> Clinics { get; set; } = new();
 }
