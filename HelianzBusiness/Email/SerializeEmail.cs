@@ -25,7 +25,7 @@ namespace HelianzBusiness.Email {
 		#endregion
 
 		private static T Deserialize<T>(string toDeserialize) {
-			XmlSerializer xmlSerializer=new XmlSerializer(typeof(T));
+			XmlSerializer xmlSerializer=XmlConverterSerializer.GetSerializer(typeof(T));
 			using(StringReader textReader=new StringReader(toDeserialize)) {
 				T objEscaped=(T)xmlSerializer.Deserialize(textReader);
 				return (T)XmlConverter.XmlUnescapeRecursion(typeof(T),objEscaped);
@@ -34,7 +34,7 @@ namespace HelianzBusiness.Email {
 
 		private static string Serialize<T>(T toSerialize) {
 			T escapedObj=(T)XmlConverter.XmlEscapeRecursion(typeof(T),toSerialize);
-			XmlSerializer xmlSerializer=new XmlSerializer(typeof(T));
+			XmlSerializer xmlSerializer=XmlConverterSerializer.GetSerializer(typeof(T));
 			StringWriter writer=new StringWriter();
 			using(XmlWriter textWriter=XmlWriter.Create(writer,new XmlWriterSettings { Indent=false,NewLineHandling=NewLineHandling.None })) {
 				xmlSerializer.Serialize(textWriter, toSerialize);

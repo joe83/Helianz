@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
 using CodeBase;
+using HelianzBusiness;
 
 //This file is used in conjunction with and must match WebServiceCustomerUpdates\WebSerialize.cs.
 namespace WebServiceSerializer {
@@ -333,7 +334,7 @@ namespace WebServiceSerializer {
 			}
 			T retVal;
 			using(XmlReader reader=XmlReader.Create(new StringReader(node.InnerXml))) {
-				XmlSerializer serializer=new XmlSerializer(typeof(T));
+		XmlSerializer serializer=XmlConverterSerializer.GetSerializer(typeof(T));
 				retVal=(T)serializer.Deserialize(reader);
 			}
 			if(retVal==null) {
@@ -561,7 +562,7 @@ namespace WebServiceSerializer {
 			if(node==null) {
 				throw new ApplicationException(GetNodeNameFromType(typeof(T))+" node not present.");
 			}
-			T ret=default(T); XmlSerializer serializer=new XmlSerializer(typeof(T));
+			T ret=default(T); XmlSerializer serializer=XmlConverterSerializer.GetSerializer(typeof(T));
 			using(XmlReader reader = XmlReader.Create(new System.IO.StringReader(node.InnerXml))) {
 				ret=(T)serializer.Deserialize(reader);
 			}
@@ -572,7 +573,7 @@ namespace WebServiceSerializer {
 		}
 
 		public static string WriteXml<T>(T input) {
-			XmlSerializer serializer=new XmlSerializer(typeof(T)); StringBuilder strbuild=new StringBuilder();
+			XmlSerializer serializer=XmlConverterSerializer.GetSerializer(typeof(T)); StringBuilder strbuild=new StringBuilder();
 			using(XmlWriter writer = XmlWriter.Create(strbuild,WebSerializer.CreateXmlWriterSettings(true))) {
 				writer.WriteStartElement(GetNodeNameFromType(typeof(T)));
 				serializer.Serialize(writer,input);

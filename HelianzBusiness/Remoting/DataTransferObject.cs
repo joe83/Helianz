@@ -29,7 +29,7 @@ namespace HelianzBusiness {
 			}
 			StringBuilder strBuild=new StringBuilder();
 			XmlWriter writer=XmlWriter.Create(strBuild);
-			XmlSerializer serializer = new XmlSerializer(this.GetType());
+			XmlSerializer serializer = XmlConverterSerializer.GetSerializer(this.GetType());
 			serializer.Serialize(writer,this);
 			writer.Close();
 			return strBuild.ToString();
@@ -51,7 +51,7 @@ namespace HelianzBusiness {
 				break;
 			}
 			Type type = Type.GetType("HelianzBusiness." +strNodeName);
-			XmlSerializer serializer = new XmlSerializer(type);
+			XmlSerializer serializer = XmlConverterSerializer.GetSerializer(type);
 			DataTransferObject retVal=(DataTransferObject)serializer.Deserialize(reader);
 			strReader.Close();
 			reader.Close();

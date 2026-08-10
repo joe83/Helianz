@@ -18,6 +18,20 @@ namespace HelianzBusiness {
 	///<summary>Code here not included in XmlConverter to avoid references in that file that we do not want for the HelianzEmail project.</summary>
 	public class XmlConverterSerializer {
 
+		///<summary>Returns a cached XmlSerializer for the given type.
+		///Uses XmlSerializer(Type, String.Empty) constructor which leverages .NET Framework's built-in
+		///serializer cache. Unlike XmlSerializer(Type), this constructor does NOT generate a new temp
+		///assembly on every call — the framework caches and reuses serializers internally.
+		///This avoids both the csc.exe code-generation failures on Windows 7 SP1 + .NET 4.8 AND the
+		///temp-file accumulation that occurs across repeated app restarts.
+		///Always use this instead of new XmlSerializer(Type).</summary>
+		public static XmlSerializer GetSerializer(Type type) {
+			// XmlSerializer(Type, String) uses .NET's internal assembly cache.
+			// XmlSerializer(Type) does NOT — it generates a new temp DLL every time.
+			// The empty-string default namespace matches the existing serialization output.
+			return new XmlSerializer(type,"");
+		}
+
 		///<summary>Should accept any type, including simple types, OD types, Arrays, Lists, and arrays of DtoObject.  But not DataTable or DataSet.  If we find a type that isn't supported, then we need to add it.</summary>
 		public static string Serialize<T>(T obj) {
 			StringBuilder strBuild=new StringBuilder();
@@ -33,7 +47,7 @@ namespace HelianzBusiness {
 			else {
 				writer=XmlWriter.Create(strBuild);
 			}
-			XmlSerializer serializer = new XmlSerializer(typeof(T));
+			XmlSerializer serializer = GetSerializer(typeof(T));
 			serializer.Serialize(writer,obj);
 			writer.Close();
 			return strBuild.ToString();
@@ -57,18 +71,18 @@ namespace HelianzBusiness {
 			}
 			XmlSerializer serializer;
 			if(classType==typeof(Color)) {
-				serializer = new XmlSerializer(typeof(int));
+				serializer = GetSerializer(typeof(int));
 				serializer.Serialize(writer,((Color)obj).ToArgb());
 			}
 			else if(classType==typeof(TimeSpan)) {
-				serializer = new XmlSerializer(typeof(long));
+				serializer = GetSerializer(typeof(long));
 				serializer.Serialize(writer,((TimeSpan)obj).Ticks);
 			}
 			else {
 				if(obj!=null) {
 					obj=XmlConverter.XmlEscapeRecursion(classType,obj);//search object for string fields to escape
 				}
-				serializer = new XmlSerializer(classType);
+				serializer = GetSerializer(classType);
 				serializer.Serialize(writer,obj);
 			}
 			writer.Close();
@@ -119,20 +133,20 @@ namespace HelianzBusiness {
 			XmlSerializer serializer;
 			T retVal;
 			if(type==typeof(Color)) {
-				serializer = new XmlSerializer(typeof(int));
+				serializer = GetSerializer(typeof(int));
 				retVal=(T)((object)Color.FromArgb((int)serializer.Deserialize(reader)));
 			}
 			else if(type==typeof(TimeSpan)) {
-				serializer = new XmlSerializer(typeof(long));
+				serializer = GetSerializer(typeof(long));
 				retVal=(T)((object)TimeSpan.FromTicks((long)serializer.Deserialize(reader)));
 			}
 			else if(type.IsInterface) {
 				//For methods that return an interface, we serialize the return object as a DtoObject.
-				serializer=new XmlSerializer(typeof(DtoObject));
+				serializer=GetSerializer(typeof(DtoObject));
 				retVal=(T)((DtoObject)serializer.Deserialize(reader)).Obj;
 			}
 			else {
-				serializer = new XmlSerializer(type);
+				serializer = GetSerializer(type);
 				retVal=(T)serializer.Deserialize(reader);
 				if(retVal!=null) {
 					retVal=(T)XmlConverter.XmlUnescapeRecursion(type,retVal);

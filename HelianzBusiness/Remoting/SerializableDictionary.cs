@@ -14,8 +14,8 @@ namespace HelianzBusiness {
 		}
 
 		public void ReadXml(System.Xml.XmlReader reader) {
-			XmlSerializer keySerializer=new XmlSerializer(typeof(TKey));
-			XmlSerializer valueSerializer=new XmlSerializer(typeof(TValue));
+			XmlSerializer keySerializer=XmlConverterSerializer.GetSerializer(typeof(TKey));
+			XmlSerializer valueSerializer=XmlConverterSerializer.GetSerializer(typeof(TValue));
 			bool wasEmpty=reader.IsEmptyElement;
 			reader.Read();
 			if(wasEmpty) {
@@ -43,8 +43,8 @@ namespace HelianzBusiness {
 		}
 
 		public void WriteXml(System.Xml.XmlWriter writer) {
-			XmlSerializer keySerializer=new XmlSerializer(typeof(TKey));
-			XmlSerializer valueSerializer=new XmlSerializer(typeof(TValue));
+			XmlSerializer keySerializer=XmlConverterSerializer.GetSerializer(typeof(TKey));
+			XmlSerializer valueSerializer=XmlConverterSerializer.GetSerializer(typeof(TValue));
 			foreach(TKey key in this.Keys) {
 				writer.WriteStartElement("I");//Item
 				writer.WriteStartElement("K");//Key
