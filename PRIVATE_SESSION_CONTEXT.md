@@ -4,7 +4,7 @@ This file is local-only and ignored by git.
 
 ## Servers
 
-- VPS1 : `root@65.109.236.36`
+- VPS1 : `root@152.53.53.114`
 - SSH key: `C:\putty\Key\root\root_nokey.openssh`
 
 ## Rclone profile

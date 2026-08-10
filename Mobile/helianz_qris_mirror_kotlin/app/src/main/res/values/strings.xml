@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">Helianz QRIS Mirror</string>
+	<string name="subtitle">Hand the phone to the customer after connecting it to the cashier session. The phone mirrors the payment QR and live status over your local network.</string>
+	<string name="cashier_link">Cashier Link</string>
+	<string name="connect_phone">Connect Phone</string>
+	<string name="connect_hint">Recommended: scan the Connect QR shown on the cashier screen. Manual link entry stays available if needed.</string>
+	<string name="manual_link_label">Manual link</string>
+	<string name="link_hint">http://192.168.x.x:43123/qris/session/...</string>
+	<string name="paste">Paste</string>
+	<string name="scan_qr">Scan Connect QR</string>
+	<string name="connect">Connect</string>
+	<string name="disconnect">Disconnect</string>
+	<string name="local_network_only">Same Wi-Fi / LAN only</string>
+	<string name="customer_scan_view">Customer Scan View</string>
+	<string name="customer_scan_hint">Keep this screen facing the customer so they can scan without reaching toward the cashier monitor.</string>
+	<string name="session_details">Session Details</string>
+	<string name="order_id">Order ID</string>
+	<string name="amount">Amount</string>
+	<string name="state">State</string>
+	<string name="expires">Expires</string>
+	<string name="value_placeholder">-</string>
+	<string name="value_unknown">Unknown</string>
+	<string name="last_sync_waiting">Waiting for first update</string>
+	<string name="last_sync_format">Last synced %1$s</string>
+	<string name="status_idle_headline">Ready for scan handoff</string>
+	<string name="status_idle_body">Connect to the cashier session to display the QR code and watch payment status.</string>
+	<string name="status_waiting_headline">Waiting for Payment</string>
+	<string name="status_paid_headline">Payment Paid</string>
+	<string name="status_expired_headline">QR Expired</string>
+	<string name="status_cancelled_headline">Payment Cancelled</string>
+	<string name="status_denied_headline">Payment Denied</string>
+	<string name="status_error_headline">Status Unavailable</string>
+	<string name="error_invalid_link">Paste the full Phone Link from the Helianz cashier dialog.</string>
+	<string name="error_socket">Cannot reach the cashier device. Confirm both devices are on the same LAN.</string>
+	<string name="error_unreachable">Cashier session not reachable (%1$d).</string>
+	<string name="error_generic">Could not refresh the cashier session.</string>
+	<string name="scan_prompt">Scan the Connect QR shown in the cashier QRIS window.</string>
+	<string name="menu_setup">Setup</string>
+	<string name="idle_tap_hint">Tap the scan button to connect</string>
+	<string name="setup_title">Setup Connection</string>
+	<string name="setup_hint">Paste or scan the Connect QR from the cashier QRIS window.</string>
+	<string name="standby_hint">Waiting for cashier to open payment form…</string>
+	<string name="last_sync_standby">Connected — waiting for next payment</string>
+	<string name="standby_image_label">Standby Screen Image</string>
+	<string name="standby_image_button">Choose Image</string>
+</resources>
