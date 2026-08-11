@@ -66,14 +66,14 @@ namespace HelianzBusiness {
 			writer.WriteEndElement();//TypeName
 			writer.WriteStartElement("Obj");
 			if(TypeName=="System.Drawing.Color") {
-				XmlSerializer serializer = XmlConverterSerializer.GetSerializer(typeof(int));
+				XmlSerializer serializer = new XmlSerializer(typeof(int));
 				serializer.Serialize(writer,((Color)Obj).ToArgb());
 			}
 			else if(TypeName=="System.Data.DataTable" && Obj!=null) {
 				writer.WriteRaw(XmlConverter.TableToXml((DataTable)Obj));
 			}
 			else if(TypeName=="System.TimeSpan") {
-				XmlSerializer serializer=XmlConverterSerializer.GetSerializer(typeof(long));
+				XmlSerializer serializer=new XmlSerializer(typeof(long));
 				serializer.Serialize(writer,((TimeSpan)Obj).Ticks);
 			}
 			else {
@@ -81,7 +81,7 @@ namespace HelianzBusiness {
 					//Interfaces cannot be serialized. Should only get here if the interface is null.
 					type=typeof(NullObject);
 				}
-				XmlSerializer serializer=XmlConverterSerializer.GetSerializer(type);
+				XmlSerializer serializer=new XmlSerializer(type);
 				serializer.Serialize(writer,Obj);
 			}
 			writer.WriteEndElement();//Obj
@@ -134,7 +134,7 @@ namespace HelianzBusiness {
 			}
 			XmlSerializer serializer=null;
 			if(!type.IsInterface) {
-				serializer=XmlConverterSerializer.GetSerializer(type);
+				serializer=new XmlSerializer(type);
 			}
 			//SECURITY: Use XmlReader with DTD processing prohibited to prevent XXE attacks.
 				XmlReaderSettings settings=new XmlReaderSettings();

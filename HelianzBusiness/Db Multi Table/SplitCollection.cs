@@ -81,7 +81,7 @@ namespace HelianzBusiness {
 		}
 
 		public void ReadXml(XmlReader reader) {
-			XmlSerializer serializer=XmlConverterSerializer.GetSerializer(typeof(List<PaySplit>));
+			XmlSerializer serializer=new XmlSerializer(typeof(List<PaySplit>));
 			bool wasEmpty=reader.IsEmptyElement;
 			reader.Read();
 			if(wasEmpty) {
@@ -93,7 +93,7 @@ namespace HelianzBusiness {
 		}
 
 		public void WriteXml(XmlWriter writer) {
-			XmlSerializer serializer=XmlConverterSerializer.GetSerializer(typeof(List<PaySplit>));
+			XmlSerializer serializer=new XmlSerializer(typeof(List<PaySplit>));
 			serializer.Serialize(writer,_dictPaySplits.Values.ToList());
 		}
 	}

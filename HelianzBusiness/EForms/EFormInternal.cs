@@ -47,7 +47,7 @@ namespace HelianzBusiness {
 
 		private static EFormDef GetEFormFromResource(string xmlDoc) {
 			EFormDef eFormDef=new EFormDef();
-			XmlSerializer xmlSerializer=XmlConverterSerializer.GetSerializer(typeof(EFormDef));
+			XmlSerializer xmlSerializer=new XmlSerializer(typeof(EFormDef));
 			using TextReader textReader = new StringReader(xmlDoc);
 			eFormDef=(EFormDef)xmlSerializer.Deserialize(textReader);
 			for(int i=0;i<eFormDef.ListEFormFieldDefs.Count;i++){

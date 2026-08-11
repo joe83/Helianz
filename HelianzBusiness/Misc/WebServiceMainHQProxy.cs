@@ -80,7 +80,7 @@ namespace HelianzBusiness {
 		///<summary>Creates an XML string for the payload of the provided content. Currently only useful if you have one thing to include in the payload.
 		///</summary>
 		public static string CreatePayloadContent<T>(T content,string tagName) {
-			System.Xml.Serialization.XmlSerializer xmlListConfirmationRequestSerializer=XmlConverterSerializer.GetSerializer(typeof(T));
+			System.Xml.Serialization.XmlSerializer xmlListConfirmationRequestSerializer=new System.Xml.Serialization.XmlSerializer(typeof(T));
 			StringBuilder strbuild=new StringBuilder();
 			using(XmlWriter writer=XmlWriter.Create(strbuild,WebServiceMainHQProxy.CreateXmlWriterSettings(true))) {
 				writer.WriteStartElement("Payload");
@@ -106,7 +106,7 @@ namespace HelianzBusiness {
 			}
 			T retVal;
 			using(XmlReader reader=XmlReader.Create(new StringReader(node.InnerXml))) {
-				XmlSerializer serializer=XmlConverterSerializer.GetSerializer(typeof(T));
+				XmlSerializer serializer=new XmlSerializer(typeof(T));
 				retVal=(T)serializer.Deserialize(reader);
 			}
 			if(retVal==null) {
@@ -447,7 +447,7 @@ namespace HelianzBusiness {
 			if(node==null) {
 				throw new ApplicationException(GetNodeNameFromType(typeof(T))+" node not present.");
 			}
-			T ret=default(T); XmlSerializer serializer=XmlConverterSerializer.GetSerializer(typeof(T));
+			T ret=default(T); XmlSerializer serializer=new XmlSerializer(typeof(T));
 			using(XmlReader reader = XmlReader.Create(new System.IO.StringReader(node.InnerXml))) {
 				ret=(T)serializer.Deserialize(reader);
 			}
@@ -458,7 +458,7 @@ namespace HelianzBusiness {
 		}
 
 		public static string WriteXml<T>(T input) {
-			XmlSerializer serializer=XmlConverterSerializer.GetSerializer(typeof(T)); StringBuilder strbuild=new StringBuilder();
+			XmlSerializer serializer=new XmlSerializer(typeof(T)); StringBuilder strbuild=new StringBuilder();
 			using(XmlWriter writer = XmlWriter.Create(strbuild,WebServiceMainHQProxy.CreateXmlWriterSettings(true))) {
 				writer.WriteStartElement(GetNodeNameFromType(typeof(T)));
 				serializer.Serialize(writer,input);
