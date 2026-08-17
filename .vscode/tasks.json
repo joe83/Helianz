@@ -2,6 +2,86 @@
     "version": "2.0.0",
     "tasks": [
         // ────────────────────────────────────────────────────────
+        // helianz_mobile  (KMP Compose Multiplatform)
+        // ────────────────────────────────────────────────────────
+        {
+            "label": "mobile: assembleDebug",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["assembleDebug"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_mobile" },
+            "group": { "kind": "build", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+        {
+            "label": "mobile: installDebug",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["installDebug"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_mobile" },
+            "group": { "kind": "build", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+        {
+            "label": "mobile: clean",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["clean"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_mobile" },
+            "group": { "kind": "build", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+        {
+            "label": "mobile: test",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["test"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_mobile" },
+            "group": { "kind": "test", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+
+        // ────────────────────────────────────────────────────────
+        // helianz_mobile_app  (KMP Compose Multiplatform)
+        // ────────────────────────────────────────────────────────
+        {
+            "label": "app: assembleDebug",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["assembleDebug"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_mobile_app" },
+            "group": { "kind": "build", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+        {
+            "label": "app: installDebug",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["installDebug"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_mobile_app" },
+            "group": { "kind": "build", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+        {
+            "label": "app: clean",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["clean"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_mobile_app" },
+            "group": { "kind": "build", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+        {
+            "label": "app: test",
+            "type": "shell",
+            "command": ".\\gradlew",
+            "args": ["test"],
+            "options": { "cwd": "${workspaceFolder}\\helianz_mobile_app" },
+            "group": { "kind": "test", "isDefault": false },
+            "problemMatcher": ["$gradle"]
+        },
+
+        // ────────────────────────────────────────────────────────
         // helianz_qris_mirror_kotlin  (Standard Android)
         // ────────────────────────────────────────────────────────
         {
@@ -42,21 +122,8 @@
         },
 
         // ────────────────────────────────────────────────────────
-        // HelianzApi Server (.NET 8, port 5000)
+        // ADB helpers
         // ────────────────────────────────────────────────────────
-        {
-            "label": "api: Start Server",
-            "type": "shell",
-            "command": "dotnet",
-            "args": ["run", "--project", "${workspaceFolder}\\HelianzApi\\HelianzApi.csproj", "--urls", "http://0.0.0.0:5000"],
-            "options": { "cwd": "${workspaceFolder}\\HelianzApi" },
-            "isBackground": true,
-            "problemMatcher": {
-                "owner": "csharp",
-                "pattern": { "regexp": "^error: (.*)$", "file": 1 }
-            },
-            "detail": "Starts HelianzApi on http://localhost:5000 (Swagger at /swagger)"
-        },
         {
             "label": "adb: list devices",
             "type": "shell",
@@ -84,62 +151,6 @@
             "command": "D:\\Android\\SDK\\platform-tools\\adb.exe",
             "args": ["shell", "am", "start", "-n", "com.helianz.qrismirror/.MainActivity"],
             "problemMatcher": []
-        },
-
-        // ────────────────────────────────────────────────────────
-        // dentalcare_flutter  (Flutter mobile app)
-        // ────────────────────────────────────────────────────────
-        {
-            "label": "flutter: Build APK",
-            "type": "shell",
-            "command": "flutter",
-            "args": ["build", "apk", "--debug", "--android-skip-build-dependency-validation"],
-            "options": { "cwd": "${workspaceFolder}\\dentalcare_flutter" },
-            "group": { "kind": "build", "isDefault": true },
-            "problemMatcher": [],
-            "detail": "Builds debug APK at dentalcare_flutter/build/app/outputs/flutter-apk/app-debug.apk"
-        },
-        {
-            "label": "flutter: Install on Device",
-            "type": "shell",
-            "command": "flutter",
-            "args": ["install", "--debug"],
-            "options": { "cwd": "${workspaceFolder}\\dentalcare_flutter" },
-            "group": { "kind": "build", "isDefault": false },
-            "dependsOn": ["flutter: Build APK"],
-            "problemMatcher": [],
-            "detail": "Builds APK then installs to connected Android device"
-        },
-        {
-            "label": "flutter: Run (Debug)",
-            "type": "shell",
-            "command": "flutter",
-            "args": ["run", "--debug"],
-            "options": { "cwd": "${workspaceFolder}\\dentalcare_flutter" },
-            "group": { "kind": "test", "isDefault": false },
-            "isBackground": true,
-            "problemMatcher": [],
-            "detail": "Builds and runs the app in debug mode on connected device (hot reload enabled)"
-        },
-        {
-            "label": "flutter: Clean",
-            "type": "shell",
-            "command": "flutter",
-            "args": ["clean"],
-            "options": { "cwd": "${workspaceFolder}\\dentalcare_flutter" },
-            "group": { "kind": "build", "isDefault": false },
-            "problemMatcher": [],
-            "detail": "Cleans all Flutter build artifacts"
-        },
-        {
-            "label": "flutter: Pub Get",
-            "type": "shell",
-            "command": "flutter",
-            "args": ["pub", "get"],
-            "options": { "cwd": "${workspaceFolder}\\dentalcare_flutter" },
-            "group": { "kind": "build", "isDefault": false },
-            "problemMatcher": [],
-            "detail": "Resolves Flutter/Dart package dependencies"
         }
     ]
 }

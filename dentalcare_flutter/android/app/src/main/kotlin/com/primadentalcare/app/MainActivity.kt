@@ -1,4 +1,4 @@
-package com.example.dentalcare_pro
+package com.primadentalcare.app
 
 import io.flutter.embedding.android.FlutterActivity
 

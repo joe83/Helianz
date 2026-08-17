@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:dentalcare_pro/models/patient.dart';
-import 'package:dentalcare_pro/models/appointment.dart';
-import 'package:dentalcare_pro/models/message.dart';
-import 'package:dentalcare_pro/services/api_client.dart';
-import 'package:dentalcare_pro/theme/app_theme.dart';
-import 'package:dentalcare_pro/widgets/accordion.dart';
-import 'package:dentalcare_pro/widgets/status_badge.dart';
+import 'package:prima_dental_care/models/patient.dart';
+import 'package:prima_dental_care/models/appointment.dart';
+import 'package:prima_dental_care/models/message.dart';
+import 'package:prima_dental_care/services/api_client.dart';
+import 'package:prima_dental_care/theme/app_theme.dart';
+import 'package:prima_dental_care/widgets/accordion.dart';
+import 'package:prima_dental_care/widgets/status_badge.dart';
 
 class PatientDetailScreen extends StatefulWidget {
   final Patient patient;

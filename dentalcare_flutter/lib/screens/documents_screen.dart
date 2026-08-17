@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:dentalcare_pro/theme/app_theme.dart';
+import 'package:prima_dental_care/theme/app_theme.dart';
 
 class DocumentsScreen extends StatelessWidget {
   const DocumentsScreen({super.key});

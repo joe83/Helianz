@@ -474,17 +474,26 @@ namespace HelianzBusiness {
 			if(string.IsNullOrEmpty(myString)) {
 				return myString;
 			}
-			StringBuilder sbEscaped=new StringBuilder();
+			StringBuilder sbEscaped=new StringBuilder(myString.Length);
 			foreach(char c in myString) {
 				//XmlEscapeStrings contains replacement sequences for any invalid characters including |'s, which we use to delineate table cells,
-				//and \r's and \n's so they are not converted to \r\n's thereby invalidating signatures
-				sbEscaped.Append(XmlEscapeStrings[c]);
+				//and \r's and \n's so they are not converted to \r\n's thereby invalidating signatures.
+				//The &, <, > entity escaping that used to happen via an XmlDocument round-trip is now done inline,
+				//avoiding ~1 XmlDocument allocation per cell (a major bottleneck in TableToXml for large result sets).
+				if(c=='&') {
+					sbEscaped.Append("&amp;");
+				}
+				else if(c=='<') {
+					sbEscaped.Append("&lt;");
+				}
+				else if(c=='>') {
+					sbEscaped.Append("&gt;");
+				}
+				else {
+					sbEscaped.Append(XmlEscapeStrings[c]);
+				}
 			}
-			XmlDocument doc=new XmlDocument();
-			XmlNode node=doc.CreateElement("root");
-			node.InnerText=sbEscaped.ToString();
-			myString=node.InnerXml;
-			return myString;
+			return sbEscaped.ToString();
 		}
 
 		public static string XmlUnescape(string myString) {

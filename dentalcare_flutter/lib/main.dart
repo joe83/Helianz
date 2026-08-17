@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:dentalcare_pro/theme/app_theme.dart';
-import 'package:dentalcare_pro/screens/appointments_screen.dart';
-import 'package:dentalcare_pro/screens/patients_screen.dart';
-import 'package:dentalcare_pro/screens/reports_screen.dart';
-import 'package:dentalcare_pro/screens/more_options_screen.dart';
-import 'package:dentalcare_pro/services/auth_service.dart';
-import 'package:dentalcare_pro/services/api_client.dart';
-import 'package:dentalcare_pro/services/api_config.dart';
-import 'package:dentalcare_pro/widgets/bottom_nav.dart';
+import 'package:prima_dental_care/theme/app_theme.dart';
+import 'package:prima_dental_care/screens/appointments_screen.dart';
+import 'package:prima_dental_care/screens/patients_screen.dart';
+import 'package:prima_dental_care/screens/reports_screen.dart';
+import 'package:prima_dental_care/screens/more_options_screen.dart';
+import 'package:prima_dental_care/services/auth_service.dart';
+import 'package:prima_dental_care/services/api_client.dart';
+import 'package:prima_dental_care/services/api_config.dart';
+import 'package:prima_dental_care/widgets/bottom_nav.dart';
 import 'screens/login_screen.dart';
 
 void main() {
-  runApp(const DentalCareApp());
+  runApp(const PrimaDentalCareApp());
 }
 
-class DentalCareApp extends StatelessWidget {
-  const DentalCareApp({super.key});
+class PrimaDentalCareApp extends StatelessWidget {
+  const PrimaDentalCareApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'DentalCare Pro',
+      title: 'Prima Dental Care',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme.copyWith(
         textTheme: GoogleFonts.interTextTheme(AppTheme.lightTheme.textTheme),

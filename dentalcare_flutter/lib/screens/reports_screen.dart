@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:dentalcare_pro/theme/app_theme.dart';
-import 'package:dentalcare_pro/services/api_client.dart';
-import 'package:dentalcare_pro/widgets/accordion.dart';
+import 'package:prima_dental_care/theme/app_theme.dart';
+import 'package:prima_dental_care/services/api_client.dart';
+import 'package:prima_dental_care/widgets/accordion.dart';
 import 'report_table_screen.dart';
 
 class ReportsScreen extends StatelessWidget {

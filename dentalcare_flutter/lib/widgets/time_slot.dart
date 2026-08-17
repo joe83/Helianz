@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:dentalcare_pro/theme/app_theme.dart';
+import 'package:prima_dental_care/theme/app_theme.dart';
 
 class TimeSlot extends StatelessWidget {
   final String time;
@@ -9,6 +9,7 @@ class TimeSlot extends StatelessWidget {
   final String? providerName;
   final String? note;
   final bool isAvailable;
+  final int? aptStatus;
 
   const TimeSlot({
     super.key,
@@ -19,6 +20,7 @@ class TimeSlot extends StatelessWidget {
     this.providerName,
     this.note,
     this.isAvailable = false,
+    this.aptStatus,
   });
 
   @override
@@ -26,18 +28,24 @@ class TimeSlot extends StatelessWidget {
     Color bgColor = const Color(0xFFFEE2E2);
     Color borderColor = AppColors.danger;
 
-    if (status?.toLowerCase() == 'confirmed') {
-      bgColor = const Color(0xFFD1FAE5);
-      borderColor = AppColors.success;
-    } else if (status?.toLowerCase() == 'scheduled') {
+    // Color by aptStatus (reliable), fall back to status string for backward compat
+    final effectiveStatus = aptStatus != null
+        ? _statusFromApt(aptStatus!)
+        : status?.toLowerCase();
+
+    if (effectiveStatus == 'scheduled') {
       bgColor = const Color(0xFFDBEAFE);
       borderColor = const Color(0xFF3B82F6);
-    } else if (status?.toLowerCase() == 'broken') {
+    } else if (effectiveStatus == 'complete') {
+      bgColor = const Color(0xFFF3F4F6);
+      borderColor = AppColors.textMuted;
+    } else if (effectiveStatus == 'broken') {
       bgColor = const Color(0xFFF3F4F6);
       borderColor = AppColors.textMuted;
     }
 
-    final isCanceled = status?.toLowerCase() == 'broken';
+    final isCanceled = aptStatus == 5 || status?.toLowerCase() == 'broken';
+    final isInactive = isCanceled || aptStatus == 2 || status?.toLowerCase() == 'complete';
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -50,7 +58,7 @@ class TimeSlot extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: isCanceled ? AppColors.textMuted : AppColors.textSecondary,
+                color: isInactive ? AppColors.textMuted : AppColors.textSecondary,
                 decoration: isCanceled ? TextDecoration.lineThrough : null,
               ),
             ),
@@ -89,7 +97,7 @@ class TimeSlot extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                             decoration: isCanceled ? TextDecoration.lineThrough : null,
-                            color: isCanceled ? AppColors.textMuted : null,
+                            color: isInactive ? AppColors.textMuted : null,
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -135,5 +143,16 @@ class TimeSlot extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// Maps Helianz ApptStatus enum to a key for color lookup.
+/// 0=None, 1=Scheduled, 2=Complete, 3=UnschedList, 4=ASAP, 5=Broken, 6=Planned
+String _statusFromApt(int aptStatus) {
+  switch (aptStatus) {
+    case 1: return 'scheduled';
+    case 2: return 'complete';
+    case 5: return 'broken';
+    default: return 'scheduled';
   }
 }

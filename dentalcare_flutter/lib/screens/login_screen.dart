@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:dentalcare_pro/theme/app_theme.dart';
-import 'package:dentalcare_pro/services/auth_service.dart';
-import 'package:dentalcare_pro/services/api_config.dart';
+import 'package:prima_dental_care/theme/app_theme.dart';
+import 'package:prima_dental_care/services/auth_service.dart';
+import 'package:prima_dental_care/services/api_config.dart';
 
 class LoginScreen extends StatefulWidget {
   final AuthService auth;

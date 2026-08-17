@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:dentalcare_pro/theme/app_theme.dart';
-import 'package:dentalcare_pro/services/api_client.dart';
+import 'package:prima_dental_care/theme/app_theme.dart';
+import 'package:prima_dental_care/services/api_client.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;

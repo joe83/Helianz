@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:dentalcare_pro/theme/app_theme.dart';
-import 'package:dentalcare_pro/models/patient.dart';
-import 'package:dentalcare_pro/services/api_client.dart';
-import 'package:dentalcare_pro/main.dart';
-import 'package:dentalcare_pro/widgets/search_header.dart';
+import 'package:prima_dental_care/theme/app_theme.dart';
+import 'package:prima_dental_care/models/patient.dart';
+import 'package:prima_dental_care/services/api_client.dart';
+import 'package:prima_dental_care/main.dart';
+import 'package:prima_dental_care/widgets/search_header.dart';
 import 'patient_detail_screen.dart';
 
 class PatientsScreen extends StatefulWidget {

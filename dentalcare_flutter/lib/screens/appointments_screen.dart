@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:dentalcare_pro/theme/app_theme.dart';
-import 'package:dentalcare_pro/models/appointment.dart';
-import 'package:dentalcare_pro/models/report.dart';
-import 'package:dentalcare_pro/main.dart';
-import 'package:dentalcare_pro/widgets/time_slot.dart';
+import 'package:prima_dental_care/theme/app_theme.dart';
+import 'package:prima_dental_care/models/appointment.dart';
+import 'package:prima_dental_care/models/report.dart';
+import 'package:prima_dental_care/main.dart';
+import 'package:prima_dental_care/widgets/time_slot.dart';
 import 'appointment_edit_screen.dart';
 
 class AppointmentsScreen extends StatefulWidget {
@@ -174,6 +174,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
             providerName: a.provName,
             note: a.note,
             status: status,
+            aptStatus: a.aptStatus,
           );
         }
         return TimeSlot(time: s.time, isAvailable: true);
