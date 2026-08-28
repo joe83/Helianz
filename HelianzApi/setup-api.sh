@@ -16,8 +16,8 @@ DB_USER="${DB_USER:-root}"
 DB_PASSWORD="${DB_PASSWORD:-}"
 JWT_KEY="${JWT_KEY:-$(openssl rand -base64 32)}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PUBLISH_DIR="$SCRIPT_DIR/bin/Release/net8.0/publish"
-DOTNET_RUNTIME="dotnet-runtime-8.0"
+PUBLISH_DIR="$SCRIPT_DIR/bin/Release/net10.0/publish"
+DOTNET_RUNTIME="dotnet-runtime-10.0"
 
 echo "=== HelianzApi Setup ==="
 

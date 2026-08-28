@@ -43,7 +43,9 @@ namespace HelianzBusiness {
 			//Either not using a report or read only server or the call stack has finally reached the correct server.
 			string connectStr="";
 			//Use the database user with lower permissions when in Middle Tier since this method is explicitly designed for the User Query window.
-			if(RemotingClient.MiddleTierRole==MiddleTierRole.ServerMT) {
+			//If no low-privilege DB user has been configured (UserLow/PasswordLow or HELIANZ_DB_USER_LOW empty), fall back to the
+			//normal DB user so user queries still work instead of failing with "Access denied for user ''@'localhost'".
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ServerMT && !string.IsNullOrEmpty(DataConnection.GetMysqlUserLow())) {
 				connectStr=DataConnection.GetLowConnectionString();
 			}
 			else {

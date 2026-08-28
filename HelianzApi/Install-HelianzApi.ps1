@@ -75,8 +75,8 @@ if ([string]::IsNullOrEmpty($SourcePath)) {
     # Try default publish locations
     $candidates = @(
         (Join-Path $ScriptDir "publish\HelianzApi-win-x64"),
-        (Join-Path $ScriptDir "bin\Release\net8.0\publish"),
-        (Join-Path $ScriptDir "bin\Release\net8.0\win-x64\publish")
+        (Join-Path $ScriptDir "bin\Release\net10.0\publish"),
+        (Join-Path $ScriptDir "bin\Release\net10.0\win-x64\publish")
     )
     foreach ($c in $candidates) {
         if (Test-Path (Join-Path $c "HelianzApi.exe")) {

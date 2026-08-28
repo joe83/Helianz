@@ -2292,11 +2292,15 @@ namespace Helianz {
 						if(Plugins.HookMethod(this,"ContrAccount.ToolBarMain_ButtonClick_Payment")) {
 							break;
 						}
-						//Auto-populate payment amount from patient balance
+						//Auto-populate payment amount from patient balance.
 						double payAmt=(double)((decimal)_family.ListPats[0].BalTotal - (decimal)_family.ListPats[0].InsEst);
 						if(payAmt <= 0) {
-							MsgBox.Show(this,"Patient balance is zero or negative.");
-							break;
+							//Allow deposits/prepayments (e.g. promo program) only when future payments are enabled; otherwise keep the original guard.
+							if(!PrefC.GetBool(PrefName.FutureTransDatesAllowed) && !PrefC.GetBool(PrefName.AccountAllowFutureDebits)) {
+								MsgBox.Show(this,"Patient balance is zero or negative.");
+								break;
+							}
+							payAmt=0;//A negative balance is a patient credit.  Open the payment window with a blank amount so a deposit can be entered.
 						}
 						toolBarButPay_Click(payAmt);
 						break;

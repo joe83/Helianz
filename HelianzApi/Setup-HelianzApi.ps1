@@ -45,7 +45,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$PublishDir = Join-Path $ScriptDir "bin\Release\net8.0\publish"
+$PublishDir = Join-Path $ScriptDir "bin\Release\net10.0\publish"
 
 # ═══════════════════════════════════════════════════════
 # 1. Pre-flight checks
