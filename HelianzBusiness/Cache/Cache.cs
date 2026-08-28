@@ -46,10 +46,308 @@ namespace HelianzBusiness {
 
 		///<summary>itypesStr= comma-delimited list of int.  Called directly from UI in one spot.  Called from above repeatedly.  The end result is that both server and client have been properly refreshed.</summary>
 		public static void Refresh(bool doRefreshServerCache,params InvalidType[] arrayITypes) {
-			DataSet ds=GetCacheDs(doRefreshServerCache,arrayITypes);
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
-				//Because otherwise it was handled just fine as part of the GetCacheDs
-				FillCache(ds,arrayITypes);
+				// Refresh tables individually via DtoGetTable to avoid multi-table DataSet serialization stalls on Middle Tier
+				RefreshIndividual(doRefreshServerCache,arrayITypes);
+				return;
+			}
+			DataSet ds=GetCacheDs(doRefreshServerCache,arrayITypes);
+		}
+
+		///<summary>Refreshes the client-side cache for the specified InvalidTypes individually using DtoGetTable.</summary>
+		private static void RefreshIndividual(bool doRefreshServerCache,params InvalidType[] arrayITypes) {
+			List<InvalidType> listITypes=arrayITypes.ToList();
+			bool isAll=listITypes.Contains(InvalidType.AllLocal);
+			if(PrefC.IsODHQ) {
+				if(listITypes.Contains(InvalidType.JobPermission) || isAll) {
+					JobPermissions.RefreshCache();
+				}
+				if(listITypes.Contains(InvalidType.PhoneComps) || isAll) {
+					PhoneComps.GetTableFromCache(doRefreshServerCache);
+				}
+				if(listITypes.Contains(InvalidType.PhoneEmpDefaults) || isAll) {
+					PhoneEmpDefaults.GetTableFromCache(doRefreshServerCache);
+				}
+				if(listITypes.Contains(InvalidType.JobTeams) || isAll) {
+					JobTeams.GetTableFromCache(doRefreshServerCache);
+					JobTeamUsers.GetTableFromCache(doRefreshServerCache);
+				}
+				if(listITypes.Contains(InvalidType.WebChatAiAssistants) || isAll) {
+					WebChatAiAssistants.GetTableFromCache(doRefreshServerCache);
+				}
+			}
+			if(listITypes.Contains(InvalidType.AccountingAutoPays) || isAll) {
+				AccountingAutoPays.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.AlertCategories) || isAll) {
+				AlertCategories.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.AlertCategoryLinks) || isAll) {
+				AlertCategoryLinks.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.ApiSubscriptions) || isAll) {
+				ApiSubscriptions.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.AppointmentTypes) || isAll) {
+				AppointmentTypes.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.AutoCodes) || isAll) {
+				AutoCodes.GetTableFromCache(doRefreshServerCache);
+				AutoCodeItems.GetTableFromCache(doRefreshServerCache);
+				AutoCodeConds.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Automation) || isAll) {
+				Automations.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.AutoNotes) || isAll) {
+				AutoNotes.GetTableFromCache(doRefreshServerCache);
+				AutoNoteControls.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Carriers) || isAll) {
+				Carriers.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.ClaimForms) || isAll) {
+				ClaimFormItems.GetTableFromCache(doRefreshServerCache);
+				ClaimForms.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.ClearHouses) || isAll) {
+				Clearinghouses.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.ClinicErxs) || isAll) {
+				ClinicErxs.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.ClinicPrefs) || isAll) {
+				ClinicPrefs.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.CodeGroups) || isAll) {
+				CodeGroups.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Computers) || isAll) {
+				Computers.GetTableFromCache(doRefreshServerCache);
+				Printers.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Defs) || isAll) {
+				Defs.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.DentalSchools) || isAll) {
+				SchoolClasses.GetTableFromCache(doRefreshServerCache);
+				SchoolCourses.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.DictCustoms) || isAll) {
+				DictCustoms.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Diseases) || isAll) {
+				DiseaseDefs.GetTableFromCache(doRefreshServerCache);
+				ICD9s.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.DisplayFields) || isAll) {
+				ChartViews.GetTableFromCache(doRefreshServerCache);
+				DisplayFields.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.DisplayReports) || isAll) {
+				DisplayReports.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Ebills) || isAll) {
+				Ebills.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.EhrCodes)) {
+				EhrCodes.UpdateList();
+			}
+			if(listITypes.Contains(InvalidType.ElectIDs) || isAll) {
+				ElectIDs.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Email) || isAll) {
+				EmailAddresses.GetTableFromCache(doRefreshServerCache);
+				EmailTemplates.GetTableFromCache(doRefreshServerCache);
+				EmailAutographs.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Employees) || isAll) {
+				Employees.GetTableFromCache(doRefreshServerCache);
+				PayPeriods.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Employers) || isAll) {
+				Employers.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.FeeScheds) || isAll) {
+				FeeScheds.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.ERoutingDef) || isAll) {
+				ERoutingDefs.GetTableFromCache(doRefreshServerCache);
+				ERoutingActionDefs.GetTableFromCache(doRefreshServerCache);
+				ERoutingDefLinks.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.HL7Defs) || isAll) {
+				HL7Defs.GetTableFromCache(doRefreshServerCache);
+				HL7DefMessages.GetTableFromCache(doRefreshServerCache);
+				HL7DefSegments.GetTableFromCache(doRefreshServerCache);
+				HL7DefFields.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.InsCats) || isAll) {
+				CovCats.GetTableFromCache(doRefreshServerCache);
+				CovSpans.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.InsFilingCodes) || isAll) {
+				InsFilingCodes.GetTableFromCache(doRefreshServerCache);
+				InsFilingCodeSubtypes.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Languages) || isAll) {
+				if(CultureInfo.CurrentCulture.Name!="en-US") {
+					Lans.GetTableFromCache(doRefreshServerCache);
+				}
+				LanguagePats.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Letters) || isAll) {
+				Letters.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.LetterMerge) || isAll) {
+				LetterMergeFields.GetTableFromCache(doRefreshServerCache);
+				LetterMerges.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.LimitedBetaFeature) || isAll) {
+				LimitedBetaFeatures.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Medications) || isAll) {
+				Medications.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Operatories) || isAll) {
+				Operatories.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.OrthoChartTabs) || isAll) {
+				OrthoChartTabs.GetTableFromCache(doRefreshServerCache);
+				OrthoChartTabLinks.GetTableFromCache(doRefreshServerCache);
+				OrthoHardwareSpecs.GetTableFromCache(doRefreshServerCache);
+				OrthoRxs.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.PatFields) || isAll) {
+				PatFieldDefs.GetTableFromCache(doRefreshServerCache);
+				PatFieldPickItems.GetTableFromCache(doRefreshServerCache);
+				ApptFieldDefs.GetTableFromCache(doRefreshServerCache);
+				FieldDefLinks.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Pharmacies) || isAll) {
+				Pharmacies.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Prefs) || isAll) {
+				Prefs.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.ProcButtons) || isAll) {
+				ProcButtons.GetTableFromCache(doRefreshServerCache);
+				ProcButtonItems.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.ProcMultiVisits) || isAll) {
+				ProcMultiVisits.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.ProcCodes) || isAll) {
+				ProcedureCodes.GetTableFromCache(doRefreshServerCache);
+				ProcCodeNotes.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Programs) || isAll) {
+				Programs.GetTableFromCache(doRefreshServerCache);
+				ProgramProperties.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.ProviderErxs) || isAll) {
+				ProviderErxs.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.ProviderClinicLink) || isAll) {
+				ProviderClinicLinks.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.ProviderIdents) || isAll) {
+				ProviderIdents.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Providers) || isAll) {
+				Providers.GetTableFromCache(doRefreshServerCache);
+				Clinics.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.QuickPaste) || isAll) {
+				QuickPasteNotes.GetTableFromCache(doRefreshServerCache);
+				QuickPasteCats.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.RecallTypes) || isAll) {
+				RecallTypes.GetTableFromCache(doRefreshServerCache);
+				RecallTriggers.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Referral) || isAll) {
+				Referrals.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.ReplicationServers) || isAll) {
+				ReplicationServers.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.RequiredFields) || isAll) {
+				RequiredFields.GetTableFromCache(doRefreshServerCache);
+				RequiredFieldConditions.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Security) || isAll) {
+				if(Userods.GetIsCacheAllowed()) {
+					Userods.GetTableFromCache(doRefreshServerCache);
+					Security.SyncCurUser();
+				}
+				UserGroups.GetTableFromCache(doRefreshServerCache);
+				GroupPermissions.GetTableFromCache(doRefreshServerCache);
+				UserGroupAttaches.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Sheets) || isAll) {
+				SheetDefs.GetTableFromCache(doRefreshServerCache);
+				SheetFieldDefs.GetTableFromCache(doRefreshServerCache);
+				EFormDefs.GetTableFromCache(doRefreshServerCache);
+				EFormFieldDefs.GetTableFromCache(doRefreshServerCache);
+				EFormImportRules.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.SigMessages) || isAll) {
+				SigElementDefs.GetTableFromCache(doRefreshServerCache);
+				SigButDefs.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Sites) || isAll) {
+				Sites.GetTableFromCache(doRefreshServerCache);
+				if(PrefC.IsODHQ) {
+					SiteLinks.GetTableFromCache(doRefreshServerCache);
+				}
+			}
+			if(listITypes.Contains(InvalidType.SmsBlockPhones) || isAll) {
+				SmsBlockPhones.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.SmsPhones) || isAll) {
+				SmsPhones.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Sops) || isAll) {
+				Sops.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.StateAbbrs) || isAll) {
+				StateAbbrs.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.TimeCardRules) || isAll) {
+				TimeCardRules.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.ToolButsAndMounts) || isAll) {
+				ToolButItems.GetTableFromCache(doRefreshServerCache);
+				MountDefs.GetTableFromCache(doRefreshServerCache);
+				ImagingDevices.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.UserClinics) || isAll) {
+				UserClinics.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.UserOdPrefs) || isAll) {
+				UserOdPrefs.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.UserQueries) || isAll) {
+				UserQueries.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Vaccines) || isAll) {
+				VaccineDefs.GetTableFromCache(doRefreshServerCache);
+				DrugManufacturers.GetTableFromCache(doRefreshServerCache);
+				DrugUnits.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Views) || isAll) {
+				ApptViews.GetTableFromCache(doRefreshServerCache);
+				ApptViewItems.GetTableFromCache(doRefreshServerCache);
+				AppointmentRules.GetTableFromCache(doRefreshServerCache);
+				ProcApptColors.GetTableFromCache(doRefreshServerCache);
+			}
+			if(listITypes.Contains(InvalidType.Wiki) || isAll) {
+				WikiListHeaderWidths.GetTableFromCache(doRefreshServerCache);
+				WikiPages.RefreshCache();
+			}
+			if(listITypes.Contains(InvalidType.ZipCodes) || isAll) {
+				ZipCodes.GetTableFromCache(doRefreshServerCache);
 			}
 		}
 
