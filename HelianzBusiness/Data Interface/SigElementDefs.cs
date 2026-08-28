@@ -6,6 +6,7 @@ using System.Collections;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
+using CodeBase;
 
 namespace HelianzBusiness {
 	///<summary></summary>
@@ -55,9 +56,17 @@ namespace HelianzBusiness {
 		///<summary>Always refreshes the ClientWeb's cache.</summary>
 		public static DataTable GetTableFromCache(bool doRefreshCache) {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
-				DataTable table=Meth.GetTable(MethodBase.GetCurrentMethod(),doRefreshCache);
-				_sigElementDefCache.FillCacheFromTable(table);
-				return table;
+				try {
+					DataTable table=Meth.GetTable(MethodBase.GetCurrentMethod(),doRefreshCache);
+					_sigElementDefCache.FillCacheFromTable(table);
+					return table;
+				}
+				catch(Exception ex) {
+					Logger.LogToPath("SigElementDefs.GetTableFromCache failed, initializing empty: " + ex.Message, LogPath.Signals, LogPhase.Unspecified);
+					DataTable emptyTable=new DataTable("SigElementDef");
+					_sigElementDefCache.FillCacheFromTable(emptyTable);
+					return emptyTable;
+				}
 			}
 			return _sigElementDefCache.GetTableFromCache(doRefreshCache);
 		}
