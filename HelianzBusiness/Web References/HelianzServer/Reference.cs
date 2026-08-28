@@ -74,7 +74,6 @@ namespace HelianzBusiness.HelianzServer {
         
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.helianz.com/HelianzServer/ProcessRequest", RequestNamespace="http://www.helianz.com/HelianzServer", ResponseNamespace="http://www.helianz.com/HelianzServer", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        [HelianzBusiness.SoapLogging]
         public string ProcessRequest(string dtoString) {
             object[] results = this.Invoke("ProcessRequest", new object[] {
                         dtoString});
