@@ -57,7 +57,7 @@ namespace HelianzBusiness {
 		///<summary>Does not do anything if the current region is US.
 		///Refreshes the cache and returns it as a DataTable. This will refresh the ClientWeb's cache and the ServerWeb's cache.</summary>
 		public static DataTable RefreshCache() {
-			if(CultureInfo.CurrentCulture.Name=="en-US") {
+			if(CultureInfo.CurrentCulture.Name=="en-US" || RemotingClient.MiddleTierRole==MiddleTierRole.ServerMT) {
 				return null;
 			}
 			return GetTableFromCache(true);
@@ -65,7 +65,7 @@ namespace HelianzBusiness {
 
 		///<summary>Fills the local cache with the passed in DataTable.</summary>
 		public static void FillCacheFromTable(DataTable table) {
-			if(CultureInfo.CurrentCulture.Name=="en-US") {
+			if(CultureInfo.CurrentCulture.Name=="en-US" || RemotingClient.MiddleTierRole==MiddleTierRole.ServerMT) {
 				return;
 			}
 			_languageCache.FillCacheFromTable(table);
@@ -111,7 +111,7 @@ namespace HelianzBusiness {
 			if(classType.StartsWith("Frm")){
 				classType="Form"+classType.Substring(3);
 			}
-			if(CultureInfo.CurrentCulture.Name=="en-US") {
+			if(CultureInfo.CurrentCulture.Name=="en-US" || RemotingClient.MiddleTierRole==MiddleTierRole.ServerMT) {
 				return text;
 			}
 			if(text.Trim()=="") {

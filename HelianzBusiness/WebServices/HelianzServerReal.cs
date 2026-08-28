@@ -25,6 +25,11 @@ namespace HelianzBusiness {
 				// Avoid 100-Continue roundtrip delay
 				httpReq.ServicePoint.Expect100Continue=false;
 				httpReq.ServicePoint.UseNagleAlgorithm=false;
+				httpReq.ServicePoint.ConnectionLimit=20;
+				httpReq.ServicePoint.MaxIdleTime=30000;
+				httpReq.AutomaticDecompression=DecompressionMethods.GZip | DecompressionMethods.Deflate;
+				httpReq.ReadWriteTimeout=60000;
+				httpReq.Timeout=60000;
 				// If no proxy configured, disable WPAD auto-detection which hangs on Win7
 				if(RemotingClient.MidTierProxyAddress==null || RemotingClient.MidTierProxyAddress=="") {
 					httpReq.Proxy=GlobalProxySelection.GetEmptyWebProxy();

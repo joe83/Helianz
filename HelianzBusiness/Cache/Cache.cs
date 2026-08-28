@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
@@ -249,7 +249,7 @@ namespace HelianzBusiness {
 			}
 			if(listITypes.Contains(InvalidType.Languages) || isAll) {
 				ODEvent.Fire(ODEventType.Cache,prefix+InvalidType.Languages.ToString());
-				if(CultureInfo.CurrentCulture.Name!="en-US") {
+				if(CultureInfo.CurrentCulture.Name!="en-US" && RemotingClient.MiddleTierRole!=MiddleTierRole.ServerMT) {
 					ds.Tables.Add(Lans.GetTableFromCache(doRefreshServerCache));
 				}
 				ds.Tables.Add(LanguagePats.GetTableFromCache(doRefreshServerCache));
