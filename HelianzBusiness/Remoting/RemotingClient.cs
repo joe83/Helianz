@@ -183,9 +183,12 @@ namespace HelianzBusiness {
 		public static DataTable ProcessGetTable(DtoGetTable dto,bool hasConnectionLost=true) {
 			string result=SendAndReceive(dto,hasConnectionLost);
 			try {
-				return XmlConverter.XmlToTable(result);
+				DataTable table=XmlConverter.XmlToTable(result);
+				SoapLogger.LogDeserializedResult(SoapLogger.CurrentCallId,dto.MethodName,typeof(DataTable),table);
+				return table;
 			}
 			catch(Exception ex) {
+				SoapLogger.LogError(SoapLogger.CurrentCallId,"ProcessGetTable.Deserialize",dto.MethodName,ex,result);
 				throw ProcessExceptionDeserialize(result,ex);
 			}
 		}
@@ -195,9 +198,12 @@ namespace HelianzBusiness {
 		public static DataTable ProcessGetTableLow(DtoGetTableLow dto,bool hasConnectionLost=true) {
 			string result=SendAndReceive(dto,hasConnectionLost);
 			try {
-				return XmlConverter.XmlToTable(result);
+				DataTable table=XmlConverter.XmlToTable(result);
+				SoapLogger.LogDeserializedResult(SoapLogger.CurrentCallId,dto.MethodName,typeof(DataTable),table);
+				return table;
 			}
 			catch(Exception ex) {
+				SoapLogger.LogError(SoapLogger.CurrentCallId,"ProcessGetTableLow.Deserialize",dto.MethodName,ex,result);
 				throw ProcessExceptionDeserialize(result,ex);
 			}
 		}
@@ -208,12 +214,16 @@ namespace HelianzBusiness {
 			string result=SendAndReceive(dto,hasConnectionLost);
 			if(Regex.IsMatch(result,"<DtoException xmlns:xsi=")) {
 				DtoException exception=(DtoException)DataTransferObject.Deserialize(result);
+				SoapLogger.LogError(SoapLogger.CurrentCallId,"ProcessGetDS.DtoException",dto.MethodName,new Exception(exception.Message),result);
 				throw new Exception(exception.Message);
 			}
 			try {
-				return XmlConverter.XmlToDs(result);
+				DataSet ds=XmlConverter.XmlToDs(result);
+				SoapLogger.LogDeserializedResult(SoapLogger.CurrentCallId,dto.MethodName,typeof(DataSet),ds);
+				return ds;
 			}
 			catch(Exception ex) {
+				SoapLogger.LogError(SoapLogger.CurrentCallId,"ProcessGetDS.Deserialize",dto.MethodName,ex,result);
 				throw ProcessExceptionDeserialize(result,ex);
 			}
 		}
@@ -223,9 +233,12 @@ namespace HelianzBusiness {
 		public static SerializableDictionary<K,V> ProcessGetSerializableDictionary<K,V>(DtoGetSerializableDictionary dto,bool hasConnectionLost=true) {
 			string result=SendAndReceive(dto,hasConnectionLost);
 			try {
-				return XmlConverterSerializer.Deserialize<SerializableDictionary<K,V>>(result);
+				SerializableDictionary<K,V> dict=XmlConverterSerializer.Deserialize<SerializableDictionary<K,V>>(result);
+				SoapLogger.LogDeserializedResult(SoapLogger.CurrentCallId,dto.MethodName,typeof(SerializableDictionary<K,V>),dict);
+				return dict;
 			}
 			catch(Exception ex) {
+				SoapLogger.LogError(SoapLogger.CurrentCallId,"ProcessGetSerializableDictionary.Deserialize",dto.MethodName,ex,result);
 				throw ProcessExceptionDeserialize(result,ex);
 			}
 		}
@@ -235,9 +248,12 @@ namespace HelianzBusiness {
 		public static long ProcessGetLong(DtoGetLong dto,bool hasConnectionLost=true) {
 			string result=SendAndReceive(dto,hasConnectionLost);
 			try {
-				return PIn.Long(result);
+				long val=PIn.Long(result);
+				SoapLogger.LogDeserializedResult(SoapLogger.CurrentCallId,dto.MethodName,typeof(long),val);
+				return val;
 			}
 			catch(Exception ex) {
+				SoapLogger.LogError(SoapLogger.CurrentCallId,"ProcessGetLong.Deserialize",dto.MethodName,ex,result);
 				throw ProcessExceptionDeserialize(result,ex);
 			}
 		}
@@ -247,9 +263,12 @@ namespace HelianzBusiness {
 		public static int ProcessGetInt(DtoGetInt dto,bool hasConnectionLost=true) {
 			string result=SendAndReceive(dto,hasConnectionLost);
 			try {
-				return PIn.Int(result);
+				int val=PIn.Int(result);
+				SoapLogger.LogDeserializedResult(SoapLogger.CurrentCallId,dto.MethodName,typeof(int),val);
+				return val;
 			}
 			catch(Exception ex) {
+				SoapLogger.LogError(SoapLogger.CurrentCallId,"ProcessGetInt.Deserialize",dto.MethodName,ex,result);
 				throw ProcessExceptionDeserialize(result,ex);
 			}
 		}
@@ -259,9 +278,12 @@ namespace HelianzBusiness {
 		public static double ProcessGetDouble(DtoGetDouble dto,bool hasConnectionLost=true) {
 			string result=SendAndReceive(dto,hasConnectionLost);
 			try {
-				return PIn.Double(result);
+				double val=PIn.Double(result);
+				SoapLogger.LogDeserializedResult(SoapLogger.CurrentCallId,dto.MethodName,typeof(double),val);
+				return val;
 			}
 			catch(Exception ex) {
+				SoapLogger.LogError(SoapLogger.CurrentCallId,"ProcessGetDouble.Deserialize",dto.MethodName,ex,result);
 				throw ProcessExceptionDeserialize(result,ex);
 			}
 		}
@@ -272,8 +294,10 @@ namespace HelianzBusiness {
 			string result=SendAndReceive(dto,hasConnectionLost);
 			if(result!="0"){
 				DtoException exception=(DtoException)DataTransferObject.Deserialize(result);
+				SoapLogger.LogError(SoapLogger.CurrentCallId,"ProcessGetVoid.DtoException",dto.MethodName,new Exception(exception.Message),result);
 				throw ThrowExceptionForDto(exception);
 			}
+			SoapLogger.LogDeserializedResult(SoapLogger.CurrentCallId,dto.MethodName,typeof(void),"void (0)");
 		}
 
 		///<summary>Optionally set hasConnectionLost true to keep the calling thread here until a connection to the Middle Tier connection can be established
@@ -281,9 +305,12 @@ namespace HelianzBusiness {
 		public static T ProcessGetObject<T>(DtoGetObject dto,bool hasConnectionLost=true) {
 			string result=SendAndReceive(dto,hasConnectionLost);
 			try {
-				return XmlConverterSerializer.Deserialize<T>(result);
+				T obj=XmlConverterSerializer.Deserialize<T>(result);
+				SoapLogger.LogDeserializedResult(SoapLogger.CurrentCallId,dto.MethodName,typeof(T),obj);
+				return obj;
 			}
 			catch(Exception ex) {
+				SoapLogger.LogError(SoapLogger.CurrentCallId,"ProcessGetObject.Deserialize",dto.MethodName,ex,result);
 				throw ProcessExceptionDeserialize(result,ex);
 			}
 		}
@@ -297,8 +324,11 @@ namespace HelianzBusiness {
 				exception=(DtoException)DataTransferObject.Deserialize(result);
 			}
 			catch {
-				return XmlConverter.XmlUnescape(result);
+				string unescaped=XmlConverter.XmlUnescape(result);
+				SoapLogger.LogDeserializedResult(SoapLogger.CurrentCallId,dto.MethodName,typeof(string),unescaped);
+				return unescaped;
 			}
+			SoapLogger.LogError(SoapLogger.CurrentCallId,"ProcessGetString.DtoException",dto.MethodName,new Exception(exception.Message),result);
 			throw ThrowExceptionForDto(exception);
 		}
 
@@ -307,12 +337,15 @@ namespace HelianzBusiness {
 		public static bool ProcessGetBool(DtoGetBool dto,bool hasConnectionLost=true) {
 			string result=SendAndReceive(dto,hasConnectionLost);
 			if(result=="True") {
+				SoapLogger.LogDeserializedResult(SoapLogger.CurrentCallId,dto.MethodName,typeof(bool),true);
 				return true;
 			}
 			if(result=="False") {
+				SoapLogger.LogDeserializedResult(SoapLogger.CurrentCallId,dto.MethodName,typeof(bool),false);
 				return false;
 			}
 			DtoException exception=(DtoException)DataTransferObject.Deserialize(result);
+			SoapLogger.LogError(SoapLogger.CurrentCallId,"ProcessGetBool.DtoException",dto.MethodName,new Exception(exception.Message),result);
 			throw ThrowExceptionForDto(exception);
 		}
 
@@ -334,6 +367,7 @@ namespace HelianzBusiness {
 				exception=(DtoException)DataTransferObject.Deserialize(result);
 			}
 			catch(Exception e) {
+				SoapLogger.LogError(SoapLogger.CurrentCallId,"ProcessExceptionDeserialize",null,new AggregateException("Error deserializing result from server.",new Exception("Result: "+result),e,ex),result);
 				throw new AggregateException("Error deserializing result from server.",new Exception("Result: "+result),e,ex);
 			}
 			return ThrowExceptionForDto(exception);
@@ -342,16 +376,23 @@ namespace HelianzBusiness {
 		///<summary>Optionally set hasConnectionLost true to keep the calling thread here until a connection to the Middle Tier connection can be established
 		///in the event of a web connection failure. Set hasConnectionLost to false if a throw is desired when a connection cannot be made.</summary>
 		internal static string SendAndReceive(DataTransferObject dto,bool hasConnectionLost=true) {
+			long callId=SoapLogger.GetNextCallId();
+			SoapLogger.CurrentCallId=callId;
+			Stopwatch sw=Stopwatch.StartNew();
+			string dtoString=null;
 			try {
 				//Anyone trying to invoke a method other than CheckUserAndPassword must first check the current HasLoginFailed status as to not call the middle tier too often.
 				bool isCheckUserAndPassword=(dto.MethodName==nameof(HelianzBusiness)+"."+nameof(Userods)+"."+nameof(Userods.CheckUserAndPassword));
 				if(!isCheckUserAndPassword && HasLoginFailed) {
 					throw new ODException("Invalid username or password.",ODException.ErrorCodes.CheckUserAndPasswordFailed);
 				}
-				string dtoString=dto.Serialize();
+				dtoString=dto.Serialize();
+				SoapLogger.LogDtoRequest(callId,dto.MethodName,ServerURI,dtoString);
 				IHelianzServer service=HelianzBusiness.WebServices.HelianzServerProxy.GetHelianzServerInstance();
 				DiagLog("SendAndReceive",$"URL={ServerURI} method={dto.MethodName} hasConnectionLost={hasConnectionLost}");
 				string result=SendAndReceiveRecursive(service,dtoString,hasConnectionLost);
+				sw.Stop();
+				SoapLogger.LogDtoResponse(callId,dto.MethodName,result,sw.ElapsedMilliseconds);
 				//If SendAndReceiveRecursive returned null, the connection was lost on the UI thread in silent mode.
 				//Throw ODException so the Meth layer can return a default value instead of crashing.
 				if(result==null && HasSilentConnectionRetry && HasMiddleTierConnectionFailed) {
@@ -360,18 +401,22 @@ namespace HelianzBusiness {
 				return result;
 			}
 			catch(SocketException sex) {
+				SoapLogger.LogError(callId,"SendAndReceive.SocketException",dto?.MethodName,sex,dtoString);
 				DiagLog("SocketException",$"URL={ServerURI} method={dto?.MethodName} msg={sex.Message}");
 				throw new WebException($"Socket error: {sex.Message}",sex,WebExceptionStatus.ConnectFailure,null);
 			}
 			catch(WebException wex) {
+				SoapLogger.LogError(callId,"SendAndReceive.WebException",dto?.MethodName,wex,dtoString);
 				DiagLog("WebException",$"URL={ServerURI} method={dto?.MethodName} status={wex.Status} msg={wex.Message}");
 				throw;
 			}
 			catch(InvalidOperationException iox) {
+				SoapLogger.LogError(callId,"SendAndReceive.InvalidOperationException",dto?.MethodName,iox,dtoString);
 				DiagLog("InvalidOp",$"URL={ServerURI} method={dto?.MethodName} msg={iox.Message} inner={iox.InnerException?.Message}");
 				throw;
 			}
 			catch(Exception ex) when (!(ex is ODException)) {
+				SoapLogger.LogError(callId,"SendAndReceive.FatalException",dto?.MethodName,ex,dtoString);
 				DiagLog("FATAL",$"URL={ServerURI} method={dto?.MethodName} type={ex.GetType().FullName} msg={ex.Message} stack={ex.StackTrace}");
 				throw;
 			}

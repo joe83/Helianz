@@ -96,51 +96,57 @@ namespace HelianzBusiness {
 		///<summary>Should accept any type.  Tested types include System types, OD types, Arrays, Lists, arrays of DtoObject, null DataObjectBase, null arrays, null Lists.  But not DataTable or DataSet.  If we find a type that isn't supported, then we need to add it.  Types that are currently unsupported include Arrays of DataObjectBase that contain a null.  Lists that contain nulls are untested and may be an issue for DataObjectBase.</summary>
 		public static T Deserialize<T>(string xmlData) {
 			Type type = typeof(T);
-			/*later.  I don't think arrays will null objects will be an issue.
-			if(type.IsArray) {
-				Type arrayType=type.GetElementType();
-				if(arrayType.BaseType==typeof(DataObjectBase)) {
-					//split into items
+			try {
+				/*later.  I don't think arrays will null objects will be an issue.
+				if(type.IsArray) {
+					Type arrayType=type.GetElementType();
+					if(arrayType.BaseType==typeof(DataObjectBase)) {
+						//split into items
+					}
+				}*/
+				if(type.IsGenericType) {//List<>
+					//because the built-in deserializer does not handle null list<>, but instead returns an empty list.
+					//<ArrayOfDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:nil="true" />
+					if(Regex.IsMatch(xmlData,"<ArrayOf[^>]*xsi:nil=\"true\"")) {
+						return default(T);//null
+					}
 				}
-			}*/
-			if(type.IsGenericType) {//List<>
-				//because the built-in deserializer does not handle null list<>, but instead returns an empty list.
-				//<ArrayOfDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:nil="true" />
-				if(Regex.IsMatch(xmlData,"<ArrayOf[^>]*xsi:nil=\"true\"")) {
-					return default(T);//null
+				StringReader strReader=new StringReader(xmlData);
+				//SECURITY: Use XmlReader with DTD processing prohibited to prevent XXE attacks.
+				XmlReaderSettings settings=new XmlReaderSettings();
+				settings.DtdProcessing=DtdProcessing.Prohibit;
+				settings.XmlResolver=null;
+				XmlReader reader=XmlReader.Create(strReader,settings);
+				XmlSerializer serializer;
+				T retVal;
+				if(type==typeof(Color)) {
+					serializer = new XmlSerializer(typeof(int));
+					retVal=(T)((object)Color.FromArgb((int)serializer.Deserialize(reader)));
 				}
-			}
-			StringReader strReader=new StringReader(xmlData);
-			//SECURITY: Use XmlReader with DTD processing prohibited to prevent XXE attacks.
-			XmlReaderSettings settings=new XmlReaderSettings();
-			settings.DtdProcessing=DtdProcessing.Prohibit;
-			settings.XmlResolver=null;
-			XmlReader reader=XmlReader.Create(strReader,settings);
-			XmlSerializer serializer;
-			T retVal;
-			if(type==typeof(Color)) {
-				serializer = new XmlSerializer(typeof(int));
-				retVal=(T)((object)Color.FromArgb((int)serializer.Deserialize(reader)));
-			}
-			else if(type==typeof(TimeSpan)) {
-				serializer = new XmlSerializer(typeof(long));
-				retVal=(T)((object)TimeSpan.FromTicks((long)serializer.Deserialize(reader)));
-			}
-			else if(type.IsInterface) {
-				//For methods that return an interface, we serialize the return object as a DtoObject.
-				serializer=new XmlSerializer(typeof(DtoObject));
-				retVal=(T)((DtoObject)serializer.Deserialize(reader)).Obj;
-			}
-			else {
-				serializer = new XmlSerializer(type);
-				retVal=(T)serializer.Deserialize(reader);
-				if(retVal!=null) {
-					retVal=(T)XmlConverter.XmlUnescapeRecursion(type,retVal);
+				else if(type==typeof(TimeSpan)) {
+					serializer = new XmlSerializer(typeof(long));
+					retVal=(T)((object)TimeSpan.FromTicks((long)serializer.Deserialize(reader)));
 				}
+				else if(type.IsInterface) {
+					//For methods that return an interface, we serialize the return object as a DtoObject.
+					serializer=new XmlSerializer(typeof(DtoObject));
+					retVal=(T)((DtoObject)serializer.Deserialize(reader)).Obj;
+				}
+				else {
+					serializer = new XmlSerializer(type);
+					retVal=(T)serializer.Deserialize(reader);
+					if(retVal!=null) {
+						retVal=(T)XmlConverter.XmlUnescapeRecursion(type,retVal);
+					}
+				}
+				strReader.Close();
+				reader.Close();
+				return retVal;
 			}
-			strReader.Close();
-			reader.Close();
-			return retVal;
+			catch(Exception ex) {
+				SoapLogger.LogError(SoapLogger.CurrentCallId,"XmlConverterSerializer.Deserialize",typeof(T).FullName,ex,xmlData);
+				throw;
+			}
 		}
 
 	}
