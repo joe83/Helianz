@@ -35,25 +35,5 @@ namespace HelianzBusiness {
 			}
 			return req;
 		}
-
-		protected override WebResponse GetWebResponse(WebRequest request) {
-			try {
-				WebResponse response=base.GetWebResponse(request);
-				Diag("GetWebResponse",$"OK URL={request.RequestUri}");
-				return response;
-			}
-			catch(Exception ex) {
-				Diag("GetWebResponse ERROR",$"{ex.GetType().Name}: {ex.Message} URL={request.RequestUri}");
-				throw;
-			}
-		}
-
-		private static void Diag(string tag,string msg) {
-			try {
-				string logPath=Path.Combine(Path.GetTempPath(),"Helianz_Diag.log");
-				File.AppendAllText(logPath,$"{DateTime.Now:HH:mm:ss.fff} [Real.{tag}] {msg}\n");
-			}
-			catch { }
-		}
 	}
 }

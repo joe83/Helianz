@@ -8,6 +8,9 @@ using System.Threading;
 namespace HelianzBusiness {
 	///<summary>High-detail, thread-safe logger for Middle Tier SOAP calls and XML serialization payloads.</summary>
 	public static class SoapLogger {
+		///<summary>Master switch to enable/disable diagnostic logging.</summary>
+		public static bool IsEnabled=false;
+
 		private static readonly object _fileLock=new object();
 		private static long _callSequence=0;
 		private static string _primaryLogPath;
@@ -43,6 +46,9 @@ namespace HelianzBusiness {
 
 		///<summary>Logs a formatted block to the log file with immediate flush.</summary>
 		public static void Log(string message) {
+			if(!IsEnabled) {
+				return;
+			}
 			try {
 				lock(_fileLock) {
 					if(!string.IsNullOrEmpty(_primaryLogPath)) {
@@ -64,6 +70,7 @@ namespace HelianzBusiness {
 
 		///<summary>Logs start of a DTO request before SOAP invocation.</summary>
 		public static void LogDtoRequest(long callId,string methodName,string serverUri,string dtoString) {
+			if(!IsEnabled) return;
 			StringBuilder sb=new StringBuilder();
 			sb.AppendLine(new string('=',80));
 			sb.AppendLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [Call #{callId}] [Thread {Thread.CurrentThread.ManagedThreadId}] METHOD: {methodName}");
@@ -77,6 +84,7 @@ namespace HelianzBusiness {
 
 		///<summary>Logs the raw outgoing SOAP Envelope XML sent over the wire.</summary>
 		public static void LogRawSoapRequest(long callId,string soapXml,string url) {
+			if(!IsEnabled) return;
 			StringBuilder sb=new StringBuilder();
 			sb.AppendLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [Call #{callId}] [Thread {Thread.CurrentThread.ManagedThreadId}] >>> RAW SOAP REQUEST XML (Length: {soapXml?.Length ?? 0} chars):");
 			sb.AppendLine(soapXml ?? "(null)");
@@ -86,6 +94,7 @@ namespace HelianzBusiness {
 
 		///<summary>Logs the raw incoming SOAP Envelope XML received over the wire.</summary>
 		public static void LogRawSoapResponse(long callId,string soapXml,long elapsedMs) {
+			if(!IsEnabled) return;
 			StringBuilder sb=new StringBuilder();
 			sb.AppendLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [Call #{callId}] [Thread {Thread.CurrentThread.ManagedThreadId}] <<< RAW SOAP RESPONSE XML (Elapsed: {elapsedMs}ms, Length: {soapXml?.Length ?? 0} chars):");
 			sb.AppendLine(soapXml ?? "(null)");
@@ -95,6 +104,7 @@ namespace HelianzBusiness {
 
 		///<summary>Logs the extracted ProcessRequestResult string.</summary>
 		public static void LogDtoResponse(long callId,string methodName,string resultString,long elapsedMs) {
+			if(!IsEnabled) return;
 			StringBuilder sb=new StringBuilder();
 			sb.AppendLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [Call #{callId}] [Thread {Thread.CurrentThread.ManagedThreadId}] <<< PARSED SOAP RESULT (Method: {methodName}, Elapsed: {elapsedMs}ms, Length: {resultString?.Length ?? 0} chars):");
 			sb.AppendLine(resultString ?? "(null)");
@@ -104,6 +114,7 @@ namespace HelianzBusiness {
 
 		///<summary>Logs successful deserialization of DTO result object.</summary>
 		public static void LogDeserializedResult(long callId,string methodName,Type targetType,object resultObj) {
+			if(!IsEnabled) return;
 			StringBuilder sb=new StringBuilder();
 			sb.AppendLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [Call #{callId}] [Thread {Thread.CurrentThread.ManagedThreadId}] <<< DESERIALIZED OBJECT:");
 			sb.AppendLine($"Target Type: {targetType?.FullName}");
@@ -126,6 +137,7 @@ namespace HelianzBusiness {
 
 		///<summary>Logs an error or exception that occurred during any phase of MT communication or deserialization.</summary>
 		public static void LogError(long callId,string stage,string methodName,Exception ex,string rawPayload=null) {
+			if(!IsEnabled) return;
 			StringBuilder sb=new StringBuilder();
 			sb.AppendLine(new string('!',80));
 			sb.AppendLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [Call #{callId}] [Thread {Thread.CurrentThread.ManagedThreadId}] !!! ERROR AT STAGE: {stage}");

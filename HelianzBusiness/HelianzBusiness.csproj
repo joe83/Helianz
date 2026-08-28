@@ -2061,7 +2061,6 @@
     <Compile Include="WebServices\WebServiceMainHQMockDemo.cs" />
     <Compile Include="WebServices\HelianzServerProxy.cs" />
     <Compile Include="WebServices\SoapLogger.cs" />
-    <Compile Include="WebServices\SoapLoggingExtension.cs" />
     <Compile Include="WebServices\SheetsSynchReal.cs" />
     <Compile Include="WebServices\WebServiceMainHQReal.cs" />
     <Compile Include="WebServices\WebServiceMainHQProxy.cs" />

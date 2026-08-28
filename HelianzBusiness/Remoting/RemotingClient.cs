@@ -389,7 +389,6 @@ namespace HelianzBusiness {
 				dtoString=dto.Serialize();
 				SoapLogger.LogDtoRequest(callId,dto.MethodName,ServerURI,dtoString);
 				IHelianzServer service=HelianzBusiness.WebServices.HelianzServerProxy.GetHelianzServerInstance();
-				DiagLog("SendAndReceive",$"URL={ServerURI} method={dto.MethodName} hasConnectionLost={hasConnectionLost}");
 				string result=SendAndReceiveRecursive(service,dtoString,hasConnectionLost);
 				sw.Stop();
 				SoapLogger.LogDtoResponse(callId,dto.MethodName,result,sw.ElapsedMilliseconds);
@@ -402,32 +401,20 @@ namespace HelianzBusiness {
 			}
 			catch(SocketException sex) {
 				SoapLogger.LogError(callId,"SendAndReceive.SocketException",dto?.MethodName,sex,dtoString);
-				DiagLog("SocketException",$"URL={ServerURI} method={dto?.MethodName} msg={sex.Message}");
 				throw new WebException($"Socket error: {sex.Message}",sex,WebExceptionStatus.ConnectFailure,null);
 			}
 			catch(WebException wex) {
 				SoapLogger.LogError(callId,"SendAndReceive.WebException",dto?.MethodName,wex,dtoString);
-				DiagLog("WebException",$"URL={ServerURI} method={dto?.MethodName} status={wex.Status} msg={wex.Message}");
 				throw;
 			}
 			catch(InvalidOperationException iox) {
 				SoapLogger.LogError(callId,"SendAndReceive.InvalidOperationException",dto?.MethodName,iox,dtoString);
-				DiagLog("InvalidOp",$"URL={ServerURI} method={dto?.MethodName} msg={iox.Message} inner={iox.InnerException?.Message}");
 				throw;
 			}
 			catch(Exception ex) when (!(ex is ODException)) {
 				SoapLogger.LogError(callId,"SendAndReceive.FatalException",dto?.MethodName,ex,dtoString);
-				DiagLog("FATAL",$"URL={ServerURI} method={dto?.MethodName} type={ex.GetType().FullName} msg={ex.Message} stack={ex.StackTrace}");
 				throw;
 			}
-		}
-
-		private static void DiagLog(string tag,string msg) {
-			try {
-				string path=Path.Combine(Path.GetTempPath(),"Helianz_Diag.log");
-				File.AppendAllText(path,$"{DateTime.Now:HH:mm:ss.fff} [Remoting.{tag}] {msg}\n");
-			}
-			catch { }
 		}
 
 		///<summary>Tries to process the dto passed in.  If there was a web connection failure then this method will keep the calling thread here 
