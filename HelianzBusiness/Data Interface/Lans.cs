@@ -74,9 +74,17 @@ namespace HelianzBusiness {
 		///<summary>Always refreshes the ClientWeb's cache.</summary>
 		public static DataTable GetTableFromCache(bool doRefreshCache) {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
-				DataTable table=Meth.GetTable(MethodBase.GetCurrentMethod(),doRefreshCache);
-				_languageCache.FillCacheFromTable(table);
-				return table;
+				try {
+					DataTable table=Meth.GetTable(MethodBase.GetCurrentMethod(),doRefreshCache);
+					_languageCache.FillCacheFromTable(table);
+					return table;
+				}
+				catch(Exception ex) {
+					Logger.LogToPath("Lans.GetTableFromCache failed, returning empty: " + ex.Message, LogPath.Signals, LogPhase.Unspecified);
+					DataTable emptyTable=new DataTable("Language");
+					_languageCache.FillCacheFromTable(emptyTable);
+					return emptyTable;
+				}
 			}
 			return _languageCache.GetTableFromCache(doRefreshCache);
 		}
@@ -120,23 +128,26 @@ namespace HelianzBusiness {
 			if(!DataConnection.HasDatabaseConnection) {//Use this just in case this check is happening before the db connection is established (e.g. Splash Screen)
 				return text;
 			}
-			Language language=new Language();
-			language.ClassType=classType;
-			language.English=text;
-			if(_languageCache.AddValueForKey(classType+text,language)) {
-				Insert(language);
-				return text;
-			}
-			if(LanguageForeigns.GetContainsKey(classType+text)) {
-				if(((LanguageForeign)LanguageForeigns.GetOne(classType+text)).Translation=="") {
-					//if translation is empty
-					return text;//return the English version
+			//Only insert master English words into DB if not ClientMT
+			if(RemotingClient.MiddleTierRole!=MiddleTierRole.ClientMT) {
+				Language language=new Language();
+				language.ClassType=classType;
+				language.English=text;
+				if(_languageCache.AddValueForKey(classType+text,language)) {
+					Insert(language);
+					return text;
 				}
-				return ((LanguageForeign)LanguageForeigns.GetOne(classType+text)).Translation;
 			}
-			else {
-				return text;
+			try {
+				if(LanguageForeigns.GetContainsKey(classType+text)) {
+					LanguageForeign lf=LanguageForeigns.GetOne(classType+text);
+					if(lf!=null && !string.IsNullOrEmpty(lf.Translation)) {
+						return lf.Translation;
+					}
+				}
 			}
+			catch { }
+			return text;
 		}
 
 		///<summary></summary>

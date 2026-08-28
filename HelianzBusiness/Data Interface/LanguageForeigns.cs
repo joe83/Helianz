@@ -5,6 +5,7 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using CodeBase;
 
 namespace HelianzBusiness{
 	///<summary></summary>
@@ -79,9 +80,17 @@ namespace HelianzBusiness{
 		///<summary>Always refreshes the ClientWeb's cache.</summary>
 		public static DataTable GetTableFromCache(bool doRefreshCache) {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
-				DataTable table=Meth.GetTable(MethodBase.GetCurrentMethod(),doRefreshCache);
-				_languageForeignCache.FillCacheFromTable(table);
-				return table;
+				try {
+					DataTable table=Meth.GetTable(MethodBase.GetCurrentMethod(),doRefreshCache);
+					_languageForeignCache.FillCacheFromTable(table);
+					return table;
+				}
+				catch(Exception ex) {
+					Logger.LogToPath("LanguageForeigns.GetTableFromCache failed, returning empty: " + ex.Message, LogPath.Signals, LogPhase.Unspecified);
+					DataTable emptyTable=new DataTable("LanguageForeign");
+					_languageForeignCache.FillCacheFromTable(emptyTable);
+					return emptyTable;
+				}
 			}
 			return _languageForeignCache.GetTableFromCache(doRefreshCache);
 		}
