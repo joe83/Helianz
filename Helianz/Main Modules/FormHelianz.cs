@@ -1746,7 +1746,7 @@ namespace Helianz{
 
 		///<summary>Refreshes certain rarely used data from database.  Must supply the types of data to refresh as flags.  Also performs a few other tasks that must be done when local data is changed.</summary>
 		private void RefreshLocalData(params InvalidType[] arrayITypes) {
-			RefreshLocalData(true,arrayITypes);
+			RefreshLocalData(false,arrayITypes);
 		}
 		
 		///<summary>Refreshes certain rarely used data from database.  Must supply the types of data to refresh as flags.  Also performs a few other tasks that must be done when local data is changed.</summary>
