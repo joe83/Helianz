@@ -162,3 +162,5 @@ helianz_mobile_app/shared/build/
 odmobile_app/.gradle/
 HelianzApi/HelianzApi
 graphify-out/
+docker/
+linux-deploy/
