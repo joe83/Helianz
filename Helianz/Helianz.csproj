@@ -838,6 +838,12 @@
     <Compile Include="Forms\FormAiChatSession.designer.cs">
       <DependentUpon>FormAiChatSession.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FormProcShareFix.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormProcShareFix.designer.cs">
+      <DependentUpon>FormProcShareFix.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FormWebChatSessionNoteEdit.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -7452,6 +7458,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormWikiCompare.resx">
       <DependentUpon>FormWikiCompare.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormProcShareFix.resx">
+      <DependentUpon>FormProcShareFix.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormClaimProcBlueBookLog.resx">
       <DependentUpon>FormClaimProcBlueBookLog.cs</DependentUpon>

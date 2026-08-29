@@ -1668,6 +1668,7 @@
     <Compile Include="Data Interface\ProcButtons.cs" />
     <Compile Include="Data Interface\ProcCodeNotes.cs" />
     <Compile Include="Data Interface\ProcedureCodes.cs" />
+    <Compile Include="Data Interface\ProcedureDoctorShares.cs" />
     <Compile Include="Data Interface\Procedures.cs" />
     <Compile Include="Data Interface\ProcTPs.cs" />
     <Compile Include="Data Interface\ProgramProperties.cs" />

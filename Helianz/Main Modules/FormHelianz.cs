@@ -647,6 +647,8 @@ namespace Helianz{
 			_menuItemRemoteSupport.Available=false;//Hidden until we are ready to go live.
 			//Query Monitor does not capture queries from a Middle Tier client, only show Query Monitor menu item when directly connected to the database.
 			_menuItemQueryMonitor.Available=(RemotingClient.MiddleTierRole==MiddleTierRole.ClientDirect);
+			//Fix Procedure Doctor Shares is only available when directly connected to the database (not Middle Tier).
+			_menuItemProcShareFix.Available=(RemotingClient.MiddleTierRole==MiddleTierRole.ClientDirect);
 			if(Security.IsAuthorized(EnumPermType.ProcCodeEdit,true) && !PrefC.GetBool(PrefName.ADAdescriptionsReset)) {
 				ProcedureCodes.ResetADAdescriptionsAndAbbrs();
 				Prefs.UpdateBool(PrefName.ADAdescriptionsReset,true);
@@ -6561,6 +6563,18 @@ namespace Helianz{
 			formProcLockTool.ShowDialog();
 			//security entries made inside the form
 			//SecurityLogs.MakeLogEntry(Permissions.Setup,0,"Proc Lock Tool");
+		}
+
+		private void menuItemProcShareFix_Click(object sender,EventArgs e) {
+			if(RemotingClient.MiddleTierRole!=MiddleTierRole.ClientDirect) {
+				MsgBox.Show(this,"This tool is only available when directly connected to the database.");
+				return;
+			}
+			if(!Security.IsAuthorized(EnumPermType.ProcComplCreate) && !Security.IsAuthorized(EnumPermType.Setup)) {
+				return;
+			}
+			using FormProcShareFix formProcShareFix=new FormProcShareFix();
+			formProcShareFix.ShowDialog();
 		}
 
 		private void menuItemSetupWizard_Click(object sender,EventArgs e) {

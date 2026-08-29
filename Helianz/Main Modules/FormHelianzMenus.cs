@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -55,6 +55,8 @@ namespace Helianz{
 		private MenuItemOD _menuItemOnlinePayments;
 		///<summary>Procedure Lock Tool Pref.</summary>
 		private MenuItemOD _menuItemProcLockTool;
+		///<summary>Fix Procedure Doctor Shares Tool (Direct DB only).</summary>
+		private MenuItemOD _menuItemProcShareFix;
 		private MenuItemOD _menuItemPublicHealthScreening;
 		private MenuItemOD _menuItemQueryFavorites;
 		private MenuItemOD _menuItemQueryMonitor;
@@ -521,6 +523,8 @@ namespace Helianz{
 			menuItemMiscTools.Add("Patient Status Setter",menuPatientStatusSetter_Click);
 			_menuItemProcLockTool=new MenuItemOD("Procedure Lock Tool",menuItemProcLockTool_Click);
 			menuItemMiscTools.Add(_menuItemProcLockTool);
+			_menuItemProcShareFix=new MenuItemOD("Fix Procedure Doctor Shares",menuItemProcShareFix_Click);
+			menuItemMiscTools.Add(_menuItemProcShareFix);
 			_menuItemServiceManager=new MenuItemOD("Service Manager",menuItemServiceManager_Click);
 			menuItemMiscTools.Add(_menuItemServiceManager);
 			menuItemMiscTools.Add("Shutdown All Workstations",menuItemShutdown_Click);
