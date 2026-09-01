@@ -852,7 +852,7 @@ namespace Helianz{
 			}
 		}
 
-		///<summary>Opens the saved PDF for the document.</summary>
+		///<summary>Opens the saved PDF in the PDF Viewer Preview.</summary>
 		private void LaunchArchivedPdf(Patient patient) {
 			string filePathPatFolder=ImageStore.GetPatientFolder(patient,ImageStore.GetPreferredAtoZpath());
 			Document document=Documents.GetByNum(StatementCur.DocNum);
@@ -861,12 +861,11 @@ namespace Helianz{
 				MessageBox.Show(Lan.g(this,"File not found:")+" "+document.FileName);
 				return;
 			}
-			try {
-				FileAtoZ.StartProcess(fileName);
-			}
-			catch(Exception ex) {
-				FriendlyException.Show($"Unable to open the following file: {document.FileName}",ex);
-			}
+			using FormPdfViewer formPdfViewer=new FormPdfViewer();
+			formPdfViewer.PdfFilePath=fileName;
+			formPdfViewer.StatementCur=StatementCur;
+			formPdfViewer.PatientCur=patient;
+			formPdfViewer.ShowDialog();
 		}
 
 		private void LimitedCustomStatementLayoutHelper() {

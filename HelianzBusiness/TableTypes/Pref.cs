@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -1211,6 +1211,33 @@ namespace HelianzBusiness {
 		///<summary>Sort images within each category in Imaging module by date created (descending). False by default.</summary>
 		[PrefName(ValueType=PrefValueType.BOOL)]
 		ImagingOrderDescending,
+		///<summary>Boolean. When true, statements sent via WhatsApp or preview will be uploaded to IDrive S3 / S3-compatible cloud storage.</summary>
+		[PrefName(ValueType=PrefValueType.BOOL)]
+		IdriveS3Enabled,
+		///<summary>String. The S3 endpoint URL for IDrive e2 or custom S3 service (e.g. https://z1x2.idrivee2-12.com).</summary>
+		[PrefName(ValueType=PrefValueType.STRING)]
+		IdriveS3Endpoint,
+		///<summary>String. S3 bucket name for IDrive e2.</summary>
+		[PrefName(ValueType=PrefValueType.STRING)]
+		IdriveS3BucketName,
+		///<summary>String. S3 Access Key ID for IDrive e2.</summary>
+		[PrefName(ValueType=PrefValueType.STRING)]
+		IdriveS3AccessKey,
+		///<summary>String. S3 Secret Access Key for IDrive e2.</summary>
+		[PrefName(ValueType=PrefValueType.STRING)]
+		IdriveS3SecretKey,
+		///<summary>String. S3 region for IDrive e2 (defaults to us-east-1 if empty).</summary>
+		[PrefName(ValueType=PrefValueType.STRING)]
+		IdriveS3Region,
+		///<summary>String. Optional public CDN domain or custom domain prefix for direct links.</summary>
+		[PrefName(ValueType=PrefValueType.STRING)]
+		IdriveS3PublicUrl,
+		///<summary>Int. Expiration period in days for Presigned S3 URLs (max 7 days according to S3 SigV4 spec).</summary>
+		[PrefName(ValueType=PrefValueType.INT)]
+		IdriveS3ExpiresDays,
+		///<summary>Boolean. True by default. When enabled, statement presigned links are automatically shortened with a shortlink service for WhatsApp.</summary>
+		[PrefName(ValueType=PrefValueType.BOOL)]
+		IdriveS3UseShortLink,
 		///<summary>Boolean.  False by default.  When enabled a fix is enabled within ODTextBox (RichTextBox) for foreign users that use 
 		///a different language input methodology that requires the composition of symbols in order to display their language correctly.
 		///E.g. the Korean symbol '역' (dur) will not display correctly inside ODTextBoxes without this set to true.</summary>

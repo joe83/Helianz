@@ -1408,6 +1408,9 @@
     <Compile Include="Forms\FormImageSelectClaimAttach.designer.cs">
       <DependentUpon>FormImageSelectClaimAttach.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FormIdriveS3Setup.designer.cs">
+      <DependentUpon>FormIdriveS3Setup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FormImagingSetup.designer.cs">
       <DependentUpon>FormImagingSetup.cs</DependentUpon>
     </Compile>
@@ -1569,6 +1572,9 @@
     </Compile>
     <Compile Include="Forms\FormPayPlanSelect.designer.cs">
       <DependentUpon>FormPayPlanSelect.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormPdfViewer.designer.cs">
+      <DependentUpon>FormPdfViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\FormPerio.designer.cs">
       <DependentUpon>FormPerio.cs</DependentUpon>
@@ -6133,6 +6139,9 @@
     <Compile Include="Forms\FormPayPlanSelect.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\FormPdfViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\FormPaySplitEdit.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -6236,6 +6245,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormRxSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormIdriveS3Setup.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormImagingSetup.cs">

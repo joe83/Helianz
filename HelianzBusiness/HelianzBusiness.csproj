@@ -2044,6 +2044,7 @@
     </Compile>
     <Compile Include="WebBridges\CloudStorage.cs" />
     <Compile Include="WebBridges\Dropbox.cs" />
+    <Compile Include="WebBridges\IdriveS3Uploader.cs" />
     <Compile Include="WebBridges\Erx\DoseSpot.cs" />
     <Compile Include="WebBridges\Erx\Erx.cs" />
     <Compile Include="WebBridges\Erx\NewCrop\NewCrop.cs" />

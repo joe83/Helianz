@@ -4466,32 +4466,21 @@ namespace Helianz {
 					wasStatementDeleted=true;
 				}
 			}
-			else {//not email
-				if(ODBuild.IsDebug()) {
-					//don't bother to check valid path because it's just debug.
-					Document document2=Documents.GetByNum(statement.DocNum);
-					string imgPath=ImageStore.GetFilePath(document2,guarFolder);
-					DateTime dateTimeNow=DateTime.Now;
-					while(DateTime.Now<dateTimeNow.AddSeconds(5) && !FileAtoZ.Exists(imgPath)) {//wait up to 5 seconds.
-						Application.DoEvents();
-					}
-					try {
-						FileAtoZ.StartProcess(imgPath);
-					}
-					catch(Exception ex) {
-						FriendlyException.Show($"Unable to open the following file: {document2.FileName}",ex);
+				Document document2=Documents.GetByNum(statement.DocNum);
+				string imgPath=tempPath;
+				if(document2!=null) {
+					string pathFromStore=ImageStore.GetFilePath(document2,guarFolder);
+					if(FileAtoZ.Exists(pathFromStore)) {
+						imgPath=pathFromStore;
 					}
 				}
-				else {
-					//Thread thread=new Thread(new ParameterizedThreadStart(SheetPrinting.PrintStatement));
-					//thread.Start(new List<object> { sheetDef,stmt,tempPath });
-					//NOTE: This is printing a "fresh" GDI+ version of the statment which is ever so slightly different than the PDFSharp statment that was saved to disk.
-					sheet=SheetUtil.CreateSheet(sheetDef,statement.PatNum,statement.HidePayment);
-					SheetFiller.FillFields(sheet,dataSet,statement);
-					SheetUtil.CalculateHeights(sheet,dataSet,statement);
-					SheetPrinting.Print(sheet,1,false,statement);//use GDI+ printing, which is slightly different than the pdf.
-				}
-			}
+				using FormPdfViewer formPdfViewer=new FormPdfViewer();
+				formPdfViewer.PdfFilePath=imgPath;
+				formPdfViewer.StatementCur=statement;
+				formPdfViewer.PatientCur=_patient;
+				formPdfViewer.SheetCur=sheet;
+				formPdfViewer.DataSet_=dataSet;
+				formPdfViewer.ShowDialog();
 			if(!wasStatementDeleted) {
 				Statements.SyncStatementProdsForStatement(dataSet,statement.StatementNum,statement.DocNum);
 			}

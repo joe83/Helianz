@@ -286,6 +286,20 @@ namespace HelianzBusiness{
 		///<summary>Updates a pref of type long.  Returns true if a change was required, or false if no change needed.</summary>
 		public static bool UpdateLong(PrefName prefName,long newValue) {
 			//Very unusual.  Involves cache, so Meth is used further down instead of here at the top.
+			if(!_prefCache.GetContainsKey(prefName.ToString())) {
+				Pref prefNew = new Pref();
+				prefNew.PrefName = prefName.ToString();
+				prefNew.ValueString = newValue.ToString();
+				if(RemotingClient.MiddleTierRole == MiddleTierRole.ClientMT) {
+					Meth.GetBool(MethodBase.GetCurrentMethod(), prefName, newValue);
+				}
+				else {
+					string insertCmd = $"INSERT INTO preference (PrefName, ValueString) VALUES ('{POut.String(prefName.ToString())}', '{POut.Long(newValue)}')";
+					Db.NonQ(insertCmd);
+				}
+				Prefs.UpdateValueForKey(prefNew);
+				return true;
+			}
 			long curValue=PrefC.GetLong(prefName);
 			if(curValue==newValue) {
 				return false;//no change needed
@@ -342,6 +356,20 @@ namespace HelianzBusiness{
 		///<summary>Returns true if a change was required, or false if no change needed.</summary>
 		public static bool UpdateBool(PrefName prefName,bool newValue,bool isForced) {
 			//Very unusual.  Involves cache, so Meth is used further down instead of here at the top.
+			if(!_prefCache.GetContainsKey(prefName.ToString())) {
+				Pref prefNew = new Pref();
+				prefNew.PrefName = prefName.ToString();
+				prefNew.ValueString = POut.Bool(newValue);
+				if(RemotingClient.MiddleTierRole == MiddleTierRole.ClientMT) {
+					Meth.GetBool(MethodBase.GetCurrentMethod(), prefName, newValue, isForced);
+				}
+				else {
+					string insertCmd = $"INSERT INTO preference (PrefName, ValueString) VALUES ('{POut.String(prefName.ToString())}', '{POut.Bool(newValue)}')";
+					Db.NonQ(insertCmd);
+				}
+				Prefs.UpdateValueForKey(prefNew);
+				return true;
+			}
 			bool curValue=PrefC.GetBool(prefName);
 			if(!isForced && curValue==newValue) {
 				return false;//no change needed
@@ -376,6 +404,20 @@ namespace HelianzBusiness{
 		///<summary>Returns true if a change was required, or false if no change needed.</summary>
 		public static bool UpdateString(PrefName prefName,string newValue) {
 			//Very unusual.  Involves cache, so Meth is used further down instead of here at the top.
+			if(!_prefCache.GetContainsKey(prefName.ToString())) {
+				Pref prefNew = new Pref();
+				prefNew.PrefName = prefName.ToString();
+				prefNew.ValueString = newValue;
+				if(RemotingClient.MiddleTierRole == MiddleTierRole.ClientMT) {
+					Meth.GetBool(MethodBase.GetCurrentMethod(), prefName, newValue);
+				}
+				else {
+					string insertCmd = $"INSERT INTO preference (PrefName, ValueString) VALUES ('{POut.String(prefName.ToString())}', '{POut.String(newValue)}')";
+					Db.NonQ(insertCmd);
+				}
+				Prefs.UpdateValueForKey(prefNew);
+				return true;
+			}
 			string curValue=PrefC.GetString(prefName);
 			if(curValue==newValue) {
 				return false;//no change needed

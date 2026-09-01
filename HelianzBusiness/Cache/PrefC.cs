@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
@@ -294,6 +294,18 @@ namespace HelianzBusiness {
 				pref=Prefs.GetOne(prefName);
 			});
 			return (pref==null ? "" : pref.ValueString);
+		}
+
+		///<summary>Gets a pref of type int. Will not throw an exception if null or not found.</summary>
+		public static int GetIntSilent(PrefName prefName,int defaultVal=0) {
+			if(Prefs.DictIsNull()) {
+				return defaultVal;
+			}
+			Pref pref=null;
+			ODException.SwallowAnyException(() => {
+				pref=Prefs.GetOne(prefName);
+			});
+			return (pref==null ? defaultVal : PIn.Int(pref.ValueString));
 		}
 
 		///<summary>Gets a pref of type date.</summary>
