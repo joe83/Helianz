@@ -83,7 +83,17 @@ namespace HelianzBusiness{
 		///<summary>Get all display reports for the passed-in category.  Pass in true to retrieve hidden display reports.</summary>
 		public static List<DisplayReport> GetForCategory(DisplayReportCategory displayReportCategory, bool showHidden) {
 			Meth.NoCheckMiddleTierRole();
-			return GetWhere(x => x.Category==displayReportCategory,!showHidden);
+			List<DisplayReport> list=GetWhere(x => x.Category==displayReportCategory,!showHidden);
+			if(displayReportCategory==DisplayReportCategory.Monthly && !list.Exists(x => x.InternalName==ReportNames.PatientBalancesCredits)) {
+				list.Add(new DisplayReport() {
+					Category=DisplayReportCategory.Monthly,
+					Description="Patient Balances and Credits",
+					InternalName=ReportNames.PatientBalancesCredits,
+					ItemOrder=15,
+					IsHidden=false
+				});
+			}
+			return list;
 		}
 
 		///<summary>Pass in true to also retrieve hidden display reports.</summary>
@@ -139,6 +149,7 @@ namespace HelianzBusiness{
 			public const string DPPOvercharged="ODDynamicPayPlanOvercharged";
 			public const string MonthlyProductionGoal="ODMonthlyProductionGoal";
 			public const string EraAutoProcessed="ODEraAutoProcessed";
+			public const string PatientBalancesCredits="ODPatientBalancesCredits";
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -438,6 +438,8 @@ namespace Helianz.User_Controls {
 					return "Insurance Aging Report";
 				case DisplayReports.ReportNames.EraAutoProcessed:
 					return "ERAs Automatically Processed Report";
+				case DisplayReports.ReportNames.PatientBalancesCredits:
+					return "Patient Balances and Credits";
 				case "ODMonthlyProductionGoal":
 					return "Monthly Production Goal";
 				case "ODProceduresIndividual":

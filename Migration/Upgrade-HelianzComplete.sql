@@ -475,6 +475,27 @@ SELECT UserNum, 13 FROM userod WHERE UserName = 'helianz';
 SELECT CONCAT('Users ready: Admin + helianz (password=12345)') AS Status;
 
 -- ============================================================================
+-- STEP 12: STANDARD REPORTS - PATIENT BALANCES AND CREDITS
+-- ============================================================================
+-- Add ODPatientBalancesCredits to displayreport (Category 2 = Monthly)
+SET @report_exists = (SELECT COUNT(*) FROM displayreport WHERE InternalName = 'ODPatientBalancesCredits');
+SET @next_order = (SELECT COALESCE(MAX(ItemOrder), 0) + 1 FROM displayreport WHERE Category = 2);
+
+INSERT INTO displayreport (InternalName, ItemOrder, Description, Category, IsHidden, IsVisibleInSubMenu)
+SELECT 'ODPatientBalancesCredits', @next_order, 'Patient Balances and Credits', 2, 0, 0
+WHERE @report_exists = 0;
+
+-- Grant access (PermType 22 = Reports) to all user groups that have Reports permissions
+SET @new_report_num = (SELECT DisplayReportNum FROM displayreport WHERE InternalName = 'ODPatientBalancesCredits');
+
+INSERT IGNORE INTO grouppermission (NewerDate, NewerDays, UserGroupNum, PermType, FKey)
+SELECT DISTINCT '0001-01-01', 0, gp.UserGroupNum, 22, @new_report_num
+FROM grouppermission gp
+WHERE gp.PermType = 22 AND @new_report_num IS NOT NULL;
+
+SELECT 'Patient Balances and Credits report registered in displayreport' AS Status;
+
+-- ============================================================================
 -- VERIFICATION QUERIES
 -- ============================================================================
 SELECT '=== POST-UPGRADE VERIFICATION ===' AS '';

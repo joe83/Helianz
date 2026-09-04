@@ -2003,13 +2003,12 @@ namespace Helianz{
 			_dictionaryTaskListPrefsCache.Add(PrefName.TasksNewTrackedByUser.ToString(),PrefC.GetBool(PrefName.TasksNewTrackedByUser));
 			_dictionaryTaskListPrefsCache.Add(PrefName.TasksShowOpenTickets.ToString(),PrefC.GetBool(PrefName.TasksShowOpenTickets));
 			_dictionaryTaskListPrefsCache.Add("TaskKeepListHidden",ComputerPrefs.LocalComputer.TaskKeepListHidden);
-			if(Security.IsAuthorized(EnumPermType.UserQueryAdmin,true)) {
-				_menuItemUserQuery.Available=true;
+			if(_menuItemUserQuery!=null) {
+				_menuItemUserQuery.Available=Security.IsAuthorized(EnumPermType.UserQueryAdmin,true);
 			}
-			else {
-				_menuItemUserQuery.Available=false;
+			if(_menuItemQueryFavorites!=null) {
+				_menuItemQueryFavorites.Available=Security.IsAuthorized(EnumPermType.UserQuery,true);
 			}
-			_menuItemQueryFavorites.Available=Security.IsAuthorized(EnumPermType.UserQuery,true);
 
 		}
 
@@ -6234,6 +6233,9 @@ namespace Helianz{
 		}
 
 		private void UpdateUnfinalizedPayCount(List<Signalod> listSignalods) {
+			if(_menuItemUnfinalizedPay==null) {
+				return;
+			}
 			if(listSignalods.Count==0) {
 				_menuItemUnfinalizedPay.Text=Lan.g(this,"Unfinalized Payments");
 				return;
@@ -6243,6 +6245,10 @@ namespace Helianz{
 		}
 
 		private void RefreshMenuReports() {
+			if(_menuItemStandard==null) {
+				ApplyTopMenuSecurityVisibility();
+				return;
+			}
 			_menuItemUserQuery.Available=Security.IsAuthorized(EnumPermType.UserQueryAdmin,true);
 			_menuItemQueryFavorites.Available=Security.IsAuthorized(EnumPermType.UserQuery,true);
 			//Find the index of the last separator which separates the static menu items from the dynamic menu items.

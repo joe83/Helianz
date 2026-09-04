@@ -538,6 +538,9 @@
     <Compile Include="Forms Reports\FormRpPatPortionUncollected.designer.cs">
       <DependentUpon>FormRpPatPortionUncollected.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms Reports\FormRpPatientBalancesCredits.designer.cs">
+      <DependentUpon>FormRpPatientBalancesCredits.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms Reports\FormRpPayPlans.designer.cs">
       <DependentUpon>FormRpPayPlans.cs</DependentUpon>
     </Compile>
@@ -3238,6 +3241,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms Reports\FormRpPatPortionUncollected.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms Reports\FormRpPatientBalancesCredits.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms Reports\FormRpUnfinalizedInsPay.cs">
@@ -7920,6 +7926,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms Reports\FormRpPatPortionUncollected.resx">
       <DependentUpon>FormRpPatPortionUncollected.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpPatientBalancesCredits.resx">
+      <DependentUpon>FormRpPatientBalancesCredits.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms Reports\FormRpUnfinalizedInsPay.resx">

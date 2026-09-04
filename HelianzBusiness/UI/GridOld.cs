@@ -3023,31 +3023,110 @@ namespace Helianz.UI {
 		}
 
 		private int SortAmountParse(GridRow row1,GridRow row2) {
-			//This is here because AmountParse does not sort correctly when the amount contains non-numeric characters
-			//We could improve this later with some kind of grid text cleaner that is called before running this sort.
-			string raw1=row1.Cells[SortedByColumnIdx].Text;			
-			raw1=raw1.Replace("$","");
-			string raw2=row2.Cells[SortedByColumnIdx].Text;
-			raw2=raw2.Replace("$","");
-			Decimal amt1=0;
-			Decimal amt2=0;
-			if(raw1!="") {
-				try {
-					amt1=Decimal.Parse(raw1);
-				}
-				catch {
-					return 0;//shouldn't happen
-				}
-			}
-			if(raw2!="") {
-				try {
-					amt2=Decimal.Parse(raw2);
-				}
-				catch {
-					return 0;//shouldn't happen
-				}
-			}
+			decimal amt1=ParseAmountFromText(row1.Cells[SortedByColumnIdx].Text);
+			decimal amt2=ParseAmountFromText(row2.Cells[SortedByColumnIdx].Text);
 			return (SortedIsAscending?1:-1)*amt1.CompareTo(amt2);
+		}
+
+		private static decimal ParseAmountFromText(string raw) {
+			if(string.IsNullOrWhiteSpace(raw)) {
+				return 0;
+			}
+			raw=raw.Trim();
+			bool isNegative=false;
+			if(raw.StartsWith("(") && raw.EndsWith(")")) {
+				isNegative=true;
+				raw=raw.Substring(1,raw.Length-2).Trim();
+			}
+			else if(raw.StartsWith("-")) {
+				isNegative=true;
+				raw=raw.Substring(1).Trim();
+			}
+			else if(raw.EndsWith("-")) {
+				isNegative=true;
+				raw=raw.Substring(0,raw.Length-1).Trim();
+			}
+			decimal val;
+			// If it contains $, use en-US
+			if(raw.Contains("$")) {
+				if(Decimal.TryParse(raw,NumberStyles.Currency,CultureInfo.GetCultureInfo("en-US"),out val)) {
+					return isNegative ? -val : val;
+				}
+			}
+			// If it contains the local currency symbol, use CurrentCulture
+			string curSymbol=CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol;
+			if(!string.IsNullOrEmpty(curSymbol) && raw.Contains(curSymbol)) {
+				if(Decimal.TryParse(raw,NumberStyles.Currency,CultureInfo.CurrentCulture,out val)) {
+					return isNegative ? -val : val;
+				}
+			}
+			// Try InvariantCulture (e.g. standard "123.45" or "1,234.56")
+			if(Decimal.TryParse(raw,NumberStyles.Currency,CultureInfo.InvariantCulture,out val)) {
+				return isNegative ? -val : val;
+			}
+			// Try CurrentCulture
+			if(Decimal.TryParse(raw,NumberStyles.Currency,CultureInfo.CurrentCulture,out val)) {
+				return isNegative ? -val : val;
+			}
+			// Fallback: extract digits and separators
+			StringBuilder sb=new StringBuilder();
+			for(int i=0;i<raw.Length;i++) {
+				char c=raw[i];
+				if(char.IsDigit(c) || c=='.' || c==',' || c=='-') {
+					sb.Append(c);
+				}
+			}
+			string cleaned=sb.ToString();
+			if(string.IsNullOrEmpty(cleaned)) {
+				return 0;
+			}
+			if(cleaned.StartsWith("-")) {
+				isNegative=!isNegative;
+				cleaned=cleaned.Substring(1);
+			}
+			if(cleaned.Contains(".") && cleaned.Contains(",")) {
+				if(cleaned.LastIndexOf('.') > cleaned.LastIndexOf(',')) {
+					// 1,234.56 -> . is decimal
+					cleaned=cleaned.Replace(",","");
+					if(Decimal.TryParse(cleaned,NumberStyles.Any,CultureInfo.InvariantCulture,out val)) {
+						return isNegative ? -val : val;
+					}
+				}
+				else {
+					// 1.234,56 -> , is decimal
+					cleaned=cleaned.Replace(".","").Replace(",",".");
+					if(Decimal.TryParse(cleaned,NumberStyles.Any,CultureInfo.InvariantCulture,out val)) {
+						return isNegative ? -val : val;
+					}
+				}
+			}
+			else if(cleaned.Contains(",")) {
+				// Only comma
+				if(cleaned.Length - cleaned.LastIndexOf(',') - 1 == 3 && cleaned.LastIndexOf(',') > 0) {
+					cleaned=cleaned.Replace(",","");
+				}
+				else {
+					cleaned=cleaned.Replace(",",".");
+				}
+				if(Decimal.TryParse(cleaned,NumberStyles.Any,CultureInfo.InvariantCulture,out val)) {
+					return isNegative ? -val : val;
+				}
+			}
+			else if(cleaned.Contains(".")) {
+				// Only dot
+				if(cleaned.Length - cleaned.LastIndexOf('.') - 1 == 3 && cleaned.LastIndexOf('.') > 0 && CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator==",") {
+					cleaned=cleaned.Replace(".","");
+				}
+				if(Decimal.TryParse(cleaned,NumberStyles.Any,CultureInfo.InvariantCulture,out val)) {
+					return isNegative ? -val : val;
+				}
+			}
+			else {
+				if(Decimal.TryParse(cleaned,NumberStyles.Any,CultureInfo.InvariantCulture,out val)) {
+					return isNegative ? -val : val;
+				}
+			}
+			return 0;
 		}
 
 

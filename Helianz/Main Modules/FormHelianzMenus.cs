@@ -110,9 +110,9 @@ namespace Helianz{
 			menuMain.Add(_menuItemListsMain);
 			LayoutMenuLists(_menuItemListsMain);
 			//Reports--------------------------------------------------------------------------------------------------------
-			_menuItemReports=new MenuItemOD("&Reports");
+			_menuItemReports=new MenuItemOD("&Reports",menuItemReportsStandard_Click);
 			menuMain.Add(_menuItemReports);
-			LayoutMenuReports(_menuItemReports);
+			//LayoutMenuReports(_menuItemReports);
 			//Custom Reports-------------------------------------------------------------------------------------------------
 			_menuItemCustomReports=new MenuItemOD("Custom Reports");
 			menuMain.Add(_menuItemCustomReports);
@@ -125,7 +125,7 @@ namespace Helianz{
 			menuMain.Add(_menuItemClinicsMain);
 			//eServices------------------------------------------------------------------------------------------------------
 			_menuItemEServicesMain=new MenuItemOD("eServices",menuItemEServices_Click);
-			menuMain.Add(_menuItemEServicesMain);
+			//menuMain.Add(_menuItemEServicesMain); // Hidden per requirement
 			//Alerts---------------------------------------------------------------------------------------------------------
 			_menuItemAlerts=new MenuItemOD("Alerts (0)",menuItemAlerts_Click);
 			menuMain.Add(_menuItemAlerts);
@@ -157,23 +157,30 @@ namespace Helianz{
 			_menuItemListsMain.Available=isSecurityAdmin;
 			_menuItemSetupMain.Available=isSecurityAdmin;
 			_menuItemToolsMain.Available=isSecurityAdmin;
-			_menuItemEServicesMain.Available=isSecurityAdmin || isEServicesSetup;
+			_menuItemEServicesMain.Available=false; // Hidden per requirement
 			_menuItemAlerts.Available=isSecurityAdmin;
-			_menuItemStandard.Available=canRunStandardReports;
-			_menuItemStandardFiltered.Available=canRunStandardReports;
-			_menuItemGraphic.Available=canRunGraphicalReports;
-			_menuItemUserQuery.Available=canRunUserQueryAdmin;
-			_menuItemQueryFavorites.Available=canRunUserQuery;
-			_menuItemActivityLog.Available=isSecurityAdmin;
-			_menuItemUnfinalizedPay.Available=canRunUnfinalizedPay;
-			bool isReports=_menuItemStandard.Available
-				|| _menuItemStandardFiltered.Available
-				|| _menuItemGraphic.Available
-				|| _menuItemUserQuery.Available
-				|| _menuItemQueryFavorites.Available
-				|| _menuItemActivityLog.Available
-				|| _menuItemUnfinalizedPay.Available;
-			_menuItemReports.Available=isReports;
+			if(_menuItemStandard!=null) {
+				_menuItemStandard.Available=canRunStandardReports;
+			}
+			if(_menuItemStandardFiltered!=null) {
+				_menuItemStandardFiltered.Available=canRunStandardReports;
+			}
+			if(_menuItemGraphic!=null) {
+				_menuItemGraphic.Available=canRunGraphicalReports;
+			}
+			if(_menuItemUserQuery!=null) {
+				_menuItemUserQuery.Available=canRunUserQueryAdmin;
+			}
+			if(_menuItemQueryFavorites!=null) {
+				_menuItemQueryFavorites.Available=canRunUserQuery;
+			}
+			if(_menuItemActivityLog!=null) {
+				_menuItemActivityLog.Available=isSecurityAdmin;
+			}
+			if(_menuItemUnfinalizedPay!=null) {
+				_menuItemUnfinalizedPay.Available=canRunUnfinalizedPay;
+			}
+			_menuItemReports.Available=canRunStandardReports;
 		}
 		#endregion MainMenu
 

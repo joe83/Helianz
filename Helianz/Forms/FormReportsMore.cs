@@ -540,6 +540,12 @@ namespace Helianz {
 					}
 					SecurityLogs.MakeLogEntry(EnumPermType.Reports,0,"Unearned Income report run.");
 					break;
+				case DisplayReports.ReportNames.PatientBalancesCredits:
+					using(FormRpPatientBalancesCredits formRpPatientBalancesCredits=new FormRpPatientBalancesCredits()) {
+						formRpPatientBalancesCredits.ShowDialog();
+					}
+					SecurityLogs.MakeLogEntry(EnumPermType.Reports,0,"Patient Balances and Credits report run.");
+					break;
 				case "ODInsuranceOverpaid"://Insurance Overpaid
 					using(FormRpInsOverpaid formRpInsOverpaid=new FormRpInsOverpaid()) {
 						formRpInsOverpaid.ShowDialog();

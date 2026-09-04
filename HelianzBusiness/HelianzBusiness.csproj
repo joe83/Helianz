@@ -1819,6 +1819,7 @@
     <Compile Include="Reports\RpProcSheet.cs" />
     <Compile Include="Reports\RpProdInc.cs" />
     <Compile Include="Reports\RpPatPortionUncollected.cs" />
+    <Compile Include="Reports\RpPatientBalancesCredits.cs" />
     <Compile Include="Reports\RpUnfinalizedInsPay.cs" />
     <Compile Include="Reports\RpRouting.cs" />
     <Compile Include="Reports\RpUnearnedIncome.cs" />

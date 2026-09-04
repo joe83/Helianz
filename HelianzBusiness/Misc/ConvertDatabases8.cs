@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -10,9 +10,13 @@ using System.Globalization;
 using System.Diagnostics;
 using System.Threading;
 using System.IO;
+#if !DOT_NET_STANDARD
 using System.Windows.Controls.Primitives;
+#endif
 using static HelianzBusiness.LargeTableHelper;
+#if !DOT_NET_STANDARD
 using ADODB;
+#endif
 
 namespace HelianzBusiness {
 	public partial class ConvertDatabases {
