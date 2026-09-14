@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -342,9 +342,9 @@ namespace Helianz {
 			this.butPreview.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butPreview.Location = new System.Drawing.Point(435, 523);
 			this.butPreview.Name = "butPreview";
-			this.butPreview.Size = new System.Drawing.Size(79, 24);
+			this.butPreview.Size = new System.Drawing.Size(125, 24);
 			this.butPreview.TabIndex = 16;
-			this.butPreview.Text = "View";
+			this.butPreview.Text = "Create Statement";
 			this.butPreview.Click += new System.EventHandler(this.butPreview_Click);
 			// 
 			// textDate

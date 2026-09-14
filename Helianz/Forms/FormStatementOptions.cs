@@ -549,7 +549,8 @@ namespace Helianz{
 				sheet.Parameters.Add(new SheetParameter(true,"Statement") { ParamValue=StatementCur });
 				SheetFiller.FillFields(sheet,dataSet,StatementCur);
 				SheetUtil.CalculateHeights(sheet,dataSet,StatementCur);
-				SheetPrinting.Print(sheet,dataSet,1,false,StatementCur);//use GDI+ printing, which is slightly different than the pdf.
+				Patient patient=Patients.GetPat(StatementCur.PatNum);
+				LaunchArchivedPdf(patient,sheet,dataSet);
 				if(StatementCur.IsInvoice && checkIsInvoiceCopy.Visible) {//for foreign countries
 					StatementCur.IsInvoiceCopy=true;
 					Statements.Update(StatementCur);
@@ -769,6 +770,10 @@ namespace Helianz{
 
 		private void butPreview_Click(object sender,EventArgs e) {
 			butPreviewSheets();
+			if(checkExportCSV.Checked) {
+				Statements.SaveStatementAsCSV(StatementCur);
+			}
+			Signalods.SetInvalid(InvalidType.BillingList);
 		}
 
 		private void butPreviewSheets() {
@@ -782,9 +787,12 @@ namespace Helianz{
 				else {
 					LaunchArchivedPdf(patient);
 				}
+				DialogResult=DialogResult.OK;
 				return;
 			}
 			//was not initially sent, or else user has unchecked the sent box
+			checkIsSent.Checked=true;
+			StatementCur.IsSent=true;
 			Cursor=Cursors.WaitCursor;
 			Patient patientGuarantor = null;
 			if(patient!=null) {
@@ -829,19 +837,11 @@ namespace Helianz{
 			SheetFiller.FillFields(sheet,dataSet,StatementCur);
 			SheetUtil.CalculateHeights(sheet,dataSet,StatementCur,true);
 			Cursor=Cursors.Default;
-			//print directly to PDF here, and save it.
-			using FormSheetFillEdit formSheetFillEdit=new FormSheetFillEdit();
-			formSheetFillEdit.SheetCur=sheet;
-			formSheetFillEdit.DataSet_=dataSet;
-			formSheetFillEdit.DoExportCSV=checkExportCSV.Checked;
-			formSheetFillEdit.StatementCur=StatementCur;
-			formSheetFillEdit.IsStatement=true;
-			formSheetFillEdit.SaveStatementToDocDelegate=SaveStatementAsDocument;
-			formSheetFillEdit.ShowDialog();
-			if(formSheetFillEdit.HasEmailBeenSent) {
-				formSheetFillEdit.StatementCur.Mode_=StatementMode.Email;
-				listMode.SetSelectedEnum(StatementMode.Email);
-			}
+			SaveStatementAsDocument(StatementCur,sheet,dataSet,"");
+			StatementCur.IsSent=true;
+			Statements.Update(StatementCur);
+			LaunchArchivedPdf(patient,sheet,dataSet);
+			DialogResult=DialogResult.OK;
 		}
 
 		private void SaveStatementAsDocument(Statement statement,Sheet sheet,DataSet dataSet,string pdfFileName) {
@@ -853,9 +853,13 @@ namespace Helianz{
 		}
 
 		///<summary>Opens the saved PDF in the PDF Viewer Preview.</summary>
-		private void LaunchArchivedPdf(Patient patient) {
+		private void LaunchArchivedPdf(Patient patient,Sheet sheet=null,DataSet dataSet=null) {
 			string filePathPatFolder=ImageStore.GetPatientFolder(patient,ImageStore.GetPreferredAtoZpath());
 			Document document=Documents.GetByNum(StatementCur.DocNum);
+			if(document==null) {
+				MessageBox.Show(Lan.g(this,"File not found"));
+				return;
+			}
 			string fileName=ImageStore.GetFilePath(document,filePathPatFolder);
 			if(!FileAtoZ.Exists(fileName)) {
 				MessageBox.Show(Lan.g(this,"File not found:")+" "+document.FileName);
@@ -865,6 +869,8 @@ namespace Helianz{
 			formPdfViewer.PdfFilePath=fileName;
 			formPdfViewer.StatementCur=StatementCur;
 			formPdfViewer.PatientCur=patient;
+			formPdfViewer.SheetCur=sheet;
+			formPdfViewer.DataSet_=dataSet;
 			formPdfViewer.ShowDialog();
 		}
 
