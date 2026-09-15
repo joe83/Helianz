@@ -542,12 +542,7 @@ namespace Helianz{
 
 		private void LoadHybridSetup() {
 			textHybridLocalPath.Text=PrefC.GetString(PrefName.DocPath);
-			if(string.IsNullOrEmpty(textHybridLocalPath.Text)) {
-				// Default: per-user LocalAppData — always writable, no admin needed.
-				textHybridLocalPath.Text=Path.Combine(
-					Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-					"Helianz","AtoZ");
-			}
+			// Determine backend type
 			HybridBackendType backendType=RcloneSync.GetBackendType();
 			comboHybridBackend.SelectedIndex=(backendType==HybridBackendType.S3) ? 1 : 0;
 			// Load SFTP credentials from ProgramProperties (where butSave_Click stores them)
@@ -796,17 +791,11 @@ namespace Helianz{
 			}
 		}
 
-		///<summary>Safely updates a Pref value. Ensures the row exists in DB first
-		///(via MT-safe RcloneSync.EnsurePrefRowExists), then updates via Prefs.UpdateString.</summary>
+		///<summary>Safely updates a Pref value. Uses Prefs.UpdateString which handles
+		///both direct DB and Middle Tier routing internally. No direct DataCore calls.</summary>
 		private void UpdatePrefSafe(PrefName prefName,string newValue) {
-			if(!Prefs.GetContainsKey(prefName.ToString())) {
-				// Add to cache + ensure DB row exists (MT-safe via RcloneSync).
-				Pref pref=new Pref();
-				pref.PrefName=prefName.ToString();
-				pref.ValueString=newValue;
-				Prefs.UpdateValueForKey(pref);
-				RcloneSync.EnsurePrefRowExists(prefName,newValue);
-			}
+			// Prefs.UpdateString routes through MT when configured.
+			// It does UPDATE (silently no-op if row missing) + always updates cache.
 			Prefs.UpdateString(prefName,newValue);
 		}
 

@@ -43,6 +43,13 @@ namespace HelianzBusiness {
 			}
 			else if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
 				int bucket=(int)(pat.PatNum % 100);
+				string folderName=pat.PatNum.ToString();
+				if(string.IsNullOrEmpty(pat.ImageFolder) || !IsNumberedFolder(pat.ImageFolder)) {
+					pat.ImageFolder=folderName;
+					if(!string.IsNullOrEmpty(PatOld.ImageFolder) && PatOld.ImageFolder!=folderName) {
+						Patients.Update(pat,PatOld);
+					}
+				}
 				retVal=ODFileUtils.CombinePaths(AtoZpath,bucket.ToString(),pat.ImageFolder);
 				try {
 					if(string.IsNullOrEmpty(AtoZpath)) {
@@ -1053,6 +1060,9 @@ namespace HelianzBusiness {
 			using(Bitmap bitmap=new Bitmap(image)) {
 				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ || PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {//if saving to AtoZ folder
 					bitmap.Save(ODFileUtils.CombinePaths(patFolder,doc.FileName),codec,encoderParameters);
+					if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
+						TriggerAsyncRclonePush(doc,patFolder);
+					}
 				}
 				else if(CloudStorage.IsCloudStorage) {
 					using(MemoryStream stream=new MemoryStream()) {
@@ -1392,12 +1402,13 @@ namespace HelianzBusiness {
 		}
 
 		///<summary>Triggers an async rclone push of a single document to the server. Fire-and-forget with error logging.</summary>
-		private static void TriggerAsyncRclonePush(Document doc,string patFolder) {
+		public static void TriggerAsyncRclonePush(Document doc,string patFolder) {
 			try {
 				string localBase=GetPreferredAtoZpath();
+				string localFilePath=ODFileUtils.CombinePaths(patFolder,doc.FileName);
 				System.Threading.Tasks.Task.Run(() => {
 					try {
-						RcloneSync.PushFile(doc.PatNum,localBase,doc.FileName);
+						RcloneSync.PushFile(doc.PatNum,localBase,doc.FileName,localFilePath);
 					}
 					catch(Exception ex) {
 						Logger.openlog.LogMB("Async rclone push failed for document "+doc.DocNum+": "+ex.Message,Logger.Severity.WARNING);

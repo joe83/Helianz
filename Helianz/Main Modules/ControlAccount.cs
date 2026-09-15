@@ -4470,8 +4470,18 @@ namespace Helianz {
 				string imgPath=tempPath;
 				if(document2!=null) {
 					string pathFromStore=ImageStore.GetFilePath(document2,guarFolder);
+					if(!FileAtoZ.Exists(pathFromStore) && PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
+						string localBase=ImageStore.GetPreferredAtoZpath();
+						string pulledPath=HybridMediaResolver.EnsureFileAvailableLocally(document2.PatNum,localBase,document2.FileName);
+						if(!string.IsNullOrEmpty(pulledPath) && FileAtoZ.Exists(pulledPath)) {
+							pathFromStore=pulledPath;
+						}
+					}
 					if(FileAtoZ.Exists(pathFromStore)) {
 						imgPath=pathFromStore;
+					}
+					if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
+						ImageStore.TriggerAsyncRclonePush(document2,guarFolder);
 					}
 				}
 				using FormPdfViewer formPdfViewer=new FormPdfViewer();

@@ -63,6 +63,12 @@ namespace Helianz{
 					_wasInitiallySent=true;
 					SetEnabled(false);
 				}
+				if(StatementCur.IsSent || StatementCur.DocNum!=0) {
+					butPreview.Text=Lan.g(this,"View");
+				}
+				else {
+					butPreview.Text=Lan.g(this,"Create Statement");
+				}
 				textDate.Text=StatementCur.DateSent.ToShortDateString();
 				//Allow the temporary value of this setting to override the default if there's a difference
 				//ShowBillTransSinceZero will have been updated only if _isFromBilling is true (ie the user arrived here from the Billing forms)
@@ -376,6 +382,7 @@ namespace Helianz{
 					return;
 				}
 				SetEnabled(true);
+				butPreview.Text=Lan.g(this,"Create Statement");
 				if(StatementCur.Mode_==StatementMode.Electronic) {
 					checkSinglePatient.Checked=false;
 					checkSinglePatient.Enabled=false;
@@ -405,8 +412,13 @@ namespace Helianz{
 					}
 				}
 			}
-			else if(ListStatements==null && StatementCur.IsInvoice && checkIsSent.Checked) {
-				checkIsInvoiceCopy.Checked=true;
+			else if(checkIsSent.Checked) {
+				if(StatementCur.DocNum!=0) {
+					butPreview.Text=Lan.g(this,"View");
+				}
+				if(ListStatements==null && StatementCur.IsInvoice) {
+					checkIsInvoiceCopy.Checked=true;
+				}
 			}
 		}
 
@@ -448,9 +460,20 @@ namespace Helianz{
 			if(StatementCur.DocNum!=0 && checkIsSent.Checked) {
 				Patient patient=Patients.GetPat(StatementCur.PatNum);
 				string filePathPatImg=ImageStore.GetPatientFolder(patient,ImageStore.GetPreferredAtoZpath());
-				if(!FileAtoZ.Exists(ImageStore.GetFilePath(Documents.GetByNum(StatementCur.DocNum),filePathPatImg))) { 
-					MsgBox.Show(this,"File not found: " + Documents.GetByNum(StatementCur.DocNum).FileName);
-					return;
+				Document doc=Documents.GetByNum(StatementCur.DocNum);
+				if(doc!=null) {
+					string filePath=ImageStore.GetFilePath(doc,filePathPatImg);
+					if(!FileAtoZ.Exists(filePath) && PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
+						string localBase=ImageStore.GetPreferredAtoZpath();
+						string pulledPath=HybridMediaResolver.EnsureFileAvailableLocally(doc.PatNum,localBase,doc.FileName);
+						if(!string.IsNullOrEmpty(pulledPath) && FileAtoZ.Exists(pulledPath)) {
+							filePath=pulledPath;
+						}
+					}
+					if(!FileAtoZ.Exists(filePath)) { 
+						MsgBox.Show(this,"File not found: " + doc.FileName);
+						return;
+					}
 				}
 			}
 			butPrintSheets();
@@ -550,6 +573,14 @@ namespace Helianz{
 				SheetFiller.FillFields(sheet,dataSet,StatementCur);
 				SheetUtil.CalculateHeights(sheet,dataSet,StatementCur);
 				Patient patient=Patients.GetPat(StatementCur.PatNum);
+				if(StatementCur.DocNum!=0 && PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
+					Document doc=Documents.GetByNum(StatementCur.DocNum);
+					if(doc!=null) {
+						string localBase=ImageStore.GetPreferredAtoZpath();
+						string patFolder=ImageStore.GetPatientFolder(patient,localBase);
+						ImageStore.TriggerAsyncRclonePush(doc,patFolder);
+					}
+				}
 				LaunchArchivedPdf(patient,sheet,dataSet);
 				if(StatementCur.IsInvoice && checkIsInvoiceCopy.Visible) {//for foreign countries
 					StatementCur.IsInvoiceCopy=true;
@@ -840,6 +871,14 @@ namespace Helianz{
 			SaveStatementAsDocument(StatementCur,sheet,dataSet,"");
 			StatementCur.IsSent=true;
 			Statements.Update(StatementCur);
+			if(StatementCur.DocNum!=0 && PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
+				Document doc=Documents.GetByNum(StatementCur.DocNum);
+				if(doc!=null) {
+					string localBase=ImageStore.GetPreferredAtoZpath();
+					string patFolder=ImageStore.GetPatientFolder(patient,localBase);
+					ImageStore.TriggerAsyncRclonePush(doc,patFolder);
+				}
+			}
 			LaunchArchivedPdf(patient,sheet,dataSet);
 			DialogResult=DialogResult.OK;
 		}
@@ -861,6 +900,15 @@ namespace Helianz{
 				return;
 			}
 			string fileName=ImageStore.GetFilePath(document,filePathPatFolder);
+			if(!FileAtoZ.Exists(fileName)) {
+				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
+					string localBase=ImageStore.GetPreferredAtoZpath();
+					string pulledPath=HybridMediaResolver.EnsureFileAvailableLocally(document.PatNum,localBase,document.FileName);
+					if(!string.IsNullOrEmpty(pulledPath) && FileAtoZ.Exists(pulledPath)) {
+						fileName=pulledPath;
+					}
+				}
+			}
 			if(!FileAtoZ.Exists(fileName)) {
 				MessageBox.Show(Lan.g(this,"File not found:")+" "+document.FileName);
 				return;

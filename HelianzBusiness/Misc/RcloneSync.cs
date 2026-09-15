@@ -180,18 +180,31 @@ namespace HelianzBusiness {
 		}
 
 		///<summary>Pushes a single file from local to server using rclone copyto.
-		///More efficient than pushing the whole folder when only one file changed.</summary>
-		public static void PushFile(long patNum,string localBasePath,string fileName) {
+		///More efficient than pushing the whole folder when only one file changed.
+		///If localFilePath is provided and exists, that file will be pushed.</summary>
+		public static void PushFile(long patNum,string localBasePath,string fileName,string localFilePath=null) {
 			if(!IsRcloneAvailable()) {
+				Logger.openlog.LogMB("rclone not available, skipping push file for patient "+patNum+" file "+fileName,Logger.Severity.WARNING);
 				return;
 			}
 			try {
-				string localPath=GetLocalPatientPath(patNum,localBasePath);
+				string srcFile;
+				if(!string.IsNullOrEmpty(localFilePath) && File.Exists(localFilePath)) {
+					srcFile=localFilePath;
+				}
+				else {
+					string localPath=GetLocalPatientPath(patNum,localBasePath);
+					srcFile=ODFileUtils.CombinePaths(localPath,fileName);
+				}
+				if(!File.Exists(srcFile)) {
+					Logger.openlog.LogMB("rclone push file skipped, local file does not exist: "+srcFile,Logger.Severity.WARNING);
+					return;
+				}
 				string remotePath=GetRemotePatientPath(patNum);
-				RunRclone("copyto",ODFileUtils.CombinePaths(localPath,fileName),remotePath+fileName);
+				RunRclone("copyto",srcFile,remotePath+fileName);
 			}
 			catch(Exception ex) {
-				Logger.openlog.LogMB("rclone push file failed for patient "+patNum+": "+ex.Message,Logger.Severity.WARNING);
+				Logger.openlog.LogMB("rclone push file failed for patient "+patNum+" file "+fileName+": "+ex.Message,Logger.Severity.WARNING);
 			}
 		}
 
@@ -353,6 +366,32 @@ namespace HelianzBusiness {
 			return "";
 		}
 
+		///<summary>Gets the SSH key path from AppData or decrypts from ProgramProperties.</summary>
+		private static string GetSshKeyPath() {
+			try {
+				string appDataKey=Path.Combine(
+					Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"Helianz","ssh_key");
+				if(File.Exists(appDataKey)) {
+					return appDataKey;
+				}
+				long progNum=Programs.GetProgramNum(ProgramName.SFTP);
+				string keyEncrypted=ProgramProperties.GetPropVal(progNum,"Hybrid SSH Key")??"";
+				if(!string.IsNullOrEmpty(keyEncrypted)) {
+					string keyDecrypted="";
+					if(CDT.Class1.DecryptSftp(keyEncrypted,out keyDecrypted)) {
+						string appDataDir=Path.GetDirectoryName(appDataKey);
+						if(!Directory.Exists(appDataDir)) {
+							Directory.CreateDirectory(appDataDir);
+						}
+						File.WriteAllText(appDataKey,keyDecrypted);
+						return appDataKey;
+					}
+				}
+			}
+			catch { }
+			return "";
+		}
+
 		#endregion
 
 		#region Process Execution
@@ -393,6 +432,10 @@ namespace HelianzBusiness {
 				if(!string.IsNullOrEmpty(sftpHost)) sb.AppendLine("host = "+sftpHost);
 				if(!string.IsNullOrEmpty(sftpUser)) sb.AppendLine("user = "+sftpUser);
 				if(!string.IsNullOrEmpty(sftpPass)) sb.AppendLine("pass = "+sftpPass);
+				string sshKeyPath=GetSshKeyPath();
+				if(!string.IsNullOrEmpty(sshKeyPath) && File.Exists(sshKeyPath)) {
+					sb.AppendLine("key_file = "+sshKeyPath.Replace('\\','/'));
+				}
 			}
 			string configPath=Path.Combine(Path.GetTempPath(),"rclone_helianz_"+Guid.NewGuid().ToString("N")+".conf");
 			File.WriteAllText(configPath,sb.ToString());
