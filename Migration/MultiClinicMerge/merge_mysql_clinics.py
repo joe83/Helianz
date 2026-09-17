@@ -104,6 +104,16 @@ COMMON_BIN_PATHS = [
 ]
 
 
+import socket
+
+DEBUG = True
+
+def debug_log(msg):
+    if DEBUG:
+        now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+        print(f"[{now}] [DEBUG] {msg}", flush=True)
+
+
 def log_header(title):
     print("\n" + "=" * 70, flush=True)
     print(f"  {title}", flush=True)
@@ -116,22 +126,30 @@ def log_step(step, title):
 
 def find_mariadb_bin(user_supplied=None):
     """Locate directory containing mysql.exe and mysqldump.exe."""
+    debug_log(f"find_mariadb_bin: user_supplied='{user_supplied}'")
     if user_supplied and os.path.isdir(user_supplied):
         if os.path.exists(os.path.join(user_supplied, "mysql.exe")):
+            debug_log(f"find_mariadb_bin: Found in user_supplied: {user_supplied}")
             return user_supplied
 
     env_bin = os.environ.get("MARIADB_BIN") or os.environ.get("MYSQL_BIN")
     if env_bin and os.path.isdir(env_bin) and os.path.exists(os.path.join(env_bin, "mysql.exe")):
+        debug_log(f"find_mariadb_bin: Found in env var: {env_bin}")
         return env_bin
 
     for path in COMMON_BIN_PATHS:
+        debug_log(f"find_mariadb_bin: Checking common path '{path}'...")
         if os.path.isdir(path) and os.path.exists(os.path.join(path, "mysql.exe")):
+            debug_log(f"find_mariadb_bin: Found in common path: {path}")
             return path
 
     which_mysql = shutil.which("mysql")
     if which_mysql:
-        return os.path.dirname(which_mysql)
+        found_dir = os.path.dirname(which_mysql)
+        debug_log(f"find_mariadb_bin: Found in PATH via which: {found_dir}")
+        return found_dir
 
+    debug_log("find_mariadb_bin: No MariaDB/MySQL bin directory found.")
     return None
 
 
@@ -140,6 +158,16 @@ def get_mysql_conn(host, port, user, password, db=None, timeout=10):
     Connect to MariaDB / MySQL with a strict connection timeout and
     automatic IPv4/localhost fallback to avoid Windows IPv6 resolution hangs.
     """
+    debug_log(f"get_mysql_conn called: host='{host}', port={port}, user='{user}', db='{db}', timeout={timeout}s")
+
+    # Resolve host via getaddrinfo to see exactly what IP addresses are returned
+    try:
+        addrinfos = socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)
+        resolved_ips = [ai[4][0] for ai in addrinfos]
+        debug_log(f"DNS/socket getaddrinfo for '{host}:{port}' -> {resolved_ips}")
+    except Exception as err:
+        debug_log(f"DNS/socket getaddrinfo failed for '{host}:{port}': {err}")
+
     hosts_to_try = [host]
     if host.lower() in ("localhost", "127.0.0.1"):
         # Favor 127.0.0.1 first on Windows to bypass IPv6 (::1) socket hangs, then try localhost
@@ -147,6 +175,7 @@ def get_mysql_conn(host, port, user, password, db=None, timeout=10):
 
     last_err = None
     for h in hosts_to_try:
+        debug_log(f"Attempting mysql.connector.connect(host='{h}', port={port}, user='{user}', timeout={timeout}s)...")
         kwargs = {
             "host": h,
             "port": port,
@@ -157,25 +186,43 @@ def get_mysql_conn(host, port, user, password, db=None, timeout=10):
         }
         if db:
             kwargs["database"] = db
+
+        t0 = time.time()
         try:
-            return mysql.connector.connect(**kwargs)
+            conn = mysql.connector.connect(**kwargs)
+            elapsed = time.time() - t0
+            server_ver = getattr(conn, "server_info", None) or "unknown"
+            thread_id = getattr(conn, "connection_id", "n/a")
+            debug_log(f"[OK] Connected to '{h}:{port}' in {elapsed:.3f}s (Server: {server_ver}, Thread ID: {thread_id})")
+            return conn
         except Exception as e:
+            elapsed = time.time() - t0
+            debug_log(f"[!] Connection to '{h}:{port}' failed after {elapsed:.3f}s: {type(e).__name__}: {e}")
             last_err = e
 
     raise last_err
 
 
 def run_shell_cmd(cmd, env_vars=None, check=True, print_stdout=False):
+    debug_log(f"run_shell_cmd: Executing: {cmd}")
     env = os.environ.copy()
     env["PYTHONIOENCODING"] = "utf-8"
     if env_vars:
         env.update(env_vars)
 
+    t0 = time.time()
     proc = subprocess.run(
         cmd, shell=True, capture_output=True, text=True, env=env, encoding="utf-8", errors="replace"
     )
+    elapsed = time.time() - t0
+    debug_log(f"run_shell_cmd: Completed in {elapsed:.2f}s (Exit code: {proc.returncode})")
+    if proc.stdout:
+        debug_log(f"run_shell_cmd stdout ({len(proc.stdout)} chars): {proc.stdout.strip()[:200]}")
+    if proc.stderr:
+        debug_log(f"run_shell_cmd stderr ({len(proc.stderr)} chars): {proc.stderr.strip()[:200]}")
+
     if print_stdout and proc.stdout:
-        print(proc.stdout)
+        print(proc.stdout, flush=True)
     if proc.returncode != 0 and check:
         err_msg = proc.stderr.strip() or proc.stdout.strip()
         raise RuntimeError(f"Command failed (exit {proc.returncode}): {cmd}\nError: {err_msg}")
@@ -195,6 +242,8 @@ def get_max_pk_in_db(conn, db_name):
     Uses information_schema.TABLES AUTO_INCREMENT metadata first, then verifies
     actual MAX() on top candidate tables. Finishes in ~0.1s instead of running 390+ queries.
     """
+    debug_log(f"get_max_pk_in_db: Starting max PK scan for `{db_name}`...")
+    t0 = time.time()
     cursor = conn.cursor()
     cursor.execute("""
         SELECT TABLE_NAME, AUTO_INCREMENT 
@@ -203,6 +252,7 @@ def get_max_pk_in_db(conn, db_name):
         ORDER BY AUTO_INCREMENT DESC
     """, (db_name,))
     table_autoincs = cursor.fetchall()
+    debug_log(f"get_max_pk_in_db: Found {len(table_autoincs)} auto_increment tables in `{db_name}` ({time.time()-t0:.3f}s)")
 
     overall_max = 0
     top_details = []
@@ -210,6 +260,7 @@ def get_max_pk_in_db(conn, db_name):
     if table_autoincs:
         # Check actual MAX() on top 15 candidate tables with largest auto_increment
         top_candidates = table_autoincs[:15]
+        debug_log(f"get_max_pk_in_db: Checking top {len(top_candidates)} candidate tables...")
         for tbl, ai in top_candidates:
             if ai and ai > 1:
                 try:
@@ -224,15 +275,17 @@ def get_max_pk_in_db(conn, db_name):
                         cursor.execute(f"SELECT MAX(`{col}`) FROM `{db_name}`.`{tbl}`")
                         r = cursor.fetchone()
                         val = r[0] if (r and r[0] is not None) else (ai - 1)
+                        debug_log(f"get_max_pk_in_db: `{db_name}`.`{tbl}`.`{col}` -> MAX = {val}")
                         if val > overall_max:
                             overall_max = val
                         if val > 0:
                             top_details.append((tbl, col, val))
-                except Exception:
-                    pass
+                except Exception as e:
+                    debug_log(f"get_max_pk_in_db: Query failed on `{tbl}`: {e}")
 
     # Fallback to column scan if no table metadata found
     if overall_max == 0:
+        debug_log(f"get_max_pk_in_db: Fallback to full column scan on `{db_name}`...")
         cursor.execute("""
             SELECT TABLE_NAME, COLUMN_NAME FROM information_schema.COLUMNS
             WHERE TABLE_SCHEMA = %s AND EXTRA LIKE '%%auto_increment%%'
@@ -254,6 +307,7 @@ def get_max_pk_in_db(conn, db_name):
 
     cursor.close()
     top_details.sort(key=lambda x: x[2], reverse=True)
+    debug_log(f"get_max_pk_in_db: Final max PK for `{db_name}` = {overall_max:,} (Total time: {time.time()-t0:.3f}s)")
     return overall_max, top_details
 
 
@@ -638,8 +692,18 @@ def main():
     parser.add_argument("--no-wipe", dest="wipe_target", action="store_false", default=True, help="Skip wiping target database before merge (default: wipe target first)")
     parser.add_argument("--keep-temp", action="store_true", help="Do not drop working temp databases")
     parser.add_argument("--dry-run", action="store_true", help="Preview calculations and exit without making modifications")
+    parser.add_argument("--no-debug", action="store_true", help="Disable verbose debug output (debug enabled by default)")
+    parser.add_argument("--conn-timeout", type=int, default=10, help="Database connection timeout in seconds (default: 10)")
 
     args = parser.parse_args()
+
+    global DEBUG
+    DEBUG = not args.no_debug
+
+    debug_log(f"Process PID: {os.getpid()}, Python: {sys.executable} (Version: {sys.version.split()[0]})")
+    debug_log(f"Working Directory: {os.getcwd()}")
+    debug_log(f"Script Directory: {SCRIPT_DIR}, Repo Root: {REPO_ROOT}")
+    debug_log(f"Arguments parsed: target={args.target}, sources={args.sources}, host={args.host}, port={args.port}, user={args.user}, dry_run={args.dry_run}")
 
     # 1. Resolve Target DB
     target_db = args.target
@@ -648,6 +712,7 @@ def main():
             target_db = input("Enter target database name [helianz]: ").strip() or "helianz"
         except (EOFError, KeyboardInterrupt):
             target_db = "helianz"
+    debug_log(f"Resolved target database: '{target_db}'")
 
     # 2. Resolve Source Clinics
     clinics = parse_clinic_definitions(
@@ -655,7 +720,7 @@ def main():
     )
     if not clinics:
         # Prompt interactively if not passed on CLI
-        print("\nNo source databases specified via --sources, --clinics, or clinic flags.")
+        print("\nNo source databases specified via --sources, --clinics, or clinic flags.", flush=True)
         try:
             src_klt = input("Enter Klaten source database [helianz_klt]: ").strip() or "helianz_klt"
             src_byl = input("Enter Boyolali source database [helianz_byl]: ").strip() or "helianz_byl"
@@ -667,6 +732,7 @@ def main():
             ]
         except (EOFError, KeyboardInterrupt):
             sys.exit("Aborted by user.")
+    debug_log(f"Resolved {len(clinics)} source clinics: {[(c['ClinicNum'], c['db'], c['Description']) for c in clinics]}")
 
     # 3. Resolve User and Password
     db_user = args.user or "root"
@@ -675,11 +741,13 @@ def main():
         env_pwd = os.environ.get("MYSQL_PWD")
         if env_pwd:
             db_pass = env_pwd
+            debug_log("Database password loaded from MYSQL_PWD environment variable.")
         else:
             try:
                 db_pass = getpass.getpass(f"Enter MariaDB password for user '{db_user}': ")
             except (EOFError, KeyboardInterrupt):
                 sys.exit("\nAborted by user.")
+    debug_log(f"Database user: '{db_user}', password length: {len(db_pass) if db_pass else 0}")
 
     # 4. Resolve MariaDB bin directory
     bin_dir = find_mariadb_bin(args.bin_dir)
@@ -694,6 +762,7 @@ def main():
     mysql_exe = os.path.join(bin_dir, "mysql.exe")
     mysqldump_exe = os.path.join(bin_dir, "mysqldump.exe")
     python_exe = get_python_exe()
+    debug_log(f"Binaries: mysql='{mysql_exe}' (exists: {os.path.exists(mysql_exe)}), mysqldump='{mysqldump_exe}' (exists: {os.path.exists(mysqldump_exe)}), python='{python_exe}'")
 
     # Environment variables to pass credentials cleanly to child processes
     child_env = {
@@ -719,16 +788,21 @@ def main():
 
     # 5. Connect and verify databases
     log_step(1, "Pre-flight Verification")
+    debug_log(f"Initiating pre-flight verification: Host={args.host}:{args.port}, User='{db_user}', Timeout={args.conn_timeout}s")
     print(f"  Connecting to database at {args.host}:{args.port} as '{db_user}'...", flush=True)
     try:
-        conn = get_mysql_conn(args.host, args.port, db_user, db_pass)
+        conn = get_mysql_conn(args.host, args.port, db_user, db_pass, timeout=args.conn_timeout)
         print(f"  [OK] Connected to MariaDB/MySQL server successfully.", flush=True)
         cursor = conn.cursor()
         print("  Retrieving database list...", flush=True)
+        debug_log("Executing: SHOW DATABASES")
         cursor.execute("SHOW DATABASES")
-        existing_dbs = {row[0].lower() for row in cursor.fetchall()}
+        raw_dbs = cursor.fetchall()
+        existing_dbs = {row[0].lower() for row in raw_dbs}
         cursor.close()
+        debug_log(f"Databases found ({len(existing_dbs)}): {sorted(existing_dbs)}")
     except Exception as e:
+        debug_log(f"[EXCEPTION] Connection/Query error: {type(e).__name__}: {e}")
         print(f"\n[!] Failed to connect to database at {args.host}:{args.port}", flush=True)
         print(f"    Error: {e}", flush=True)
         print(f"\n    Troubleshooting:", flush=True)
@@ -741,24 +815,30 @@ def main():
     print(f"  Checking {len(clinics)} source databases on server...", flush=True)
     for c in clinics:
         src = c["db"]
+        debug_log(f"Verifying existence of source DB '{src}' for Clinic {c['ClinicNum']}...")
         if src.lower() not in existing_dbs:
+            debug_log(f"Source DB '{src}' NOT found in existing databases: {sorted(existing_dbs)}")
             print(f"\n[!] Error: Source database `{src}` does not exist on {args.host}:{args.port}!", flush=True)
             print(f"    Databases found on server: {', '.join(sorted(existing_dbs))}", flush=True)
             print(f"    Please verify database names or restore source dumps first.", flush=True)
             sys.exit(1)
+        debug_log(f"Source DB '{src}' confirmed on server.")
         print(f"  [OK] Found source database `{src}` for Clinic {c['ClinicNum']} ({c['Description']})", flush=True)
 
     # Preview PKs and calculate projected offsets
     print("\n  Analyzing Source Max PKs & Projected Offsets...", flush=True)
     base_clinic = clinics[0]
+    debug_log(f"Analyzing max PK for base clinic `{base_clinic['db']}`...")
     base_max, base_top = get_max_pk_in_db(conn, base_clinic["db"])
     print(f"    Clinic {base_clinic['ClinicNum']} (`{base_clinic['db']}`) : Max PK = {base_max:,} (Base, offset +0)", flush=True)
 
     running_target_max = base_max
     for c in clinics[1:]:
+        debug_log(f"Analyzing max PK for clinic {c['ClinicNum']} `{c['db']}`...")
         c_max, _ = get_max_pk_in_db(conn, c["db"])
         offset_val = compute_rounded_offset(running_target_max, args.step)
         est_after = offset_val + c_max
+        debug_log(f"Clinic {c['ClinicNum']} `{c['db']}`: max_pk={c_max:,}, offset={offset_val:,}, est_max={est_after:,}")
         print(f"    Clinic {c['ClinicNum']} (`{c['db']}`) : Max PK = {c_max:,} -> Offset +{offset_val:,} (Range: {offset_val+1:,} -> {est_after:,})", flush=True)
         running_target_max = est_after
 
