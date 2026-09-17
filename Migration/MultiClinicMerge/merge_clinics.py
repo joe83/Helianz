@@ -12,22 +12,51 @@ import argparse
 import sys
 
 HOST = os.environ.get("MYSQL_HOST", "localhost")
+PORT = int(os.environ.get("MYSQL_TCP_PORT", "3306"))
 USER = os.environ.get("MYSQL_USER", "root")
 PASSWORD = os.environ.get("MYSQL_PWD", "J0k0m4r0k3@")
 
 
-def discover_merge_tables(db):
+def get_db_connection(db=None, host=None, port=None, user=None, password=None):
+    """Create a MariaDB/MySQL connection with pure-Python mode to avoid Windows C-extension access violations."""
+    h = host or HOST
+    p = port or PORT
+    u = user or USER
+    pwd = password if password is not None else PASSWORD
+    for use_pure in [True, False]:
+        try:
+            return mysql.connector.connect(
+                host=h,
+                port=p,
+                user=u,
+                password=pwd,
+                database=db,
+                use_pure=use_pure,
+                ssl_disabled=True,
+                connection_timeout=30,
+                charset="utf8mb4"
+            )
+        except Exception:
+            if not use_pure:
+                raise
+
+
+def discover_merge_tables(db, conn=None, host=None, port=None, user=None, password=None):
     """Return ALL tables from the source DB.
     We merge everything using INSERT IGNORE — truly shared tables (definitions, 
     procedure codes, etc.) have non-offset PKs and will be skipped on duplicate key.
     Clinic-specific and clinic-adjacent tables have offset PKs and will insert cleanly."""
-    conn = mysql.connector.connect(host=HOST, user=USER, password=PASSWORD, database=db)
+    owns_conn = False
+    if conn is None:
+        conn = get_db_connection(db=db, host=host, port=port, user=user, password=password)
+        owns_conn = True
     c = conn.cursor()
     c.execute("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_NAME", (db,))
     tables = [row[0] for row in c.fetchall()]
     c.close()
-    conn.close()
-    print(f"  Merging all {len(tables)} tables")
+    if owns_conn:
+        conn.close()
+    print(f"  Merging all {len(tables)} tables", flush=True)
     return tables
 
 
@@ -71,16 +100,20 @@ def merge_tables(conn, src_db, target_db, tables, dry_run=False):
     return total, errors
 
 
-def verify(target_db):
+def verify(target_db, conn=None, host=None, port=None, user=None, password=None):
     """Quick integrity check on the merged DB."""
-    conn = mysql.connector.connect(host=HOST, user=USER, password=PASSWORD, database=target_db)
+    owns_conn = False
+    if conn is None:
+        conn = get_db_connection(db=target_db, host=host, port=port, user=user, password=password)
+        owns_conn = True
+
     c = conn.cursor(buffered=True)
 
     c.execute("SELECT ClinicNum, COUNT(*) FROM patient GROUP BY ClinicNum ORDER BY ClinicNum")
     clinics = c.fetchall()
-    print(f"\n  Patients: {sum(r[1] for r in clinics)} total across {len(clinics)} clinics")
+    print(f"\n  Patients: {sum(r[1] for r in clinics)} total across {len(clinics)} clinics", flush=True)
     for r in clinics:
-        print(f"    ClinicNum={r[0]}: {r[1]}")
+        print(f"    ClinicNum={r[0]}: {r[1]}", flush=True)
 
     checks = [
         ("proc->pat", "PatNum", "patient", "PatNum"),
@@ -106,46 +139,42 @@ def verify(target_db):
         status = "OK" if n == 0 else f"FAIL({n})"
         if n > 0:
             all_ok = False
-        print(f"    {ft}.{fc} -> {pt}.{pc}: {status}")
+        print(f"    {ft}.{fc} -> {pt}.{pc}: {status}", flush=True)
 
-    print(f"\n  {'✅ ALL CLEAN' if all_ok else '❌ HAS ISSUES'}")
+    print(f"\n  {'✅ ALL CLEAN' if all_ok else '❌ HAS ISSUES'}", flush=True)
     c.close()
-    conn.close()
+    if owns_conn:
+        conn.close()
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Merge multiple clinic temp DBs into one target")
-    parser.add_argument("--target", required=True, help="Target database (e.g., heliantmp_merged)")
-    parser.add_argument("--sources", required=True, help="Comma-separated source DBs (e.g., heliantmp_1,heliantmp_2)")
-    parser.add_argument("--dry-run", action="store_true", help="Preview without changes")
-    args = parser.parse_args()
+def run_merge(target, sources, conn=None, dry_run=False, host=None, port=None, user=None, password=None):
+    print(f"Target: {target}", flush=True)
+    print(f"Sources ({len(sources)}): {', '.join(sources)}", flush=True)
 
-    target = args.target
-    sources = [s.strip() for s in args.sources.split(",") if s.strip()]
-
-    print(f"Target: {target}")
-    print(f"Sources ({len(sources)}): {', '.join(sources)}")
+    owns_conn = False
+    if conn is None:
+        conn = get_db_connection(db=target, host=host, port=port, user=user, password=password)
+        owns_conn = True
 
     # Discover tables from first source
-    print("\nDiscovering tables to merge...")
-    tables = discover_merge_tables(sources[0])
+    print("\nDiscovering tables to merge...", flush=True)
+    tables = discover_merge_tables(sources[0], conn=conn, host=host, port=port, user=user, password=password)
 
-    if args.dry_run:
-        print("\n=== DRY RUN ===\n")
-        conn = mysql.connector.connect(host=HOST, user=USER, password=PASSWORD, database=target)
+    if dry_run:
+        print("\n=== DRY RUN ===\n", flush=True)
         for src in sources:
             merge_tables(conn, src, target, tables, dry_run=True)
-        conn.close()
+        if owns_conn:
+            conn.close()
         return
 
-    conn = mysql.connector.connect(host=HOST, user=USER, password=PASSWORD, database=target)
     c = conn.cursor()
     c.execute("SET FOREIGN_KEY_CHECKS = 0")
 
     total_rows = 0
     all_errors = []
     for src in sources:
-        print(f"\n─ Merging {src} ─")
+        print(f"\n─ Merging {src} ─", flush=True)
         rows, errors = merge_tables(conn, src, target, tables)
         total_rows += rows
         all_errors.extend(errors)
@@ -153,18 +182,36 @@ def main():
 
     c.execute("SET FOREIGN_KEY_CHECKS = 1")
     c.close()
-    conn.close()
 
     if all_errors:
-        print(f"\n{len(all_errors)} errors:")
+        print(f"\n{len(all_errors)} errors:", flush=True)
         for e in all_errors[:10]:
-            print(e)
+            print(e, flush=True)
 
-    print(f"\nTotal rows merged: {total_rows:,}")
+    print(f"\nTotal rows merged: {total_rows:,}", flush=True)
 
     # Verify
-    print("\n=== Verification ===")
-    verify(target)
+    print("\n=== Verification ===", flush=True)
+    verify(target, conn=conn)
+
+    if owns_conn:
+        conn.close()
+    print("\n[OK] Clinic merge completed.", flush=True)
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Merge multiple clinic temp DBs into one target")
+    parser.add_argument("--target", required=True, help="Target database (e.g., heliantmp_merged)")
+    parser.add_argument("--sources", required=True, help="Comma-separated source DBs (e.g., heliantmp_1,heliantmp_2)")
+    parser.add_argument("--host", default=HOST, help=f"Database host (default: {HOST})")
+    parser.add_argument("--port", type=int, default=PORT, help=f"Database port (default: {PORT})")
+    parser.add_argument("--user", default=USER, help=f"Database user (default: {USER})")
+    parser.add_argument("--password", default=None, help="Database password (defaults to MYSQL_PWD)")
+    parser.add_argument("--dry-run", action="store_true", help="Preview without changes")
+    args = parser.parse_args()
+
+    sources = [s.strip() for s in args.sources.split(",") if s.strip()]
+    run_merge(args.target, sources, dry_run=args.dry_run, host=args.host, port=args.port, user=args.user, password=args.password)
 
 
 if __name__ == "__main__":

@@ -12,10 +12,37 @@ import argparse
 import re
 import os
 import glob
+import json
 
 HOST = os.environ.get("MYSQL_HOST", "localhost")
+PORT = int(os.environ.get("MYSQL_TCP_PORT", "3306"))
 USER = os.environ.get("MYSQL_USER", "root")
 PASSWORD = os.environ.get("MYSQL_PWD", "J0k0m4r0k3@")
+
+
+def get_db_connection(db=None, host=None, port=None, user=None, password=None):
+    """Create a MariaDB/MySQL connection with pure-Python mode to avoid Windows C-extension access violations."""
+    h = host or HOST
+    p = port or PORT
+    u = user or USER
+    pwd = password if password is not None else PASSWORD
+    for use_pure in [True, False]:
+        try:
+            return mysql.connector.connect(
+                host=h,
+                port=p,
+                user=u,
+                password=pwd,
+                database=db,
+                use_pure=use_pure,
+                ssl_disabled=True,
+                connection_timeout=30,
+                charset="utf8mb4"
+            )
+        except Exception:
+            if not use_pure:
+                raise
+
 
 def find_repo_root(start_dir):
     cur = os.path.abspath(start_dir)
@@ -48,42 +75,62 @@ CS_TO_DB_TABLE = {
 
 
 def discover_fk_map():
-    """Parse C# TableTypes for ///<summary>FK to table.column</summary> comments.
+    """Load FK mappings from bundled fk_map.json or parse C# TableTypes.
     Returns dict: (source_table, source_column) -> (target_table, target_column)"""
+    # 1. Bundled JSON cache in script directory
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    json_path = os.path.join(script_dir, "fk_map.json")
+    if os.path.exists(json_path):
+        try:
+            with open(json_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            fk_map = {}
+            for k, v in data.items():
+                st, sc = k.split(".", 1)
+                tt, tc = v.split(".", 1)
+                fk_map[(st, sc)] = (tt, tc)
+            return fk_map
+        except Exception:
+            pass
+
+    # 2. Parse C# TableTypes if directory exists
     pattern = re.compile(r'///<summary>FK to (\w+)\.(\w+)')
     fk_map = {}
 
-    for cs_file in glob.glob(os.path.join(TABLETYPES_DIR, '*.cs')):
-        source_table = os.path.splitext(os.path.basename(cs_file))[0].lower()
-        with open(cs_file, encoding='utf-8', errors='ignore') as f:
-            lines = f.readlines()
-        for i, line in enumerate(lines):
-            m = pattern.search(line)
-            if m:
-                target_table, target_col = m.group(1).lower(), m.group(2).lower()
-                # Map C# class name to actual DB table name
-                target_table = CS_TO_DB_TABLE.get(target_table, target_table)
-                source_table = CS_TO_DB_TABLE.get(source_table, source_table)
-                for j in range(i + 1, min(i + 5, len(lines))):
-                    prop = re.search(r'public \w+ (\w+)', lines[j])
-                    if prop:
-                        source_col = prop.group(1).lower()
-                        fk_map[(source_table, source_col)] = (target_table, target_col)
-                        break
+    if os.path.exists(TABLETYPES_DIR):
+        for cs_file in glob.glob(os.path.join(TABLETYPES_DIR, '*.cs')):
+            source_table = os.path.splitext(os.path.basename(cs_file))[0].lower()
+            with open(cs_file, encoding='utf-8', errors='ignore') as f:
+                lines = f.readlines()
+            for i, line in enumerate(lines):
+                m = pattern.search(line)
+                if m:
+                    target_table, target_col = m.group(1).lower(), m.group(2).lower()
+                    target_table = CS_TO_DB_TABLE.get(target_table, target_table)
+                    source_table = CS_TO_DB_TABLE.get(source_table, source_table)
+                    for j in range(i + 1, min(i + 5, len(lines))):
+                        prop = re.search(r'public \w+ (\w+)', lines[j])
+                        if prop:
+                            source_col = prop.group(1).lower()
+                            fk_map[(source_table, source_col)] = (target_table, target_col)
+                            break
     return fk_map
 
 
-def run(offset, db, dry_run=False):
-    print(f"Offset: +{offset:,}  |  Database: {db}")
-    print(f"FK source: {TABLETYPES_DIR}")
+def run(offset, db, dry_run=False, conn=None, host=None, port=None, user=None, password=None):
+    print(f"Offset: +{offset:,}  |  Database: {db}", flush=True)
     if dry_run:
-        print("⚠️  DRY RUN\n")
+        print("⚠️  DRY RUN\n", flush=True)
 
     # ── Discover FK map from source ──
     fk_map = discover_fk_map()
-    print(f"FK mappings from source: {len(fk_map)}")
+    print(f"FK mappings loaded: {len(fk_map)}", flush=True)
 
-    conn = mysql.connector.connect(host=HOST, user=USER, password=PASSWORD, database=db)
+    owns_conn = False
+    if conn is None:
+        conn = get_db_connection(db=db, host=host, port=port, user=user, password=password)
+        owns_conn = True
+
     cursor = conn.cursor()
     if not dry_run:
         cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
@@ -270,8 +317,12 @@ def run(offset, db, dry_run=False):
 
     cursor2.close()
     cursor.close()
-    conn.close()
-    print("\nDone.")
+    if owns_conn:
+        conn.close()
+    print("\n[OK] Offset complete.", flush=True)
+
+
+run_offset = run
 
 
 if __name__ == "__main__":
@@ -279,6 +330,10 @@ if __name__ == "__main__":
         description="Offset clinic-specific PKs/FKs by N to avoid ID collisions when merging")
     parser.add_argument("offset", type=int, help="Offset amount (e.g., 2000000)")
     parser.add_argument("--db", default="heliantmp", help="Database name")
+    parser.add_argument("--host", default=HOST, help=f"Database host (default: {HOST})")
+    parser.add_argument("--port", type=int, default=PORT, help=f"Database port (default: {PORT})")
+    parser.add_argument("--user", default=USER, help=f"Database user (default: {USER})")
+    parser.add_argument("--password", default=None, help="Database password (defaults to MYSQL_PWD)")
     parser.add_argument("--dry-run", action="store_true", help="Preview only")
     args = parser.parse_args()
-    run(args.offset, args.db, args.dry_run)
+    run(args.offset, args.db, args.dry_run, host=args.host, port=args.port, user=args.user, password=args.password)

@@ -209,10 +209,20 @@ def main():
 
     password = args.password
     if password is None:
+        password = os.environ.get("MYSQL_PWD")
+    if password is None:
         password = getpass.getpass(f"Enter MariaDB password for user '{args.user}': ")
 
     conn = mysql.connector.connect(
-        host=args.host, port=args.port, user=args.user, password=password, database=args.db, charset="utf8mb4"
+        host=args.host,
+        port=args.port,
+        user=args.user,
+        password=password,
+        database=args.db,
+        charset="utf8mb4",
+        use_pure=True,
+        ssl_disabled=True,
+        connection_timeout=30,
     )
     merge_duplicate_users(conn, args.db)
     conn.close()

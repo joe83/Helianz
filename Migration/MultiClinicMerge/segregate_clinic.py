@@ -13,9 +13,34 @@ import argparse
 
 # ── Config ──
 HOST = os.environ.get("MYSQL_HOST", "localhost")
+PORT = int(os.environ.get("MYSQL_TCP_PORT", "3306"))
 USER = os.environ.get("MYSQL_USER", "root")
 PASSWORD = os.environ.get("MYSQL_PWD", "J0k0m4r0k3@")
 DEFAULT_DB = "helianz"
+
+
+def get_db_connection(db=None, host=None, port=None, user=None, password=None):
+    """Create a MariaDB/MySQL connection with pure-Python mode to avoid Windows C-extension access violations."""
+    h = host or HOST
+    p = port or PORT
+    u = user or USER
+    pwd = password if password is not None else PASSWORD
+    for use_pure in [True, False]:
+        try:
+            return mysql.connector.connect(
+                host=h,
+                port=p,
+                user=u,
+                password=pwd,
+                database=db,
+                use_pure=use_pure,
+                ssl_disabled=True,
+                connection_timeout=30,
+                charset="utf8mb4"
+            )
+        except Exception:
+            if not use_pure:
+                raise
 
 # ── Tables to segregate ──
 # Tables WITH ClinicNum column that hold clinic-specific operational data.
@@ -208,72 +233,90 @@ def verify(cursor, clinic_num):
     print(f"    userodapptview: {cursor.fetchone()[0]} users")
 
 
+def segregate_clinic_data(clinic_num, db=DEFAULT_DB, conn=None, dry_run=False, yes=True, host=None, port=None, user=None, password=None):
+    """Segregate ClinicNum=0 records to clinic_num. Can use an existing connection or create a new one."""
+    print(f"Target: ClinicNum={clinic_num} on database '{db}'", flush=True)
+    print(f"Tables to inspect: {len(CLINIC_TABLES)}", flush=True)
+
+    if dry_run:
+        print("\n=== DRY RUN (no changes) ===", flush=True)
+        for t in CLINIC_TABLES:
+            print(f"  UPDATE {t} SET ClinicNum = {clinic_num} WHERE ClinicNum = 0", flush=True)
+        return True
+
+    owns_conn = False
+    if conn is None:
+        conn = get_db_connection(db=db, host=host, port=port, user=user, password=password)
+        owns_conn = True
+
+    cursor = conn.cursor()
+    try:
+        # Count before
+        cursor.execute("SELECT COUNT(*) FROM patient WHERE ClinicNum = 0")
+        before_patients = cursor.fetchone()[0]
+        print(f"Patients at ClinicNum=0 before: {before_patients}", flush=True)
+
+        if before_patients == 0:
+            print("  ⚠️  No unassigned data found (ClinicNum=0 is empty). Nothing to do.", flush=True)
+            return True
+
+        if not yes:
+            confirm = input(f"\nMove {before_patients} patients (and all related data) to ClinicNum={clinic_num}? [y/N]: ")
+            if confirm.lower() != 'y':
+                print("Aborted.", flush=True)
+                return False
+        else:
+            print(f"\nMoving {before_patients} patients to ClinicNum={clinic_num}...", flush=True)
+
+        # ── Phase 1: Move all data ──
+        print("\n=== Segregating data ===", flush=True)
+        for table in CLINIC_TABLES:
+            try:
+                sql = f"UPDATE `{table}` SET ClinicNum = {clinic_num} WHERE ClinicNum = 0"
+                cursor.execute(sql)
+                if cursor.rowcount > 0:
+                    print(f"  {table}: {cursor.rowcount} rows -> ClinicNum={clinic_num}", flush=True)
+            except Exception as e:
+                # Table might not exist or might not have ClinicNum in this DB version
+                pass
+
+        # ── Phase 2: Linking tables ──
+        post_segregate(cursor, clinic_num, db)
+
+        conn.commit()
+
+        # ── Verify ──
+        verify(cursor, clinic_num)
+        print("\n[OK] Segregation complete.", flush=True)
+        return True
+    finally:
+        cursor.close()
+        if owns_conn:
+            conn.close()
+
+
 def main():
     parser = argparse.ArgumentParser(description="Segregate ClinicNum=0 data to a specific clinic")
     parser.add_argument("clinic_num", type=int, help="Target ClinicNum (e.g., 1, 2, 3)")
     parser.add_argument("--db", default=DEFAULT_DB, help=f"Database name (default: {DEFAULT_DB})")
+    parser.add_argument("--host", default=HOST, help=f"Database host (default: {HOST})")
+    parser.add_argument("--port", type=int, default=PORT, help=f"Database port (default: {PORT})")
+    parser.add_argument("--user", default=USER, help=f"Database user (default: {USER})")
+    parser.add_argument("--password", default=None, help="Database password (defaults to MYSQL_PWD)")
     parser.add_argument("--dry-run", action="store_true", help="Show what would be done, don't execute")
     parser.add_argument("-y", "--yes", action="store_true", help="Skip confirmation prompt")
     args = parser.parse_args()
 
-    clinic_num = args.clinic_num
-    db = args.db
-
-    print(f"Target: ClinicNum={clinic_num} on database '{db}'")
-    print(f"Tables to update: {len(CLINIC_TABLES)}")
-
-    if args.dry_run:
-        print("\n=== DRY RUN (no changes) ===")
-        for t in CLINIC_TABLES:
-            print(f"  UPDATE {t} SET ClinicNum = {clinic_num} WHERE ClinicNum = 0")
-        return
-
-    conn = mysql.connector.connect(host=HOST, user=USER, password=PASSWORD, database=db)
-    cursor = conn.cursor()
-
-    # Count before
-    cursor.execute("SELECT COUNT(*) FROM patient WHERE ClinicNum = 0")
-    before_patients = cursor.fetchone()[0]
-    print(f"Patients at ClinicNum=0 before: {before_patients}")
-
-    if before_patients == 0:
-        print("⚠️  No unassigned data found (ClinicNum=0 is empty). Nothing to do.")
-        cursor.close()
-        conn.close()
-        return
-
-    if not args.yes:
-        confirm = input(f"\nMove {before_patients} patients (and all related data) to ClinicNum={clinic_num}? [y/N]: ")
-        if confirm.lower() != 'y':
-            print("Aborted.")
-            cursor.close()
-            conn.close()
-            return
-    else:
-        print(f"\nMoving {before_patients} patients to ClinicNum={clinic_num}...")
-
-    # ── Phase 1: Move all data ──
-    print("\n=== Segregating data ===")
-    for table in CLINIC_TABLES:
-        try:
-            sql = f"UPDATE `{table}` SET ClinicNum = {clinic_num} WHERE ClinicNum = 0"
-            cursor.execute(sql)
-            if cursor.rowcount > 0:
-                print(f"  {table}: {cursor.rowcount} rows -> ClinicNum={clinic_num}")
-        except Exception as e:
-            print(f"  ⚠️  {table}: ERROR - {e}")
-
-    # ── Phase 2: Linking tables ──
-    post_segregate(cursor, clinic_num, db)
-
-    conn.commit()
-
-    # ── Verify ──
-    verify(cursor, clinic_num)
-
-    cursor.close()
-    conn.close()
-    print("\n✅ Done.")
+    segregate_clinic_data(
+        args.clinic_num,
+        db=args.db,
+        dry_run=args.dry_run,
+        yes=args.yes,
+        host=args.host,
+        port=args.port,
+        user=args.user,
+        password=args.password
+    )
 
 
 if __name__ == "__main__":

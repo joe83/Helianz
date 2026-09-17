@@ -14,15 +14,43 @@ import mysql.connector
 import argparse
 
 HOST = os.environ.get("MYSQL_HOST", "localhost")
+PORT = int(os.environ.get("MYSQL_TCP_PORT", "3306"))
 USER = os.environ.get("MYSQL_USER", "root")
 PASSWORD = os.environ.get("MYSQL_PWD", "J0k0m4r0k3@")
 DEFAULT_GAP = 1_000_000  # Safety gap above max PK
 
 
-def get_max_pks(db):
+def get_db_connection(db=None, host=None, port=None, user=None, password=None):
+    """Create a MariaDB/MySQL connection with pure-Python mode to avoid Windows C-extension access violations."""
+    h = host or HOST
+    p = port or PORT
+    u = user or USER
+    pwd = password if password is not None else PASSWORD
+    for use_pure in [True, False]:
+        try:
+            return mysql.connector.connect(
+                host=h,
+                port=p,
+                user=u,
+                password=pwd,
+                database=db,
+                use_pure=use_pure,
+                ssl_disabled=True,
+                connection_timeout=30,
+                charset="utf8mb4"
+            )
+        except Exception:
+            if not use_pure:
+                raise
+
+
+def get_max_pks(db, conn=None):
     """Get max value for every auto_increment PK in the database.
     Returns dict: {column_name: (max_value, table_name)}"""
-    conn = mysql.connector.connect(host=HOST, user=USER, password=PASSWORD, database=db)
+    owns_conn = False
+    if conn is None:
+        conn = get_db_connection(db=db)
+        owns_conn = True
     c = conn.cursor()
 
     c.execute("""
@@ -46,7 +74,8 @@ def get_max_pks(db):
             pass
 
     c.close()
-    conn.close()
+    if owns_conn:
+        conn.close()
     return max_vals
 
 

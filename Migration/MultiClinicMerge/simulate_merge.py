@@ -61,7 +61,9 @@ def run_cmd(cmd, check=True):
 
 def run_sql(db, sql):
     """Execute SQL on a database."""
-    conn = mysql.connector.connect(host=HOST, user=USER, password=PASSWORD, database=db)
+    conn = mysql.connector.connect(
+        host=HOST, user=USER, password=PASSWORD, database=db, use_pure=True, ssl_disabled=True, connection_timeout=30
+    )
     c = conn.cursor()
     for stmt in sql.split(";"):
         stmt = stmt.strip()

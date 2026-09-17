@@ -237,30 +237,73 @@ def get_mysql_conn(host, port, user, password, db=None, timeout=10):
     raise last_err
 
 
+NTSTATUS_NAMES = {
+    3221225477: "STATUS_ACCESS_VIOLATION (0xC0000005 - memory access violation/segfault)",
+    3221225786: "STATUS_CONTROL_C_EXIT (0xC000013A)",
+    3221225478: "STATUS_IN_PAGE_ERROR (0xC0000006)",
+    3221225620: "STATUS_INTEGER_DIVIDE_BY_ZERO (0xC0000094)",
+    3221225725: "STATUS_STACK_OVERFLOW (0xC00000FD)",
+    3221226505: "STATUS_DLL_NOT_FOUND (0xC0000135)",
+}
+
+
+class SimpleProcResult:
+    def __init__(self, returncode, stdout="", stderr=""):
+        self.returncode = returncode
+        self.stdout = stdout
+        self.stderr = stderr
+
+
 def run_shell_cmd(cmd, env_vars=None, check=True, print_stdout=False):
     debug_log(f"run_shell_cmd: Executing: {cmd}")
     env = os.environ.copy()
     env["PYTHONIOENCODING"] = "utf-8"
+    env["PYTHONUNBUFFERED"] = "1"
     if env_vars:
         env.update(env_vars)
 
     t0 = time.time()
-    proc = subprocess.run(
-        cmd, shell=True, capture_output=True, text=True, env=env, encoding="utf-8", errors="replace"
-    )
-    elapsed = time.time() - t0
-    debug_log(f"run_shell_cmd: Completed in {elapsed:.2f}s (Exit code: {proc.returncode})")
-    if proc.stdout:
-        debug_log(f"run_shell_cmd stdout ({len(proc.stdout)} chars): {proc.stdout.strip()[:200]}")
-    if proc.stderr:
-        debug_log(f"run_shell_cmd stderr ({len(proc.stderr)} chars): {proc.stderr.strip()[:200]}")
-
-    if print_stdout and proc.stdout:
-        print(proc.stdout, flush=True)
-    if proc.returncode != 0 and check:
-        err_msg = proc.stderr.strip() or proc.stdout.strip()
-        raise RuntimeError(f"Command failed (exit {proc.returncode}): {cmd}\nError: {err_msg}")
-    return proc
+    if print_stdout:
+        # Stream live output so the user sees real-time progress
+        proc = subprocess.Popen(
+            cmd,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            env=env,
+            encoding="utf-8",
+            errors="replace",
+        )
+        lines = []
+        for line in iter(proc.stdout.readline, ""):
+            print(line, end="", flush=True)
+            lines.append(line)
+        proc.stdout.close()
+        proc.wait()
+        elapsed = time.time() - t0
+        debug_log(f"run_shell_cmd: Completed in {elapsed:.2f}s (Exit code: {proc.returncode})")
+        if proc.returncode != 0 and check:
+            crash_note = NTSTATUS_NAMES.get(proc.returncode, "")
+            last_lines = "".join(lines[-10:]).strip()
+            err_msg = crash_note if not last_lines else f"{last_lines}\n{crash_note}".strip()
+            raise RuntimeError(f"Command failed (exit {proc.returncode}): {cmd}\nError: {err_msg}")
+        return SimpleProcResult(proc.returncode, "".join(lines))
+    else:
+        proc = subprocess.run(
+            cmd, shell=True, capture_output=True, text=True, env=env, encoding="utf-8", errors="replace"
+        )
+        elapsed = time.time() - t0
+        debug_log(f"run_shell_cmd: Completed in {elapsed:.2f}s (Exit code: {proc.returncode})")
+        if proc.stdout:
+            debug_log(f"run_shell_cmd stdout ({len(proc.stdout)} chars): {proc.stdout.strip()[:200]}")
+        if proc.stderr:
+            debug_log(f"run_shell_cmd stderr ({len(proc.stderr)} chars): {proc.stderr.strip()[:200]}")
+        if proc.returncode != 0 and check:
+            crash_note = NTSTATUS_NAMES.get(proc.returncode, "")
+            err_msg = proc.stderr.strip() or proc.stdout.strip() or crash_note
+            raise RuntimeError(f"Command failed (exit {proc.returncode}): {cmd}\nError: {err_msg}")
+        return proc
 
 
 def get_python_exe():
@@ -943,8 +986,14 @@ def main():
     ensure_clinics_registered(conn, target_db, clinics)
 
     print(f"  Segregating Clinic 1 records in `{target_db}` (ClinicNum 0 -> {base_clinic['ClinicNum']})...")
-    run_shell_cmd(f'"{python_exe}" "{SEGREGATE_SCRIPT}" {base_clinic["ClinicNum"]} --db {target_db} --yes', env_vars=child_env, print_stdout=True)
-    print("  [OK] Clinic 1 segregation completed.")
+    try:
+        from segregate_clinic import segregate_clinic_data
+        segregate_clinic_data(base_clinic["ClinicNum"], db=target_db, conn=conn)
+        print("  [OK] Clinic 1 segregation completed.")
+    except Exception as ex:
+        debug_log(f"In-process segregation fallback ({ex})...")
+        run_shell_cmd(f'"{python_exe}" "{SEGREGATE_SCRIPT}" {base_clinic["ClinicNum"]} --db {target_db} --yes', env_vars=child_env, print_stdout=True)
+        print("  [OK] Clinic 1 segregation completed.")
 
     # 9. Process Subsequent Clinics Sequentially
     for c in clinics[1:]:
@@ -969,13 +1018,28 @@ def main():
             ensure_clinics_registered(conn, tmp_db, clinics)
 
             print(f"  Segregating Clinic {c_num} records in `{tmp_db}` (ClinicNum 0 -> {c_num})...")
-            run_shell_cmd(f'"{python_exe}" "{SEGREGATE_SCRIPT}" {c_num} --db {tmp_db} --yes', env_vars=child_env, print_stdout=True)
+            try:
+                from segregate_clinic import segregate_clinic_data
+                segregate_clinic_data(c_num, db=tmp_db, conn=conn)
+            except Exception as ex:
+                debug_log(f"In-process segregation fallback ({ex})...")
+                run_shell_cmd(f'"{python_exe}" "{SEGREGATE_SCRIPT}" {c_num} --db {tmp_db} --yes', env_vars=child_env, print_stdout=True)
 
             print(f"  Applying PK/FK offset +{actual_offset:,} to `{tmp_db}`...")
-            run_shell_cmd(f'"{python_exe}" "{OFFSET_SCRIPT}" {actual_offset} --db {tmp_db}', env_vars=child_env, print_stdout=True)
+            try:
+                from offset_db import run_offset
+                run_offset(actual_offset, db=tmp_db, conn=conn)
+            except Exception as ex:
+                debug_log(f"In-process offset fallback ({ex})...")
+                run_shell_cmd(f'"{python_exe}" "{OFFSET_SCRIPT}" {actual_offset} --db {tmp_db}', env_vars=child_env, print_stdout=True)
 
             print(f"  Merging `{tmp_db}` into `{target_db}`...")
-            run_shell_cmd(f'"{python_exe}" "{MERGE_SCRIPT}" --target {target_db} --sources {tmp_db}', env_vars=child_env, print_stdout=True)
+            try:
+                from merge_clinics import run_merge
+                run_merge(target=target_db, sources=[tmp_db], conn=conn)
+            except Exception as ex:
+                debug_log(f"In-process merge fallback ({ex})...")
+                run_shell_cmd(f'"{python_exe}" "{MERGE_SCRIPT}" --target {target_db} --sources {tmp_db}', env_vars=child_env, print_stdout=True)
 
         finally:
             if not args.keep_temp:
@@ -987,7 +1051,12 @@ def main():
     # Post-Merge AUTO_INCREMENT
     log_step(step_num, f"Resetting AUTO_INCREMENT to {args.autoinc_start:,}")
     step_num += 1
-    run_shell_cmd(f'"{python_exe}" "{AUTOINC_SCRIPT}" --db {target_db} --start {args.autoinc_start}', env_vars=child_env, print_stdout=True)
+    try:
+        from set_autoinc import set_auto_increment
+        set_auto_increment(db=target_db, start_val=args.autoinc_start, conn=conn)
+    except Exception as ex:
+        debug_log(f"In-process autoinc fallback ({ex})...")
+        run_shell_cmd(f'"{python_exe}" "{AUTOINC_SCRIPT}" --db {target_db} --start {args.autoinc_start}', env_vars=child_env, print_stdout=True)
 
     # Post-Merge Fixes
     log_step(step_num, "Applying Post-Merge ApptView, User, and Preference Fixes")
