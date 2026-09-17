@@ -44,6 +44,8 @@ param(
 	[string]$Sources,
 	[string]$User = "root",
 	[string]$Password,
+	[string]$DbHost = "localhost",
+	[int]$Port = 3306,
 	[string]$BinDir,
 	[int]$AutoIncStart = 10000000,
 	[int]$Step = 1000000,
@@ -80,6 +82,8 @@ $MergeScript = Join-Path $ScriptDir "merge_mysql_clinics.py"
 $ArgsList = @(
 	"`"$MergeScript`"",
 	"--user", "`"$User`"",
+	"--host", "`"$DbHost`"",
+	"--port", "$Port",
 	"--step", "$Step",
 	"--autoinc-start", "$AutoIncStart"
 )

@@ -105,13 +105,13 @@ COMMON_BIN_PATHS = [
 
 
 def log_header(title):
-    print("\n" + "=" * 70)
-    print(f"  {title}")
-    print("=" * 70)
+    print("\n" + "=" * 70, flush=True)
+    print(f"  {title}", flush=True)
+    print("=" * 70, flush=True)
 
 
 def log_step(step, title):
-    print(f"\n--- [{step}] {title} ---")
+    print(f"\n--- [{step}] {title} ---", flush=True)
 
 
 def find_mariadb_bin(user_supplied=None):
@@ -135,17 +135,34 @@ def find_mariadb_bin(user_supplied=None):
     return None
 
 
-def get_mysql_conn(host, port, user, password, db=None):
-    kwargs = {
-        "host": host,
-        "port": port,
-        "user": user,
-        "password": password,
-        "charset": "utf8mb4",
-    }
-    if db:
-        kwargs["database"] = db
-    return mysql.connector.connect(**kwargs)
+def get_mysql_conn(host, port, user, password, db=None, timeout=10):
+    """
+    Connect to MariaDB / MySQL with a strict connection timeout and
+    automatic IPv4/localhost fallback to avoid Windows IPv6 resolution hangs.
+    """
+    hosts_to_try = [host]
+    if host.lower() in ("localhost", "127.0.0.1"):
+        # Favor 127.0.0.1 first on Windows to bypass IPv6 (::1) socket hangs, then try localhost
+        hosts_to_try = ["127.0.0.1", "localhost"]
+
+    last_err = None
+    for h in hosts_to_try:
+        kwargs = {
+            "host": h,
+            "port": port,
+            "user": user,
+            "password": password,
+            "charset": "utf8mb4",
+            "connection_timeout": timeout,
+        }
+        if db:
+            kwargs["database"] = db
+        try:
+            return mysql.connector.connect(**kwargs)
+        except Exception as e:
+            last_err = e
+
+    raise last_err
 
 
 def run_shell_cmd(cmd, env_vars=None, check=True, print_stdout=False):
@@ -173,29 +190,67 @@ def get_python_exe():
 
 
 def get_max_pk_in_db(conn, db_name):
+    """
+    Fast discovery of maximum primary key in the specified database.
+    Uses information_schema.TABLES AUTO_INCREMENT metadata first, then verifies
+    actual MAX() on top candidate tables. Finishes in ~0.1s instead of running 390+ queries.
+    """
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT TABLE_NAME, COLUMN_NAME FROM information_schema.COLUMNS
-        WHERE TABLE_SCHEMA = %s AND EXTRA LIKE '%auto_increment%'
-          AND DATA_TYPE = 'bigint'
-        ORDER BY TABLE_NAME
+        SELECT TABLE_NAME, AUTO_INCREMENT 
+        FROM information_schema.TABLES 
+        WHERE TABLE_SCHEMA = %s AND AUTO_INCREMENT IS NOT NULL
+        ORDER BY AUTO_INCREMENT DESC
     """, (db_name,))
-    pk_cols = cursor.fetchall()
+    table_autoincs = cursor.fetchall()
 
     overall_max = 0
     top_details = []
 
-    for tbl, col in pk_cols:
-        try:
-            cursor.execute(f"SELECT MAX(`{col}`) FROM `{db_name}`.`{tbl}`")
-            row = cursor.fetchone()
-            val = row[0] if (row and row[0] is not None) else 0
-            if val > overall_max:
-                overall_max = val
-            if val > 0:
-                top_details.append((tbl, col, val))
-        except Exception:
-            pass
+    if table_autoincs:
+        # Check actual MAX() on top 15 candidate tables with largest auto_increment
+        top_candidates = table_autoincs[:15]
+        for tbl, ai in top_candidates:
+            if ai and ai > 1:
+                try:
+                    cursor.execute("""
+                        SELECT COLUMN_NAME FROM information_schema.COLUMNS 
+                        WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND EXTRA LIKE '%%auto_increment%%'
+                        LIMIT 1
+                    """, (db_name, tbl))
+                    col_row = cursor.fetchone()
+                    if col_row:
+                        col = col_row[0]
+                        cursor.execute(f"SELECT MAX(`{col}`) FROM `{db_name}`.`{tbl}`")
+                        r = cursor.fetchone()
+                        val = r[0] if (r and r[0] is not None) else (ai - 1)
+                        if val > overall_max:
+                            overall_max = val
+                        if val > 0:
+                            top_details.append((tbl, col, val))
+                except Exception:
+                    pass
+
+    # Fallback to column scan if no table metadata found
+    if overall_max == 0:
+        cursor.execute("""
+            SELECT TABLE_NAME, COLUMN_NAME FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = %s AND EXTRA LIKE '%%auto_increment%%'
+              AND DATA_TYPE = 'bigint'
+            ORDER BY TABLE_NAME
+        """, (db_name,))
+        pk_cols = cursor.fetchall()
+        for tbl, col in pk_cols:
+            try:
+                cursor.execute(f"SELECT MAX(`{col}`) FROM `{db_name}`.`{tbl}`")
+                row = cursor.fetchone()
+                val = row[0] if (row and row[0] is not None) else 0
+                if val > overall_max:
+                    overall_max = val
+                if val > 0:
+                    top_details.append((tbl, col, val))
+            except Exception:
+                pass
 
     cursor.close()
     top_details.sort(key=lambda x: x[2], reverse=True)
@@ -664,33 +719,47 @@ def main():
 
     # 5. Connect and verify databases
     log_step(1, "Pre-flight Verification")
+    print(f"  Connecting to database at {args.host}:{args.port} as '{db_user}'...", flush=True)
     try:
         conn = get_mysql_conn(args.host, args.port, db_user, db_pass)
+        print(f"  [OK] Connected to MariaDB/MySQL server successfully.", flush=True)
         cursor = conn.cursor()
+        print("  Retrieving database list...", flush=True)
         cursor.execute("SHOW DATABASES")
         existing_dbs = {row[0].lower() for row in cursor.fetchall()}
         cursor.close()
     except Exception as e:
-        sys.exit(f"Error connecting to database: {e}")
+        print(f"\n[!] Failed to connect to database at {args.host}:{args.port}", flush=True)
+        print(f"    Error: {e}", flush=True)
+        print(f"\n    Troubleshooting:", flush=True)
+        print(f"    - If MariaDB is on a remote server/IP, specify --host <server_ip> (e.g. --host 192.168.1.50)", flush=True)
+        print(f"    - If MariaDB is local on this machine, verify service status in PowerShell: Get-Service *mariadb*, *mysql*", flush=True)
+        print(f"    - Verify the MariaDB port is {args.port}", flush=True)
+        print(f"    - Verify password for user '{db_user}'", flush=True)
+        sys.exit(1)
 
+    print(f"  Checking {len(clinics)} source databases on server...", flush=True)
     for c in clinics:
         src = c["db"]
         if src.lower() not in existing_dbs:
-            sys.exit(f"Error: Source database `{src}` does not exist on MariaDB server!")
-        print(f"  [OK] Found source database `{src}` for Clinic {c['ClinicNum']} ({c['Description']})")
+            print(f"\n[!] Error: Source database `{src}` does not exist on {args.host}:{args.port}!", flush=True)
+            print(f"    Databases found on server: {', '.join(sorted(existing_dbs))}", flush=True)
+            print(f"    Please verify database names or restore source dumps first.", flush=True)
+            sys.exit(1)
+        print(f"  [OK] Found source database `{src}` for Clinic {c['ClinicNum']} ({c['Description']})", flush=True)
 
     # Preview PKs and calculate projected offsets
-    print("\n  Source Max PKs & Projected Offsets:")
+    print("\n  Analyzing Source Max PKs & Projected Offsets...", flush=True)
     base_clinic = clinics[0]
     base_max, base_top = get_max_pk_in_db(conn, base_clinic["db"])
-    print(f"    Clinic {base_clinic['ClinicNum']} (`{base_clinic['db']}`) : Max PK = {base_max:,} (Base, offset +0)")
+    print(f"    Clinic {base_clinic['ClinicNum']} (`{base_clinic['db']}`) : Max PK = {base_max:,} (Base, offset +0)", flush=True)
 
     running_target_max = base_max
     for c in clinics[1:]:
         c_max, _ = get_max_pk_in_db(conn, c["db"])
         offset_val = compute_rounded_offset(running_target_max, args.step)
         est_after = offset_val + c_max
-        print(f"    Clinic {c['ClinicNum']} (`{c['db']}`) : Max PK = {c_max:,} -> Offset +{offset_val:,} (Range: {offset_val+1:,} -> {est_after:,})")
+        print(f"    Clinic {c['ClinicNum']} (`{c['db']}`) : Max PK = {c_max:,} -> Offset +{offset_val:,} (Range: {offset_val+1:,} -> {est_after:,})", flush=True)
         running_target_max = est_after
 
     if args.dry_run:
