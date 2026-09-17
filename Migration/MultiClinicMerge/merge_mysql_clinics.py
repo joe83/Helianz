@@ -612,6 +612,15 @@ def apply_post_merge_fixes(conn, target_db, clinics):
         WHERE PrefName IN ('EasyNoClinics', 'ClinicListIsAlphabetical')
     """)
 
+    # 7. Synchronize patient.ImageFolder to match PatNum for hybrid media resolution
+    cursor.execute(f"""
+        UPDATE `{target_db}`.`patient`
+        SET ImageFolder = CAST(PatNum AS CHAR)
+        WHERE ImageFolder IS NOT NULL AND ImageFolder != ''
+    """)
+    if cursor.rowcount > 0:
+        print(f"  [FIX] Synchronized {cursor.rowcount} patient ImageFolder records to match offset PatNum")
+
     conn.commit()
     cursor.close()
     print("  [OK] Post-merge apptview, user clinic permissions, and preferences configured.")

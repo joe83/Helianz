@@ -275,6 +275,14 @@ def run(offset, db, dry_run=False, conn=None, host=None, port=None, user=None, p
             except Exception as e:
                 pass
 
+    # ── Synchronize patient.ImageFolder with new offset PatNum ──
+    try:
+        cursor.execute("UPDATE patient SET ImageFolder = CAST(PatNum AS CHAR) WHERE ImageFolder IS NOT NULL AND ImageFolder != ''")
+        if cursor.rowcount > 0:
+            print(f"  Synchronized {cursor.rowcount} patient ImageFolder values to offset PatNum", flush=True)
+    except Exception as e:
+        print(f"  [!] Note: ImageFolder sync error: {e}", flush=True)
+
     conn.commit()
 
     if errors:
