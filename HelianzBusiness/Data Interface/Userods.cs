@@ -70,15 +70,21 @@ namespace HelianzBusiness {
 		}
 
 		///<summary>Returns a list of non-hidden, non-CEMT user names.  Set hasOnlyCEMT to true if you only want non-hidden CEMT users.
+		///Optionally filters by clinicNum: -2 = All clinics, otherwise filters to users with access to that clinic.
 		///Always returns all non-hidden users if PrefName.UserNameManualEntry is true.</summary>
-		public static List<string> GetUserNamesNoCache(bool hasOnlyCEMT) {
+		public static List<string> GetUserNamesNoCache(bool hasOnlyCEMT,long clinicNum=-2) {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
-				return Meth.GetObject<List<string>>(MethodBase.GetCurrentMethod(),hasOnlyCEMT);
+				return Meth.GetObject<List<string>>(MethodBase.GetCurrentMethod(),hasOnlyCEMT,clinicNum);
 			}
-			string command=$@"SELECT userod.UserName FROM userod 
+			string command=$@"SELECT DISTINCT userod.UserName FROM userod 
+				LEFT JOIN userclinic ON userclinic.UserNum = userod.UserNum 
 				WHERE userod.IsHidden=0 
-				{ (PrefC.GetBool(PrefName.UserNameManualEntry) ? " " : " AND userod.UserNumCEMT"+(hasOnlyCEMT ? "!=" : "=")+@"0 ") }
-				ORDER BY userod.UserName";
+				{ (PrefC.GetBool(PrefName.UserNameManualEntry) ? " " : " AND userod.UserNumCEMT"+(hasOnlyCEMT ? "!=" : "=")+@"0 ") }";
+			if(clinicNum!=-2) {
+				command+=$@" AND (userod.ClinicIsRestricted=0 
+					OR userclinic.ClinicNum={POut.Long(clinicNum)})";
+			}
+			command+=" ORDER BY userod.UserName";
 			return Db.GetListString(command);
 		}
 

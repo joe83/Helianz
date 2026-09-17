@@ -32,8 +32,6 @@ namespace Helianz {
 		private string _keyboardInput="";
 	///<summary>Stores the selected clinic filter. -2 = All, 0 = Unassigned, >0 = specific clinic.</summary>
 	private long _clinicNumFilter=-2;
-	///<summary>Stores the user-to-clinic mapping for the current CEMT filter state. Refreshed when CEMT filter changes.</summary>
-	private Dictionary<string,long> _dictUserClinic=null;
 
 	///<summary>Set userNumSelected to automatically select the corresponding user in the list (if available).  Set isSimpleSwitch true if temporarily switching users for some reason.  This will leave Security.CurUser alone and will instead indicate which user was chosen / successfully logged in via CurUserSimpleSwitch.</summary>
 	public FormLogOn(long userNumSelected=0,bool isSimpleSwitch=false,bool doRefreshSecurityCache=true,bool doClearCaches=false) {
@@ -99,24 +97,17 @@ namespace Helianz {
 	///<summary>Fills the User list with non-hidden, non-CEMT user names.  Only shows non-hidden CEMT users if Show CEMT users is checked.
 	///Also filters by the selected clinic in comboClinic.</summary>
 	private void FillListBox() {
+		string selectedUser=listUser.SelectedItem?.ToString();
 		listUser.Items.Clear();
-		//Refresh the user-clinic mapping when the CEMT filter changes
-		_dictUserClinic=Userods.GetUserClinicMapNoCache(checkShowCEMTUsers.Checked);
-		List<string> listUserNames=Userods.GetUserNamesNoCache(checkShowCEMTUsers.Checked);
+		List<string> listUserNames=Userods.GetUserNamesNoCache(checkShowCEMTUsers.Checked,_clinicNumFilter);
 		for(int i=0;i<listUserNames.Count;i++) {
 			if(textFilterName.Text!="" && !listUserNames[i].ToLower().StartsWith(textFilterName.Text.Trim().ToLower())) {
 				continue;
 			}
-			//Apply clinic filter (only if not "All")
-			if(_clinicNumFilter!=-2) {
-				long userClinicNum=0;
-				_dictUserClinic.TryGetValue(listUserNames[i],out userClinicNum);
-				if(userClinicNum!=_clinicNumFilter) {
-					continue;
-				}
-			}
 			listUser.Items.Add(listUserNames[i]);
-			if(_userNameAutoSelect!=null && _userNameAutoSelect.Trim().ToLower()==listUserNames[i].Trim().ToLower()) {
+			if((_userNameAutoSelect!=null && _userNameAutoSelect.Trim().ToLower()==listUserNames[i].Trim().ToLower())
+				|| (selectedUser!=null && selectedUser.Trim().ToLower()==listUserNames[i].Trim().ToLower())) 
+			{
 				listUser.SelectedIndex=listUser.Items.Count-1;
 			}
 		}
@@ -281,6 +272,12 @@ namespace Helianz {
 				//since this is necessary for Reporting Servers over middle tier and was already happening when a user logged in over middle tier.
 				Security.PasswordTyped=passwordTyped;
 				SecurityLogs.MakeLogEntry(EnumPermType.UserLogOnOff,0,Lan.g(this,"User:")+" "+Security.CurUser.UserName+" "+Lan.g(this,"has logged on."));
+				//If user chose a specific clinic in the login dropdown, set it as the active session clinic and persist to ComputerPrefs
+				if(comboClinic.ClinicNumSelected!=-2 && comboClinic.ClinicNumSelected>=0) {
+					ComputerPrefs.LocalComputer.ClinicNum=comboClinic.ClinicNumSelected;
+					ComputerPrefs.Update(ComputerPrefs.LocalComputer);
+					Clinics.SetClinicNum(comboClinic.ClinicNumSelected);
+				}
 			}
 			Plugins.HookAddCode(this,"FormLogOn.butOK_Click_end");
 			DialogResult=DialogResult.OK;

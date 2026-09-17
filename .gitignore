@@ -164,3 +164,9 @@ HelianzApi/HelianzApi
 graphify-out/
 docker/
 linux-deploy/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.venv/

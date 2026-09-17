@@ -17,9 +17,19 @@ HOST = os.environ.get("MYSQL_HOST", "localhost")
 USER = os.environ.get("MYSQL_USER", "root")
 PASSWORD = os.environ.get("MYSQL_PWD", "J0k0m4r0k3@")
 
-# Path to TableTypes directory for FK discovery
-TABLETYPES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
-                               "..", "HelianzBusiness", "TableTypes")
+def find_repo_root(start_dir):
+    cur = os.path.abspath(start_dir)
+    while True:
+        if os.path.exists(os.path.join(cur, "HelianzBusiness")) or os.path.exists(os.path.join(cur, "Helianz.sln")):
+            return cur
+        parent = os.path.dirname(cur)
+        if parent == cur:
+            break
+        cur = parent
+    return os.path.dirname(os.path.dirname(os.path.abspath(start_dir)))
+
+REPO_ROOT = find_repo_root(os.path.dirname(os.path.abspath(__file__)))
+TABLETYPES_DIR = os.path.join(REPO_ROOT, "HelianzBusiness", "TableTypes")
 
 
 # C# class name → DB table name mappings (OpenDental uses different names)

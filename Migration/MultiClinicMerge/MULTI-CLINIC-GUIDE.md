@@ -18,16 +18,36 @@ Merging 3 independent clinic databases (cdental v11 → Helianz v24) into one ce
 
 ## 2. Migration Toolkit
 
-All scripts in `Migration/`. Run from repo root with the venv Python.
+All scripts are located in `Migration/MultiClinicMerge/`. Run from repo root or the toolkit directory using the venv Python or PowerShell wrapper.
 
 | Script | Purpose |
 |--------|---------|
-| `segregate_clinic.py` | Assign all ClinicNum=0 data to a clinic |
-| `offset_db.py` | Offset clinic PKs+FKs by N to avoid collisions |
-| `merge_clinics.py` | Merge multiple temp DBs into target |
-| `simulate_merge.py` | Full simulation from helianz copies |
-| `calc_offset.py` | Calculate safe offset values |
-| `set_autoinc.py` | Reset AUTO_INCREMENT after merge |
+| `merge_mysql_clinics.py` | **Main Orchestrator**: Automated pre-flight, backup, target wipe, seed, dynamic round-up offset, merge, autoinc reset, user deduplication, and verification |
+| `Merge-ClinicsProduction.ps1` | Production PowerShell wrapper with parameters & secure password prompt |
+| `merge_duplicate_users.py` | Deduplicates identical usernames across clinics, re-links 14 tables, merges clinic access |
+| `segregate_clinic.py` | Assign all ClinicNum=0 data to a specific clinic |
+| `offset_db.py` | Offset clinic PKs+FKs by N to avoid collisions (738 FK relationships) |
+| `merge_clinics.py` | Merge source tables into target via `INSERT IGNORE` |
+| `set_autoinc.py` | Reset AUTO_INCREMENT to 10,000,000 across all operational tables |
+| `calc_offset.py` | Calculate safe offset values and round-up steps |
+| `simulate_merge.py` | Full multi-clinic simulation tool |
+
+### 2.0 `merge_mysql_clinics.py` (Automated Production Pipeline)
+
+```bash
+python merge_mysql_clinics.py --target helianz --sources helianz_klt,helianz_byl,helianz_jog -u root
+```
+
+**Key Features:**
+- **Pre-flight verification:** Checks source DB existence and calculates round-up offsets.
+- **Wipes target clean:** Drops and recreates target database cleanly prior to seeding (can be skipped with `--no-wipe`).
+- **Dynamic round-up offsets:** $\lceil \text{max\_pk} / 1,000,000 \rceil \times 1,000,000$.
+- **AUTO_INCREMENT reset:** Automatically bumps operational and audit tables to `10,000,000`.
+- **User deduplication & restrictions:**
+  - Sets `ClinicIsRestricted = 1` for all users.
+  - Users active in single clinic are restricted to that clinic.
+  - Multi-clinic users (e.g. `Admin` in Boyolali + Jogja) are granted access to their active clinics.
+  - Cleans up `userodapptview` so users only have views for allowed clinics.
 
 ### 2.1 `segregate_clinic.py`
 
