@@ -160,6 +160,9 @@ def get_mysql_conn(host, port, user, password, db=None, timeout=10):
     """
     debug_log(f"get_mysql_conn called: host='{host}', port={port}, user='{user}', db='{db}', timeout={timeout}s")
 
+    # Set default socket timeout so NO socket call anywhere can hang indefinitely
+    socket.setdefaulttimeout(float(timeout))
+
     # Resolve host via getaddrinfo to see exactly what IP addresses are returned
     try:
         addrinfos = socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)
@@ -172,33 +175,64 @@ def get_mysql_conn(host, port, user, password, db=None, timeout=10):
     if host.lower() in ("localhost", "127.0.0.1"):
         # Favor 127.0.0.1 first on Windows to bypass IPv6 (::1) socket hangs, then try localhost
         hosts_to_try = ["127.0.0.1", "localhost"]
+        try:
+            local_ip = socket.gethostbyname(socket.gethostname())
+            if local_ip not in hosts_to_try and not local_ip.startswith("127."):
+                hosts_to_try.append(local_ip)
+        except Exception:
+            pass
+
+    debug_log(f"Candidate hosts to attempt in order: {hosts_to_try}")
 
     last_err = None
     for h in hosts_to_try:
-        debug_log(f"Attempting mysql.connector.connect(host='{h}', port={port}, user='{user}', timeout={timeout}s)...")
-        kwargs = {
-            "host": h,
-            "port": port,
-            "user": user,
-            "password": password,
-            "charset": "utf8mb4",
-            "connection_timeout": timeout,
-        }
-        if db:
-            kwargs["database"] = db
+        # Step A: Raw TCP socket probe to verify port is open and receiving greetings
+        debug_log(f"Probing raw TCP socket on {h}:{port} (timeout=3.0s)...")
+        family = socket.AF_INET6 if ":" in h else socket.AF_INET
+        s = socket.socket(family, socket.SOCK_STREAM)
+        s.settimeout(3.0)
+        sock_err = s.connect_ex((h, port))
+        if sock_err != 0:
+            debug_log(f"[!] Raw TCP socket connect to {h}:{port} returned error code {sock_err} (10061 = Connection Refused, service may be stopped or listening on different port)")
+            s.close()
+            continue
+        else:
+            debug_log(f"[OK] Raw TCP socket connected to {h}:{port}. Waiting up to 3s for MariaDB greeting...")
+            try:
+                greeting = s.recv(1024)
+                debug_log(f"[OK] Server greeting received ({len(greeting)} bytes): {greeting[:40]}")
+            except Exception as ge:
+                debug_log(f"[!] Warning: TCP connected, but server greeting timed out: {ge} (MariaDB might be blocked on reverse DNS or max_connections)")
+            s.close()
 
-        t0 = time.time()
-        try:
-            conn = mysql.connector.connect(**kwargs)
-            elapsed = time.time() - t0
-            server_ver = getattr(conn, "server_info", None) or "unknown"
-            thread_id = getattr(conn, "connection_id", "n/a")
-            debug_log(f"[OK] Connected to '{h}:{port}' in {elapsed:.3f}s (Server: {server_ver}, Thread ID: {thread_id})")
-            return conn
-        except Exception as e:
-            elapsed = time.time() - t0
-            debug_log(f"[!] Connection to '{h}:{port}' failed after {elapsed:.3f}s: {type(e).__name__}: {e}")
-            last_err = e
+        # Step B: mysql.connector connection attempts (with ssl_disabled and use_pure)
+        for use_pure in [True, False]:
+            debug_log(f"Attempting mysql.connector.connect(host='{h}', port={port}, user='{user}', timeout={timeout}s, ssl_disabled=True, use_pure={use_pure})...")
+            kwargs = {
+                "host": h,
+                "port": port,
+                "user": user,
+                "password": password,
+                "charset": "utf8mb4",
+                "connection_timeout": timeout,
+                "ssl_disabled": True,
+                "use_pure": use_pure,
+            }
+            if db:
+                kwargs["database"] = db
+
+            t0 = time.time()
+            try:
+                conn = mysql.connector.connect(**kwargs)
+                elapsed = time.time() - t0
+                server_ver = getattr(conn, "server_info", None) or "unknown"
+                thread_id = getattr(conn, "connection_id", "n/a")
+                debug_log(f"[OK] Connected to '{h}:{port}' in {elapsed:.3f}s (Server: {server_ver}, Thread ID: {thread_id})")
+                return conn
+            except Exception as e:
+                elapsed = time.time() - t0
+                debug_log(f"[!] Connection attempt (use_pure={use_pure}) to '{h}:{port}' failed after {elapsed:.3f}s: {type(e).__name__}: {e}")
+                last_err = e
 
     raise last_err
 
@@ -789,6 +823,18 @@ def main():
     # 5. Connect and verify databases
     log_step(1, "Pre-flight Verification")
     debug_log(f"Initiating pre-flight verification: Host={args.host}:{args.port}, User='{db_user}', Timeout={args.conn_timeout}s")
+
+    # Probe MariaDB via native CLI binary first
+    if os.path.exists(mysql_exe):
+        debug_log(f"Probing MariaDB via native CLI binary: {mysql_exe}...")
+        cli_probe = run_shell_cmd(f'"{mysql_exe}" -h {args.host} -P {args.port} -u {db_user} -e "SELECT @@version;"', env_vars=child_env, check=False)
+        if cli_probe.returncode == 0:
+            ver_text = cli_probe.stdout.strip().replace("\r", "").replace("\n", " ")
+            debug_log(f"[OK] Native CLI mysql.exe connected successfully! Version output: {ver_text}")
+        else:
+            err_text = cli_probe.stderr.strip() or cli_probe.stdout.strip()
+            debug_log(f"[!] Native CLI mysql.exe probe returned code {cli_probe.returncode}: {err_text}")
+
     print(f"  Connecting to database at {args.host}:{args.port} as '{db_user}'...", flush=True)
     try:
         conn = get_mysql_conn(args.host, args.port, db_user, db_pass, timeout=args.conn_timeout)
