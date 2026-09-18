@@ -161,7 +161,41 @@ def get_remote_file_list(rclone_exe, remote_path, cache_file="rclone_files_cache
     return files
 
 
-def load_database_documents(conn, db_name, clinic_filter=None):
+def load_clinic_info_from_db(conn, db_name):
+    """
+    Read clinics from database and dynamically calculate offsets from MIN(PatNum).
+    """
+    cursor = conn.cursor(dictionary=True)
+    clinics = {}
+
+    # Check if clinic table exists
+    cursor.execute("SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME = 'clinic'", (db_name,))
+    if cursor.fetchone()["COUNT(*)"] > 0:
+        cursor.execute(f"SELECT ClinicNum, Description, Abbr FROM `{db_name}`.`clinic`")
+        for r in cursor.fetchall():
+            c_num = r["ClinicNum"]
+            clinics[c_num] = {
+                "name": r["Description"] or f"Clinic {c_num}",
+                "abbr": (r["Abbr"] or f"c{c_num}").lower().replace(" ", ""),
+                "offset": 0
+            }
+
+    # Calculate offset per clinic from MIN(PatNum) in patient table
+    cursor.execute(f"SELECT ClinicNum, MIN(PatNum) as MinPat FROM `{db_name}`.`patient` GROUP BY ClinicNum")
+    for r in cursor.fetchall():
+        c_num = r["ClinicNum"]
+        min_pat = r["MinPat"] or 0
+        offset = (min_pat // 1_000_000) * 1_000_000
+        if c_num in clinics:
+            clinics[c_num]["offset"] = offset
+        else:
+            clinics[c_num] = {"name": f"Clinic {c_num}", "abbr": f"c{c_num}", "offset": offset}
+
+    cursor.close()
+    return clinics
+
+
+def load_database_documents(conn, db_name, clinic_filter=None, clinics_map=None):
     """
     Load all patients and documents from the database.
     Returns:
@@ -195,16 +229,23 @@ def load_database_documents(conn, db_name, clinic_filter=None):
     log(f"Loaded {len(rows):,} document records from database `{db_name}`.")
 
     # Apply clinic filter if specified
-    if clinic_filter:
+    if clinic_filter and clinics_map:
         valid_clinics = set()
         for cf in clinic_filter:
             cf_str = str(cf).strip().lower()
-            for c_num, info in CLINIC_DEFAULTS.items():
-                if cf_str in (str(c_num), info["name"].lower(), info["abbr"].lower()):
+            for c_num, info in clinics_map.items():
+                c_name_lower = info["name"].lower()
+                c_abbr_lower = info["abbr"].lower()
+                if (cf_str == str(c_num) or 
+                    cf_str in c_name_lower or 
+                    cf_str in c_abbr_lower or 
+                    c_abbr_lower.startswith(cf_str) or 
+                    c_name_lower.startswith(cf_str)):
                     valid_clinics.add(c_num)
         if valid_clinics:
             rows = [r for r in rows if r["ClinicNum"] in valid_clinics]
-            log(f"Filtered to {len(rows):,} documents for clinics: {sorted(valid_clinics)}")
+            clinic_descs = [f"{clinics_map[c]['name']} ({c})" for c in sorted(valid_clinics)]
+            log(f"Filtered to {len(rows):,} documents for clinics: {', '.join(clinic_descs)}")
 
     return rows
 
@@ -273,10 +314,13 @@ def build_candidate_source_paths(doc, clinic_info):
     return target_path, candidates
 
 
-def plan_media_migration(db_docs, remote_files):
+def plan_media_migration(db_docs, remote_files, clinics_map=None):
     """
     Match database documents to actual remote files and build an action plan.
     """
+    if clinics_map is None:
+        clinics_map = CLINIC_DEFAULTS
+
     # Build fast lookup sets and filename index
     remote_file_set = set(remote_files)
     remote_lower_map = {f.lower(): f for f in remote_files}
@@ -300,7 +344,7 @@ def plan_media_migration(db_docs, remote_files):
 
     for doc in db_docs:
         c_num = doc["ClinicNum"]
-        clinic_info = CLINIC_DEFAULTS.get(c_num, {"name": f"Clinic {c_num}", "abbr": f"c{c_num}", "offset": 0})
+        clinic_info = clinics_map.get(c_num, {"name": f"Clinic {c_num}", "abbr": f"c{c_num}", "offset": 0})
         c_name = clinic_info["name"]
         stats["by_clinic"].setdefault(c_name, {"already_correct": 0, "move": 0, "not_found": 0})
 
@@ -491,24 +535,30 @@ Examples:
         log(f"\n[!] Failed to connect to database `{args.db}`: {e}")
         sys.exit(1)
 
-    # 3. Load DB Documents
+    # 3. Load clinic metadata & dynamic offsets from DB
+    clinics_map = load_clinic_info_from_db(conn, args.db)
+    log(f"  Clinics in Database: {len(clinics_map)}")
+    for c_num, info in sorted(clinics_map.items()):
+        log(f"    - Clinic {c_num} ({info['name']}, {info['abbr']}): offset +{info['offset']:,}")
+
+    # 4. Load DB Documents
     clinic_filter = [c.strip() for c in args.clinics.split(",")] if args.clinics else None
-    db_docs = load_database_documents(conn, args.db, clinic_filter=clinic_filter)
+    db_docs = load_database_documents(conn, args.db, clinic_filter=clinic_filter, clinics_map=clinics_map)
     conn.close()
 
     if not db_docs:
         log("\n[!] No document records found in database matching criteria. Exiting.")
         sys.exit(0)
 
-    # 4. Scan Remote Storage
+    # 5. Scan Remote Storage
     try:
         remote_files = get_remote_file_list(rclone_exe, args.remote, use_cache=args.use_cache)
     except Exception as e:
         log(f"\n[!] Failed to scan remote storage: {e}")
         sys.exit(1)
 
-    # 5. Build Move Plan
-    actions, stats = plan_media_migration(db_docs, remote_files)
+    # 6. Build Move Plan
+    actions, stats = plan_media_migration(db_docs, remote_files, clinics_map=clinics_map)
 
     # 6. Print Summary Report
     log("\n" + "=" * 70)
