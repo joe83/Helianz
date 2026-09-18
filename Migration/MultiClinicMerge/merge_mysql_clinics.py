@@ -254,7 +254,11 @@ class SimpleProcResult:
         self.stderr = stderr
 
 
-def run_shell_cmd(cmd, env_vars=None, check=True, print_stdout=False):
+def run_shell_cmd(cmd, env_vars=None, check=True, print_stdout=False, timeout=None):
+    """
+    Execute a shell command with real-time debug logging and optional streaming output.
+    Supports a timeout parameter to prevent indefinite hangs.
+    """
     debug_log(f"run_shell_cmd: Executing: {cmd}")
     env = os.environ.copy()
     env["PYTHONIOENCODING"] = "utf-8"
@@ -276,11 +280,15 @@ def run_shell_cmd(cmd, env_vars=None, check=True, print_stdout=False):
             errors="replace",
         )
         lines = []
-        for line in iter(proc.stdout.readline, ""):
-            print(line, end="", flush=True)
-            lines.append(line)
-        proc.stdout.close()
-        proc.wait()
+        try:
+            for line in iter(proc.stdout.readline, ""):
+                print(line, end="", flush=True)
+                lines.append(line)
+            proc.stdout.close()
+            proc.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            raise TimeoutError(f"Command timed out after {timeout}s: {cmd}")
         elapsed = time.time() - t0
         debug_log(f"run_shell_cmd: Completed in {elapsed:.2f}s (Exit code: {proc.returncode})")
         if proc.returncode != 0 and check:
@@ -290,9 +298,12 @@ def run_shell_cmd(cmd, env_vars=None, check=True, print_stdout=False):
             raise RuntimeError(f"Command failed (exit {proc.returncode}): {cmd}\nError: {err_msg}")
         return SimpleProcResult(proc.returncode, "".join(lines))
     else:
-        proc = subprocess.run(
-            cmd, shell=True, capture_output=True, text=True, env=env, encoding="utf-8", errors="replace"
-        )
+        try:
+            proc = subprocess.run(
+                cmd, shell=True, capture_output=True, text=True, env=env, encoding="utf-8", errors="replace", timeout=timeout
+            )
+        except subprocess.TimeoutExpired:
+            raise TimeoutError(f"Command timed out after {timeout}s: {cmd}")
         elapsed = time.time() - t0
         debug_log(f"run_shell_cmd: Completed in {elapsed:.2f}s (Exit code: {proc.returncode})")
         if proc.stdout:
@@ -1019,7 +1030,15 @@ def main():
 
         try:
             print(f"  Creating temporary database `{tmp_db}`...")
-            run_shell_cmd(f'"{mysql_exe}" -h {args.host} -P {args.port} -u {db_user} -e "CREATE DATABASE `{tmp_db}` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"', env_vars=child_env)
+            try:
+                conn.commit()
+                create_cur = conn.cursor()
+                create_cur.execute(f"CREATE DATABASE `{tmp_db}` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;")
+                create_cur.close()
+                conn.commit()
+            except Exception as cex:
+                debug_log(f"In-process create db fallback ({cex})...")
+                run_shell_cmd(f'"{mysql_exe}" -h {args.host} -P {args.port} -u {db_user} -e "CREATE DATABASE `{tmp_db}` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"', env_vars=child_env, timeout=30)
 
             print(f"  Cloning `{c_db}` into `{tmp_db}`...")
             run_shell_cmd(f'"{mysqldump_exe}" -h {args.host} -P {args.port} -u {db_user} --single-transaction --routines --triggers --events {c_db} | "{mysql_exe}" -h {args.host} -P {args.port} -u {db_user} {tmp_db}', env_vars=child_env)
@@ -1053,7 +1072,29 @@ def main():
         finally:
             if not args.keep_temp:
                 print(f"  Cleaning up temporary DB `{tmp_db}`...")
-                run_shell_cmd(f'"{mysql_exe}" -h {args.host} -P {args.port} -u {db_user} -e "DROP DATABASE IF EXISTS `{tmp_db}`;"', env_vars=child_env)
+                try:
+                    conn.commit()
+                except Exception:
+                    pass
+
+                dropped = False
+                try:
+                    drop_cur = conn.cursor()
+                    drop_cur.execute("SET lock_wait_timeout = 5")
+                    drop_cur.execute(f"DROP DATABASE IF EXISTS `{tmp_db}`")
+                    drop_cur.close()
+                    conn.commit()
+                    dropped = True
+                    print(f"  [OK] Cleaned up temporary DB `{tmp_db}`.")
+                except Exception as dex:
+                    debug_log(f"In-process drop failed ({dex}), trying fallback...")
+
+                if not dropped:
+                    try:
+                        run_shell_cmd(f'"{mysql_exe}" -h {args.host} -P {args.port} -u {db_user} -e "DROP DATABASE IF EXISTS `{tmp_db}`;"', env_vars=child_env, check=False, timeout=30)
+                        print(f"  [OK] Cleaned up temporary DB `{tmp_db}` via mysql.exe.")
+                    except Exception as mex:
+                        print(f"  [WARN] Could not drop temporary DB `{tmp_db}`: {mex}")
             else:
                 print(f"  [NOTE] Kept temporary DB `{tmp_db}`")
 

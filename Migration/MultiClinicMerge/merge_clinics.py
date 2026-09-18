@@ -193,6 +193,10 @@ def run_merge(target, sources, conn=None, dry_run=False, host=None, port=None, u
     # Verify
     print("\n=== Verification ===", flush=True)
     verify(target, conn=conn)
+    try:
+        conn.commit()
+    except Exception:
+        pass
 
     if owns_conn:
         conn.close()
