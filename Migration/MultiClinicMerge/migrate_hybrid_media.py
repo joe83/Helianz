@@ -133,11 +133,12 @@ def find_rclone_exe(custom_path=None):
 def get_remote_file_list(rclone_exe, remote_path, cache_file="rclone_files_cache.txt", use_cache=False):
     """List all files currently in the rclone remote path."""
     if use_cache and os.path.exists(cache_file):
-        log(f"Loading remote file list from cache: {cache_file} ...")
         with open(cache_file, "r", encoding="utf-8", errors="replace") as f:
             files = [line.strip().replace("\\", "/") for line in f if line.strip()]
-        log(f"Loaded {len(files):,} files from cache.")
-        return files
+        if len(files) > 0:
+            log(f"Loading remote file list from cache: {cache_file} ...")
+            log(f"Loaded {len(files):,} files from cache.")
+            return files
 
     log(f"Scanning remote storage via rclone: '{remote_path}' ...")
     cmd = [rclone_exe, "lsf", "-R", "--files-only", remote_path]
@@ -439,7 +440,7 @@ def export_plan_csv(actions, csv_file="migrate_media_plan.csv"):
     log(f"[OK] Audit plan saved to {csv_file} ({len(actions):,} entries)")
 
 
-def execute_moves(rclone_exe, source_remote, dest_remote, actions, copy_mode=True, max_workers=16):
+def execute_moves(rclone_exe, source_remote, dest_remote, actions, copy_mode=True, max_workers=16, dest_cache=None):
     """
     Execute the planned file moves/copies via rclone in parallel.
     Uses --ignore-existing on copies to prevent overwriting destination files.
@@ -461,6 +462,7 @@ def execute_moves(rclone_exe, source_remote, dest_remote, actions, copy_mode=Tru
     failed = 0
     counter = 0
     lock = threading.Lock()
+    successful_targets = []
     t0 = time.time()
 
     def do_task(act):
@@ -479,6 +481,7 @@ def execute_moves(rclone_exe, source_remote, dest_remote, actions, copy_mode=Tru
                 curr = counter
                 if res.returncode == 0:
                     success += 1
+                    successful_targets.append(act["target_path"])
                     if curr <= 10 or curr % 500 == 0 or curr == total:
                         pct = (curr / total) * 100
                         log(f"[{curr:,}/{total:,} ({pct:.1f}%)] [OK] {act['source_path']} -> {act['target_path']}")
@@ -495,6 +498,16 @@ def execute_moves(rclone_exe, source_remote, dest_remote, actions, copy_mode=Tru
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = [executor.submit(do_task, act) for act in transfers]
         for f in as_completed(futures):
+            pass
+
+    # Save/append newly transferred files to destination cache
+    if dest_cache and successful_targets:
+        try:
+            with open(dest_cache, "a", encoding="utf-8") as f:
+                for tgt in successful_targets:
+                    f.write(tgt + "\n")
+            debug_log(f"Updated {dest_cache} with {len(successful_targets):,} new entries.")
+        except Exception:
             pass
 
     elapsed = time.time() - t0
@@ -536,6 +549,7 @@ Examples:
     parser.add_argument("--clinics", default=None, help="Filter clinics: comma-separated names, abbrs, or IDs (default: ALL clinics)")
     parser.add_argument("--rclone", default=None, help="Custom path to rclone executable")
     parser.add_argument("--use-cache", action="store_true", help="Use local cache file if available instead of re-scanning remote")
+    parser.add_argument("--rescan-dest", action="store_true", help="Force live scan of destination remote (bypasses dest cache)")
     parser.add_argument("--dry-run", action="store_true", default=True, help="Preview transfers without making changes (default)")
     parser.add_argument("--execute", action="store_true", help="Execute the actual transfers on the remote storage")
     parser.add_argument("--move", action="store_true", help="Move instead of copy (warning: removes source files)")
@@ -605,11 +619,12 @@ Examples:
 
         source_files = get_remote_file_list(rclone_exe, source_remote, cache_file=source_cache, use_cache=args.use_cache)
 
+        dest_cache = "rclone_dest_cache.txt" if not same_remote else None
         if same_remote:
             dest_files = source_files
         else:
-            dest_cache = "rclone_dest_cache.txt"
-            dest_files = get_remote_file_list(rclone_exe, dest_remote, cache_file=dest_cache, use_cache=args.use_cache)
+            use_d_cache = args.use_cache and not args.rescan_dest
+            dest_files = get_remote_file_list(rclone_exe, dest_remote, cache_file=dest_cache, use_cache=use_d_cache)
     except Exception as e:
         log(f"\n[!] Failed to scan remote storage: {e}")
         sys.exit(1)
@@ -656,7 +671,7 @@ Examples:
         log("=" * 70)
     else:
         if transfers:
-            execute_moves(rclone_exe, source_remote, dest_remote, actions, copy_mode=copy_mode, max_workers=args.workers)
+            execute_moves(rclone_exe, source_remote, dest_remote, actions, copy_mode=copy_mode, max_workers=args.workers, dest_cache=dest_cache)
         else:
             log("\nNo files need to be transferred. All available files are already at destination!")
 
