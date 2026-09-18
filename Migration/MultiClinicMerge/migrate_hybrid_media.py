@@ -38,7 +38,33 @@ import subprocess
 import time
 import csv
 from datetime import datetime
-import mysql.connector
+try:
+    import mysql.connector
+except ModuleNotFoundError:
+    # Auto-switch to project virtual environment if available
+    cur_dir = os.path.dirname(os.path.abspath(__file__))
+    venv_python = None
+    for _ in range(4):
+        cand = os.path.join(cur_dir, ".venv", "Scripts", "python.exe")
+        if os.path.exists(cand) and cand.lower() != sys.executable.lower():
+            venv_python = cand
+            break
+        p = os.path.dirname(cur_dir)
+        if p == cur_dir:
+            break
+        cur_dir = p
+
+    if venv_python:
+        ret = subprocess.run([venv_python] + sys.argv)
+        sys.exit(ret.returncode)
+
+    print("[!] Error: Python module 'mysql-connector-python' is not installed.")
+    print(f"    Current Python: {sys.executable}")
+    print("\n    To run with project virtual environment:")
+    print(r"    ..\..\.venv\Scripts\python.exe migrate_hybrid_media.py " + " ".join(sys.argv[1:]))
+    print("\n    Or install into current Python:")
+    print("    pip install mysql-connector-python")
+    sys.exit(1)
 
 # ── Defaults ──
 DEFAULT_REMOTE = "helianz-media:dsmile/HelianzImages"
