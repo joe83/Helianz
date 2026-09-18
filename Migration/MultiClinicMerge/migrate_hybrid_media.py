@@ -37,7 +37,9 @@ import argparse
 import subprocess
 import time
 import csv
+import threading
 from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor, as_completed
 try:
     import mysql.connector
 except ModuleNotFoundError:
@@ -433,10 +435,10 @@ def export_plan_csv(actions, csv_file="migrate_media_plan.csv"):
     log(f"[OK] Audit plan saved to {csv_file} ({len(actions):,} entries)")
 
 
-def execute_moves(rclone_exe, remote_base, actions, copy_mode=False):
+def execute_moves(rclone_exe, remote_base, actions, copy_mode=False, max_workers=16):
     """
     Execute the planned file moves/copies via rclone.
-    Uses server-side operations (moveto / copyto) within the remote storage.
+    Uses server-side operations (moveto / copyto) within the remote storage in parallel.
     """
     moves = [a for a in actions if a["status"] == "MOVE"]
     total = len(moves)
@@ -444,34 +446,49 @@ def execute_moves(rclone_exe, remote_base, actions, copy_mode=False):
 
     log("\n" + "=" * 70)
     log(f"EXECUTING {total:,} FILE {'COPIES' if copy_mode else 'MOVES'} via rclone {action_verb}")
+    log(f"Parallel Workers: {max_workers} threads")
     log("=" * 70)
 
     success = 0
     failed = 0
+    counter = 0
+    lock = threading.Lock()
     t0 = time.time()
 
-    for idx, act in enumerate(moves, 1):
+    def do_task(act):
+        nonlocal success, failed, counter
         src = f"{remote_base}/{act['source_path']}"
         dst = f"{remote_base}/{act['target_path']}"
-
         cmd = [rclone_exe, action_verb, src, dst]
         try:
-            res = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-            if res.returncode == 0:
-                success += 1
-                if idx <= 10 or idx % 100 == 0 or idx == total:
-                    log(f"[{idx}/{total}] [OK] {act['source_path']} -> {act['target_path']}")
-            else:
-                failed += 1
-                err = res.stderr.strip() or res.stdout.strip()
-                log(f"[{idx}/{total}] [ERROR] {act['source_path']} -> {act['target_path']}: {err}")
+            res = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+            with lock:
+                counter += 1
+                curr = counter
+                if res.returncode == 0:
+                    success += 1
+                    if curr <= 10 or curr % 500 == 0 or curr == total:
+                        pct = (curr / total) * 100
+                        log(f"[{curr:,}/{total:,} ({pct:.1f}%)] [OK] {act['source_path']} -> {act['target_path']}")
+                else:
+                    failed += 1
+                    err = res.stderr.strip() or res.stdout.strip()
+                    log(f"[{curr:,}/{total:,}] [ERROR] {act['source_path']} -> {act['target_path']}: {err}")
         except Exception as ex:
-            failed += 1
-            log(f"[{idx}/{total}] [EXCEPTION] {act['source_path']} -> {act['target_path']}: {ex}")
+            with lock:
+                counter += 1
+                failed += 1
+                log(f"[{counter:,}/{total:,}] [EXCEPTION] {act['source_path']} -> {act['target_path']}: {ex}")
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(do_task, act) for act in moves]
+        for f in as_completed(futures):
+            pass
 
     elapsed = time.time() - t0
+    rate = total / elapsed if elapsed > 0 else 0
     log("\n" + "=" * 70)
-    log(f"EXECUTION SUMMARY: {success:,} succeeded, {failed:,} failed in {elapsed:.2f}s")
+    log(f"EXECUTION SUMMARY: {success:,} succeeded, {failed:,} failed in {elapsed:.2f}s ({rate:.1f} files/sec)")
     log("=" * 70)
 
 
@@ -499,6 +516,7 @@ Examples:
     parser.add_argument("--dry-run", action="store_true", default=True, help="Preview moves without making changes (default)")
     parser.add_argument("--execute", action="store_true", help="Execute the actual moves on the remote storage")
     parser.add_argument("--copy", action="store_true", help="Copy instead of move (non-destructive)")
+    parser.add_argument("--workers", type=int, default=16, help="Number of parallel worker threads (default: 16)")
     parser.add_argument("--csv", default="migrate_media_plan.csv", help="Output path for plan CSV audit report")
 
     args = parser.parse_args()
@@ -515,6 +533,7 @@ Examples:
     log(f"  Mode           : {'DRY-RUN (SIMULATION ONLY - NO FILES TOUCHED)' if is_dry_run else 'EXECUTE (REAL MOVES/COPIES)'}")
     if not is_dry_run:
         log(f"  Operation      : {'COPY (Non-destructive)' if args.copy else 'MOVE (Server-side Rename)'}")
+        log(f"  Parallelism    : {args.workers} worker threads")
     if args.clinics:
         log(f"  Clinic Filter  : {args.clinics}")
 
@@ -591,7 +610,7 @@ Examples:
         log("=" * 70)
     else:
         if moves:
-            execute_moves(rclone_exe, args.remote, actions, copy_mode=args.copy)
+            execute_moves(rclone_exe, args.remote, actions, copy_mode=args.copy, max_workers=args.workers)
         else:
             log("\nNo files need to be moved. All files are already in their correct locations!")
 
