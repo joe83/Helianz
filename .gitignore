@@ -170,3 +170,7 @@ __pycache__/
 *.pyc
 *.pyo
 .venv/
+
+# Migration temporary caches and reports
+Migration/MultiClinicMerge/rclone_*_cache.txt
+Migration/MultiClinicMerge/migrate_media_plan.csv
