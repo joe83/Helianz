@@ -274,11 +274,11 @@ def build_candidate_source_paths(doc, clinic_info):
     img_folder = doc.get("ImageFolder", "").strip()
     c_abbr = clinic_info.get("abbr", "").lower()
     c_name = clinic_info.get("name", "").lower()
-
     candidates = []
 
-    # 1. Correct hybrid path (already where it should be)
+    # 1. Correct hybrid path (e.g. for Klaten or when source already has target structure)
     target_path = f"{target_bucket}/{pat_num}/{filename}"
+    candidates.append(target_path)
 
     # 2. Old numbered paths
     candidates.append(f"{old_bucket}/{old_pat_num}/{filename}")
@@ -316,76 +316,78 @@ def build_candidate_source_paths(doc, clinic_info):
     return target_path, candidates
 
 
-def plan_media_migration(db_docs, remote_files, clinics_map=None):
+def plan_media_migration(db_docs, source_files, dest_files, clinics_map=None, same_remote=True, copy_mode=True):
     """
-    Match database documents to actual remote files and build an action plan.
+    Match database documents to remote files and build an action plan.
+    - Files already in dest are skipped (ALREADY_IN_DEST) so nothing is overwritten.
+    - Files found in source are queued for transfer (COPY or MOVE).
+    - Files not found in source are skipped (SKIPPED_NOT_FOUND) so migration can be re-run next time.
     """
     if clinics_map is None:
         clinics_map = CLINIC_DEFAULTS
 
-    # Build fast lookup sets and filename index
-    remote_file_set = set(remote_files)
-    remote_lower_map = {f.lower(): f for f in remote_files}
+    dest_file_set = set(dest_files)
+    dest_lower_map = {f.lower(): f for f in dest_files}
 
-    # Index by filename alone and filename+parent
-    filename_to_paths = {}
-    for f in remote_files:
+    source_file_set = set(source_files)
+    source_lower_map = {f.lower(): f for f in source_files}
+    source_filename_to_paths = {}
+    for f in source_files:
         basename = os.path.basename(f)
-        filename_to_paths.setdefault(basename.lower(), []).append(f)
+        source_filename_to_paths.setdefault(basename.lower(), []).append(f)
 
     actions = []
     stats = {
         "total_db_docs": len(db_docs),
-        "already_correct": 0,
-        "planned_moves": 0,
-        "not_found_on_remote": 0,
+        "already_in_dest": 0,
+        "ready_to_transfer": 0,
+        "skipped_not_found": 0,
         "by_clinic": {}
     }
 
-    log("Matching database records against remote file index ...")
+    log("Matching database records against source & destination file indexes ...")
 
     for doc in db_docs:
         c_num = doc["ClinicNum"]
         clinic_info = clinics_map.get(c_num, {"name": f"Clinic {c_num}", "abbr": f"c{c_num}", "offset": 0})
         c_name = clinic_info["name"]
-        stats["by_clinic"].setdefault(c_name, {"already_correct": 0, "move": 0, "not_found": 0})
+        stats["by_clinic"].setdefault(c_name, {"already_in_dest": 0, "transfer": 0, "skipped_not_found": 0})
 
         target_path, candidates = build_candidate_source_paths(doc, clinic_info)
 
-        # Check if already at target path
-        if target_path in remote_file_set or target_path.lower() in remote_lower_map:
-            actual_target = target_path if target_path in remote_file_set else remote_lower_map[target_path.lower()]
+        # 1. Protection: Check if already in destination (DO NOT OVERWRITE)
+        if target_path in dest_file_set or target_path.lower() in dest_lower_map:
+            actual_target = target_path if target_path in dest_file_set else dest_lower_map[target_path.lower()]
             actions.append({
-                "status": "ALREADY_CORRECT",
+                "status": "ALREADY_IN_DEST",
                 "clinic": c_name,
                 "pat_num": doc["PatNum"],
                 "doc_num": doc["DocNum"],
                 "filename": doc["FileName"],
-                "source_path": actual_target,
-                "target_path": target_path
+                "source_path": actual_target if same_remote else "",
+                "target_path": actual_target
             })
-            stats["already_correct"] += 1
-            stats["by_clinic"][c_name]["already_correct"] += 1
+            stats["already_in_dest"] += 1
+            stats["by_clinic"][c_name]["already_in_dest"] += 1
             continue
 
-        # Try candidate paths
+        # 2. Search in source files
         found_source = None
         for cand in candidates:
-            if cand in remote_file_set:
+            if cand in source_file_set:
                 found_source = cand
                 break
-            if cand.lower() in remote_lower_map:
-                found_source = remote_lower_map[cand.lower()]
+            if cand.lower() in source_lower_map:
+                found_source = source_lower_map[cand.lower()]
                 break
 
-        # Fallback: search by filename and match parent folder containing patnum or imagefolder
+        # Fallback search by filename
         if not found_source:
             fname_lower = doc["FileName"].lower()
-            matches = filename_to_paths.get(fname_lower, [])
+            matches = source_filename_to_paths.get(fname_lower, [])
             if len(matches) == 1:
                 found_source = matches[0]
             elif len(matches) > 1:
-                # Disambiguate by checking if old_patnum, target_patnum, or imagefolder is in the path
                 pat_str = str(doc["PatNum"])
                 offset = clinic_info.get("offset", 0)
                 old_pat_str = str(doc["PatNum"] - offset)
@@ -398,8 +400,9 @@ def plan_media_migration(db_docs, remote_files, clinics_map=None):
                         break
 
         if found_source:
+            act_verb = "COPY" if copy_mode else "MOVE"
             actions.append({
-                "status": "MOVE",
+                "status": act_verb,
                 "clinic": c_name,
                 "pat_num": doc["PatNum"],
                 "doc_num": doc["DocNum"],
@@ -407,11 +410,12 @@ def plan_media_migration(db_docs, remote_files, clinics_map=None):
                 "source_path": found_source,
                 "target_path": target_path
             })
-            stats["planned_moves"] += 1
-            stats["by_clinic"][c_name]["move"] += 1
+            stats["ready_to_transfer"] += 1
+            stats["by_clinic"][c_name]["transfer"] += 1
         else:
+            # Not in source yet - skip safely so user can re-run next time!
             actions.append({
-                "status": "NOT_FOUND",
+                "status": "SKIPPED_NOT_FOUND",
                 "clinic": c_name,
                 "pat_num": doc["PatNum"],
                 "doc_num": doc["DocNum"],
@@ -419,8 +423,8 @@ def plan_media_migration(db_docs, remote_files, clinics_map=None):
                 "source_path": "",
                 "target_path": target_path
             })
-            stats["not_found_on_remote"] += 1
-            stats["by_clinic"][c_name]["not_found"] += 1
+            stats["skipped_not_found"] += 1
+            stats["by_clinic"][c_name]["skipped_not_found"] += 1
 
     return actions, stats
 
@@ -435,18 +439,22 @@ def export_plan_csv(actions, csv_file="migrate_media_plan.csv"):
     log(f"[OK] Audit plan saved to {csv_file} ({len(actions):,} entries)")
 
 
-def execute_moves(rclone_exe, remote_base, actions, copy_mode=False, max_workers=16):
+def execute_moves(rclone_exe, source_remote, dest_remote, actions, copy_mode=True, max_workers=16):
     """
-    Execute the planned file moves/copies via rclone.
-    Uses server-side operations (moveto / copyto) within the remote storage in parallel.
+    Execute the planned file moves/copies via rclone in parallel.
+    Uses --ignore-existing on copies to prevent overwriting destination files.
     """
-    moves = [a for a in actions if a["status"] == "MOVE"]
-    total = len(moves)
+    transfers = [a for a in actions if a["status"] in ("COPY", "MOVE")]
+    total = len(transfers)
     action_verb = "copyto" if copy_mode else "moveto"
 
     log("\n" + "=" * 70)
     log(f"EXECUTING {total:,} FILE {'COPIES' if copy_mode else 'MOVES'} via rclone {action_verb}")
-    log(f"Parallel Workers: {max_workers} threads")
+    log(f"  Source Remote : {source_remote}")
+    log(f"  Dest Remote   : {dest_remote}")
+    log(f"  Workers       : {max_workers} threads")
+    if copy_mode:
+        log("  Protection    : --ignore-existing enabled (will not overwrite destination)")
     log("=" * 70)
 
     success = 0
@@ -457,9 +465,13 @@ def execute_moves(rclone_exe, remote_base, actions, copy_mode=False, max_workers
 
     def do_task(act):
         nonlocal success, failed, counter
-        src = f"{remote_base}/{act['source_path']}"
-        dst = f"{remote_base}/{act['target_path']}"
-        cmd = [rclone_exe, action_verb, src, dst]
+        src = f"{source_remote}/{act['source_path']}"
+        dst = f"{dest_remote}/{act['target_path']}"
+        cmd = [rclone_exe, action_verb]
+        if copy_mode:
+            cmd.append("--ignore-existing")
+        cmd.extend([src, dst])
+
         try:
             res = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
             with lock:
@@ -481,7 +493,7 @@ def execute_moves(rclone_exe, remote_base, actions, copy_mode=False, max_workers
                 log(f"[{counter:,}/{total:,}] [EXCEPTION] {act['source_path']} -> {act['target_path']}: {ex}")
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(do_task, act) for act in moves]
+        futures = [executor.submit(do_task, act) for act in transfers]
         for f in as_completed(futures):
             pass
 
@@ -498,44 +510,60 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
+  # 1. Preview full migration for ALL clinics (non-destructive copy dry-run):
   python migrate_hybrid_media.py --dry-run
-  python migrate_hybrid_media.py --clinics klt,jog --dry-run
+
+  # 2. Preview copying to a different destination folder:
+  python migrate_hybrid_media.py --dest helianz-media:dsmile/HelianzImagesNew --dry-run
+
+  # 3. Preview specific clinics only:
+  python migrate_hybrid_media.py --clinics byl,jog --dry-run
+
+  # 4. Execute non-destructive copy with 16 parallel threads:
   python migrate_hybrid_media.py --execute
-  python migrate_hybrid_media.py --execute --copy
+
+  # 5. Execute with custom destination:
+  python migrate_hybrid_media.py --dest helianz-media:dsmile/HelianzImagesNew --execute
         """
     )
-    parser.add_argument("--remote", default=DEFAULT_REMOTE, help=f"rclone remote path (default: {DEFAULT_REMOTE})")
+    parser.add_argument("--remote", default=DEFAULT_REMOTE, help=f"Source rclone remote path (default: {DEFAULT_REMOTE})")
+    parser.add_argument("--dest", default=None, help="Destination rclone remote path (default: same as --remote)")
     parser.add_argument("--db", default=DEFAULT_DB, help=f"Target merged database name (default: {DEFAULT_DB})")
     parser.add_argument("--host", default=DEFAULT_HOST, help=f"MySQL host (default: {DEFAULT_HOST})")
     parser.add_argument("--port", type=int, default=DEFAULT_PORT, help=f"MySQL port (default: {DEFAULT_PORT})")
     parser.add_argument("--user", default=DEFAULT_USER, help=f"MySQL user (default: {DEFAULT_USER})")
     parser.add_argument("--password", default=None, help="MySQL password (defaults to MYSQL_PWD)")
-    parser.add_argument("--clinics", default=None, help="Filter clinics: comma-separated names, abbrs, or IDs (e.g. klt,jog)")
+    parser.add_argument("--clinics", default=None, help="Filter clinics: comma-separated names, abbrs, or IDs (default: ALL clinics)")
     parser.add_argument("--rclone", default=None, help="Custom path to rclone executable")
     parser.add_argument("--use-cache", action="store_true", help="Use local cache file if available instead of re-scanning remote")
-    parser.add_argument("--dry-run", action="store_true", default=True, help="Preview moves without making changes (default)")
-    parser.add_argument("--execute", action="store_true", help="Execute the actual moves on the remote storage")
-    parser.add_argument("--copy", action="store_true", help="Copy instead of move (non-destructive)")
+    parser.add_argument("--dry-run", action="store_true", default=True, help="Preview transfers without making changes (default)")
+    parser.add_argument("--execute", action="store_true", help="Execute the actual transfers on the remote storage")
+    parser.add_argument("--move", action="store_true", help="Move instead of copy (warning: removes source files)")
+    parser.add_argument("--copy", action="store_true", default=True, help="Copy files non-destructively (default)")
     parser.add_argument("--workers", type=int, default=16, help="Number of parallel worker threads (default: 16)")
     parser.add_argument("--csv", default="migrate_media_plan.csv", help="Output path for plan CSV audit report")
 
     args = parser.parse_args()
 
-    # Determine execution mode:
-    # If user explicitly passed --execute, then dry_run is False
+    # Execution and transfer modes
     is_dry_run = not args.execute
+    copy_mode = not args.move  # Defaults to True (copy) unless --move is passed explicitly
+
+    source_remote = args.remote.rstrip("/\\")
+    dest_remote = args.dest.rstrip("/\\") if args.dest else source_remote
+    same_remote = (source_remote.lower() == dest_remote.lower())
 
     log("=" * 70)
     log("  HELIANZ HYBRID CLOUD MEDIA MIGRATION TOOL")
     log("=" * 70)
-    log(f"  Remote Storage : {args.remote}")
+    log(f"  Source Storage : {source_remote}")
+    log(f"  Dest Storage   : {dest_remote} {'(Same bucket)' if same_remote else '(New location)'}")
     log(f"  Database       : {args.db} on {args.host}:{args.port}")
-    log(f"  Mode           : {'DRY-RUN (SIMULATION ONLY - NO FILES TOUCHED)' if is_dry_run else 'EXECUTE (REAL MOVES/COPIES)'}")
+    log(f"  Clinics Filter : {args.clinics if args.clinics else 'ALL CLINICS'}")
+    log(f"  Mode           : {'DRY-RUN (SIMULATION ONLY - NO FILES TOUCHED)' if is_dry_run else 'EXECUTE (REAL TRANSFERS)'}")
+    log(f"  Operation      : {'COPY (Non-destructive, will NOT overwrite dest)' if copy_mode else 'MOVE (Rename)'}")
     if not is_dry_run:
-        log(f"  Operation      : {'COPY (Non-destructive)' if args.copy else 'MOVE (Server-side Rename)'}")
         log(f"  Parallelism    : {args.workers} worker threads")
-    if args.clinics:
-        log(f"  Clinic Filter  : {args.clinics}")
 
     # 1. Locate rclone
     rclone_exe = find_rclone_exe(args.rclone)
@@ -569,50 +597,68 @@ Examples:
         log("\n[!] No document records found in database matching criteria. Exiting.")
         sys.exit(0)
 
-    # 5. Scan Remote Storage
+    # 5. Scan Remote Storage (Source and Dest)
     try:
-        remote_files = get_remote_file_list(rclone_exe, args.remote, use_cache=args.use_cache)
+        source_cache = "rclone_source_cache.txt"
+        if not os.path.exists(source_cache) and os.path.exists("rclone_files_cache.txt") and source_remote == DEFAULT_REMOTE:
+            source_cache = "rclone_files_cache.txt"
+
+        source_files = get_remote_file_list(rclone_exe, source_remote, cache_file=source_cache, use_cache=args.use_cache)
+
+        if same_remote:
+            dest_files = source_files
+        else:
+            dest_cache = "rclone_dest_cache.txt"
+            dest_files = get_remote_file_list(rclone_exe, dest_remote, cache_file=dest_cache, use_cache=args.use_cache)
     except Exception as e:
         log(f"\n[!] Failed to scan remote storage: {e}")
         sys.exit(1)
 
-    # 6. Build Move Plan
-    actions, stats = plan_media_migration(db_docs, remote_files, clinics_map=clinics_map)
+    # 6. Build Migration Plan
+    actions, stats = plan_media_migration(
+        db_docs,
+        source_files=source_files,
+        dest_files=dest_files,
+        clinics_map=clinics_map,
+        same_remote=same_remote,
+        copy_mode=copy_mode
+    )
 
-    # 6. Print Summary Report
+    # 7. Print Summary Report
     log("\n" + "=" * 70)
     log("  MIGRATION AUDIT SUMMARY")
     log("=" * 70)
-    log(f"  Total DB Documents   : {stats['total_db_docs']:,}")
-    log(f"  Already Correct      : {stats['already_correct']:,} ({stats['already_correct']/stats['total_db_docs']*100:.1f}%)")
-    log(f"  Need to be Moved     : {stats['planned_moves']:,} ({stats['planned_moves']/stats['total_db_docs']*100:.1f}%)")
-    log(f"  Not Found on Remote  : {stats['not_found_on_remote']:,} ({stats['not_found_on_remote']/stats['total_db_docs']*100:.1f}%)")
+    log(f"  Total DB Documents          : {stats['total_db_docs']:,}")
+    log(f"  Already in Dest (Skipped)   : {stats['already_in_dest']:,} ({stats['already_in_dest']/stats['total_db_docs']*100:.1f}%) [WILL NOT OVERWRITE]")
+    log(f"  Ready to {'Copy' if copy_mode else 'Move'}               : {stats['ready_to_transfer']:,} ({stats['ready_to_transfer']/stats['total_db_docs']*100:.1f}%)")
+    log(f"  Missing in Source (Skipped) : {stats['skipped_not_found']:,} ({stats['skipped_not_found']/stats['total_db_docs']*100:.1f}%) [CAN RE-RUN NEXT TIME]")
+
     log("\n  Breakdown by Clinic:")
     for c_name, c_stat in stats["by_clinic"].items():
-        log(f"    - {c_name:12}: {c_stat['move']:,} to move, {c_stat['already_correct']:,} already correct, {c_stat['not_found']:,} not found")
+        log(f"    - {c_name:12}: {c_stat['already_in_dest']:,} already in dest, {c_stat['transfer']:,} ready to transfer, {c_stat['skipped_not_found']:,} not found in source")
 
-    # Sample Planned Moves
-    moves = [a for a in actions if a["status"] == "MOVE"]
-    if moves:
-        log(f"\n  Sample Planned Moves (showing first 10 of {len(moves):,}):")
-        for m in moves[:10]:
+    # Sample Planned Transfers
+    transfers = [a for a in actions if a["status"] in ("COPY", "MOVE")]
+    if transfers:
+        log(f"\n  Sample Planned Transfers (showing first 10 of {len(transfers):,}):")
+        for m in transfers[:10]:
             log(f"    [{m['clinic']}] {m['source_path']}  --->  {m['target_path']}")
 
-    # 7. Export CSV Report
+    # 8. Export CSV Report
     export_plan_csv(actions, args.csv)
 
-    # 8. Execute or Stop
+    # 9. Execute or Stop
     if is_dry_run:
         log("\n" + "=" * 70)
-        log("  DRY-RUN COMPLETE — NO FILES WERE MOVED OR MODIFIED.")
-        log(f"  Review '{args.csv}' to inspect every planned move.")
+        log("  DRY-RUN COMPLETE — NO FILES WERE COPIED OR MODIFIED.")
+        log(f"  Review '{args.csv}' to inspect every planned transfer.")
         log("  When ready to execute, re-run with: --execute")
         log("=" * 70)
     else:
-        if moves:
-            execute_moves(rclone_exe, args.remote, actions, copy_mode=args.copy, max_workers=args.workers)
+        if transfers:
+            execute_moves(rclone_exe, source_remote, dest_remote, actions, copy_mode=copy_mode, max_workers=args.workers)
         else:
-            log("\nNo files need to be moved. All files are already in their correct locations!")
+            log("\nNo files need to be transferred. All available files are already at destination!")
 
 
 if __name__ == "__main__":
