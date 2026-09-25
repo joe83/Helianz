@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -3838,11 +3838,7 @@ namespace Helianz {
 
 		///<summary>Resets the waiting room queue numbers. Shows a confirmation popup before resetting.</summary>
 		private void butResetQueue_Click(object sender,EventArgs e) {
-			if(contrApptPanel.TableWaitingRoom==null || contrApptPanel.TableWaitingRoom.Rows.Count==0) {
-				MsgBox.Show(this,"No patients are currently in the waiting room queue.");
-				return;
-			}
-			if(!MsgBox.Show(this,MsgBoxButtons.YesNo,"Reset the waiting room queue?\r\nThis will clear all queue labels and renumber patients by waiting time order.")) {
+			if(!MsgBox.Show(this,MsgBoxButtons.YesNo,"Reset today's queue numbers?\r\nThis will clear all queue labels and renumber all today's arrived patients in arrival order.")) {
 				return;
 			}
 			//Clear and recompute all queue labels for today.
@@ -3851,10 +3847,7 @@ namespace Helianz {
 			_selectedWaitingAptNum=0;
 			RefreshWaitingRoomTable();
 			FillWaitingRoom();
-			_setNotifiedAptNums.Clear();
-			_selectedWaitingAptNum=0;
-			RefreshWaitingRoomTable();
-			FillWaitingRoom();
+			RefreshPeriod();
 		}
 
 		///<summary>Sets buttons at right to enabled/disabled. Sets value of listConfirmed. Was previously called RefreshModuleScreenPatient.</summary>

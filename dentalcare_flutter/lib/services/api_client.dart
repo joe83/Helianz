@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'api_config.dart';
 import 'auth_service.dart';
@@ -11,6 +10,8 @@ class HelianzApiClient {
 
   HelianzApiClient(this._auth);
 
+  AuthService get auth => _auth;
+
   Map<String, String> get _headers => {
         'Content-Type': 'application/json',
         if (_auth.token != null) 'Authorization': 'Bearer ${_auth.token}',
@@ -20,8 +21,8 @@ class HelianzApiClient {
   // Auth / Debug
   // ──────────────────────────────────────────────
 
-  Future<bool> login(String username, String password) =>
-      _auth.login(username, password);
+  Future<bool> login(String username, String password, {int? clinicNum}) =>
+      _auth.login(username, password, clinicNum: clinicNum);
 
   Future<bool> getDebugToken() => _auth.getDebugToken();
 
@@ -282,31 +283,43 @@ class HelianzApiClient {
   // Dashboard / Reports
   // ──────────────────────────────────────────────
 
-  Future<Map<String, dynamic>> getDashboardKpis() async {
-    final response =
-        await http.get(Uri.parse('${ApiConfig.apiUrl}/dashboard/kpis'), headers: _headers);
+  Future<Map<String, dynamic>> getDashboardKpis({int? clinicNum}) async {
+    final params = <String, String>{
+      if (clinicNum != null) 'clinicNum': '$clinicNum',
+    };
+    final uri = Uri.parse('${ApiConfig.apiUrl}/dashboard/kpis')
+        .replace(queryParameters: params.isNotEmpty ? params : null);
+    final response = await http.get(uri, headers: _headers);
     return _handleResponse(response);
   }
 
-  Future<Map<String, dynamic>> getRevenueTrends() async {
-    final response = await http.get(
-      Uri.parse('${ApiConfig.apiUrl}/dashboard/revenue/trends'),
-      headers: _headers,
-    );
+  Future<Map<String, dynamic>> getRevenueTrends({int? clinicNum}) async {
+    final params = <String, String>{
+      if (clinicNum != null) 'clinicNum': '$clinicNum',
+    };
+    final uri = Uri.parse('${ApiConfig.apiUrl}/dashboard/revenue/trends')
+        .replace(queryParameters: params.isNotEmpty ? params : null);
+    final response = await http.get(uri, headers: _headers);
     return _handleResponse(response);
   }
 
-  Future<Map<String, dynamic>> getProviders() async {
-    final response = await http.get(
-      Uri.parse('${ApiConfig.apiUrl}/dashboard/providers'),
-      headers: _headers,
-    );
+  Future<Map<String, dynamic>> getProviders({int? clinicNum}) async {
+    final params = <String, String>{
+      if (clinicNum != null) 'clinicNum': '$clinicNum',
+    };
+    final uri = Uri.parse('${ApiConfig.apiUrl}/dashboard/providers')
+        .replace(queryParameters: params.isNotEmpty ? params : null);
+    final response = await http.get(uri, headers: _headers);
     return _handleResponse(response);
   }
 
-  Future<Map<String, dynamic>> getArAging() async {
-    final response =
-        await http.get(Uri.parse('${ApiConfig.apiUrl}/dashboard/ar'), headers: _headers);
+  Future<Map<String, dynamic>> getArAging({int? clinicNum}) async {
+    final params = <String, String>{
+      if (clinicNum != null) 'clinicNum': '$clinicNum',
+    };
+    final uri = Uri.parse('${ApiConfig.apiUrl}/dashboard/ar')
+        .replace(queryParameters: params.isNotEmpty ? params : null);
+    final response = await http.get(uri, headers: _headers);
     return _handleResponse(response);
   }
 

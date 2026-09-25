@@ -3,16 +3,21 @@ namespace HelianzApi.Models;
 public class LoginRequest
 {
     public string Username { get; set; } = "";
+    public string? Email { get; set; }
     public string Password { get; set; } = "";
+    public long? ClinicNum { get; set; }
 }
 
 public class LoginResponse
 {
     public string Token { get; set; } = "";
     public string DisplayName { get; set; } = "";
+    public string Email { get; set; } = "";
     public long UserNum { get; set; }
     public long ClinicNum { get; set; }
     public List<long> ClinicNums { get; set; } = new();
+    public List<ClinicInfo> Clinics { get; set; } = new();
+    public bool ClinicIsRestricted { get; set; }
     public List<long> UserGroupNums { get; set; } = new();
     public List<UserPermission> Permissions { get; set; } = new();
 }

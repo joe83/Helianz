@@ -59,7 +59,6 @@ class _ReportTableScreenState extends State<ReportTableScreen> {
   // Reference data for filter dropdowns
   List<Map<String, dynamic>> _refProviders = [];
   List<Map<String, dynamic>> _refClinics = [];
-  bool _refLoaded = false;
 
   bool get _needsDateFilter => _eps.containsKey(widget.reportType);
 
@@ -89,6 +88,10 @@ class _ReportTableScreenState extends State<ReportTableScreen> {
     super.initState();
     _dateFrom = DateTime.now();
     _dateTo = DateTime.now();
+    final active = widget.api.auth.activeClinicNum;
+    if (active != null && active > 0) {
+      _selectedClinicNums.add(active);
+    }
     _loadRefData();
     _load();
   }
@@ -100,7 +103,6 @@ class _ReportTableScreenState extends State<ReportTableScreen> {
       setState(() {
         _refProviders = (ref['providers'] as List?)?.cast<Map<String, dynamic>>() ?? [];
         _refClinics = (ref['clinics'] as List?)?.cast<Map<String, dynamic>>() ?? [];
-        _refLoaded = true;
       });
     } catch (_) { /* non-critical, filter will still work without dropdowns */ }
   }
@@ -418,13 +420,6 @@ class _ReportTableScreenState extends State<ReportTableScreen> {
       return v;
     }
     return v.toString();
-  }
-
-  String _tot(Map<String, dynamic> d, List rows) {
-    for (final k in ['totalAmount', 'totalProduction', 'totalFee', 'totalIncome']) {
-      if (d[k] is num && (d[k] as num) != 0) return 'Total: ${_idFmt.format((d[k] as num).round())}';
-    }
-    return '';
   }
 
   double _w(String h) {

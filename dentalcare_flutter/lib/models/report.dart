@@ -108,6 +108,7 @@ class ReferenceData {
   final List<AppointmentType> appointmentTypes;
   final List<Definition> paymentTypes;
   final List<Definition> commTypes;
+  final List<ClinicInfo> clinics;
 
   ReferenceData({
     this.providers = const [],
@@ -116,6 +117,7 @@ class ReferenceData {
     this.appointmentTypes = const [],
     this.paymentTypes = const [],
     this.commTypes = const [],
+    this.clinics = const [],
   });
 
   factory ReferenceData.fromJson(Map<String, dynamic> json) {
@@ -128,6 +130,7 @@ class ReferenceData {
           _parseList(json['appointmentTypes'], AppointmentType.fromJson),
       paymentTypes: _parseList(json['paymentTypes'], Definition.fromJson),
       commTypes: _parseList(json['commTypes'], Definition.fromJson),
+      clinics: _parseList(json['clinics'], ClinicInfo.fromJson),
     );
   }
 
@@ -138,6 +141,42 @@ class ReferenceData {
         .map((e) => fromJson(e as Map<String, dynamic>))
         .toList();
   }
+}
+
+class ClinicInfo {
+  final int clinicNum;
+  final String description;
+  final String? address;
+  final String? city;
+  final String? phone;
+  final bool isHidden;
+
+  ClinicInfo({
+    required this.clinicNum,
+    required this.description,
+    this.address,
+    this.city,
+    this.phone,
+    this.isHidden = false,
+  });
+
+  factory ClinicInfo.fromJson(Map<String, dynamic> json) => ClinicInfo(
+        clinicNum: json['clinicNum'] ?? 0,
+        description: json['description'] ?? '',
+        address: json['address'],
+        city: json['city'],
+        phone: json['phone'],
+        isHidden: json['isHidden'] ?? false,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'clinicNum': clinicNum,
+        'description': description,
+        'address': address,
+        'city': city,
+        'phone': phone,
+        'isHidden': isHidden,
+      };
 }
 
 class Provider {

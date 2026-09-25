@@ -1720,8 +1720,11 @@ namespace HelianzBusiness{
 			return result;
 		}
 
-		///<summary>Computes a queue label (e.g. "A-1") for a given appointment by grouping by provider if multi-op, then counting today's arrivals.</summary>
+		///<summary>Computes a queue label (e.g. "A-1") for a given appointment by grouping by provider if multi-op, then counting today's arrivals for that provider.</summary>
 		public static string ComputeQueueLabelStatic(Appointment appointment) {
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				return Meth.GetString(MethodBase.GetCurrentMethod(),appointment);
+			}
 			return ComputeQueueLabel(appointment);
 		}
 
@@ -1738,22 +1741,33 @@ namespace HelianzBusiness{
 
 		///<summary>Clears and recomputes queue labels for all today's arrived appointments, sorted by arrival time.</summary>
 		public static void ResetQueueLabels() {
+			ResetQueueLabels(DateTime.Today);
+		}
+
+		///<summary>Clears and recomputes queue labels for all arrived appointments on the given date, sorted by arrival time.</summary>
+		public static void ResetQueueLabels(DateTime date) {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
-				Meth.GetVoid(MethodBase.GetCurrentMethod());
+				Meth.GetVoid(MethodBase.GetCurrentMethod(),date);
 				return;
 			}
-			//Clear all queue labels for today.
+			DateTime targetDate=(date==default || date.Year<1880) ? DateTime.Today : date.Date;
+			//Clear all queue labels for the target date.
 			string command="UPDATE appointment SET QueueLabel='' "
-				+"WHERE "+DbHelper.DtimeToDate("AptDateTime")+" = "+POut.Date(DateTime.Now)+" "
-				+"AND DateTimeArrived > "+POut.Date(DateTime.Now)+" "
+				+"WHERE "+DbHelper.DtimeToDate("AptDateTime")+" = "+POut.Date(targetDate)+" "
+				+"AND DateTimeArrived >= "+POut.Date(targetDate)+" "
+				+"AND DateTimeArrived < "+POut.Date(targetDate.AddDays(1))+" "
 				+"AND AptStatus IN ("+POut.Int((int)ApptStatus.Complete)+","+POut.Int((int)ApptStatus.Scheduled)+")";
 			Db.NonQ(command);
-			//Recompute labels for current waiting room patients in arrival order.
-			DataTable table=GetPeriodWaitingRoomTable(DateTime.Now);
+			//Recompute labels for ALL arrived patients on that day in arrival order (including seated/dismissed).
+			string commandArrived="SELECT AptNum FROM appointment "
+				+"WHERE "+DbHelper.DtimeToDate("AptDateTime")+" = "+POut.Date(targetDate)+" "
+				+"AND DateTimeArrived >= "+POut.Date(targetDate)+" "
+				+"AND DateTimeArrived < "+POut.Date(targetDate.AddDays(1))+" "
+				+"AND AptStatus IN ("+POut.Int((int)ApptStatus.Complete)+","+POut.Int((int)ApptStatus.Scheduled)+") "
+				+"ORDER BY DateTimeArrived, AptNum";
+			DataTable table=Db.GetTable(commandArrived);
 			if(table!=null && table.Columns.Contains("AptNum")) {
-				List<DataRow> listRows=table.Rows.Cast<DataRow>()
-					.OrderBy(r => (DateTime)r["DateTimeArrived"]).ToList();
-				foreach(DataRow row in listRows) {
+				foreach(DataRow row in table.Rows) {
 					long aptNum=PIn.Long(row["AptNum"].ToString());
 					Appointment appt=GetOneApt(aptNum);
 					if(appt!=null && appt.DateTimeArrived.Year>1880) {
@@ -1764,25 +1778,34 @@ namespace HelianzBusiness{
 			}
 		}
 
-		///<summary>Computes a queue label (e.g. "A-1") for a given operatory by counting today's arrivals in that room.</summary>
+		///<summary>Computes a queue label (e.g. "A-1") for a given appointment. If the provider uses multiple operatories today,
+		///groups those operatories using the lowest operatory letter as the prefix, then counts arrivals specifically for this provider.</summary>
 		private static string ComputeQueueLabel(Appointment appointment) {
 			long opNum=appointment.Op;
+			DateTime aptDate=appointment.AptDateTime.Date;
+			if(aptDate.Year<1880) {
+				aptDate=DateTime.Today;
+			}
 			//Determine which provider is assigned: use ProvHyg if IsHygiene, otherwise ProvNum.
 			long provNum=appointment.IsHygiene ? appointment.ProvHyg : appointment.ProvNum;
-			//Find all operatories this provider is using today (from actual appointments, not defaults).
-			List<long> listGroupOps=new List<long>();
+			//Find operatories regularly used by this provider today (>= 2 appointments, to prevent stray/temporary appointments from contaminating groups).
+			List<long> listGroupOps=new List<long>{ opNum };
 			if(provNum>0) {
-				string cmdOps="SELECT DISTINCT Op FROM appointment "
+				string cmdOps="SELECT Op FROM appointment "
 					+"WHERE "+(appointment.IsHygiene ? "ProvHyg" : "ProvNum")+"="+POut.Long(provNum)+" "
-					+"AND "+DbHelper.DtimeToDate("AptDateTime")+" = "+POut.Date(DateTime.Now)+" "
-					+"AND AptStatus IN ("+POut.Int((int)ApptStatus.Complete)+","+POut.Int((int)ApptStatus.Scheduled)+")";
+					+"AND "+DbHelper.DtimeToDate("AptDateTime")+" = "+POut.Date(aptDate)+" "
+					+"AND AptStatus IN ("+POut.Int((int)ApptStatus.Complete)+","+POut.Int((int)ApptStatus.Scheduled)+") ";
+				if(PrefC.HasClinicsEnabled && appointment.ClinicNum>0) {
+					cmdOps+="AND ClinicNum="+POut.Long(appointment.ClinicNum)+" ";
+				}
+				cmdOps+="GROUP BY Op HAVING COUNT(*) >= 2";
 				DataTable tableProvOps=Db.GetTable(cmdOps);
 				foreach(DataRow row in tableProvOps.Rows) {
-					listGroupOps.Add(PIn.Long(row["Op"].ToString()));
+					long op=PIn.Long(row["Op"].ToString());
+					if(!listGroupOps.Contains(op)) {
+						listGroupOps.Add(op);
+					}
 				}
-			}
-			if(listGroupOps.Count<=1) {
-				listGroupOps=new List<long>{opNum};//Single op: use per-room numbering.
 			}
 			//Get the prefix from the FIRST (lowest-numbered) operatory in the group.
 			long prefixOp=listGroupOps.OrderBy(x=>x).First();
@@ -1794,13 +1817,16 @@ namespace HelianzBusiness{
 					break;
 				}
 			}
-			//Count today's arrivals across ALL the provider's operatories.
-			string opList=string.Join(",",listGroupOps.Select(x => x.ToString()));
+			//Count today's arrivals specifically for THIS provider (or this operatory if no provider).
 			string command="SELECT COUNT(*) FROM appointment "
-				+"WHERE Op IN ("+opList+") "
-				+"AND "+DbHelper.DtimeToDate("AptDateTime")+" = "+POut.Date(DateTime.Now)+" "
-				+"AND DateTimeArrived > "+POut.Date(DateTime.Now)+" "
+				+"WHERE "+(provNum>0 ? (appointment.IsHygiene ? "ProvHyg" : "ProvNum")+"="+POut.Long(provNum) : "Op="+POut.Long(opNum))+" "
+				+"AND "+DbHelper.DtimeToDate("AptDateTime")+" = "+POut.Date(aptDate)+" "
+				+"AND DateTimeArrived >= "+POut.Date(aptDate)+" "
+				+"AND DateTimeArrived < "+POut.Date(aptDate.AddDays(1))+" "
 				+"AND QueueLabel != ''";
+			if(PrefC.HasClinicsEnabled && appointment.ClinicNum>0) {
+				command+="AND ClinicNum="+POut.Long(appointment.ClinicNum)+" ";
+			}
 			int count=PIn.Int(Db.GetScalar(command))+1;
 			return prefix+"-"+count;
 		}

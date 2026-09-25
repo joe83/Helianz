@@ -19,6 +19,8 @@ This directory contains the complete automated toolchain for merging independent
 | [`calc_offset.py`](calc_offset.py) | Python | Analyzes database max PKs and computes collision-free offset boundaries. |
 | [`simulate_merge.py`](simulate_merge.py) | Python | Creates temporary sandbox copies to simulate a merge before running against production. |
 | [`Fix-ApptViewAfterClinicSwitch.sql`](Fix-ApptViewAfterClinicSwitch.sql) | SQL | Fixes workstation `ApptView` assignments after clinic switching. |
+| [`migrate_hybrid_media.py`](migrate_hybrid_media.py) | Python | **Cloud / Hybrid Media Migrator**: Organizes patient images/files in S3/iDrive e2 storage, calculates destination bucket folders, uses portable `rclone.exe`, loads `.env`, creates rclone profiles on the fly, and performs non-destructive parallel copies with dry-run audit reports. |
+| [`rclone.exe`](rclone.exe) | Binary | **Portable Rclone**: Self-contained cloud storage sync executable used by media migration tools without requiring system-wide installation. |
 | [`MULTI-CLINIC-GUIDE.md`](MULTI-CLINIC-GUIDE.md) | Markdown | Detailed architecture, table categorizations, and design documentation. |
 
 ---

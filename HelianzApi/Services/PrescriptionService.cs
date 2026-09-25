@@ -18,10 +18,11 @@ public class PrescriptionService
         var conditions = new List<string>();
         var parameters = new DynamicParameters();
 
-        if (allowedClinics.Count > 0)
+        var effectiveClinics = allowedClinics.Where(c => c != 0).ToList();
+        if (effectiveClinics.Count > 0)
         {
             conditions.Add("rx.ClinicNum IN @AllowedClinics");
-            parameters.Add("AllowedClinics", allowedClinics);
+            parameters.Add("AllowedClinics", effectiveClinics);
         }
         if (req.PatNum.HasValue)
         {
@@ -81,7 +82,8 @@ public class PrescriptionService
     public async Task<Prescription?> GetByIdAsync(long rxNum, List<long> allowedClinics)
     {
         using var conn = _db.CreateConnection();
-        var clinicFilter = allowedClinics.Count > 0
+        var effectiveClinics = allowedClinics.Where(c => c != 0).ToList();
+        var clinicFilter = effectiveClinics.Count > 0
             ? "AND rx.ClinicNum IN @AllowedClinics" : "";
 
         return await conn.QueryFirstOrDefaultAsync<Prescription>($@"
@@ -98,7 +100,7 @@ public class PrescriptionService
             LEFT JOIN provider prov ON rx.ProvNum = prov.ProvNum
             LEFT JOIN pharmacy ph ON rx.PharmacyNum = ph.PharmacyNum
             WHERE rx.RxNum = @RxNum {clinicFilter}",
-            new { RxNum = rxNum, AllowedClinics = allowedClinics });
+            new { RxNum = rxNum, AllowedClinics = effectiveClinics });
     }
 
     public async Task<long> CreateAsync(PrescriptionCreateRequest req)

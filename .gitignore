@@ -172,5 +172,14 @@ __pycache__/
 .venv/
 
 # Migration temporary caches and reports
-Migration/MultiClinicMerge/rclone_*_cache.txt
+Migration/MultiClinicMerge/rclone_*_cache*.txt
 Migration/MultiClinicMerge/migrate_media_plan.csv
+Migration/MultiClinicMerge/rclone.exe
+
+# Mobile build artifacts
+*.apk
+
+# Environment and credential files
+.env
+*.env
+!.env.example

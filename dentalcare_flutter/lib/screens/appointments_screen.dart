@@ -16,6 +16,8 @@ class AppointmentsScreen extends StatefulWidget {
 class _AppointmentsScreenState extends State<AppointmentsScreen> {
   DateTime _selectedDate = DateTime.now();
   int _selectedOp = 0;
+  int? _currentClinicNum;
+  List<Operatory> _allOperatories = [];
   List<Operatory> _operatories = [];
   List<Appointment> _appointments = [];
   Map<int, String> _confirmedNames = {}; // DefNum → ItemName
@@ -26,25 +28,56 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final services = AppServices.of(context);
+    final activeClinic = services.auth.activeClinicNum;
     if (!_initLoaded) {
       _initLoaded = true;
+      _currentClinicNum = activeClinic;
       _loadReferenceData().then((_) => _loadAppointments());
+    } else if (_currentClinicNum != activeClinic) {
+      _currentClinicNum = activeClinic;
+      if (_allOperatories.isEmpty) {
+        _loadReferenceData().then((_) => _loadAppointments());
+      } else {
+        _filterOperatories();
+        _loadAppointments();
+      }
     }
+  }
+
+  void _filterOperatories() {
+    final services = AppServices.of(context);
+    final userClinics = services.auth.clinicNums ?? [];
+    final isAdmin = userClinics.contains(0) || !services.auth.clinicIsRestricted;
+    final activeClinic = services.auth.activeClinicNum;
+
+    setState(() {
+      if (activeClinic != null && activeClinic > 0) {
+        _operatories = _allOperatories
+            .where((o) => o.isHidden != true && o.clinicNum == activeClinic)
+            .toList();
+      } else {
+        _operatories = _allOperatories.where((o) {
+          if (o.isHidden == true) return false;
+          if (isAdmin) return true;
+          if (o.clinicNum == null || o.clinicNum == 0) return true;
+          return userClinics.contains(o.clinicNum);
+        }).toList();
+      }
+      if (_selectedOp >= _operatories.length) {
+        _selectedOp = 0;
+      }
+    });
   }
 
   Future<void> _loadReferenceData() async {
     try {
       final services = AppServices.of(context);
       final refJson = await services.api.getReferenceData();
-      final ref = ReferenceData.fromJson(refJson as Map<String, dynamic>);
-      final userClinics = services.auth.clinicNums ?? [];
-      final isAdmin = userClinics.contains(0);
-      _operatories = ref.operatories.where((o) {
-        if (o.isHidden == true) return false;
-        if (isAdmin) return true;
-        if (o.clinicNum == null || o.clinicNum == 0) return true;
-        return userClinics.contains(o.clinicNum);
-      }).toList();
+      final ref = ReferenceData.fromJson(refJson);
+      _allOperatories = ref.operatories;
+      _filterOperatories();
+
       // Load confirmed status definitions
       final confirmedList = refJson['confirmedStatuses'] as List? ?? [];
       final map = <int, String>{};
@@ -58,9 +91,16 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
   Future<void> _loadAppointments() async {
     setState(() { _loading = true; _error = null; });
     try {
-      final api = AppServices.of(context).api;
+      final services = AppServices.of(context);
+      final api = services.api;
+      final activeClinic = services.auth.activeClinicNum;
+      final clinicParam = (activeClinic != null && activeClinic > 0) ? activeClinic : null;
       final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
-      final result = await api.searchAppointments(dateFrom: dateStr, dateTo: dateStr);
+      final result = await api.searchAppointments(
+        dateFrom: dateStr,
+        dateTo: dateStr,
+        clinicNum: clinicParam,
+      );
       final searchResult = AppointmentSearchResult.fromJson(result);
       // Sort by time ascending
       final sorted = List<Appointment>.from(searchResult.appointments)
@@ -98,7 +138,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(12),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))]),
+                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2))]),
               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 IconButton(onPressed: () => _changeDate(-1), icon: const Icon(Icons.chevron_left, color: AppColors.primary)),
                 Column(mainAxisSize: MainAxisSize.min, children: [
@@ -113,7 +153,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
               Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(12),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))]),
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2))]),
                 child: Row(
                   children: List.generate(_operatories.length, (i) {
                     final active = _selectedOp == i;

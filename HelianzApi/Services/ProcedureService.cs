@@ -18,10 +18,11 @@ public class ProcedureService
         var conditions = new List<string>();
         var parameters = new DynamicParameters();
 
-        if (allowedClinics.Count > 0)
+        var effectiveClinics = allowedClinics.Where(c => c != 0).ToList();
+        if (effectiveClinics.Count > 0)
         {
             conditions.Add("pl.ClinicNum IN @AllowedClinics");
-            parameters.Add("AllowedClinics", allowedClinics);
+            parameters.Add("AllowedClinics", effectiveClinics);
         }
         if (req.PatNum.HasValue)
         {
@@ -172,13 +173,14 @@ public class ProcedureService
     public async Task<bool> SetCompleteAsync(long procNum, List<long> allowedClinics)
     {
         using var conn = _db.CreateConnection();
-        var clinicFilter = allowedClinics.Count > 0
+        var effectiveClinics = allowedClinics.Where(c => c != 0).ToList();
+        var clinicFilter = effectiveClinics.Count > 0
             ? "AND ClinicNum IN @AllowedClinics" : "";
 
         var rows = await conn.ExecuteAsync($@"
             UPDATE procedurelog SET ProcStatus = 2
             WHERE ProcNum = @ProcNum {clinicFilter}",
-            new { ProcNum = procNum, AllowedClinics = allowedClinics });
+            new { ProcNum = procNum, AllowedClinics = effectiveClinics });
         return rows > 0;
     }
 }

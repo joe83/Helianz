@@ -53,6 +53,7 @@ namespace Helianz {
 			formUserEdit.IsNew=true;
 			formUserEdit.ShowDialog();
 			if(formUserEdit.DialogResult == DialogResult.OK) {//update to reflect changes that were made in FormUserEdit.
+				Userods.RefreshCache();
 				userControlSecurityUserGroup.FillGridUsers();//New user is not in grid yet, add them.
 				userControlSecurityUserGroup.SelectedUser=formUserEdit.UserodCur;//Selects the user that was just added in the grid.
 				userControlSecurityUserGroup.RefreshUserTabGroups();//Previously selected users User Groups are still selected, refresh for UserCur.
@@ -87,6 +88,7 @@ namespace Helianz {
 			using FormUserEdit formUserEdit = new FormUserEdit(e.User);
 			formUserEdit.ShowDialog();
 			if(formUserEdit.DialogResult == DialogResult.OK) {//update to reflect changes that were made in FormUserEdit.
+				Userods.RefreshCache();
 				userControlSecurityUserGroup.FillGridUsers();
 				userControlSecurityUserGroup.RefreshUserTabGroups();
 			}

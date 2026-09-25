@@ -8,7 +8,9 @@ import 'package:prima_dental_care/screens/more_options_screen.dart';
 import 'package:prima_dental_care/services/auth_service.dart';
 import 'package:prima_dental_care/services/api_client.dart';
 import 'package:prima_dental_care/services/api_config.dart';
+import 'package:prima_dental_care/models/report.dart';
 import 'package:prima_dental_care/widgets/bottom_nav.dart';
+import 'package:prima_dental_care/widgets/clinic_switcher_sheet.dart';
 import 'screens/login_screen.dart';
 
 void main() {
@@ -58,9 +60,22 @@ class _AppBootstrapState extends State<AppBootstrap> {
     super.dispose();
   }
 
+  Future<void> _loadReferenceClinics() async {
+    try {
+      final refJson = await _api.getReferenceData();
+      final ref = ReferenceData.fromJson(refJson);
+      if (ref.clinics.isNotEmpty) {
+        _auth.updateAvailableClinics(ref.clinics);
+      }
+    } catch (_) {}
+  }
+
   Future<void> _tryRestoreSession() async {
     await ApiConfig.load(); // load saved server URL first
     final restored = await _auth.restoreSession();
+    if (restored) {
+      _loadReferenceClinics();
+    }
     if (mounted) {
       setState(() {
         _loggedIn = restored;
@@ -76,7 +91,10 @@ class _AppBootstrapState extends State<AppBootstrap> {
     }
   }
 
-  void _onLoginSuccess() => setState(() => _loggedIn = true);
+  void _onLoginSuccess() {
+    _loadReferenceClinics();
+    setState(() => _loggedIn = true);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,8 +114,8 @@ class _AppBootstrapState extends State<AppBootstrap> {
   }
 }
 
-/// Inherited widget to provide services down the tree.
-class AppServices extends InheritedWidget {
+/// Inherited widget to provide services down the tree and notify dependents on auth changes.
+class AppServices extends InheritedNotifier<AuthService> {
   final AuthService auth;
   final HelianzApiClient api;
 
@@ -106,17 +124,13 @@ class AppServices extends InheritedWidget {
     required this.auth,
     required this.api,
     required super.child,
-  });
+  }) : super(notifier: auth);
 
   static AppServices of(BuildContext context) {
     final result = context.dependOnInheritedWidgetOfExactType<AppServices>();
     assert(result != null, 'No AppServices found in context');
     return result!;
   }
-
-  @override
-  bool updateShouldNotify(AppServices oldWidget) =>
-      auth != oldWidget.auth || api != oldWidget.api;
 }
 
 class MainScreen extends StatefulWidget {
@@ -130,12 +144,23 @@ class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
   List<_TabInfo> _buildTabs(AuthService auth, HelianzApiClient api) {
+    final clinicKey = auth.activeClinicNum ?? 0;
     final tabs = <_TabInfo>[];
     if (auth.canViewAppointments) {
-      tabs.add(_TabInfo(const AppointmentsScreen(), 'Appointments', Icons.calendar_today_rounded, 'Appts'));
+      tabs.add(_TabInfo(
+        AppointmentsScreen(key: ValueKey('appts_$clinicKey')),
+        'Appointments',
+        Icons.calendar_today_rounded,
+        'Appts',
+      ));
     }
     if (auth.canViewPatients) {
-      tabs.add(_TabInfo(const PatientsScreen(), 'Patients', Icons.people_rounded, 'Patients'));
+      tabs.add(_TabInfo(
+        PatientsScreen(key: ValueKey('patients_$clinicKey')),
+        'Patients',
+        Icons.people_rounded,
+        'Patients',
+      ));
     }
     if (auth.canViewReports) {
       tabs.add(_TabInfo(ReportsScreen(api: api), 'Reports', Icons.bar_chart_rounded, 'Reports'));
@@ -159,19 +184,52 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         title: Text(tabs[_currentIndex].title),
         actions: [
-          if (_currentIndex == 0)
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.today_rounded),
-            ),
-          if (_currentIndex == 0)
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.refresh_rounded),
-            ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.settings_outlined),
+          Builder(
+            builder: (context) {
+              final canSwitch = services.auth.canSwitchClinic;
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                child: InkWell(
+                  onTap: canSwitch
+                      ? () => ClinicSwitcherSheet.show(
+                            context,
+                            services.auth,
+                            onClinicChanged: () {
+                              if (mounted) setState(() {});
+                            },
+                          )
+                      : null,
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.18),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white30),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.local_hospital_rounded, size: 14, color: AppColors.accent),
+                        const SizedBox(width: 6),
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 130),
+                          child: Text(
+                            services.auth.activeClinicName,
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (canSwitch) ...[
+                          const SizedBox(width: 4),
+                          const Icon(Icons.arrow_drop_down_rounded, size: 18, color: Colors.white70),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),

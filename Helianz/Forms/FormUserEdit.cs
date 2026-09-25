@@ -54,6 +54,7 @@ namespace Helianz{
 				textUserNum.Text=UserodCur.UserNum.ToString();
 			}
 			textUserName.Text=UserodCur.UserName;
+			textEmail.Text=UserodCur.Email??"";
 			if(!string.IsNullOrEmpty(UserodCur.DomainUser) && UserodCur.DomainUser.Split('\\').Length>1) {
 				textDomainUser.Text=UserodCur.DomainUser.Split('\\')[1];
 			}
@@ -423,6 +424,7 @@ namespace Helianz{
 				UserodCur.ProvNum=_listProviders[listProv.SelectedIndex-1].ProvNum;
 			}
 			UserodCur.BadgeId=textBadgeId.Text;
+			UserodCur.Email=textEmail.Text.Trim();
 			if(IsNew) {
 				try {
 					Userods.Insert(UserodCur,listUserGroup.GetListSelected<UserGroup>().Select(x => x.UserGroupNum).ToList());
@@ -522,6 +524,7 @@ Click OK to remove the DoseSpot ID(s) from all other users. Only the current use
 				}
 				isUserOdPrefCacheInvalid=true;
 			}
+			Userods.RefreshCache();
 			DataValid.SetInvalid(InvalidType.Security);
 			//List of AlertTypes that are selected.
 			List<long> listAlertCatagoryNumsUser=new List<long>();

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:prima_dental_care/theme/app_theme.dart';
 import 'package:prima_dental_care/models/patient.dart';
-import 'package:prima_dental_care/services/api_client.dart';
 import 'package:prima_dental_care/main.dart';
 import 'package:prima_dental_care/widgets/search_header.dart';
 import 'patient_detail_screen.dart';
@@ -18,6 +17,7 @@ class _PatientsScreenState extends State<PatientsScreen> {
   final TextEditingController _searchController = TextEditingController();
   Timer? _debounce;
 
+  int? _currentClinicNum;
   List<Patient> _patients = [];
   int _totalCount = 0;
   bool _loading = true;
@@ -27,9 +27,15 @@ class _PatientsScreenState extends State<PatientsScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final services = AppServices.of(context);
+    final activeClinic = services.auth.activeClinicNum;
     if (!_initLoaded) {
       _initLoaded = true;
+      _currentClinicNum = activeClinic;
       _loadPatients();
+    } else if (_currentClinicNum != activeClinic) {
+      _currentClinicNum = activeClinic;
+      _loadPatients(query: _searchController.text.isEmpty ? null : _searchController.text);
     }
   }
 
@@ -40,8 +46,15 @@ class _PatientsScreenState extends State<PatientsScreen> {
     });
 
     try {
-      final api = AppServices.of(context).api;
-      final result = await api.searchPatients(query: query);
+      final services = AppServices.of(context);
+      final api = services.api;
+      final activeClinic = services.auth.activeClinicNum;
+      final clinicParam = (activeClinic != null && activeClinic > 0) ? activeClinic : null;
+
+      final result = await api.searchPatients(
+        query: query,
+        clinicNum: clinicParam,
+      );
       final searchResult = PatientSearchResult.fromJson(result);
       setState(() {
         _patients = searchResult.patients;
@@ -100,15 +113,16 @@ class _PatientsScreenState extends State<PatientsScreen> {
                       Text(
                         '$_totalCount patients',
                         style: const TextStyle(
-                          fontSize: 13,
-                          color: AppColors.textMuted,
-                          fontWeight: FontWeight.w500,
-                        ),
+                            color: AppColors.textSecondary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500),
                       ),
                   ],
                 ),
               ),
-              Expanded(child: _buildBody()),
+              Expanded(
+                child: _buildBody(),
+              ),
             ],
           ),
         ),
@@ -171,14 +185,59 @@ class _PatientsScreenState extends State<PatientsScreen> {
                     color: Colors.white, fontWeight: FontWeight.w600),
               ),
             ),
-            title: Text(patient.displayName,
-                style: const TextStyle(fontWeight: FontWeight.w600)),
+            title: Row(
+              children: [
+                Expanded(
+                  child: Text(patient.displayName,
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
+                ),
+                if (patient.clinicNum != null && patient.clinicNum! > 0)
+                  _buildClinicBadge(patient.clinicNum!),
+              ],
+            ),
             subtitle: Text(_buildSubtitle(patient)),
             trailing: const Icon(Icons.chevron_right,
                 color: AppColors.textMuted),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildClinicBadge(int clinicNum) {
+    String label;
+    Color color;
+    switch (clinicNum) {
+      case 1:
+        label = 'Klaten 1';
+        color = const Color(0xFF0284C7); // Sky blue
+        break;
+      case 2:
+        label = 'Boyolali 1';
+        color = const Color(0xFFD97706); // Amber
+        break;
+      case 3:
+        label = 'Jogja 1';
+        color = const Color(0xFF059669); // Emerald
+        break;
+      default:
+        label = 'Clinic #$clinicNum';
+        color = AppColors.primary;
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
+      ),
     );
   }
 

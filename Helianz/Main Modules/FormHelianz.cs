@@ -821,7 +821,9 @@ namespace Helianz{
 			Logger.LogToPath("BackupReminder",LogPath.Startup,LogPhase.Unspecified);
 			//Users can have strange values in their preference table which can cause unhandled exceptions when the parsed date is manipulated.
 			//Manipulate DateTime.Today instead since it should always yield a reasonable DateTime for manipulation.
-			bool isBackupReminderNeeded=PrefC.GetDate(PrefName.BackupReminderLastDateRun) < DateTime.Today.AddMonths(-1);//Remind users every month.
+			//Disable backup reminder when connected to Middle Tier server since backups are managed centrally on the server.
+			bool isBackupReminderNeeded=RemotingClient.MiddleTierRole!=MiddleTierRole.ClientMT
+				&& PrefC.GetDate(PrefName.BackupReminderLastDateRun) < DateTime.Today.AddMonths(-1);//Remind users every month.
 			if(!ODBuild.IsTrial() && isBackupReminderNeeded) {
 				FrmBackupReminder frmBackupReminder=new FrmBackupReminder();
 				frmBackupReminder.ShowDialog();

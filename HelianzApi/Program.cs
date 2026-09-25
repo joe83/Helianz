@@ -65,9 +65,14 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Helianz API v1");
+    c.RoutePrefix = "swagger";
+});
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapGet("/", () => Results.Redirect("/swagger"));
 
 app.Run();

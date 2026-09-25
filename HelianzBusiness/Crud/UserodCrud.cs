@@ -49,6 +49,9 @@ namespace HelianzBusiness.Crud{
 				userod=new Userod();
 				userod.UserNum                   = PIn.Long  (row["UserNum"].ToString());
 				userod.UserName                  = PIn.String(row["UserName"].ToString());
+				if(table.Columns.Contains("Email")) {
+					userod.Email                 = PIn.String(row["Email"].ToString());
+				}
 				userod.Password                  = PIn.String(row["Password"].ToString());
 				userod.UserGroupNum              = PIn.Long  (row["UserGroupNum"].ToString());
 				userod.EmployeeNum               = PIn.Long  (row["EmployeeNum"].ToString());
@@ -84,6 +87,7 @@ namespace HelianzBusiness.Crud{
 			DataTable table=new DataTable(tableName);
 			table.Columns.Add("UserNum");
 			table.Columns.Add("UserName");
+			table.Columns.Add("Email");
 			table.Columns.Add("Password");
 			table.Columns.Add("UserGroupNum");
 			table.Columns.Add("EmployeeNum");
@@ -110,6 +114,7 @@ namespace HelianzBusiness.Crud{
 				table.Rows.Add(new object[] {
 					POut.Long  (userod.UserNum),
 					            userod.UserName,
+					            userod.Email,
 					            userod.Password,
 					POut.Long  (userod.UserGroupNum),
 					POut.Long  (userod.EmployeeNum),
@@ -151,12 +156,13 @@ namespace HelianzBusiness.Crud{
 			if(useExistingPK || PrefC.RandomKeys) {
 				command+="UserNum,";
 			}
-			command+="UserName,Password,UserGroupNum,EmployeeNum,ClinicNum,ProvNum,IsHidden,TaskListInBox,AnesthProvType,DefaultHidePopups,PasswordIsStrong,ClinicIsRestricted,InboxHidePopups,UserNumCEMT,DateTFail,FailedAttempts,DomainUser,IsPasswordResetRequired,MobileWebPin,MobileWebPinFailedAttempts,DateTLastLogin,EClipboardClinicalPin,BadgeId) VALUES(";
+			command+="UserName,Email,Password,UserGroupNum,EmployeeNum,ClinicNum,ProvNum,IsHidden,TaskListInBox,AnesthProvType,DefaultHidePopups,PasswordIsStrong,ClinicIsRestricted,InboxHidePopups,UserNumCEMT,DateTFail,FailedAttempts,DomainUser,IsPasswordResetRequired,MobileWebPin,MobileWebPinFailedAttempts,DateTLastLogin,EClipboardClinicalPin,BadgeId) VALUES(";
 			if(useExistingPK || PrefC.RandomKeys) {
 				command+=POut.Long(userod.UserNum)+",";
 			}
 			command+=
 				 "'"+POut.String(userod.UserName)+"',"
+				+"'"+POut.String(userod.Email)+"',"
 				+"'"+POut.String(userod.Password)+"',"
 				+    POut.Long  (userod.UserGroupNum)+","
 				+    POut.Long  (userod.EmployeeNum)+","
@@ -203,12 +209,13 @@ namespace HelianzBusiness.Crud{
 			if(isRandomKeys || useExistingPK) {
 				command+="UserNum,";
 			}
-			command+="UserName,Password,UserGroupNum,EmployeeNum,ClinicNum,ProvNum,IsHidden,TaskListInBox,AnesthProvType,DefaultHidePopups,PasswordIsStrong,ClinicIsRestricted,InboxHidePopups,UserNumCEMT,DateTFail,FailedAttempts,DomainUser,IsPasswordResetRequired,MobileWebPin,MobileWebPinFailedAttempts,DateTLastLogin,EClipboardClinicalPin,BadgeId) VALUES(";
+			command+="UserName,Email,Password,UserGroupNum,EmployeeNum,ClinicNum,ProvNum,IsHidden,TaskListInBox,AnesthProvType,DefaultHidePopups,PasswordIsStrong,ClinicIsRestricted,InboxHidePopups,UserNumCEMT,DateTFail,FailedAttempts,DomainUser,IsPasswordResetRequired,MobileWebPin,MobileWebPinFailedAttempts,DateTLastLogin,EClipboardClinicalPin,BadgeId) VALUES(";
 			if(isRandomKeys || useExistingPK) {
 				command+=POut.Long(userod.UserNum)+",";
 			}
 			command+=
 				 "'"+POut.String(userod.UserName)+"',"
+				+"'"+POut.String(userod.Email)+"',"
 				+"'"+POut.String(userod.Password)+"',"
 				+    POut.Long  (userod.UserGroupNum)+","
 				+    POut.Long  (userod.EmployeeNum)+","
@@ -244,6 +251,7 @@ namespace HelianzBusiness.Crud{
 		public static void Update(Userod userod) {
 			string command="UPDATE userod SET "
 				+"UserName                  = '"+POut.String(userod.UserName)+"', "
+				+"Email                     = '"+POut.String(userod.Email)+"', "
 				+"Password                  = '"+POut.String(userod.Password)+"', "
 				+"UserGroupNum              =  "+POut.Long  (userod.UserGroupNum)+", "
 				+"EmployeeNum               =  "+POut.Long  (userod.EmployeeNum)+", "
@@ -276,6 +284,10 @@ namespace HelianzBusiness.Crud{
 			if(userod.UserName != oldUserod.UserName) {
 				if(command!="") { command+=",";}
 				command+="UserName = '"+POut.String(userod.UserName)+"'";
+			}
+			if(userod.Email != oldUserod.Email) {
+				if(command!="") { command+=",";}
+				command+="Email = '"+POut.String(userod.Email)+"'";
 			}
 			if(userod.Password != oldUserod.Password) {
 				if(command!="") { command+=",";}
@@ -380,6 +392,9 @@ namespace HelianzBusiness.Crud{
 			if(userod.UserName != oldUserod.UserName) {
 				return true;
 			}
+			if(userod.Email != oldUserod.Email) {
+				return true;
+			}
 			if(userod.Password != oldUserod.Password) {
 				return true;
 			}
@@ -453,6 +468,7 @@ namespace HelianzBusiness.Crud{
 		public static void UpdateCemt(Userod userod) {
 			string command="UPDATE userod SET "
 				+"UserName             = '"+POut.String(userod.UserName)+"', "
+				+"Email                = '"+POut.String(userod.Email)+"', "
 				+"Password             = '"+POut.String(userod.Password)+"', "
 				+"ClinicNum            =  "+POut.Long  (userod.ClinicNum)+", "
 				+"IsHidden             =  "+POut.Bool  (userod.IsHidden)+", "

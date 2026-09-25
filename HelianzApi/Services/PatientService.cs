@@ -17,9 +17,25 @@ public class PatientService
 
         // ClinicNum=0 means "all clinics" in OpenDental — skip filtering
         var effectiveClinics = allowedClinics.Where(c => c != 0).ToList();
-        var clinicFilter = effectiveClinics.Count > 0
-            ? "AND p.ClinicNum IN @AllowedClinics"
-            : "";
+        var clinicFilter = "";
+        if (req.ClinicNum.HasValue && req.ClinicNum.Value > 0)
+        {
+            if (effectiveClinics.Count > 0 && !effectiveClinics.Contains(req.ClinicNum.Value))
+            {
+                return new PatientSearchResult
+                {
+                    Patients = new(),
+                    TotalCount = 0,
+                    Page = req.Page,
+                    PageSize = req.PageSize
+                };
+            }
+            clinicFilter = "AND p.ClinicNum = @ClinicNum";
+        }
+        else if (effectiveClinics.Count > 0)
+        {
+            clinicFilter = "AND p.ClinicNum IN @AllowedClinics";
+        }
         var searchFilter = string.IsNullOrWhiteSpace(req.Query)
             ? ""
             : @"AND (p.LName LIKE @Query

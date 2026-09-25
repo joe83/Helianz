@@ -26,6 +26,18 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Public endpoint to list active clinics for login selection.</summary>
+    [HttpGet("clinics")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetClinics()
+    {
+        using var conn = _db.CreateConnection();
+        var clinics = await conn.QueryAsync<ClinicInfo>(@"
+            SELECT ClinicNum, Description, Address, City, Phone, IsHidden
+            FROM clinic WHERE IsHidden = 0 ORDER BY ClinicNum");
+        return Ok(clinics);
+    }
+
     /// <summary>Verify JWT token is still valid. Returns 200 with user info or 401.</summary>
     [HttpGet("verify")]
     [Authorize]

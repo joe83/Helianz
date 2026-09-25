@@ -1,4 +1,4 @@
-﻿using System.Windows.Forms;
+using System.Windows.Forms;
 
 namespace Helianz {
 	public partial class FormUserEdit {
@@ -31,6 +31,8 @@ namespace Helianz {
 			this.labelBadgeInstruction = new System.Windows.Forms.Label();
 			this.textBadgeId = new System.Windows.Forms.TextBox();
 			this.labelBadgeId = new System.Windows.Forms.Label();
+			this.textEmail = new System.Windows.Forms.TextBox();
+			this.labelEmail = new System.Windows.Forms.Label();
 			this.textLogOffAfterMinutes = new System.Windows.Forms.TextBox();
 			this.labelAutoLogoff = new System.Windows.Forms.Label();
 			this.securityTreeUser = new Helianz.UserControlSecurityTree();
@@ -114,6 +116,8 @@ namespace Helianz {
 			this.tabUser.Controls.Add(this.textUserName);
 			this.tabUser.Controls.Add(this.listUserGroup);
 			this.tabUser.Controls.Add(this.label3);
+			this.tabUser.Controls.Add(this.textEmail);
+			this.tabUser.Controls.Add(this.labelEmail);
 			this.tabUser.Controls.Add(this.label1);
 			this.tabUser.Location = new System.Drawing.Point(2, 21);
 			this.tabUser.Name = "tabUser";
@@ -131,6 +135,22 @@ namespace Helianz {
 			this.labelBadgeInstruction.TabIndex = 270;
 			this.labelBadgeInstruction.Text = "8 digits or less";
 			this.labelBadgeInstruction.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// labelEmail
+			// 
+			this.labelEmail.Location = new System.Drawing.Point(205, 50);
+			this.labelEmail.Name = "labelEmail";
+			this.labelEmail.Size = new System.Drawing.Size(65, 20);
+			this.labelEmail.TabIndex = 271;
+			this.labelEmail.Text = "Email";
+			this.labelEmail.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// textEmail
+			// 
+			this.textEmail.Location = new System.Drawing.Point(274, 50);
+			this.textEmail.Name = "textEmail";
+			this.textEmail.Size = new System.Drawing.Size(145, 20);
+			this.textEmail.TabIndex = 272;
 			// 
 			// textBadgeId
 			// 
@@ -561,5 +581,7 @@ namespace Helianz {
 		private TextBox textBadgeId;
 		private Label labelBadgeId;
 		private Label labelBadgeInstruction;
+		private TextBox textEmail;
+		private Label labelEmail;
 	}
 }

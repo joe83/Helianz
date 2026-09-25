@@ -16,19 +16,23 @@
     MySQL server hostname. Default: localhost
 
 .PARAMETER DbName
-    MySQL database name. Default: helianz_klt
+    MySQL database name. Default: helianz
 
 .PARAMETER DbUser
     MySQL user. Default: root
 
+.PARAMETER DbPassword
+    MySQL password.
+
 .PARAMETER JwtKey
-    JWT signing key (min 32 chars). A random key is generated if not provided.
+    JWT key (min 32 chars). Auto-generated if blank.
 
 .PARAMETER ServiceName
     Windows Service name. Default: HelianzApi
 
 .EXAMPLE
-    .\Setup-HelianzApi.ps1 -Port 5000 -DbServer 192.168.1.100 -DbName helianz
+    .\Setup-HelianzApi.ps1 -DbPassword "secret"
+    .\Setup-HelianzApi.ps1 -DbServer 192.168.1.100 -DbName helianz_prod -DbUser apiuser -DbPassword "secret"
 #>
 
 param(
@@ -36,7 +40,7 @@ param(
     [int]$Port = 5000,
     [string]$DbServer = "localhost",
     [int]$DbPort = 3306,
-    [string]$DbName = "helianz_klt",
+    [string]$DbName = "helianz",
     [string]$DbUser = "root",
     [string]$DbPassword = "",
     [string]$JwtKey = "",

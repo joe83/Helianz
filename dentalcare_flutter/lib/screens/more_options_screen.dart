@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:prima_dental_care/main.dart';
 import 'package:prima_dental_care/theme/app_theme.dart';
 import 'package:prima_dental_care/services/auth_service.dart';
 import 'package:prima_dental_care/services/api_client.dart';
+import 'package:prima_dental_care/widgets/clinic_switcher_sheet.dart';
 import 'reports_screen.dart';
 import 'pharmacies_screen.dart';
 
@@ -12,6 +14,8 @@ class MoreOptionsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveAuth = AppServices.of(context).auth;
+    final canSwitch = effectiveAuth.canSwitchClinic;
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -31,17 +35,51 @@ class MoreOptionsScreen extends StatelessWidget {
                 const CircleAvatar(radius: 36, backgroundColor: Colors.white24,
                     child: Icon(Icons.person, size: 36, color: Colors.white)),
                 const SizedBox(height: 12),
-                Text(auth.displayName ?? 'Helianz User',
+                Text(effectiveAuth.displayName ?? 'Helianz User',
                     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Colors.white)),
+                const SizedBox(height: 6),
+                InkWell(
+                  onTap: canSwitch ? () => ClinicSwitcherSheet.show(context, effectiveAuth) : null,
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white30),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.local_hospital_rounded, size: 14, color: AppColors.accent),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Branch: ${effectiveAuth.activeClinicName}',
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white),
+                        ),
+                        if (canSwitch) ...[
+                          const SizedBox(width: 4),
+                          const Icon(Icons.arrow_drop_down, color: Colors.white70, size: 18),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text('Clinic: ${auth.clinicNum ?? '—'}',
-                    style: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.8))),
-                if (auth.userGroupNums != null && auth.userGroupNums!.isNotEmpty)
-                  Text('Groups: ${auth.userGroupNums!.join(", ")}',
-                      style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.6))),
+                if (effectiveAuth.userGroupNums != null && effectiveAuth.userGroupNums!.isNotEmpty)
+                  Text('Groups: ${effectiveAuth.userGroupNums!.join(", ")}',
+                      style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.6))),
               ]),
             ),
               _buildMenuGroup([
+                if (effectiveAuth.canSwitchClinic)
+                  _MenuItem(
+                    icon: Icons.store_mall_directory_rounded,
+                    label: 'Switch Clinic Branch',
+                    color: const Color(0xFFE0F2FE),
+                    iconColor: const Color(0xFF0284C7),
+                    onTap: () => ClinicSwitcherSheet.show(context, effectiveAuth),
+                  ),
                 if (auth.canViewReports)
                   _MenuItem(
                     icon: Icons.bar_chart_rounded,
@@ -89,6 +127,29 @@ class MoreOptionsScreen extends StatelessWidget {
                   label: 'Switch User',
                   color: const Color(0xFFF3F4F6),
                   iconColor: const Color(0xFF4B5563),
+                  onTap: () async {
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Switch User'),
+                        content: const Text('Do you want to log out and switch to another account?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: const Text('Cancel'),
+                          ),
+                          FilledButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
+                            child: const Text('Switch'),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirm == true) {
+                      await auth.logout();
+                    }
+                  },
                 ),
                 _MenuItem(
                   icon: Icons.info_rounded,
@@ -111,7 +172,29 @@ class MoreOptionsScreen extends StatelessWidget {
                   color: const Color(0xFFFEE2E2),
                   iconColor: const Color(0xFFDC2626),
                   textColor: AppColors.danger,
-                  onTap: () => auth.logout(),
+                  onTap: () async {
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Log Out'),
+                        content: const Text('Are you sure you want to log out of your session?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: const Text('Cancel'),
+                          ),
+                          FilledButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
+                            child: const Text('Log Out'),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirm == true) {
+                      await auth.logout();
+                    }
+                  },
                 ),
               ]),
             ],

@@ -20,7 +20,7 @@
     MySQL port. Default: 3306
 
 .PARAMETER DbName
-    MySQL database name. Default: helianz_klt
+    MySQL database name. Default: helianz
 
 .PARAMETER DbUser
     MySQL user. Default: root
@@ -49,7 +49,7 @@ param(
     [int]$Port = 5000,
     [string]$DbServer = "localhost",
     [int]$DbPort = 3306,
-    [string]$DbName = "helianz_klt",
+    [string]$DbName = "helianz",
     [string]$DbUser = "root",
     [string]$DbPassword = "",
     [string]$JwtKey = "",
@@ -72,8 +72,9 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 
 # Find source files
 if ([string]::IsNullOrEmpty($SourcePath)) {
-    # Try default publish locations
+    # Try default locations: same folder first, then publish subfolders
     $candidates = @(
+        $ScriptDir,
         (Join-Path $ScriptDir "publish\HelianzApi-win-x64"),
         (Join-Path $ScriptDir "bin\Release\net10.0\publish"),
         (Join-Path $ScriptDir "bin\Release\net10.0\win-x64\publish")
@@ -94,6 +95,17 @@ if ([string]::IsNullOrEmpty($SourcePath) -or -not (Test-Path (Join-Path $SourceP
 }
 
 Write-Host "Source: $SourcePath" -ForegroundColor Gray
+
+# Prompt for password if not provided
+if ([string]::IsNullOrEmpty($DbPassword)) {
+    $secPwd = Read-Host "Enter MySQL password for '$DbUser'" -AsSecureString
+    $DbPassword = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
+        [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secPwd))
+    if ([string]::IsNullOrEmpty($DbPassword)) {
+        Write-Host "ERROR: MySQL password is required." -ForegroundColor Red
+        exit 1
+    }
+}
 
 # Generate JWT key
 if ([string]::IsNullOrEmpty($JwtKey)) {
@@ -122,14 +134,23 @@ if ($svc) {
 
 Write-Host "Installing to $InstallPath ..." -ForegroundColor Cyan
 
-if (Test-Path $InstallPath) {
-    Remove-Item -Recurse -Force $InstallPath -ErrorAction SilentlyContinue
-}
-New-Item -ItemType Directory -Path $InstallPath -Force | Out-Null
-New-Item -ItemType Directory -Path (Join-Path $InstallPath "logs") -Force | Out-Null
+$resolvedSource  = (Resolve-Path $SourcePath).Path.TrimEnd('\')
+$resolvedInstall = $InstallPath.TrimEnd('\')
 
-Copy-Item -Path "$SourcePath\*" -Destination $InstallPath -Recurse -Force
-Write-Host "Files copied." -ForegroundColor Green
+if ($resolvedSource -eq $resolvedInstall) {
+    # Source IS the install path - files already in place, skip copy
+    Write-Host "Source and install path are the same - skipping copy." -ForegroundColor DarkGray
+    New-Item -ItemType Directory -Path (Join-Path $InstallPath "logs") -Force | Out-Null
+} else {
+    if (Test-Path $InstallPath) {
+        Remove-Item -Recurse -Force $InstallPath -ErrorAction SilentlyContinue
+    }
+    New-Item -ItemType Directory -Path $InstallPath -Force | Out-Null
+    New-Item -ItemType Directory -Path (Join-Path $InstallPath "logs") -Force | Out-Null
+
+    Copy-Item -Path "$SourcePath\*" -Destination $InstallPath -Recurse -Force
+    Write-Host "Files copied." -ForegroundColor Green
+}
 
 # ═══════════════════════════════════════════
 # 4. Create appsettings.json
@@ -160,6 +181,7 @@ $appsettings = @{
 }
 $appsettings | ConvertTo-Json -Depth 5 | Set-Content -Path $configPath -Encoding UTF8
 Write-Host "Configuration saved." -ForegroundColor Green
+Write-Host "  DbServer: $DbServer | DbName: $DbName | DbUser: $DbUser | Port: $Port" -ForegroundColor DarkGray
 
 # ═══════════════════════════════════════════
 # 5. Test run (verify everything works)

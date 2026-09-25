@@ -12,6 +12,8 @@ namespace HelianzBusiness{
 		public long UserNum;
 		///<summary>.</summary>
 		public string UserName;
+		///<summary>Email address for executive mobile app authentication.</summary>
+		public string Email="";
 		///<summary>The password details in a "HashType$Salt$Hash" format, separating the different fields by '$'.
 		///This is NOT the actual password but the encoded password hash.
 		///If the contents of this variable are not in the aforementioned format, it is assumed to be a legacy password hash (MD5).</summary>

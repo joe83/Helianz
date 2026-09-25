@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// The server URL can be changed at runtime via the login screen.
 class ApiConfig {
   static const String _key = 'api_base_url';
-  static const String _defaultUrl = 'http://100.64.0.2:5000';
+  static const String _defaultUrl = 'http://109.111.52.14:5000';
 
   static String? _baseUrl;
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -220,7 +220,8 @@ namespace Helianz {
 					case UserFilters.AllUsers:
 					case UserFilters.Other:
 					default:
-						listUserOds.RemoveAll(x => !x.UserName.ToLower().Contains(textPowerSearch.Text.ToLower()));
+						listUserOds.RemoveAll(x => !x.UserName.ToLower().Contains(textPowerSearch.Text.ToLower()) 
+							&& !(x.Email??"").ToLower().Contains(textPowerSearch.Text.ToLower()));
 						break;
 				}
 			}
@@ -299,6 +300,7 @@ namespace Helianz {
 			gridUsers.Columns.Clear();
 			string tableName="TableSecurity";
 			gridUsers.Columns.Add(new GridColumn(Lan.g(tableName,"Username"),90));
+			gridUsers.Columns.Add(new GridColumn(Lan.g(tableName,"Email"),110));
 			gridUsers.Columns.Add(new GridColumn(Lan.g(tableName,"Employee"),90));
 			gridUsers.Columns.Add(new GridColumn(Lan.g(tableName,"Provider"),90));
 			if(PrefC.HasClinicsEnabled) {
@@ -311,6 +313,7 @@ namespace Helianz {
 			foreach(Userod user in listFilteredUsers) {
 				GridRow row=new GridRow();
 				row.Cells.Add(user.UserName);
+				row.Cells.Add(user.Email??"");
 				row.Cells.Add(Employees.GetNameFL(user.EmployeeNum));
 				row.Cells.Add(Providers.GetLongDesc(user.ProvNum));
 				if(PrefC.HasClinicsEnabled) {

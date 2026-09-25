@@ -103,6 +103,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                             title: 'Patient Info',
                             initiallyExpanded: true,
                             children: [
+                              _infoRow('Clinic / Branch', _clinicName(p.clinicNum)),
                               _infoRow('Phone', p.primaryPhone),
                               _infoRow('Email', p.email),
                               _infoRow('Address', _addr(p)),
@@ -128,6 +129,16 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
         ],
       ),
     );
+  }
+
+  String _clinicName(int? clinicNum) {
+    if (clinicNum == null || clinicNum == 0) return 'HQ / Unassigned';
+    switch (clinicNum) {
+      case 1: return 'Klaten 1';
+      case 2: return 'Boyolali 1';
+      case 3: return 'Jogja 1';
+      default: return 'Clinic #$clinicNum';
+    }
   }
 
   String _addr(Patient p) {

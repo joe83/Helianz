@@ -31,67 +31,148 @@ public class AuthService
         try
         {
             using var conn = _db.CreateConnection();
-            _logger.LogInformation("Login attempt for user: {User}", request.Username);
+            var loginIdentifier = !string.IsNullOrWhiteSpace(request.Email)
+                ? request.Email.Trim()
+                : (request.Username ?? "").Trim();
 
-            // Look up user by username (matches OpenDental userod table)
-            var user = await conn.QueryFirstOrDefaultAsync<UserRow>(@"
-                SELECT UserNum, UserName, Password, UserGroupNum, ClinicNum,
-                       EmployeeNum, IsHidden
-                FROM userod
-                WHERE UserName = @UserName AND IsHidden = 0",
-                new { request.Username });
+            _logger.LogInformation("Login attempt for identifier: {Identifier}", loginIdentifier);
 
-            if (user == null)
+            bool isEmailLogin = !string.IsNullOrWhiteSpace(request.Email) || loginIdentifier.Contains('@');
+
+            List<UserRow> users;
+            if (isEmailLogin)
             {
-                _logger.LogWarning("User not found: {User}", request.Username);
-                return null;
+                // Strict executive email matching: must have non-empty Email configured in userod
+                users = (await conn.QueryAsync<UserRow>(@"
+                    SELECT UserNum, UserName, Email, Password, UserGroupNum, ClinicNum,
+                           EmployeeNum, IsHidden, ClinicIsRestricted
+                    FROM userod
+                    WHERE LOWER(TRIM(Email)) = LOWER(TRIM(@Email))
+                      AND Email != ''
+                      AND IsHidden = 0",
+                    new { Email = loginIdentifier })).ToList();
+
+                if (users.Count == 0)
+                {
+                    _logger.LogWarning("Executive user not found or email not registered: {Email}", loginIdentifier);
+                    return null;
+                }
+            }
+            else
+            {
+                // Fallback username matching (trimmed and case-insensitive) or email
+                users = (await conn.QueryAsync<UserRow>(@"
+                    SELECT UserNum, UserName, Email, Password, UserGroupNum, ClinicNum,
+                           EmployeeNum, IsHidden, ClinicIsRestricted
+                    FROM userod
+                    WHERE (LOWER(TRIM(UserName)) = LOWER(TRIM(@LoginId))
+                           OR (Email != '' AND LOWER(TRIM(Email)) = LOWER(TRIM(@LoginId))))
+                      AND IsHidden = 0",
+                    new { LoginId = loginIdentifier })).ToList();
+
+                if (users.Count == 0)
+                {
+                    _logger.LogWarning("User not found: {User}", loginIdentifier);
+                    return null;
+                }
+            }
+
+            // Pick user matching clinic if multiple exist, otherwise first
+            UserRow user;
+            if (request.ClinicNum.HasValue && request.ClinicNum.Value > 0)
+            {
+                user = users.FirstOrDefault(u => u.ClinicNum == request.ClinicNum.Value)
+                    ?? users.FirstOrDefault(u => u.ClinicNum == 0)
+                    ?? users[0];
+            }
+            else
+            {
+                user = users[0];
             }
 
             // Verify password hash (OpenDental format: HashType$Salt$Hash)
             if (!VerifyPassword(request.Password, user.Password))
             {
-                _logger.LogWarning("Invalid password for user: {User}", request.Username);
+                _logger.LogWarning("Invalid password for user: {User}", loginIdentifier);
                 return null;
             }
 
-            // Get user's clinic access
-            var clinicNums = (await conn.QueryAsync<long>(@"
-                SELECT ClinicNum FROM userclinic WHERE UserNum = @UserNum",
+            // Get all active clinics
+            var allClinics = (await conn.QueryAsync<ClinicInfo>(@"
+                SELECT ClinicNum, Description, Address, City, Phone, IsHidden
+                FROM clinic WHERE IsHidden = 0 ORDER BY ClinicNum")).ToList();
+
+            List<long> clinicNums;
+            List<ClinicInfo> accessibleClinics;
+
+            if (!user.ClinicIsRestricted)
+            {
+                // Unrestricted user has access to all clinics (0 represents HQ/all access)
+                accessibleClinics = allClinics;
+                clinicNums = allClinics.Select(c => c.ClinicNum).ToList();
+                if (!clinicNums.Contains(0))
+                {
+                    clinicNums.Insert(0, 0);
+                }
+            }
+            else
+            {
+                // Restricted user: clinics explicitly linked in userclinic
+                var userClinicNums = (await conn.QueryAsync<long>(@"
+                    SELECT ClinicNum FROM userclinic WHERE UserNum = @UserNum",
+                    new { user.UserNum })).ToHashSet();
+
+                if (user.ClinicNum != 0)
+                {
+                    userClinicNums.Add(user.ClinicNum);
+                }
+
+                if (userClinicNums.Count == 0 && allClinics.Count > 0)
+                {
+                    userClinicNums.Add(allClinics[0].ClinicNum);
+                }
+
+                clinicNums = userClinicNums.ToList();
+                accessibleClinics = allClinics.Where(c => userClinicNums.Contains(c.ClinicNum)).ToList();
+            }
+
+            // Get user's group memberships
+            var userGroupNums = (await conn.QueryAsync<long>(@"
+                SELECT UserGroupNum FROM usergroupattach WHERE UserNum = @UserNum",
                 new { user.UserNum })).ToList();
 
-        if (clinicNums.Count == 0)
-            clinicNums.Add(user.ClinicNum);
+            // Query permissions for all groups the user belongs to
+            var permissions = new List<UserPermission>();
+            if (userGroupNums.Count > 0)
+            {
+                permissions = (await conn.QueryAsync<UserPermission>(@"
+                    SELECT DISTINCT gp.PermType, gp.FKey, gp.NewerDate, gp.NewerDays
+                    FROM grouppermission gp
+                    WHERE gp.UserGroupNum IN @UserGroupNums
+                    ORDER BY gp.PermType, gp.FKey",
+                    new { UserGroupNums = userGroupNums })).ToList();
+            }
 
-        // Get user's group memberships
-        var userGroupNums = (await conn.QueryAsync<long>(@"
-            SELECT UserGroupNum FROM usergroupattach WHERE UserNum = @UserNum",
-            new { user.UserNum })).ToList();
+            // Build JWT token with permission claims
+            var token = GenerateToken(user.UserNum, user.UserName, clinicNums, userGroupNums, permissions);
 
-        // Query permissions for all groups the user belongs to
-        var permissions = new List<UserPermission>();
-        if (userGroupNums.Count > 0)
-        {
-            permissions = (await conn.QueryAsync<UserPermission>(@"
-                SELECT DISTINCT gp.PermType, gp.FKey, gp.NewerDate, gp.NewerDays
-                FROM grouppermission gp
-                WHERE gp.UserGroupNum IN @UserGroupNums
-                ORDER BY gp.PermType, gp.FKey",
-                new { UserGroupNums = userGroupNums })).ToList();
-        }
+            var defaultClinicNum = user.ClinicNum != 0
+                ? user.ClinicNum
+                : (accessibleClinics.FirstOrDefault()?.ClinicNum ?? 0);
 
-        // Build JWT token with permission claims
-        var token = GenerateToken(user.UserNum, user.UserName, clinicNums, userGroupNums, permissions);
-
-        return new LoginResponse
-        {
-            Token = token,
-            DisplayName = user.UserName,
-            UserNum = user.UserNum,
-            ClinicNum = user.ClinicNum,
-            ClinicNums = clinicNums,
-            UserGroupNums = userGroupNums,
-            Permissions = permissions
-        };
+            return new LoginResponse
+            {
+                Token = token,
+                DisplayName = user.UserName,
+                Email = user.Email,
+                UserNum = user.UserNum,
+                ClinicNum = defaultClinicNum,
+                ClinicNums = clinicNums,
+                Clinics = accessibleClinics,
+                ClinicIsRestricted = user.ClinicIsRestricted,
+                UserGroupNums = userGroupNums,
+                Permissions = permissions
+            };
     }
     catch (Exception ex)
     {
@@ -232,10 +313,12 @@ public class AuthService
     {
         public long UserNum { get; set; }
         public string UserName { get; set; } = "";
+        public string Email { get; set; } = "";
         public string Password { get; set; } = "";
         public long UserGroupNum { get; set; }
         public long ClinicNum { get; set; }
         public long EmployeeNum { get; set; }
         public bool IsHidden { get; set; }
+        public bool ClinicIsRestricted { get; set; }
     }
 }

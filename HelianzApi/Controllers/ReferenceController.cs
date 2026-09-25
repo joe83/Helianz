@@ -19,4 +19,12 @@ public class ReferenceController : ControllerBase
     {
         return Ok(await _service.GetAllAsync(clinicNum));
     }
+
+    [HttpGet("clinics")]
+    [AllowAnonymous]
+    public async Task<ActionResult<List<ClinicInfo>>> GetClinics()
+    {
+        var all = await _service.GetAllAsync(0);
+        return Ok(all.Clinics);
+    }
 }

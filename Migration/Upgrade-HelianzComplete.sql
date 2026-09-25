@@ -493,7 +493,28 @@ SELECT DISTINCT '0001-01-01', 0, gp.UserGroupNum, 22, @new_report_num
 FROM grouppermission gp
 WHERE gp.PermType = 22 AND @new_report_num IS NOT NULL;
 
-SELECT 'Patient Balances and Credits report registered in displayreport' AS Status;
+-- ============================================================================
+-- STEP 15: EXECUTIVE MOBILE ACCESS - Email column in userod
+-- ============================================================================
+-- Add Email column to userod for executive mobile app authentication.
+-- Allows users with an email to log into the mobile app via email address.
+SET @sql_email = IF(
+    (SELECT COUNT(*) FROM information_schema.columns 
+     WHERE table_schema=DATABASE() AND table_name='userod' AND column_name='Email') = 0,
+    'ALTER TABLE userod ADD COLUMN Email VARCHAR(255) NOT NULL DEFAULT \'\' AFTER UserName',
+    'SELECT \'Email column already exists in userod\' AS msg'
+);
+PREPARE stmt FROM @sql_email; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @sql_email_idx = IF(
+    (SELECT COUNT(*) FROM information_schema.statistics 
+     WHERE table_schema=DATABASE() AND table_name='userod' AND index_name='idx_userod_email') = 0,
+    'ALTER TABLE userod ADD INDEX idx_userod_email (Email)',
+    'SELECT \'idx_userod_email already exists\' AS msg'
+);
+PREPARE stmt FROM @sql_email_idx; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SELECT 'Email column and index in userod ensured' AS Status;
 
 -- ============================================================================
 -- VERIFICATION QUERIES

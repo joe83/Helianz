@@ -47,19 +47,20 @@ public class ReportsController : ControllerBase
     // PRODUCTION & INCOME
     // ═══════════════════════════════════════════
 
-    [HttpGet("prod-today")] public async Task<IActionResult> ProdToday() => await Prod(DateTime.Today, DateTime.Today);
-    [HttpGet("prod-yesterday")] public async Task<IActionResult> ProdYesterday() => await Prod(DateTime.Today.AddDays(-1), DateTime.Today.AddDays(-1));
-    [HttpGet("prod-this-month")] public async Task<IActionResult> ProdThisMonth() => await Prod(new DateTime(DateTime.Today.Year,DateTime.Today.Month,1), DateTime.Today);
-    [HttpGet("prod-last-month")] public async Task<IActionResult> ProdLastMonth() { var m=DateTime.Today.AddMonths(-1); return await Prod(new DateTime(m.Year,m.Month,1),new DateTime(m.Year,m.Month,DateTime.DaysInMonth(m.Year,m.Month))); }
-    [HttpGet("prod-this-year")] public async Task<IActionResult> ProdThisYear() => await Prod(new DateTime(DateTime.Today.Year,1,1), DateTime.Today);
+    [HttpGet("prod-today")] public async Task<IActionResult> ProdToday([FromQuery]string? clinicNums) => await Prod(DateTime.Today, DateTime.Today, clinicNums);
+    [HttpGet("prod-yesterday")] public async Task<IActionResult> ProdYesterday([FromQuery]string? clinicNums) => await Prod(DateTime.Today.AddDays(-1), DateTime.Today.AddDays(-1), clinicNums);
+    [HttpGet("prod-this-month")] public async Task<IActionResult> ProdThisMonth([FromQuery]string? clinicNums) => await Prod(new DateTime(DateTime.Today.Year,DateTime.Today.Month,1), DateTime.Today, clinicNums);
+    [HttpGet("prod-last-month")] public async Task<IActionResult> ProdLastMonth([FromQuery]string? clinicNums) { var m=DateTime.Today.AddMonths(-1); return await Prod(new DateTime(m.Year,m.Month,1),new DateTime(m.Year,m.Month,DateTime.DaysInMonth(m.Year,m.Month)), clinicNums); }
+    [HttpGet("prod-this-year")] public async Task<IActionResult> ProdThisYear([FromQuery]string? clinicNums) => await Prod(new DateTime(DateTime.Today.Year,1,1), DateTime.Today, clinicNums);
 
-    private async Task<IActionResult> Prod(DateTime f, DateTime t) {
+    private async Task<IActionResult> Prod(DateTime f, DateTime t, string? clinicNums = null) {
         var a=Clinics(); using var c=_db.CreateConnection(); var p=CP(a); p.Add("F",f); p.Add("T",t);
+        var clinicFilt = PF(p, clinicNums, "ClinicFilter", "pa.ClinicNum");
         // 4 separate queries to avoid join multiplication
-        var prod = (await c.QueryAsync(@$"SELECT pl.ProcDate Date,SUM(pl.ProcFee) Production FROM procedurelog pl INNER JOIN patient pa ON pl.PatNum=pa.PatNum WHERE pl.ProcDate BETWEEN @F AND @T AND pl.ProcStatus=2 {CF(a)} GROUP BY pl.ProcDate",p)).ToDictionary(r=>(DateTime)r.Date,r=>(decimal)r.Production);
-        var adj = (await c.QueryAsync(@$"SELECT AdjDate Date,SUM(AdjAmt) AdjAmt FROM adjustment a INNER JOIN patient pa ON a.PatNum=pa.PatNum WHERE AdjDate BETWEEN @F AND @T {CF(a)} GROUP BY AdjDate",p)).ToDictionary(r=>(DateTime)r.Date,r=>(decimal)r.AdjAmt);
-        var wo = (await c.QueryAsync(@$"SELECT DateCP Date,SUM(WriteOff) WriteOff FROM claimproc cp INNER JOIN patient pa ON cp.PatNum=pa.PatNum WHERE DateCP BETWEEN @F AND @T AND Status IN(4,5,6) {CF(a)} GROUP BY DateCP",p)).ToDictionary(r=>(DateTime)r.Date,r=>(decimal)r.WriteOff);
-        var inc = (await c.QueryAsync(@$"SELECT PayDate Date,SUM(PayAmt) Income FROM payment pp INNER JOIN patient pa ON pp.PatNum=pa.PatNum WHERE PayDate BETWEEN @F AND @T {CF(a)} GROUP BY PayDate",p)).ToDictionary(r=>(DateTime)r.Date,r=>(decimal)r.Income);
+        var prod = (await c.QueryAsync(@$"SELECT pl.ProcDate Date,SUM(pl.ProcFee) Production FROM procedurelog pl INNER JOIN patient pa ON pl.PatNum=pa.PatNum WHERE pl.ProcDate BETWEEN @F AND @T AND pl.ProcStatus=2 {CF(a)} {clinicFilt} GROUP BY pl.ProcDate",p)).ToDictionary(r=>(DateTime)r.Date,r=>(decimal)r.Production);
+        var adj = (await c.QueryAsync(@$"SELECT AdjDate Date,SUM(AdjAmt) AdjAmt FROM adjustment a INNER JOIN patient pa ON a.PatNum=pa.PatNum WHERE AdjDate BETWEEN @F AND @T {CF(a)} {clinicFilt} GROUP BY AdjDate",p)).ToDictionary(r=>(DateTime)r.Date,r=>(decimal)r.AdjAmt);
+        var wo = (await c.QueryAsync(@$"SELECT DateCP Date,SUM(WriteOff) WriteOff FROM claimproc cp INNER JOIN patient pa ON cp.PatNum=pa.PatNum WHERE DateCP BETWEEN @F AND @T AND Status IN(4,5,6) {CF(a)} {clinicFilt} GROUP BY DateCP",p)).ToDictionary(r=>(DateTime)r.Date,r=>(decimal)r.WriteOff);
+        var inc = (await c.QueryAsync(@$"SELECT PayDate Date,SUM(PayAmt) Income FROM payment pp INNER JOIN patient pa ON pp.PatNum=pa.PatNum WHERE PayDate BETWEEN @F AND @T {CF(a)} {clinicFilt} GROUP BY PayDate",p)).ToDictionary(r=>(DateTime)r.Date,r=>(decimal)r.Income);
         var rows = new List<object>();
         decimal tp=0,ta=0,tw=0,tpi=0;
         for(var d=f;d<=t;d=d.AddDays(1)){var dd=d.Date;var pr=prod.GetValueOrDefault(dd);var ad=adj.GetValueOrDefault(dd);var wr=wo.GetValueOrDefault(dd);var im=inc.GetValueOrDefault(dd);var dn=dd.DayOfWeek switch{DayOfWeek.Sunday=>"Min",DayOfWeek.Monday=>"Sen",DayOfWeek.Tuesday=>"Sel",DayOfWeek.Wednesday=>"Rab",DayOfWeek.Thursday=>"Kam",DayOfWeek.Friday=>"Jum",DayOfWeek.Saturday=>"Sab",_=>""};tp+=pr;ta+=ad;tw+=wr;tpi+=im;rows.Add(new{Date=dd,DayName=dn,Production=pr,Adjustment=ad,WriteOff=wr,TotalProd=pr+ad+wr,PatientIncome=im,UnearnedPtIncome=0m,InsIncome=0m,TotalIncome=im});}
@@ -72,13 +73,14 @@ public class ReportsController : ControllerBase
           rows});}
 
     [HttpGet("prod-goal")]
-    public async Task<IActionResult> ProdGoal() {
+    public async Task<IActionResult> ProdGoal([FromQuery]string? clinicNums) {
         var a=Clinics(); using var c=_db.CreateConnection(); var p=CP(a);
+        var clinicFilt = PF(p, clinicNums, "ClinicFilter", "pa.ClinicNum");
         var m=new DateTime(DateTime.Today.Year,DateTime.Today.Month,1); p.Add("F",m); p.Add("T",DateTime.Today);
         var r=await c.QueryAsync(@$"
             SELECT pr.ProvNum,pr.Abbr ProvName,SUM(COALESCE(pl.ProcFee,0)) Production,COUNT(DISTINCT pl.PatNum) Patients,0 Goal
             FROM provider pr LEFT JOIN procedurelog pl ON pl.ProvNum=pr.ProvNum AND pl.ProcDate BETWEEN @F AND @T AND pl.ProcStatus=2
-            LEFT JOIN patient pa ON pl.PatNum=pa.PatNum {CF(a)} WHERE pr.IsHidden=0 GROUP BY pr.ProvNum,pr.Abbr ORDER BY Production DESC", p);
+            LEFT JOIN patient pa ON pl.PatNum=pa.PatNum {CF(a)} {clinicFilt} WHERE pr.IsHidden=0 GROUP BY pr.ProvNum,pr.Abbr ORDER BY Production DESC", p);
         return Ok(new{month=m.ToString("yyyy-MM"),rows=r});
     }
 
