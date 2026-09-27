@@ -10623,6 +10623,34 @@
       <Link>WebView2Loader.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\Required dlls\Eztwain4.dll">
+      <Link>Eztwain4.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Required dlls\EZT4Jpeg.dll">
+      <Link>EZT4Jpeg.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Required dlls\EZT4Pdf.dll">
+      <Link>EZT4Pdf.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Required dlls\freeglut.dll">
+      <Link>freeglut.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Required dlls\MSVCR71.dll">
+      <Link>MSVCR71.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Required dlls\vcruntime140.dll">
+      <Link>vcruntime140.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Required dlls\VideoCamLib.dll">
+      <Link>VideoCamLib.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Resources\raisehanddisabled.png" />
     <None Include="Resources\raisehand.png" />
     <None Include="Resources\ODLogo.gif" />

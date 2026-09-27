@@ -359,9 +359,51 @@ namespace HelianzBusiness {
 				ParamTypes=DtoObject.GenerateTypes(Parameters,AssemblyName);
 				MethodInfo=ClassType.GetMethod(MethodName,ParamTypes);
 				if(MethodInfo==null) {
+					// Fallback: Check if there is a method where leading parameters match ParamTypes and trailing parameters have default values
+					MethodInfo[] methods=ClassType.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
+					foreach(MethodInfo m in methods) {
+						if(m.Name!=MethodName) {
+							continue;
+						}
+						ParameterInfo[] pInfos=m.GetParameters();
+						if(pInfos.Length<=ParamTypes.Length) {
+							continue;
+						}
+						bool match=true;
+						for(int i=0;i<ParamTypes.Length;i++) {
+							if(ParamTypes[i]!=null && !pInfos[i].ParameterType.IsAssignableFrom(ParamTypes[i])) {
+								match=false;
+								break;
+							}
+						}
+						if(!match) {
+							continue;
+						}
+						for(int i=ParamTypes.Length;i<pInfos.Length;i++) {
+							if(!pInfos[i].HasDefaultValue && !pInfos[i].IsOptional) {
+								match=false;
+								break;
+							}
+						}
+						if(match) {
+							MethodInfo=m;
+							break;
+						}
+					}
+				}
+				if(MethodInfo==null) {
 					throw new ApplicationException("Method not found with "+Parameters.Length.ToString()+" parameters: "+dto.MethodName);
 				}
 				ParamObjs=DtoObject.GenerateObjects(Parameters);
+				ParameterInfo[] actualParams=MethodInfo.GetParameters();
+				if(ParamObjs.Length<actualParams.Length) {
+					object[] paddedObjs=new object[actualParams.Length];
+					Array.Copy(ParamObjs,paddedObjs,ParamObjs.Length);
+					for(int i=ParamObjs.Length;i<actualParams.Length;i++) {
+						paddedObjs[i]=actualParams[i].DefaultValue;
+					}
+					ParamObjs=paddedObjs;
+				}
 			}
 
 			///<summary>Only used if the dto is trying to call "Userods.HashPassword".

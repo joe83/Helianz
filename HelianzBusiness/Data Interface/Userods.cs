@@ -69,10 +69,18 @@ namespace HelianzBusiness {
 			return Db.GetScalar(command);
 		}
 
+		///<summary>Backward compatibility overload for older clients (1 parameter).</summary>
+		public static List<string> GetUserNamesNoCache(bool hasOnlyCEMT) {
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				return Meth.GetObject<List<string>>(MethodBase.GetCurrentMethod(),hasOnlyCEMT);
+			}
+			return GetUserNamesNoCache(hasOnlyCEMT,-2);
+		}
+
 		///<summary>Returns a list of non-hidden, non-CEMT user names.  Set hasOnlyCEMT to true if you only want non-hidden CEMT users.
 		///Optionally filters by clinicNum: -2 = All clinics, otherwise filters to users with access to that clinic.
 		///Always returns all non-hidden users if PrefName.UserNameManualEntry is true.</summary>
-		public static List<string> GetUserNamesNoCache(bool hasOnlyCEMT,long clinicNum=-2) {
+		public static List<string> GetUserNamesNoCache(bool hasOnlyCEMT,long clinicNum) {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
 				return Meth.GetObject<List<string>>(MethodBase.GetCurrentMethod(),hasOnlyCEMT,clinicNum);
 			}

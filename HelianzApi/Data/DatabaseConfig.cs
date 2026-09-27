@@ -14,5 +14,5 @@ public class DatabaseConfig
     public string GetConnectionString() =>
         $"Server={Server};Port={Port};Database={Database};User={User};Password={Password};" +
         $"Pooling={Pooling};MinPoolSize={MinPoolSize};MaxPoolSize={MaxPoolSize};" +
-        $"AllowUserVariables=true;DefaultCommandTimeout=60;";
+        $"AllowUserVariables=true;DefaultCommandTimeout=60;ConvertZeroDateTime=True;AllowZeroDateTime=True;";
 }

@@ -25,6 +25,7 @@ builder.Services.AddScoped<PaymentService>();
 builder.Services.AddScoped<PrescriptionService>();
 builder.Services.AddScoped<NoteService>();
 builder.Services.AddScoped<ReferenceDataService>();
+builder.Services.AddScoped<QueueService>();
 
 // ── Auth (JWT) ────────────────────────────────────────
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "HelianzDevKey-ChangeInProduction-Min32Chars!";
@@ -64,6 +65,9 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -73,6 +77,5 @@ app.UseSwaggerUI(c =>
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.MapGet("/", () => Results.Redirect("/swagger"));
 
 app.Run();

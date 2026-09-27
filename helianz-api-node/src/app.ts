@@ -25,6 +25,7 @@ import noteRoutes from './routes/notes';
 import dashboardRoutes from './routes/dashboard';
 import reportRoutes from './routes/reports';
 import referenceRoutes from './routes/reference';
+import queueRoutes from './routes/queue';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '5000', 10);
@@ -77,6 +78,7 @@ app.use('/api/notes', noteRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/reference', referenceRoutes);
+app.use('/api/queue', queueRoutes);
 
 // Health check
 app.get('/health', (_req, res) => {

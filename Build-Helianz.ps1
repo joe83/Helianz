@@ -153,6 +153,16 @@ if (-not (Test-Path $binDir)) {
 # Copy all build output, preserving sub-folders
 Copy-Item -Path "$binDir\*" -Destination $OutputDir -Recurse -Force
 
+# Ensure all unmanaged native runtime DLLs from Required dlls are present in output
+$nativeDlls = @("Eztwain4.dll", "EZT4Jpeg.dll", "EZT4Pdf.dll", "freeglut.dll", "MSVCR71.dll", "vcruntime140.dll", "VideoCamLib.dll")
+$reqDllDir = Join-Path $PSScriptRoot "Required dlls"
+foreach ($dll in $nativeDlls) {
+	$src = Join-Path $reqDllDir $dll
+	if (Test-Path $src) {
+		Copy-Item -Path $src -Destination $OutputDir -Force
+	}
+}
+
 $stopwatch.Stop()
 Write-Host ""
 Write-Host "========================================================" -ForegroundColor Green
