@@ -36,6 +36,13 @@ import argparse
 import subprocess
 from datetime import datetime
 
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 def find_repo_root(start_dir):
     cur = os.path.abspath(start_dir)
     while True:
@@ -501,6 +508,122 @@ def ensure_clinics_registered(conn, db_name, clinics):
     print(f"  [OK] Registered clinics in `{db_name}`")
 
 
+def ensure_clinic_admin_users(conn, target_db, clinics):
+    """
+    Generate dedicated admin users for each clinic:
+      - admin klaten (Clinic 1)
+      - admin boyolali (Clinic 2)
+      - admin jogja (Clinic 3)
+    Each has all permissions in their clinic, but ClinicIsRestricted=1 and userclinic restricted ONLY to their clinic.
+    Also ensures the Email column and index exist on userod (commit 8295205).
+    """
+    cursor = conn.cursor(dictionary=True)
+
+    # 1. Ensure Email column and index on userod (commit 8295205)
+    cursor.execute(f"""
+        SELECT COUNT(*) as c FROM information_schema.COLUMNS 
+        WHERE TABLE_SCHEMA = '{target_db}' AND TABLE_NAME = 'userod' AND COLUMN_NAME = 'Email'
+    """)
+    if cursor.fetchone()['c'] == 0:
+        cursor.execute(f"ALTER TABLE `{target_db}`.userod ADD COLUMN Email VARCHAR(255) NOT NULL DEFAULT '' AFTER UserName")
+        cursor.execute(f"ALTER TABLE `{target_db}`.userod ADD INDEX idx_userod_email (Email)")
+        print("  [FIX] Added Email column and index to userod (commit 8295205)")
+    else:
+        cursor.execute(f"""
+            SELECT COUNT(*) as c FROM information_schema.STATISTICS 
+            WHERE TABLE_SCHEMA = '{target_db}' AND TABLE_NAME = 'userod' AND INDEX_NAME = 'idx_userod_email'
+        """)
+        if cursor.fetchone()['c'] == 0:
+            cursor.execute(f"ALTER TABLE `{target_db}`.userod ADD INDEX idx_userod_email (Email)")
+
+    # 2. Get default password hash from existing Admin or Owner
+    cursor.execute(f"SELECT Password, PasswordIsStrong FROM `{target_db}`.userod WHERE LOWER(UserName) = 'admin' LIMIT 1")
+    admin_row = cursor.fetchone()
+    if not admin_row or not admin_row.get('Password'):
+        cursor.execute(f"SELECT Password, PasswordIsStrong FROM `{target_db}`.userod WHERE Password != '' LIMIT 1")
+        admin_row = cursor.fetchone()
+
+    pwd = admin_row['Password'] if admin_row else ''
+    pwd_strong = admin_row['PasswordIsStrong'] if admin_row else 1
+
+    # Remove redundant 'admin boy' if present (keeping 'admin boyolali')
+    cursor.execute(f"SELECT UserNum FROM `{target_db}`.userod WHERE LOWER(UserName) = 'admin boy'")
+    admin_boy = cursor.fetchone()
+    if admin_boy:
+        boy_uid = admin_boy['UserNum']
+        cursor.execute(f"DELETE FROM `{target_db}`.userclinic WHERE UserNum = %s", (boy_uid,))
+        cursor.execute(f"DELETE FROM `{target_db}`.usergroupattach WHERE UserNum = %s", (boy_uid,))
+        cursor.execute(f"DELETE FROM `{target_db}`.userodapptview WHERE UserNum = %s", (boy_uid,))
+        cursor.execute(f"DELETE FROM `{target_db}`.userodpref WHERE UserNum = %s", (boy_uid,))
+        cursor.execute(f"DELETE FROM `{target_db}`.alertsub WHERE UserNum = %s", (boy_uid,))
+        cursor.execute(f"DELETE FROM `{target_db}`.userod WHERE UserNum = %s", (boy_uid,))
+        print("  [FIX] Removed redundant 'admin boy' user (using 'admin boyolali')")
+
+    # 3. Clinic Admin definitions: (UserName, ClinicNum, Email)
+    admin_defs = [
+        ("admin klaten", 1, "admin.klaten@dsmile.id"),
+        ("admin boyolali", 2, "admin.boyolali@dsmile.id"),
+        ("admin jogja", 3, "admin.jogja@dsmile.id"),
+    ]
+
+    for uname, clinic_num, email in admin_defs:
+        cursor.execute(f"SELECT UserNum FROM `{target_db}`.userod WHERE LOWER(UserName) = %s", (uname.lower(),))
+        existing = cursor.fetchone()
+
+        if existing:
+            user_num = existing['UserNum']
+            cursor.execute(f"""
+                UPDATE `{target_db}`.userod
+                SET ClinicNum = %s, ClinicIsRestricted = 1, UserGroupNum = 1, Email = %s, PasswordIsStrong = %s
+                WHERE UserNum = %s
+            """, (clinic_num, email, pwd_strong, user_num))
+        else:
+            cursor.execute(f"""
+                INSERT INTO `{target_db}`.userod (
+                    UserName, Email, Password, UserGroupNum, EmployeeNum, ClinicNum, ProvNum,
+                    IsHidden, TaskListInBox, AnesthProvType, DefaultHidePopups, PasswordIsStrong,
+                    ClinicIsRestricted, InboxHidePopups, UserNumCEMT, DateTFail, FailedAttempts,
+                    DomainUser, IsPasswordResetRequired, MobileWebPin, MobileWebPinFailedAttempts,
+                    DateTLastLogin, EClipboardClinicalPin, BadgeId
+                ) VALUES (
+                    %s, %s, %s, 1, 0, %s, 0,
+                    0, 0, 3, 0, %s,
+                    1, 0, 0, '0001-01-01 00:00:00', 0,
+                    '', 0, '', 0,
+                    '0001-01-01 00:00:00', '', '0'
+                )
+            """, (uname, email, pwd, clinic_num, pwd_strong))
+            user_num = cursor.lastrowid
+            print(f"  [USER] Generated clinic admin: '{uname}' (UserNum={user_num}, Clinic={clinic_num}, Email={email})")
+
+        # Ensure user belongs to Admin Group (UserGroupNum = 1) in usergroupattach
+        cursor.execute(f"SELECT 1 FROM `{target_db}`.usergroupattach WHERE UserNum = %s AND UserGroupNum = 1", (user_num,))
+        if not cursor.fetchone():
+            cursor.execute(f"INSERT INTO `{target_db}`.usergroupattach (UserNum, UserGroupNum) VALUES (%s, 1)", (user_num,))
+
+        # Ensure userclinic ONLY has their specific clinic (strict clinic restriction)
+        cursor.execute(f"DELETE FROM `{target_db}`.userclinic WHERE UserNum = %s", (user_num,))
+        cursor.execute(f"INSERT INTO `{target_db}`.userclinic (UserNum, ClinicNum) VALUES (%s, %s)", (user_num, clinic_num))
+
+        # Ensure apptview ONLY for their clinic
+        cursor.execute(f"DELETE FROM `{target_db}`.userodapptview WHERE UserNum = %s", (user_num,))
+        cursor.execute(f"""
+            INSERT INTO `{target_db}`.userodapptview (UserNum, ClinicNum, ApptViewNum)
+            SELECT %s, %s, COALESCE(
+                (SELECT ApptViewNum FROM `{target_db}`.apptview WHERE ClinicNum = %s AND Description = 'All' LIMIT 1),
+                (SELECT ApptViewNum FROM `{target_db}`.apptview WHERE ClinicNum = %s LIMIT 1),
+                2
+            )
+        """, (user_num, clinic_num, clinic_num, clinic_num))
+
+    # Also ensure the general 'Admin' has email 'admin@dsmile.id'
+    cursor.execute(f"UPDATE `{target_db}`.userod SET Email = 'admin@dsmile.id' WHERE LOWER(UserName) = 'admin' AND (Email = '' OR Email IS NULL)")
+
+    conn.commit()
+    cursor.close()
+    print("  [OK] Dedicated clinic admin users generated with full clinic permissions & strict isolation.")
+
+
 def apply_post_merge_fixes(conn, target_db, clinics):
     cursor = conn.cursor()
     cursor.execute(f"USE `{target_db}`")
@@ -531,6 +654,9 @@ def apply_post_merge_fixes(conn, target_db, clinics):
         merge_duplicate_users(conn, target_db)
     except Exception as e:
         print(f"  [WARN] User merge: {e}")
+
+    # 2b. Generate clinic admin users & ensure Email column
+    ensure_clinic_admin_users(conn, target_db, clinics)
 
     # 3. userclinic & ClinicIsRestricted:
     # Users preserve their natural originating clinics.
@@ -678,6 +804,15 @@ def run_full_verification(conn, target_db):
     print("\n4. Referential Integrity Checks (Orphan Records):")
     checks = [
         ("procedurelog.PatNum -> patient.PatNum", f"SELECT COUNT(*) FROM `{target_db}`.`procedurelog` WHERE PatNum NOT IN (SELECT PatNum FROM `{target_db}`.`patient`)"),
+        ("procedurelog.CodeNum -> procedurecode.CodeNum", f"SELECT COUNT(*) FROM `{target_db}`.`procedurelog` WHERE CodeNum > 0 AND CodeNum NOT IN (SELECT CodeNum FROM `{target_db}`.`procedurecode`)"),
+        ("fee.CodeNum -> procedurecode.CodeNum", f"SELECT COUNT(*) FROM `{target_db}`.`fee` WHERE CodeNum > 0 AND CodeNum NOT IN (SELECT CodeNum FROM `{target_db}`.`procedurecode`)"),
+        ("fee.FeeSched -> feesched.FeeSchedNum", f"SELECT COUNT(*) FROM `{target_db}`.`fee` WHERE FeeSched > 0 AND FeeSched NOT IN (SELECT FeeSchedNum FROM `{target_db}`.`feesched`)"),
+        ("provider.FeeSched -> feesched.FeeSchedNum", f"SELECT COUNT(*) FROM `{target_db}`.`provider` WHERE FeeSched > 0 AND FeeSched NOT IN (SELECT FeeSchedNum FROM `{target_db}`.`feesched`)"),
+        ("payment.PayType -> definition.DefNum", f"SELECT COUNT(*) FROM `{target_db}`.`payment` WHERE PayType > 0 AND PayType NOT IN (SELECT DefNum FROM `{target_db}`.`definition`)"),
+        ("adjustment.AdjType -> definition.DefNum", f"SELECT COUNT(*) FROM `{target_db}`.`adjustment` WHERE AdjType > 0 AND AdjType NOT IN (SELECT DefNum FROM `{target_db}`.`definition`)"),
+        ("document.DocCategory -> definition.DefNum", f"SELECT COUNT(*) FROM `{target_db}`.`document` WHERE DocCategory > 0 AND DocCategory NOT IN (SELECT DefNum FROM `{target_db}`.`definition`)"),
+        ("patient.EmployerNum -> employer.EmployerNum", f"SELECT COUNT(*) FROM `{target_db}`.`patient` WHERE EmployerNum > 0 AND EmployerNum NOT IN (SELECT EmployerNum FROM `{target_db}`.`employer`)"),
+        ("sheetfielddef.SheetDefNum -> sheetdef.SheetDefNum", f"SELECT COUNT(*) FROM `{target_db}`.`sheetfielddef` WHERE SheetDefNum > 0 AND SheetDefNum NOT IN (SELECT SheetDefNum FROM `{target_db}`.`sheetdef`)"),
         ("appointment.PatNum -> patient.PatNum", f"SELECT COUNT(*) FROM `{target_db}`.`appointment` WHERE PatNum > 0 AND PatNum NOT IN (SELECT PatNum FROM `{target_db}`.`patient`)"),
         ("appointment.Op -> operatory.OperatoryNum", f"SELECT COUNT(*) FROM `{target_db}`.`appointment` WHERE Op > 0 AND Op NOT IN (SELECT OperatoryNum FROM `{target_db}`.`operatory`)"),
         ("paysplit.PatNum -> patient.PatNum", f"SELECT COUNT(*) FROM `{target_db}`.`paysplit` WHERE PatNum NOT IN (SELECT PatNum FROM `{target_db}`.`patient`)"),
@@ -1015,6 +1150,15 @@ def main():
         run_shell_cmd(f'"{python_exe}" "{SEGREGATE_SCRIPT}" {base_clinic["ClinicNum"]} --db {target_db} --yes', env_vars=child_env, print_stdout=True)
         print("  [OK] Clinic 1 segregation completed.")
 
+    # Prefix Clinic 1 fee schedules so all clinics are uniformly tagged
+    try:
+        cur_klt_fee = conn.cursor()
+        cur_klt_fee.execute(f"UPDATE `{target_db}`.feesched SET Description = CONCAT('[{base_clinic.get('Abbr', 'KLT1')}] ', Description) WHERE Description NOT LIKE '[%'")
+        cur_klt_fee.close()
+        conn.commit()
+    except Exception as kex:
+        debug_log(f"Clinic 1 fee schedule prefix notice: {kex}")
+
     # 9. Process Subsequent Clinics Sequentially
     for c in clinics[1:]:
         c_num = c["ClinicNum"]
@@ -1053,6 +1197,15 @@ def main():
                 debug_log(f"In-process segregation fallback ({ex})...")
                 run_shell_cmd(f'"{python_exe}" "{SEGREGATE_SCRIPT}" {c_num} --db {tmp_db} --yes', env_vars=child_env, print_stdout=True)
 
+            print(f"  Harmonizing Catalogs (procedurecode & definition) `{tmp_db}` -> `{target_db}`...")
+            try:
+                from harmonize_catalogs import harmonize_procedurecodes, harmonize_definitions
+                harmonize_procedurecodes(conn, src_db=tmp_db, target_db=target_db)
+                harmonize_definitions(conn, src_db=tmp_db, target_db=target_db)
+            except Exception as hex:
+                print(f"  [ERROR] Harmonization failed: {hex}")
+                raise
+
             print(f"  Applying PK/FK offset +{actual_offset:,} to `{tmp_db}`...")
             try:
                 from offset_db import run_offset
@@ -1060,6 +1213,15 @@ def main():
             except Exception as ex:
                 debug_log(f"In-process offset fallback ({ex})...")
                 run_shell_cmd(f'"{python_exe}" "{OFFSET_SCRIPT}" {actual_offset} --db {tmp_db}', env_vars=child_env, print_stdout=True)
+
+            # Prefix clinic abbreviation on fee schedules so they are distinct in target
+            try:
+                cur_feesched = conn.cursor()
+                cur_feesched.execute(f"UPDATE `{tmp_db}`.feesched SET Description = CONCAT('[{c.get('Abbr', f'C{c_num}')}] ', Description)")
+                cur_feesched.close()
+                conn.commit()
+            except Exception as fex:
+                debug_log(f"Fee schedule prefix notice: {fex}")
 
             print(f"  Merging `{tmp_db}` into `{target_db}`...")
             try:

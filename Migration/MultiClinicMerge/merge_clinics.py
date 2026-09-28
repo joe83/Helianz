@@ -66,7 +66,10 @@ def merge_tables(conn, src_db, target_db, tables, dry_run=False):
     total = 0
     errors = []
 
+    SKIP_MERGE_TABLES = {"procedurecode", "definition"}
     for table in tables:
+        if table.lower() in SKIP_MERGE_TABLES:
+            continue
         try:
             c.execute(f"SELECT COUNT(*) FROM {src_db}.`{table}`")
             cnt = c.fetchone()[0]

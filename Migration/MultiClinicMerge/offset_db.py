@@ -13,6 +13,14 @@ import re
 import os
 import glob
 import json
+import sys
+
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 
 HOST = os.environ.get("MYSQL_HOST", "localhost")
 PORT = int(os.environ.get("MYSQL_TCP_PORT", "3306"))
@@ -94,7 +102,7 @@ def discover_fk_map():
             pass
 
     # 2. Parse C# TableTypes if directory exists
-    pattern = re.compile(r'///<summary>FK to (\w+)\.(\w+)')
+    pattern = re.compile(r'///\s*<summary>FK to (\w+)\.(\w+)')
     fk_map = {}
 
     if os.path.exists(TABLETYPES_DIR):
@@ -107,12 +115,12 @@ def discover_fk_map():
                 if m:
                     target_table, target_col = m.group(1).lower(), m.group(2).lower()
                     target_table = CS_TO_DB_TABLE.get(target_table, target_table)
-                    source_table = CS_TO_DB_TABLE.get(source_table, source_table)
+                    source_table_mapped = CS_TO_DB_TABLE.get(source_table, source_table)
                     for j in range(i + 1, min(i + 5, len(lines))):
-                        prop = re.search(r'public \w+ (\w+)', lines[j])
+                        prop = re.search(r'(?:public|internal)\s+\w+\s+(\w+)', lines[j])
                         if prop:
                             source_col = prop.group(1).lower()
-                            fk_map[(source_table, source_col)] = (target_table, target_col)
+                            fk_map[(source_table_mapped, source_col)] = (target_table, target_col)
                             break
     return fk_map
 
@@ -120,7 +128,7 @@ def discover_fk_map():
 def run(offset, db, dry_run=False, conn=None, host=None, port=None, user=None, password=None):
     print(f"Offset: +{offset:,}  |  Database: {db}", flush=True)
     if dry_run:
-        print("⚠️  DRY RUN\n", flush=True)
+        print("[DRY RUN]\n", flush=True)
 
     # ── Discover FK map from source ──
     fk_map = discover_fk_map()
@@ -177,6 +185,26 @@ def run(offset, db, dry_run=False, conn=None, host=None, port=None, user=None, p
     """, (db, db, db, db))
     clinic_adjacent_tables = {row[0] for row in cursor.fetchall()}
     clinic_tables |= patient_shared_tables | clinic_adjacent_tables
+
+    # Explicitly include clinic-specific catalog and operational tables so each clinic's
+    # records are offset cleanly without colliding or dropping data
+    ADDITIONAL_CLINIC_TABLES = [
+        'provider',
+        'feesched',
+        'employer',
+        'statementprod',
+        'sheetdef',
+        'sheetfielddef',
+        'securityloghash',
+        'deletedobject',
+        'supply',
+        'procbutton',
+        'procbuttonitem',
+    ]
+    for tbl in ADDITIONAL_CLINIC_TABLES:
+        cursor.execute("SELECT 1 FROM information_schema.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s", (db, tbl))
+        if cursor.fetchone():
+            clinic_tables.add(tbl)
 
     cursor.execute("""
         SELECT TABLE_NAME, COLUMN_NAME FROM information_schema.COLUMNS

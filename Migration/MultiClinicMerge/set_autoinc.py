@@ -97,7 +97,7 @@ def set_auto_increment(db, start_val, conn=None, dry_run=False, host=None, port=
                 print(f"  [DRY] {table_name}.{col_name}: {ai:,} -> {start_val:,}", flush=True)
             else:
                 c2 = conn.cursor()
-                c2.execute(f"ALTER TABLE `{table_name}` AUTO_INCREMENT = {start_val}")
+                c2.execute(f"ALTER TABLE `{db}`.`{table_name}` AUTO_INCREMENT = {start_val}")
                 c2.close()
             updated += 1
         except Exception as e:

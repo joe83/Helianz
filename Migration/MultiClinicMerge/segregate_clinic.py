@@ -97,7 +97,7 @@ def post_segregate(cursor, clinic_num, db):
     # providercliniclink: link providers to this clinic
     cursor.execute(f"""
         INSERT IGNORE INTO providercliniclink (ProvNum, ClinicNum)
-        SELECT ProvNum, {clinic_num} FROM providerclinic WHERE ClinicNum = {clinic_num}
+        SELECT ProvNum, {clinic_num} FROM provider
     """)
     print(f"  providercliniclink: {cursor.rowcount} rows added")
 
