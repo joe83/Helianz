@@ -183,3 +183,4 @@ Migration/MultiClinicMerge/rclone.exe
 .env
 *.env
 !.env.example
+Migration/MultiClinicMerge/local_patient_folders_preview/
