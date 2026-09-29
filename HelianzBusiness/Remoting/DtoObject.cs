@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -58,7 +58,7 @@ namespace HelianzBusiness {
 			*/
 			writer.WriteStartElement("TypeName");
 			Type type=ConvertNameToType(TypeName);
-			if((type==typeof(object) || type.IsInterface) && Obj!=null) {
+			if(type!=null && (type==typeof(object) || type.IsInterface) && Obj!=null) {
 				type=Obj.GetType();
 				TypeName=type.FullName;
 			}
@@ -131,6 +131,9 @@ namespace HelianzBusiness {
 			}
 			else{
 				type=ConvertNameToType(TypeName);
+			}
+			if(type==null) {
+				throw new ApplicationException($"Middle Tier could not resolve TypeName '{TypeName}' for DTO deserialization.");
 			}
 			XmlSerializer serializer=null;
 			if(!type.IsInterface) {
@@ -275,9 +278,15 @@ namespace HelianzBusiness {
 					if(typeGen==null) {//For assemblies other than HelianzBusiness, i.e. CodeBase
 						typeGen=Type.GetType(strTypeGenName+","+StringTools.SubstringBefore(strTypeGenName,"."));
 					}
+					if(typeGen==null) {
+						typeGen=ResolveTypeFromAssemblies(strTypeGenName);
+					}
 				}
 				else {//plugin was found
 					typeGen=assemb.GetType(strTypeGenName);//strTypeName includes the namespace, which we require to be same as assembly by convention
+				}
+				if(typeGen==null) {
+					throw new ApplicationException($"Could not resolve generic type argument '{strTypeGenName}' for '{strTypeName}'.");
 				}
 				Type typeList=typeof(List<>);
 				typeObj=typeList.MakeGenericType(typeGen);
@@ -292,7 +301,7 @@ namespace HelianzBusiness {
 				typeObj=typeof(TimeSpan);
 			}
 			else {//system types, HelianzBusiness, and plugins
-				string strAssembName=strTypeName.Substring(0,strTypeName.IndexOf("."));//example: System.String: index=6, substring(0,6)="System"
+				string strAssembName=strTypeName.Contains(".") ? strTypeName.Substring(0,strTypeName.IndexOf(".")) : strTypeName;
 				Assembly assemb=null;
 				ODException.SwallowAnyException(() => {
 					assemb=Plugins.GetAssembly(strAssembName);//usually null, unless the type is for a plugin
@@ -302,12 +311,43 @@ namespace HelianzBusiness {
 					if(typeObj==null) {//For assemblies other than HelianzBusiness, i.e. CodeBase
 						typeObj=Type.GetType(strTypeName+","+StringTools.SubstringBefore(strTypeName,"."));
 					}
+					if(typeObj==null) {
+						typeObj=ResolveTypeFromAssemblies(strTypeName);
+					}
 				}
 				else {//plugin was found
 					typeObj=assemb.GetType(strTypeName);//strTypeName includes the namespace, which we require to be same as assembly by convention
 				}
 			}
 			return typeObj;
+		}
+
+		private static Type ResolveTypeFromAssemblies(string strTypeName) {
+			string ns=StringTools.SubstringBefore(strTypeName,".");
+			// Known alias fallbacks for .NET Standard / .NET 10 project names
+			if(ns=="CodeBase") {
+				Type t=Type.GetType(strTypeName+",xCodeBaseStandard") ?? Type.GetType(strTypeName+",CodeBase");
+				if(t!=null) {
+					return t;
+				}
+			}
+			else if(ns=="DataConnectionBase") {
+				Type t=Type.GetType(strTypeName+",DataConnectionBaseStandard") ?? Type.GetType(strTypeName+",DataConnectionBase");
+				if(t!=null) {
+					return t;
+				}
+			}
+			// Search all currently loaded assemblies in AppDomain
+			foreach(Assembly a in AppDomain.CurrentDomain.GetAssemblies()) {
+				try {
+					Type t=a.GetType(strTypeName);
+					if(t!=null) {
+						return t;
+					}
+				}
+				catch {}
+			}
+			return null;
 		}
 
 		///<summary>A helper method that returns true if the type passed in is a "List".</summary>
