@@ -1409,19 +1409,45 @@ namespace HelianzBusiness {
 		}
 
 		///<summary>Server-side protection: If a completed procedure with a fee has Share = 0, calculates and populates
-		///the performing doctor's ProviderShare from their fee schedule (exact match -> prov override -> clinic override -> HQ).</summary>
+		///the performing doctor's ProviderShare with 3-way fallback (Specialist -> Fulltimer -> Parttimer or vice-versa).</summary>
 		public static void EnsureProviderShare(Procedure procedure) {
 			if(procedure.ProcStatus!=ProcStat.C || procedure.ProcFee<=0 || procedure.Share>0 || procedure.ProvNum<=0) {
 				return;
 			}
 			try {
 				Provider prov=Providers.GetProv(procedure.ProvNum);
-				if(prov==null || prov.FeeSched<=0) {
+				if(prov==null) {
 					return;
 				}
-				Fee feeForShare=Fees.GetFee(procedure.CodeNum,prov.FeeSched,procedure.ClinicNum,procedure.ProvNum);
-				if(feeForShare!=null && feeForShare.ProviderShare>0) {
-					procedure.Share=feeForShare.ProviderShare;
+				// 3-way fallback hierarchy
+				List<long> listFeeSchedPriority;
+				if(prov.FeeSched==56) {
+					// Specialist -> Fulltimer -> Parttimer
+					listFeeSchedPriority=new List<long> { 56, 57, 58 };
+				}
+				else if(prov.FeeSched==57) {
+					// Fulltimer -> Specialist -> Parttimer
+					listFeeSchedPriority=new List<long> { 57, 56, 58 };
+				}
+				else if(prov.FeeSched==58) {
+					// Parttimer -> Fulltimer -> Specialist
+					listFeeSchedPriority=new List<long> { 58, 57, 56 };
+				}
+				else if(prov.FeeSched>0) {
+					// Other custom FeeSched: Own -> Fulltimer -> Specialist -> Parttimer
+					listFeeSchedPriority=new List<long> { prov.FeeSched, 57, 56, 58 };
+				}
+				else {
+					// No FeeSched: Fulltimer -> Specialist -> Parttimer
+					listFeeSchedPriority=new List<long> { 57, 56, 58 };
+				}
+
+				foreach(long feeSchedNum in listFeeSchedPriority) {
+					Fee feeForShare=Fees.GetFee(procedure.CodeNum,feeSchedNum,procedure.ClinicNum,(feeSchedNum==prov.FeeSched?procedure.ProvNum:0));
+					if(feeForShare!=null && feeForShare.ProviderShare>0) {
+						procedure.Share=feeForShare.ProviderShare;
+						break;
+					}
 				}
 			}
 			catch { }
