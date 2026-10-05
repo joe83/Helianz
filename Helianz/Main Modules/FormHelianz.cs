@@ -3339,14 +3339,21 @@ namespace Helianz{
 			bool isChangingClinic=(Clinics.ClinicNum!=clinic.ClinicNum);
 			Clinics.SetClinicNum(clinic.ClinicNum);
 			Text=PatientL.GetMainTitle(Patients.GetPat(PatNumCur),Clinics.ClinicNum);
+			RefreshMenuClinics();
 			SetSmsNotificationText(doUseSignalInterval:!isChangingClinic);
 			if(PrefC.GetBool(PrefName.AppointmentClinicTimeReset)) {
 				controlAppt.ModuleSelected(DateTime.Today);
 				//this actually refreshes the module, which is possibly different behavior than before the overhaul.
 				//Alternatively, we might check to see of that module is selected first.
 			}
-			RefreshMenuClinics();
 			if(isChangingClinic) {
+				if(Security.CurUser!=null) {
+					Security.CurUser.ClinicNum=clinic.ClinicNum;
+					Userods.SetClinicNumForUser(Security.CurUser.UserNum,clinic.ClinicNum);
+					Defs.RefreshCache();
+					ProcedureCodes.RefreshCache();
+					FeeScheds.RefreshCache();
+				}
 				_listTaskNumsNormal=null;//Will cause task preprocessing to run again.
 				_listTasksReminders=null;//Will cause task preprocessing to run again.
 				UserControlTasks.ResetGlobalTaskFilterTypesToDefaultAllInstances();
@@ -6574,10 +6581,6 @@ namespace Helianz{
 		}
 
 		private void menuItemProcShareFix_Click(object sender,EventArgs e) {
-			if(RemotingClient.MiddleTierRole!=MiddleTierRole.ClientDirect) {
-				MsgBox.Show(this,"This tool is only available when directly connected to the database.");
-				return;
-			}
 			if(!Security.IsAuthorized(EnumPermType.ProcComplCreate) && !Security.IsAuthorized(EnumPermType.Setup)) {
 				return;
 			}

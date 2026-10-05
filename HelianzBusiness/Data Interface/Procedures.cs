@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -1383,6 +1383,7 @@ namespace HelianzBusiness {
 			if(procedure.ProcStatus==ProcStat.TP && AvaTax.DoSendProcToAvalara(procedure)) {
 				procedure.TaxAmt=(double)AvaTax.GetEstimate(procedure.CodeNum,procedure.PatNum,procedure.ProcFee);
 			}
+			EnsureProviderShare(procedure);
 			Crud.ProcedureCrud.Insert(procedure);
 			//Do the sales tax adjustments first because we might be changing the proc note if an error occurs.
 			if(procedure.ProcStatus==ProcStat.C && !skipDiscountPlanAdjustment) {
@@ -1405,6 +1406,25 @@ namespace HelianzBusiness {
 				ProcNotes.Insert(note);
 			}
 			return procedure.ProcNum;
+		}
+
+		///<summary>Server-side protection: If a completed procedure with a fee has Share = 0, calculates and populates
+		///the performing doctor's ProviderShare from their fee schedule (exact match -> prov override -> clinic override -> HQ).</summary>
+		public static void EnsureProviderShare(Procedure procedure) {
+			if(procedure.ProcStatus!=ProcStat.C || procedure.ProcFee<=0 || procedure.Share>0 || procedure.ProvNum<=0) {
+				return;
+			}
+			try {
+				Provider prov=Providers.GetProv(procedure.ProvNum);
+				if(prov==null || prov.FeeSched<=0) {
+					return;
+				}
+				Fee feeForShare=Fees.GetFee(procedure.CodeNum,prov.FeeSched,procedure.ClinicNum,procedure.ProvNum);
+				if(feeForShare!=null && feeForShare.ProviderShare>0) {
+					procedure.Share=feeForShare.ProviderShare;
+				}
+			}
+			catch { }
 		}
 
 
@@ -1654,6 +1674,7 @@ namespace HelianzBusiness {
 			if(isPaySplit) {
 				PaySplits.UpdateAttachedPaySplits(procedure);
 			}
+			EnsureProviderShare(procedure);
 			bool hasChanged=Crud.ProcedureCrud.Update(procedure,oldProcedure);
 			//Setting the procedure to complete OR treatment planned. Alternatively, if setting a proc TP / Completed to NOT be TP / Completed.
 			if((oldProcedure.ProcStatus!=ProcStat.C && procedure.ProcStatus.In(ProcStat.C, ProcStat.TP))
