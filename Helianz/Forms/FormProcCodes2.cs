@@ -119,6 +119,30 @@ namespace Helianz {
 			LayoutManager.MoveLocation(comboFeeSchedGroup2,new Point(LayoutManager.Scale(14),LayoutManager.Scale(96)));
 			LayoutManager.MoveLocation(comboFeeSchedGroup3,new Point(LayoutManager.Scale(14),LayoutManager.Scale(96)));
 			FillComboBoxes();
+			if(!IsSelectionMode && _listFeeScheds.Count > 0 && PrefC.HasClinicsEnabled) {
+				// Pre-configure side-by-side clinic comparison by default using JM Fulltimer
+				int idxJm = _listFeeScheds.FindIndex(x => x.Description.ToLower().Contains("fulltimer"));
+				if(idxJm < 0) {
+					idxJm = _listFeeScheds.FindIndex(x => x.Description.ToLower().Contains("spesialis"));
+				}
+				if(idxJm < 0) {
+					idxJm = 0;
+				}
+				comboFeeSched1.SelectedIndex=idxJm;
+				comboClinic1.ClinicNumSelected=1; // Klaten
+				if(comboFeeSched2.Items.Count > idxJm + 1) {
+					comboFeeSched2.SelectedIndex=idxJm + 1; // item after "None"
+					comboClinic2.Enabled=true;
+					butPickClinic2.Enabled=true;
+					comboClinic2.ClinicNumSelected=2; // Boyolali
+				}
+				if(comboFeeSched3.Items.Count > idxJm + 1) {
+					comboFeeSched3.SelectedIndex=idxJm + 1; // item after "None"
+					comboClinic3.Enabled=true;
+					butPickClinic3.Enabled=true;
+					comboClinic3.ClinicNumSelected=3; // Jogja
+				}
+			}
 			SynchAndFillListFees(false);
 			_needsSynch=false;
 			for(int i=0;i<Enum.GetNames(typeof(ProcCodeListSort)).Length;i++) {
@@ -438,22 +462,25 @@ namespace Helianz {
 
 		private void FillCats() {
 			List<long> listDefNums=new List<long>();
-			for(int i=0;i<listCategories.SelectedIndices.Count;i++) {
-				listDefNums.Add(_defArrayCat[listCategories.SelectedIndices[i]].DefNum);
+			if(_defArrayCat!=null) {
+				for(int i=0;i<listCategories.SelectedIndices.Count;i++) {
+					int idx=listCategories.SelectedIndices[i];
+					if(idx>=0 && idx<_defArrayCat.Length) {
+						listDefNums.Add(_defArrayCat[idx].DefNum);
+					}
+				}
 			}
-			if(checkShowHidden.Checked) {
-				_defArrayCat=Defs.GetDefsForCategory(DefCat.ProcCodeCats).ToArray();
-			}
-			else {
-				_defArrayCat=Defs.GetDefsForCategory(DefCat.ProcCodeCats,true).ToArray();
-			}
+			bool isShort=!checkShowHidden.Checked;
+			_defArrayCat=Defs.GetDefsForCategory(DefCat.ProcCodeCats,isShort).ToArray();
 			listCategories.Items.Clear();
 			for(int i=0;i<_defArrayCat.Length;i++) {
 				listCategories.Items.Add(_defArrayCat[i].ItemName);
-				if(!listDefNums.Contains(_defArrayCat[i].DefNum)) {
-					continue;
+				if(listDefNums.Contains(_defArrayCat[i].DefNum)) {
+					listCategories.SetSelected(i);
 				}
-				listCategories.SetSelected(i);
+			}
+			if(listCategories.SelectedIndices.Count==0) {
+				listCategories.SetAll(true);
 			}
 		}
 
@@ -530,13 +557,40 @@ namespace Helianz {
 			gridMain.BeginUpdate();
 			gridMain.Columns.Clear();
 			//The order of these columns are important for gridMain_CellDoubleClick(), gridMain_CellLeave(), and GridMain_CellEnter()
-			//Auto-fit fee schedule header widths (min 80, max 130)
-			string fee1Hdr=feeSched1?.Description??"Fee 1";
+			//Auto-fit fee schedule header widths (min 80, max 150)
+			string c1Abbr="";
+			if(clinic1Num>0) {
+				string abbr=Clinics.GetAbbr(clinic1Num);
+				if(!string.IsNullOrEmpty(abbr)) {
+					c1Abbr="["+abbr+"] ";
+				}
+			}
+			string c2Abbr="";
+			if(clinic2Num>0) {
+				string abbr=Clinics.GetAbbr(clinic2Num);
+				if(!string.IsNullOrEmpty(abbr)) {
+					c2Abbr="["+abbr+"] ";
+				}
+			}
+			string c3Abbr="";
+			if(clinic3Num>0) {
+				string abbr=Clinics.GetAbbr(clinic3Num);
+				if(!string.IsNullOrEmpty(abbr)) {
+					c3Abbr="["+abbr+"] ";
+				}
+			}
+			string fee1Desc=feeSched1?.Description??"Fee 1";
+			string fee1Hdr=fee1Desc.StartsWith("[") ? fee1Desc : (c1Abbr+fee1Desc);
 			string ps1Hdr=fee1Hdr+" PS";
-			string fee2Hdr=feeSched2?.Description??"Fee 2";
+
+			string fee2Desc=feeSched2?.Description??"Fee 2";
+			string fee2Hdr=fee2Desc.StartsWith("[") ? fee2Desc : (c2Abbr+fee2Desc);
 			string ps2Hdr=fee2Hdr+" PS";
-			string fee3Hdr=feeSched3?.Description??"Fee 3";
+
+			string fee3Desc=feeSched3?.Description??"Fee 3";
+			string fee3Hdr=fee3Desc.StartsWith("[") ? fee3Desc : (c3Abbr+fee3Desc);
 			string ps3Hdr=fee3Hdr+" PS";
+
 			int feeW=80,psW=80;
 			using(Graphics g=Graphics.FromImage(new Bitmap(1,1))) {
 				Font hdrFont=new Font("Tahoma",8,FontStyle.Bold);
@@ -546,8 +600,8 @@ namespace Helianz {
 				psW=Math.Max(psW,(int)g.MeasureString(ps2Hdr,hdrFont).Width+12);
 				feeW=Math.Max(feeW,(int)g.MeasureString(fee3Hdr,hdrFont).Width+12);
 				psW=Math.Max(psW,(int)g.MeasureString(ps3Hdr,hdrFont).Width+12);
-				feeW=Math.Min(feeW,130);
-				psW=Math.Min(psW,130);
+				feeW=Math.Min(feeW,150);
+				psW=Math.Min(psW,150);
 			}
 			GridColumn col=new GridColumn(Lan.g("TableProcedures","Category"),90);
 			gridMain.Columns.Add(col);

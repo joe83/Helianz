@@ -577,7 +577,7 @@ namespace Helianz {
 			for(int i=0;i<_tablePats.Rows.Count;i++) {
 				row=new GridRow();
 				#region New York Mental Health
-				if(PrefC.GetBool(PrefName.OmhNy)) {
+				if(PrefC.GetBool(PrefName.OmhNy) && _tablePats.Columns.Contains("RecallPastDue")) {
 					string description=_tablePats.Rows[i]["RecallPastDue"].ToString();
 					if(description=="ORANGE") {
 						row.ColorText=Color.FromRgb(255,165,0);//Orange

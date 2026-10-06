@@ -3789,6 +3789,8 @@ namespace Helianz {
 		private void PrintQueueTicket(string queueLabel,string patientName,string roomName,string clinicName,string note,string colorOrto) {
 			DateTime now=DateTime.Now;
 			PrintDocument pd=new PrintDocument();
+			pd.DefaultPageSettings.Margins=new Margins(0,0,0,0);
+			pd.OriginAtMargins=false;
 			//Use the configured Queue Ticket printer if set, otherwise fall back to default.
 			Printer printerForSit=Printers.GetForSit(PrintSituation.QueueTicket);
 			if(printerForSit!=null && !string.IsNullOrEmpty(printerForSit.PrinterName)) {
@@ -3799,7 +3801,7 @@ namespace Helianz {
 				using Font fontBody=new Font("Arial",8);
 				using Font fontName=new Font("Arial",11,FontStyle.Bold);
 				using Font fontQueue=new Font("Arial",16,FontStyle.Bold);
-				float pageW=args.PageBounds.Width;
+				float pageW=args.PageBounds.Width > 320 ? 280 : args.PageBounds.Width;
 				float cx=pageW/2;
 				float y=5;
 				StringFormat sfCenter=new StringFormat(){ Alignment=StringAlignment.Center };

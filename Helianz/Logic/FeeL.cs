@@ -105,7 +105,11 @@ namespace Helianz {
 				return false;
 			}
 			//Make sure the user has permission to edit the clinic of the fee schedule being edited.
-			if(!Security.CurUser.ClinicIsRestricted || clinicNum==Clinics.ClinicNum) {
+			if(!Security.CurUser.ClinicIsRestricted 
+				|| clinicNum==Clinics.ClinicNum 
+				|| (Security.CurUser!=null && UserClinics.GetForUser(Security.CurUser.UserNum).Any(x => x.ClinicNum==clinicNum))
+				|| Security.IsAuthorized(EnumPermType.FeeSchedEdit,true)) 
+			{
 				return true;
 			}
 			if(clinicNum==0 && feeSched!=null && feeSched.IsGlobal) {
