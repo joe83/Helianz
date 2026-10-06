@@ -27,6 +27,7 @@ Usage Examples:
 """
 
 import os
+import re
 import sys
 import math
 import time
@@ -35,6 +36,7 @@ import getpass
 import argparse
 import subprocess
 from datetime import datetime
+from collections import defaultdict
 
 if sys.platform == "win32":
     try:
@@ -449,7 +451,7 @@ def parse_clinic_definitions(sources_arg, clinics_arg, klt_db=None, byl_db=None,
         for i, db in enumerate(src_dbs, start=1):
             # Try to derive nice default name from database name
             name_guess = db.replace("helianz_", "").replace("cdental_", "").replace("_", " ").title()
-            abbr_guess = "".join(w[:3].upper() for w in name_guess.split()) + str(i)
+            abbr_guess = "".join(w[:3].upper() for w in name_guess.split())
             clinics.append({
                 "ClinicNum": i,
                 "db": db,
@@ -616,12 +618,48 @@ def ensure_clinic_admin_users(conn, target_db, clinics):
             )
         """, (user_num, clinic_num, clinic_num, clinic_num))
 
-    # Also ensure the general 'Admin' has email 'admin@dsmile.id'
-    cursor.execute(f"UPDATE `{target_db}`.userod SET Email = 'admin@dsmile.id' WHERE LOWER(UserName) = 'admin' AND (Email = '' OR Email IS NULL)")
+    # Also ensure the general 'Admin' and 'Owner' are unrestricted global admins with access to all clinics
+    cursor.execute(f"""
+        UPDATE `{target_db}`.userod 
+        SET ClinicIsRestricted = 0, ClinicNum = 1, UserGroupNum = 1, Email = 'admin@dsmile.id' 
+        WHERE LOWER(UserName) = 'admin'
+    """)
+    cursor.execute(f"""
+        UPDATE `{target_db}`.userod 
+        SET ClinicIsRestricted = 0, ClinicNum = 1, UserGroupNum = 1 
+        WHERE LOWER(UserName) = 'owner'
+    """)
+    cursor.execute(f"""
+        UPDATE `{target_db}`.userod 
+        SET ClinicIsRestricted = 0, ClinicNum = 1, UserGroupNum = 1 
+        WHERE LOWER(UserName) = 'endru'
+    """)
+    cursor.execute(f"SELECT UserNum, UserName FROM `{target_db}`.userod WHERE LOWER(UserName) IN ('admin', 'owner', 'endru')")
+    global_admins = cursor.fetchall()
+    for gadmin in global_admins:
+        guid = gadmin['UserNum']
+        for c in clinics:
+            cnum = c.get('ClinicNum') or c.get('clinic_num')
+            cursor.execute(f"SELECT 1 FROM `{target_db}`.userclinic WHERE UserNum = %s AND ClinicNum = %s", (guid, cnum))
+            if not cursor.fetchone():
+                cursor.execute(f"INSERT INTO `{target_db}`.userclinic (UserNum, ClinicNum) VALUES (%s, %s)", (guid, cnum))
+        cursor.execute(f"SELECT 1 FROM `{target_db}`.usergroupattach WHERE UserNum = %s AND UserGroupNum = 1", (guid,))
+        if not cursor.fetchone():
+            cursor.execute(f"INSERT INTO `{target_db}`.usergroupattach (UserNum, UserGroupNum) VALUES (%s, 1)", (guid,))
+
+    # Deduplicate grouppermission
+    cursor.execute(f"""
+        DELETE gp1 FROM `{target_db}`.grouppermission gp1
+        INNER JOIN `{target_db}`.grouppermission gp2 
+        WHERE gp1.UserGroupNum = gp2.UserGroupNum 
+          AND gp1.PermType = gp2.PermType 
+          AND gp1.FKey = gp2.FKey 
+          AND gp1.GroupPermNum > gp2.GroupPermNum
+    """)
 
     conn.commit()
     cursor.close()
-    print("  [OK] Dedicated clinic admin users generated with full clinic permissions & strict isolation.")
+    print("  [OK] Dedicated clinic admin users and global admins configured with full permissions.")
 
 
 def apply_post_merge_fixes(conn, target_db, clinics):
@@ -648,6 +686,13 @@ def apply_post_merge_fixes(conn, target_db, clinics):
     if cursor.rowcount > 0:
         print(f"  [FIX] Fixed computerpref ApptViewNum=0 for {cursor.rowcount} computers")
 
+    # Ensure Patient Select auto-populates on open across all computers
+    cursor.execute(f"UPDATE `{target_db}`.`computerpref` SET PatSelectSearchMode = 2")
+    cursor.execute(f"UPDATE `{target_db}`.`preference` SET ValueString = '1' WHERE PrefName = 'PatientSelectSearchWithEmptyParams'")
+    cursor.execute(f"UPDATE `{target_db}`.`preference` SET ValueString = '0' WHERE PrefName = 'PatientSelectUsesSearchButton'")
+    cursor.execute(f"UPDATE `{target_db}`.`preference` SET ValueString = '1' WHERE PrefName = 'EnterpriseAllowRefreshWhileTyping'")
+    print(f"  [FIX] Configured patient search preferences (auto-refresh & instant first 40 load)")
+
     # 2. Dynamic User merge & deduplication
     try:
         from merge_duplicate_users import merge_duplicate_users
@@ -662,12 +707,18 @@ def apply_post_merge_fixes(conn, target_db, clinics):
     # Users preserve their natural originating clinics.
     # If a user existed in multiple clinics (e.g. Admin in Boyolali + Jogja), merge_duplicate_users
     # combined their userclinic entries so they have access to those specific clinics.
-    # Set ClinicIsRestricted = 1 for all users as requested.
+    # Set ClinicIsRestricted = 1 for all regular clinic users, and 0 for global admins (Admin, Owner, endru)
     cursor.execute(f"""
         UPDATE `{target_db}`.`userod`
         SET ClinicIsRestricted = 1
+        WHERE LOWER(UserName) NOT IN ('admin', 'owner', 'endru')
     """)
-    print(f"  [FIX] Set ClinicIsRestricted = 1 for all users ({cursor.rowcount} users restricted to their clinics)")
+    cursor.execute(f"""
+        UPDATE `{target_db}`.`userod`
+        SET ClinicIsRestricted = 0, ClinicNum = 1, UserGroupNum = 1
+        WHERE LOWER(UserName) IN ('admin', 'owner', 'endru')
+    """)
+    print(f"  [FIX] Set ClinicIsRestricted = 1 for clinic users, ClinicIsRestricted = 0 for super-admin / owner / endru")
 
     # Ensure any user without a userclinic row gets their default ClinicNum
     cursor.execute(f"""
@@ -676,11 +727,33 @@ def apply_post_merge_fixes(conn, target_db, clinics):
         WHERE ClinicNum > 0 AND UserNum NOT IN (SELECT DISTINCT UserNum FROM `{target_db}`.`userclinic`)
     """)
 
+    # Ensure global admins (Admin, Owner, endru) have access to ALL clinics
+    cursor.execute(f"SELECT UserNum FROM `{target_db}`.`userod` WHERE LOWER(UserName) IN ('admin', 'owner', 'endru')")
+    g_admin_rows = cursor.fetchall()
+    for g_row in g_admin_rows:
+        g_uid = g_row['UserNum'] if isinstance(g_row, dict) else g_row[0]
+        for c in clinics:
+            cnum = c.get('ClinicNum') or c.get('clinic_num')
+            cursor.execute(f"""
+                INSERT IGNORE INTO `{target_db}`.`userclinic` (UserNum, ClinicNum)
+                VALUES (%s, %s)
+            """, (g_uid, cnum))
+
     # Deduplicate userclinic
     cursor.execute(f"""
         DELETE uc1 FROM `{target_db}`.`userclinic` uc1
         INNER JOIN `{target_db}`.`userclinic` uc2
         WHERE uc1.UserNum = uc2.UserNum AND uc1.ClinicNum = uc2.ClinicNum AND uc1.UserClinicNum > uc2.UserClinicNum
+    """)
+
+    # Deduplicate grouppermission
+    cursor.execute(f"""
+        DELETE gp1 FROM `{target_db}`.`grouppermission` gp1
+        INNER JOIN `{target_db}`.`grouppermission` gp2 
+        WHERE gp1.UserGroupNum = gp2.UserGroupNum 
+          AND gp1.PermType = gp2.PermType 
+          AND gp1.FKey = gp2.FKey 
+          AND gp1.GroupPermNum > gp2.GroupPermNum
     """)
 
     # Ensure userod.ClinicNum is valid (matches one of their allowed clinics in userclinic)
@@ -746,7 +819,7 @@ def apply_post_merge_fixes(conn, target_db, clinics):
     cursor.execute(f"""
         UPDATE `{target_db}`.`preference` 
         SET ValueString = '0' 
-        WHERE PrefName IN ('EasyNoClinics', 'ClinicListIsAlphabetical')
+        WHERE PrefName IN ('EasyNoClinics', 'ClinicListIsAlphabetical', 'ProcCodeListShowHidden')
     """)
 
     # 7. Synchronize patient.ImageFolder to match PatNum for hybrid media resolution
@@ -758,9 +831,643 @@ def apply_post_merge_fixes(conn, target_db, clinics):
     if cursor.rowcount > 0:
         print(f"  [FIX] Synchronized {cursor.rowcount} patient ImageFolder records to match offset PatNum")
 
+    # 8. Harmonize & Deduplicate Procedure Codes (remapping duplicate CodeNums across proclog/fees & quarantining obsolete codes)
+    harmonize_and_deduplicate_procedures(conn, target_db, clinics)
+
+    # 9. Generate Per-Clinic Procedure & Category Catalogs (clinic_def & clinic_procedurecode)
+    generate_clinic_procedure_catalogs(conn, target_db, clinics)
+
+    # 10. Consolidate Unified Fee Schedules (FeeSched 53, 56, 57, 58)
+    consolidate_unified_fees(conn, target_db)
+
+    # 11. Seed ClinicNum = 0 Baseline Fees for all clinic fee schedules
+    seed_baseline_fees(conn, target_db)
+
     conn.commit()
     cursor.close()
-    print("  [OK] Post-merge apptview, user clinic permissions, and preferences configured.")
+    print("  [OK] Post-merge apptview, user clinic permissions, preferences, and clinic catalogs configured.")
+
+
+CANONICAL_PROC_CATS = [
+    (73, 0, 'EXAM', 0),
+    (74, 1, 'CLEAN', 0),
+    (75, 2, 'CONS', 0),
+    (76, 3, 'ENDO', 0),
+    (77, 4, 'PERIO', 0),
+    (78, 5, 'PROST', 0),
+    (79, 6, 'COSME', 0),
+    (80, 7, 'IMPLANT', 0),
+    (82, 8, 'OS', 0),
+    (83, 9, 'ORTHO', 0),
+    (259, 10, 'PEDO', 0),
+    (981, 11, 'OBAT', 1),
+    (114, 12, 'HIDDEN', 1),
+    (273, 13, 'HARGA LAMA', 1),
+]
+
+
+def get_norm_proc_key(pcode, desc):
+    clean = re.sub(r'[\s_]+', '', pcode or '').upper()
+    if clean == 'OS' and 'hect' in (desc or '').lower():
+        return 'OS_HECT'
+    if clean == 'PROM2' and 'behel' in (desc or '').lower():
+        return 'PROM2_BEHEL'
+    if clean == 'EX1' and 'extract' in (desc or '').lower():
+        return 'EX1_EXTRACT'
+    return clean
+
+
+def to_canonical_proc_code(pcode, desc):
+    clean = (pcode or '').strip()
+    if clean.upper() == 'OS' and 'hect' in (desc or '').lower():
+        return 'OS (Hecting)'
+    if re.sub(r'[\s_]+', '', clean).upper() == 'PROM2' and 'behel' in (desc or '').lower():
+        return 'PROM2 (Behel)'
+    m = re.match(r'^([A-Za-z]+)\s*(\d+)$', clean)
+    if m:
+        return f"{m.group(1).upper()}{m.group(2)}"
+    return re.sub(r'\s+', ' ', clean).upper()
+
+
+CAT_CLEAN_MAP = {
+    'EXAMS & XRAYS': 73, 'EXAM': 73, 'EXAMS': 73,
+    'CLEANINGS': 74, 'CLEAN': 74, 'CLEANING': 74,
+    'CONSERVATION': 75, 'CONS': 75, 'FILLINGS': 75, 'KONSERVASI': 75,
+    'ENDO': 76, 'ENDODONTIC': 76,
+    'PERIO': 77, 'PERIODONTIC': 77, 'KURETASE': 77,
+    'DENTURES': 78, 'PROST': 78, 'PROSTHO': 78, 'CROWN & BRIDGE': 78,
+    'COSMETIC': 79, 'COSME': 79,
+    'IMPLANTS': 80, 'IMPLANT': 80,
+    'ORAL SURGERY': 82, 'OS': 82, 'BEDAH MULUT': 82,
+    'ORTHO': 83, 'ORTHODONTIC': 83,
+    'PEDO': 259, 'PEDODONTIC': 259
+}
+
+
+def map_category_to_canonical(name):
+    if not name:
+        return 114
+    n = name.strip().lower()
+    if 'exam' in n or 'xray' in n:
+        return 73
+    if 'clean' in n:
+        return 74
+    if 'cons' in n or 'fill' in n or 'konservasi' in n:
+        return 75
+    if 'endo' in n:
+        return 76
+    if 'perio' in n or 'kuretase' in n:
+        return 77
+    if 'prost' in n or 'denture' in n or 'crown' in n or 'bridge' in n:
+        return 78
+    if 'cosme' in n:
+        return 79
+    if 'implant' in n:
+        return 80
+    if n in ('os', 'oral surgery', 'bedah mulut') or 'bedah' in n:
+        return 82
+    if 'ortho' in n:
+        return 83
+    if 'pedo' in n:
+        return 259
+    if 'obat' in n:
+        return 981
+    return 114
+
+
+def harmonize_and_deduplicate_procedures(conn, target_db, clinics):
+    """
+    Harmonizes procedure codes across clinics:
+      1. Identifies active procedure codes from source clinics (non-hidden, non-obat).
+      2. Normalizes codes (e.g. 'KN 1' -> 'KN1', 'EX 2' -> 'EX2', 'OR 1' -> 'OR1').
+      3. Preserves clinical distinctions ('OS' vs 'OS (Hecting)', 'PROM2' vs 'PROM2 (Behel)').
+      4. Quarantines obsolete/hidden codes into DefNum 273 (HARGA LAMA, IsHidden = 1).
+      5. Deduplicates active procedures:
+         - Maps duplicate CodeNums to canonical CodeNum (preferring base clinic / lowest ID).
+         - Remaps foreign keys in procedurelog, fee, procbuttonitem, proccodenote, recalltrigger, etc.
+         - Merges and deduplicates clinic-specific fee records under canonical CodeNum.
+         - Safely removes redundant procedurecode duplicate rows.
+    """
+    print("  [PROCEDURECODE] Harmonizing and deduplicating procedure catalog...")
+    cursor = conn.cursor(dictionary=True, buffered=True)
+
+    # 1. Collect active keys from source clinics
+    active_keys = set()
+    clinic_active_info = {}
+    for c in clinics:
+        c_db = c.get("db")
+        if not c_db:
+            continue
+        try:
+            c_cur = conn.cursor(dictionary=True, buffered=True)
+            c_cur.execute(f"""
+                SELECT p.ProcCode, p.Descript, d.ItemName
+                FROM `{c_db}`.procedurecode p
+                JOIN `{c_db}`.definition d ON p.ProcCat = d.DefNum
+                WHERE d.Category = 11 AND d.IsHidden = 0 AND LOWER(d.ItemName) NOT LIKE '%obat%'
+            """)
+            for r in c_cur.fetchall():
+                norm_k = re.sub(r'[\s_]+', '', r['ProcCode'] or '').upper()
+                active_keys.add(norm_k)
+                if norm_k not in clinic_active_info:
+                    clinic_active_info[norm_k] = r
+            c_cur.close()
+        except Exception as e:
+            debug_log(f"Notice getting active procs from {c_db}: {e}")
+
+    # Fallback to target_db if source DBs unavailable
+    if not active_keys:
+        c_cur = conn.cursor(dictionary=True, buffered=True)
+        c_cur.execute(f"""
+            SELECT p.ProcCode, p.Descript, d.ItemName
+            FROM `{target_db}`.procedurecode p
+            JOIN `{target_db}`.definition d ON p.ProcCat = d.DefNum
+            WHERE d.Category = 11 AND d.IsHidden = 0 AND LOWER(d.ItemName) NOT LIKE '%obat%'
+        """)
+        for r in c_cur.fetchall():
+            norm_k = re.sub(r'[\s_]+', '', r['ProcCode'] or '').upper()
+            active_keys.add(norm_k)
+            if norm_k not in clinic_active_info:
+                clinic_active_info[norm_k] = r
+        c_cur.close()
+
+    # 2. Fetch all procedures in target_db
+    cursor.execute(f"SELECT * FROM `{target_db}`.procedurecode")
+    all_target_procs = cursor.fetchall()
+
+    act_groups = defaultdict(list)
+    obs_ids = []
+
+    for r in all_target_procs:
+        k = get_norm_proc_key(r['ProcCode'], r['Descript'])
+        if k in active_keys or k in ('OS_HECT', 'PROM2_BEHEL'):
+            act_groups[k].append(r)
+        else:
+            obs_ids.append(r['CodeNum'])
+
+    # 3. Quarantine obsolete procedure codes to HARGA LAMA (273)
+    if obs_ids:
+        obs_str = ','.join(str(i) for i in obs_ids)
+        cursor.execute(f"""
+            UPDATE `{target_db}`.procedurecode 
+            SET ProcCat = 273 
+            WHERE CodeNum IN ({obs_str})
+        """)
+        print(f"    Quarantined {len(obs_ids)} obsolete procedure codes to HARGA LAMA (DefNum 273)")
+
+    CODE_NUM_CHILD_TABLES = [
+        ("procedurelog", "CodeNum"),
+        ("procbuttonitem", "CodeNum"),
+        ("proccodenote", "CodeNum"),
+        ("recalltrigger", "CodeNum"),
+        ("autocodeitem", "CodeNum"),
+        ("benefit", "CodeNum"),
+        ("substitutionlink", "CodeNum"),
+        ("toothgridcol", "CodeNum"),
+        ("toothgriddef", "CodeNum"),
+        ("resellerservice", "CodeNum"),
+    ]
+
+    total_remapped_proclogs = 0
+    total_deleted_dups = 0
+
+    # 4. Harmonize and deduplicate active groups
+    for k, records in act_groups.items():
+        rec_sorted = sorted(records, key=lambda x: x['CodeNum'])
+        canonical_rec = rec_sorted[0]
+        c_id = canonical_rec['CodeNum']
+
+        descs = [(r['Descript'] or '').strip() for r in records if (r['Descript'] or '').strip()]
+        clean_desc = max(descs, key=len) if descs else (canonical_rec['Descript'] or '')
+        clean_code = to_canonical_proc_code(canonical_rec['ProcCode'], clean_desc)
+
+        # Pick the record that provided clean_desc to also preserve its TreatArea, PaintType, and AbbrDesc
+        best_rec = next((r for r in records if (r['Descript'] or '').strip() == clean_desc), canonical_rec)
+        clean_treat_area = best_rec.get('TreatArea', canonical_rec.get('TreatArea', 0))
+        clean_paint_type = best_rec.get('PaintType', canonical_rec.get('PaintType', 0))
+        clean_abbr = best_rec.get('AbbrDesc') or canonical_rec.get('AbbrDesc') or ''
+
+        source_entry = clinic_active_info.get(k)
+        src_cat_name = source_entry['ItemName'] if source_entry else ''
+        clean_cat = CAT_CLEAN_MAP.get(src_cat_name.upper(), map_category_to_canonical(src_cat_name))
+        if k == 'OS_HECT':
+            clean_cat = 82
+        elif k == 'PROM2_BEHEL':
+            clean_cat = 83
+
+        cursor.execute(f"""
+            UPDATE `{target_db}`.procedurecode 
+            SET ProcCode = %s, Descript = %s, ProcCat = %s, TreatArea = %s, PaintType = %s, AbbrDesc = %s
+            WHERE CodeNum = %s
+        """, (clean_code, clean_desc, clean_cat, clean_treat_area, clean_paint_type, clean_abbr, c_id))
+
+        dups = rec_sorted[1:]
+        if dups:
+            dup_ids = [d['CodeNum'] for d in dups]
+            dup_str = ','.join(str(i) for i in dup_ids)
+
+            # A) Remap child tables
+            for tbl, col in CODE_NUM_CHILD_TABLES:
+                cursor.execute(f"SHOW TABLES FROM `{target_db}` LIKE '{tbl}'")
+                if cursor.fetchone():
+                    cursor.execute(f"""
+                        UPDATE `{target_db}`.`{tbl}` 
+                        SET `{col}` = %s 
+                        WHERE `{col}` IN ({dup_str})
+                    """, (c_id,))
+                    if tbl == 'procedurelog' and cursor.rowcount > 0:
+                        total_remapped_proclogs += cursor.rowcount
+
+            # B) Remap fee table
+            for dup_id in dup_ids:
+                cursor.execute(f"""
+                    SELECT FeeNum, FeeSched, ClinicNum, ProvNum, Amount, ProviderShare, Bahan, Alat
+                    FROM `{target_db}`.fee 
+                    WHERE CodeNum = %s
+                """, (dup_id,))
+                dup_fees = cursor.fetchall()
+
+                for df in dup_fees:
+                    fs = df['FeeSched']
+                    cl = df['ClinicNum']
+                    prov = df['ProvNum']
+
+                    cursor.execute(f"""
+                        SELECT FeeNum, Amount, ProviderShare 
+                        FROM `{target_db}`.fee 
+                        WHERE CodeNum = %s AND FeeSched = %s AND ClinicNum = %s AND ProvNum = %s
+                    """, (c_id, fs, cl, prov))
+                    existing = cursor.fetchone()
+
+                    if existing:
+                        if (df['ProviderShare'] or 0) > (existing['ProviderShare'] or 0) or ((df['Amount'] or 0) > 0 and (existing['Amount'] or 0) == 0):
+                            cursor.execute(f"""
+                                UPDATE `{target_db}`.fee 
+                                SET Amount = %s, ProviderShare = %s, Bahan = %s, Alat = %s 
+                                WHERE FeeNum = %s
+                            """, (df['Amount'], df['ProviderShare'], df['Bahan'], df['Alat'], existing['FeeNum']))
+                        cursor.execute(f"DELETE FROM `{target_db}`.fee WHERE FeeNum = %s", (df['FeeNum'],))
+                    else:
+                        cursor.execute(f"UPDATE `{target_db}`.fee SET CodeNum = %s WHERE FeeNum = %s", (c_id, df['FeeNum']))
+
+            # C) Delete duplicate procedurecode rows
+            cursor.execute(f"DELETE FROM `{target_db}`.procedurecode WHERE CodeNum IN ({dup_str})")
+            total_deleted_dups += len(dup_ids)
+
+    conn.commit()
+    cursor.close()
+    print(f"    [OK] Harmonized {len(act_groups)} active procedure codes ({total_deleted_dups} duplicate rows deleted, {total_remapped_proclogs:,} proclogs remapped).")
+
+
+def generate_clinic_procedure_catalogs(conn, target_db, clinics):
+    """
+    Creates and populates `clinic_def` and `clinic_procedurecode` in `target_db`.
+    Harmonizes procedure categories to canonical categories (EXAM, CLEAN, CONS, ENDO,
+    PERIO, PROST, COSME, IMPLANT, OS, ORTHO, PEDO, OBAT, HARGA LAMA) across all clinics.
+    Populates clinic_procedurecode strictly with active procedures.
+    """
+    cursor = conn.cursor(dictionary=True, buffered=True)
+    print("  [CATALOG] Generating harmonized per-clinic procedure and category catalogs...")
+
+    # 1. Create clinic_def table
+    cursor.execute(f"""
+        CREATE TABLE IF NOT EXISTS `{target_db}`.`clinic_def` (
+            ClinicNum BIGINT NOT NULL,
+            DefNum BIGINT NOT NULL,
+            Category INT NOT NULL,
+            ItemOrder INT NOT NULL,
+            ItemName VARCHAR(255) NOT NULL,
+            ItemValue VARCHAR(255) DEFAULT '',
+            ItemColor INT DEFAULT 0,
+            IsHidden TINYINT DEFAULT 0,
+            PRIMARY KEY (ClinicNum, DefNum),
+            KEY (ClinicNum, ItemOrder)
+        )
+    """)
+
+    # 2. Create clinic_procedurecode table
+    cursor.execute(f"DROP TABLE IF EXISTS `{target_db}`.`clinic_procedurecode`")
+    cursor.execute(f"""
+        CREATE TABLE `{target_db}`.`clinic_procedurecode` (
+          ClinicNum bigint(20) NOT NULL,
+          CodeNum bigint(20) NOT NULL,
+          ProcCode varchar(15) NOT NULL,
+          Descript varchar(255) DEFAULT NULL,
+          AbbrDesc varchar(50) DEFAULT NULL,
+          ProcTime varchar(24) DEFAULT NULL,
+          ProcCat bigint(20) NOT NULL,
+          TreatArea tinyint(3) unsigned NOT NULL DEFAULT 0,
+          NoBillIns tinyint(1) unsigned NOT NULL DEFAULT 0,
+          IsProsth tinyint(1) unsigned NOT NULL DEFAULT 0,
+          DefaultNote text DEFAULT NULL,
+          IsHygiene tinyint(1) unsigned NOT NULL DEFAULT 0,
+          GTypeNum smallint(5) unsigned NOT NULL DEFAULT 0,
+          AlternateCode1 varchar(15) DEFAULT NULL,
+          MedicalCode varchar(15) DEFAULT NULL,
+          IsTaxed tinyint(3) unsigned NOT NULL DEFAULT 0,
+          PaintType tinyint(4) NOT NULL DEFAULT 0,
+          GraphicColor int(11) NOT NULL,
+          LaymanTerm varchar(255) DEFAULT NULL,
+          IsCanadianLab tinyint(3) unsigned NOT NULL,
+          PreExisting tinyint(1) NOT NULL DEFAULT 0,
+          BaseUnits int(11) NOT NULL,
+          SubstitutionCode varchar(25) DEFAULT NULL,
+          SubstOnlyIf int(11) NOT NULL,
+          DateTStamp timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+          IsMultiVisit tinyint(4) NOT NULL,
+          DrugNDC varchar(255) NOT NULL,
+          RevenueCodeDefault varchar(255) NOT NULL,
+          ProvNumDefault bigint(20) NOT NULL,
+          CanadaTimeUnits double NOT NULL,
+          IsRadiology tinyint(4) NOT NULL,
+          DefaultClaimNote text NOT NULL,
+          DefaultTPNote text NOT NULL,
+          BypassGlobalLock tinyint(4) NOT NULL,
+          TaxCode varchar(16) NOT NULL,
+          PaintText varchar(255) NOT NULL,
+          AreaAlsoToothRange tinyint(4) NOT NULL,
+          DiagnosticCodes varchar(255) NOT NULL,
+          PRIMARY KEY (ClinicNum, CodeNum),
+          KEY (ClinicNum, ProcCat),
+          KEY (ClinicNum, ProcCode)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci
+    """)
+
+    cursor.execute(f"TRUNCATE TABLE `{target_db}`.`clinic_def`")
+    cursor.execute(f"TRUNCATE TABLE `{target_db}`.`clinic_procedurecode`")
+
+    # 3. Create clinic_feesched table
+    cursor.execute(f"""
+        CREATE TABLE IF NOT EXISTS `{target_db}`.`clinic_feesched` (
+            ClinicNum BIGINT NOT NULL,
+            FeeSchedNum BIGINT NOT NULL,
+            PRIMARY KEY (ClinicNum, FeeSchedNum),
+            KEY (ClinicNum)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+    """)
+    cursor.execute(f"TRUNCATE TABLE `{target_db}`.`clinic_feesched`")
+
+    # 4. Seed Canonical Definitions into target_db.definition
+    for def_num, item_order, item_name, is_hidden in CANONICAL_PROC_CATS:
+        cursor.execute(f"""
+            INSERT INTO `{target_db}`.`definition`
+                (DefNum, Category, ItemOrder, ItemName, ItemValue, ItemColor, IsHidden)
+            VALUES (%s, 11, %s, %s, '', 0, %s)
+            ON DUPLICATE KEY UPDATE ItemOrder=VALUES(ItemOrder), ItemName=VALUES(ItemName), IsHidden=VALUES(IsHidden)
+        """, (def_num, item_order, item_name, is_hidden))
+
+    # Hide all other Category 11 definitions in target_db
+    canonical_visible_ids = [c[0] for c in CANONICAL_PROC_CATS if c[3] == 0]
+    id_list_str = ','.join(str(i) for i in canonical_visible_ids)
+    cursor.execute(f"""
+        UPDATE `{target_db}`.`definition`
+        SET IsHidden = 1
+        WHERE Category = 11 AND DefNum NOT IN ({id_list_str})
+    """)
+
+    # 5. Query strictly active procedure codes from target_db
+    cursor.execute(f"""
+        SELECT * FROM `{target_db}`.`procedurecode` 
+        WHERE ProcCat NOT IN (114, 273, 981)
+        ORDER BY ProcCat, ProcCode
+    """)
+    active_procs = cursor.fetchall()
+
+    # 6. Populate each clinic with canonical categories and active procedure codes
+    for c in clinics:
+        c_num = c["ClinicNum"]
+        c_desc = c.get('Description', f'Clinic {c_num}')
+
+        # Populate clinic_def with identical canonical categories
+        for def_num, item_order, item_name, is_hidden in CANONICAL_PROC_CATS:
+            cursor.execute(f"""
+                INSERT INTO `{target_db}`.`clinic_def`
+                    (ClinicNum, DefNum, Category, ItemOrder, ItemName, ItemValue, ItemColor, IsHidden)
+                VALUES (%s, %s, 11, %s, %s, '', 0, %s)
+            """, (c_num, def_num, item_order, item_name, is_hidden))
+
+        # Populate clinic_procedurecode strictly with active procedures
+        inserted_count = 0
+        for p in active_procs:
+            p_copy = dict(p)
+            cols = list(p_copy.keys())
+            col_str = '`, `'.join(['ClinicNum'] + cols)
+            vals = [c_num] + [p_copy[k] for k in cols]
+            placeholders = ', '.join(['%s'] * len(vals))
+            cursor.execute(f"INSERT INTO `{target_db}`.`clinic_procedurecode` (`{col_str}`) VALUES ({placeholders})", vals)
+            inserted_count += 1
+
+        print(f"    Clinic {c_num} ({c_desc}): {len(CANONICAL_PROC_CATS)} categories, {inserted_count} procedure codes.")
+
+    conn.commit()
+    cursor.close()
+    print("  [OK] Generated harmonized clinic catalogs.")
+
+
+def consolidate_unified_fees(conn, target_db):
+    """
+    Consolidates clinic-specific fee schedules into unified JM FeeSched IDs across all clinics:
+      - FeeSched 56: JM Spesialis (Visible)
+      - FeeSched 57: JM Fulltimer (Visible)
+      - FeeSched 58: JM Partimer (Visible)
+      - FeeSched 53: Office Fees (Hidden, legacy default)
+    All active procedure codes from older schedules (Full Timer, Fulltime, etc.) are merged
+    into the active JM fee schedules. Provider FeeSched references are also remapped to 56, 57, 58.
+    """
+    cursor = conn.cursor()
+    print("  [FEE] Consolidating unified JM fee schedules (FeeSched 56, 57, 58)...")
+
+    # 1. Remap provider FeeSched to canonical JM schedules
+    cursor.execute(f"UPDATE `{target_db}`.`provider` SET FeeSched = 56 WHERE FeeSched IN (2000057, 2000054, 3000060, 3000055)")
+    cursor.execute(f"UPDATE `{target_db}`.`provider` SET FeeSched = 57 WHERE FeeSched IN (2000055, 2000053, 3000058, 3000054, 3000056, 3000057)")
+    cursor.execute(f"UPDATE `{target_db}`.`provider` SET FeeSched = 58 WHERE FeeSched IN (2000056, 3000059)")
+    cursor.execute(f"UPDATE `{target_db}`.`patient` SET FeeSched = 56 WHERE FeeSched IN (2000057, 2000054, 3000060, 3000055)")
+    cursor.execute(f"UPDATE `{target_db}`.`patient` SET FeeSched = 57 WHERE FeeSched IN (2000055, 2000053, 3000058, 3000054, 3000056, 3000057)")
+    cursor.execute(f"UPDATE `{target_db}`.`patient` SET FeeSched = 58 WHERE FeeSched IN (2000056, 3000059)")
+
+    # 2. Update primary JM fees in `fee` table
+    # Clinic 2 (Boyolali)
+    cursor.execute(f"UPDATE `{target_db}`.`fee` SET FeeSched = 56 WHERE FeeSched = 2000057 AND ClinicNum = 2")
+    cursor.execute(f"UPDATE `{target_db}`.`fee` SET FeeSched = 57 WHERE FeeSched = 2000055 AND ClinicNum = 2")
+    cursor.execute(f"UPDATE `{target_db}`.`fee` SET FeeSched = 58 WHERE FeeSched = 2000056 AND ClinicNum = 2")
+
+    # Clinic 3 (Jogja)
+    cursor.execute(f"UPDATE `{target_db}`.`fee` SET FeeSched = 56 WHERE FeeSched = 3000060 AND ClinicNum = 3")
+    cursor.execute(f"UPDATE `{target_db}`.`fee` SET FeeSched = 57 WHERE FeeSched = 3000058 AND ClinicNum = 3")
+    cursor.execute(f"UPDATE `{target_db}`.`fee` SET FeeSched = 58 WHERE FeeSched = 3000059 AND ClinicNum = 3")
+
+    # 3. Merge legacy Fulltime / Fulltimer fees into JM Fulltimer (57), JM Partimer (58), JM Spesialis (56)
+    # Clinic 2: Merge 2000053 (Fulltime)
+    cursor.execute(f"""
+        INSERT INTO `{target_db}`.`fee` (Amount, FeeSched, CodeNum, ClinicNum, ProvNum, ProviderShare, Bahan, Alat)
+        SELECT f.Amount, 57, f.CodeNum, 2, f.ProvNum, f.ProviderShare, f.Bahan, f.Alat
+        FROM `{target_db}`.`fee` f
+        WHERE f.ClinicNum = 2 AND f.FeeSched = 2000053 AND f.Amount > 0
+        AND f.CodeNum NOT IN (
+            SELECT f57.CodeNum FROM (SELECT CodeNum FROM `{target_db}`.`fee` WHERE ClinicNum = 2 AND FeeSched = 57) f57
+        )
+        ON DUPLICATE KEY UPDATE Amount = VALUES(Amount)
+    """)
+    cursor.execute(f"""
+        INSERT INTO `{target_db}`.`fee` (Amount, FeeSched, CodeNum, ClinicNum, ProvNum, ProviderShare, Bahan, Alat)
+        SELECT f.Amount, 58, f.CodeNum, 2, f.ProvNum, 
+               CASE WHEN f.ProviderShare > 0 THEN f.ProviderShare * 1.33 ELSE 0 END, 
+               f.Bahan, f.Alat
+        FROM `{target_db}`.`fee` f
+        WHERE f.ClinicNum = 2 AND f.FeeSched = 57 AND f.Amount > 0
+        AND f.CodeNum NOT IN (
+            SELECT f58.CodeNum FROM (SELECT CodeNum FROM `{target_db}`.`fee` WHERE ClinicNum = 2 AND FeeSched = 58) f58
+        )
+        ON DUPLICATE KEY UPDATE Amount = VALUES(Amount)
+    """)
+    cursor.execute(f"""
+        INSERT INTO `{target_db}`.`fee` (Amount, FeeSched, CodeNum, ClinicNum, ProvNum, ProviderShare, Bahan, Alat)
+        SELECT f.Amount, 56, f.CodeNum, 2, f.ProvNum, f.ProviderShare, f.Bahan, f.Alat
+        FROM `{target_db}`.`fee` f
+        WHERE f.ClinicNum = 2 AND f.FeeSched = 57 AND f.Amount > 0
+        AND f.CodeNum NOT IN (
+            SELECT f56.CodeNum FROM (SELECT CodeNum FROM `{target_db}`.`fee` WHERE ClinicNum = 2 AND FeeSched = 56) f56
+        )
+        ON DUPLICATE KEY UPDATE Amount = VALUES(Amount)
+    """)
+
+    # Clinic 3: Merge 3000054 (Fulltimer) and 3000053
+    cursor.execute(f"""
+        INSERT INTO `{target_db}`.`fee` (Amount, FeeSched, CodeNum, ClinicNum, ProvNum, ProviderShare, Bahan, Alat)
+        SELECT f.Amount, 57, f.CodeNum, 3, f.ProvNum, f.ProviderShare, f.Bahan, f.Alat
+        FROM `{target_db}`.`fee` f
+        WHERE f.ClinicNum = 3 AND f.FeeSched IN (3000053, 3000054) AND f.Amount > 0
+        AND f.CodeNum NOT IN (
+            SELECT f57.CodeNum FROM (SELECT CodeNum FROM `{target_db}`.`fee` WHERE ClinicNum = 3 AND FeeSched = 57) f57
+        )
+        ON DUPLICATE KEY UPDATE Amount = VALUES(Amount)
+    """)
+    cursor.execute(f"""
+        INSERT INTO `{target_db}`.`fee` (Amount, FeeSched, CodeNum, ClinicNum, ProvNum, ProviderShare, Bahan, Alat)
+        SELECT f.Amount, 58, f.CodeNum, 3, f.ProvNum, f.ProviderShare, f.Bahan, f.Alat
+        FROM `{target_db}`.`fee` f
+        WHERE f.ClinicNum = 3 AND f.FeeSched = 57 AND f.Amount > 0
+        AND f.CodeNum NOT IN (
+            SELECT f58.CodeNum FROM (SELECT CodeNum FROM `{target_db}`.`fee` WHERE ClinicNum = 3 AND FeeSched = 58) f58
+        )
+        ON DUPLICATE KEY UPDATE Amount = VALUES(Amount)
+    """)
+    cursor.execute(f"""
+        INSERT INTO `{target_db}`.`fee` (Amount, FeeSched, CodeNum, ClinicNum, ProvNum, ProviderShare, Bahan, Alat)
+        SELECT f.Amount, 56, f.CodeNum, 3, f.ProvNum, f.ProviderShare, f.Bahan, f.Alat
+        FROM `{target_db}`.`fee` f
+        WHERE f.ClinicNum = 3 AND f.FeeSched = 57 AND f.Amount > 0
+        AND f.CodeNum NOT IN (
+            SELECT f56.CodeNum FROM (SELECT CodeNum FROM `{target_db}`.`fee` WHERE ClinicNum = 3 AND FeeSched = 56) f56
+        )
+        ON DUPLICATE KEY UPDATE Amount = VALUES(Amount)
+    """)
+
+    # Clinic 1: Merge 54 (Full Timer)
+    cursor.execute(f"""
+        INSERT INTO `{target_db}`.`fee` (Amount, FeeSched, CodeNum, ClinicNum, ProvNum, ProviderShare, Bahan, Alat)
+        SELECT f.Amount, 57, f.CodeNum, 1, f.ProvNum, f.ProviderShare, f.Bahan, f.Alat
+        FROM `{target_db}`.`fee` f
+        WHERE f.ClinicNum = 1 AND f.FeeSched = 54 AND f.Amount > 0
+        AND f.CodeNum NOT IN (
+            SELECT f57.CodeNum FROM (SELECT CodeNum FROM `{target_db}`.`fee` WHERE ClinicNum = 1 AND FeeSched = 57) f57
+        )
+        ON DUPLICATE KEY UPDATE Amount = VALUES(Amount)
+    """)
+    cursor.execute(f"""
+        INSERT INTO `{target_db}`.`fee` (Amount, FeeSched, CodeNum, ClinicNum, ProvNum, ProviderShare, Bahan, Alat)
+        SELECT f.Amount, 58, f.CodeNum, 1, f.ProvNum, 
+               CASE WHEN f.ProviderShare > 0 THEN f.ProviderShare * 1.33 ELSE 0 END, 
+               f.Bahan, f.Alat
+        FROM `{target_db}`.`fee` f
+        WHERE f.ClinicNum = 1 AND f.FeeSched = 57 AND f.Amount > 0
+        AND f.CodeNum NOT IN (
+            SELECT f58.CodeNum FROM (SELECT CodeNum FROM `{target_db}`.`fee` WHERE ClinicNum = 1 AND FeeSched = 58) f58
+        )
+        ON DUPLICATE KEY UPDATE Amount = VALUES(Amount)
+    """)
+    cursor.execute(f"""
+        INSERT INTO `{target_db}`.`fee` (Amount, FeeSched, CodeNum, ClinicNum, ProvNum, ProviderShare, Bahan, Alat)
+        SELECT f.Amount, 56, f.CodeNum, 1, f.ProvNum, f.ProviderShare, f.Bahan, f.Alat
+        FROM `{target_db}`.`fee` f
+        WHERE f.ClinicNum = 1 AND f.FeeSched = 57 AND f.Amount > 0
+        AND f.CodeNum NOT IN (
+            SELECT f56.CodeNum FROM (SELECT CodeNum FROM `{target_db}`.`fee` WHERE ClinicNum = 1 AND FeeSched = 56) f56
+        )
+        ON DUPLICATE KEY UPDATE Amount = VALUES(Amount)
+    """)
+
+    # 4. Clean up FeeSched 53 (Office Fees) - remove clinic overrides and hide it
+    cursor.execute(f"DELETE FROM `{target_db}`.`fee` WHERE FeeSched = 53 AND ClinicNum > 0")
+    cursor.execute(f"UPDATE `{target_db}`.`feesched` SET Description = 'Office Fees', IsHidden = 1 WHERE FeeSchedNum = 53")
+    cursor.execute(f"UPDATE `{target_db}`.`feesched` SET Description = 'JM Spesialis', IsHidden = 0 WHERE FeeSchedNum = 56")
+    cursor.execute(f"UPDATE `{target_db}`.`feesched` SET Description = 'JM Fulltimer', IsHidden = 0 WHERE FeeSchedNum = 57")
+    cursor.execute(f"UPDATE `{target_db}`.`feesched` SET Description = 'JM Partimer', IsHidden = 0 WHERE FeeSchedNum = 58")
+    cursor.execute(f"UPDATE `{target_db}`.`feesched` SET IsHidden = 1 WHERE FeeSchedNum NOT IN (56, 57, 58)")
+
+    # Clean any leftover [TAG] prefixes
+    cursor.execute(f"""
+        UPDATE `{target_db}`.`feesched` 
+        SET Description = CASE 
+            WHEN Description LIKE '[%]%' THEN TRIM(SUBSTRING(Description, INSTR(Description, ']') + 1))
+            ELSE Description 
+        END
+        WHERE Description LIKE '[%]%'
+    """)
+
+    # Deduplicate fee table rows where exact duplicate exists
+    cursor.execute(f"""
+        DELETE f1 FROM `{target_db}`.`fee` f1
+        JOIN `{target_db}`.`fee` f2 ON f1.FeeSched = f2.FeeSched 
+                   AND f1.CodeNum = f2.CodeNum 
+                   AND f1.ClinicNum = f2.ClinicNum 
+                   AND f1.ProvNum = f2.ProvNum 
+                   AND (f1.ProviderShare < f2.ProviderShare 
+                        OR (f1.ProviderShare = f2.ProviderShare AND f1.Amount <= f2.Amount AND f1.FeeNum > f2.FeeNum))
+    """)
+
+    # 5. Populate clinic_feesched (strictly 56, 57, 58 for all clinics)
+    cursor.execute(f"TRUNCATE TABLE `{target_db}`.`clinic_feesched`")
+    for c_num in [1, 2, 3]:
+        for fs_num in [56, 57, 58]:
+            cursor.execute(f"INSERT IGNORE INTO `{target_db}`.`clinic_feesched` (ClinicNum, FeeSchedNum) VALUES (%s, %s)", (c_num, fs_num))
+
+    conn.commit()
+    cursor.close()
+    print("  [OK] Unified JM fee schedules (56, 57, 58) consolidated and populated.")
+
+
+def seed_baseline_fees(conn, target_db):
+    """
+    Inserts baseline ClinicNum = 0 fee records for unified fee schedules (56, 57, 58).
+    This guarantees that when the client queries fees with Default/0 clinic override,
+    the fee amount is found rather than returning 0.
+    """
+    cursor = conn.cursor()
+    print("  [FEE] Seeding baseline fees (ClinicNum = 0) for unified fee schedules...")
+    cursor.execute(f"""
+        INSERT IGNORE INTO `{target_db}`.`fee` (Amount, FeeSched, CodeNum, ClinicNum, ProvNum, ProviderShare, Bahan, Alat)
+        SELECT Amount, FeeSched, CodeNum, 0, ProvNum, ProviderShare, Bahan, Alat
+        FROM `{target_db}`.`fee`
+        WHERE ClinicNum = 1 AND FeeSched IN (56, 57, 58)
+    """)
+    if cursor.rowcount > 0:
+        print(f"  [FIX] Inserted {cursor.rowcount} baseline ClinicNum = 0 fee records from Clinic 1.")
+
+    # Deduplicate any duplicate ClinicNum = 0 records
+    cursor.execute(f"""
+        DELETE f1 FROM `{target_db}`.`fee` f1
+        JOIN `{target_db}`.`fee` f2 ON f1.FeeSched = f2.FeeSched 
+                   AND f1.CodeNum = f2.CodeNum 
+                   AND f1.ClinicNum = 0 
+                   AND f2.ClinicNum = 0 
+                   AND f1.ProvNum = f2.ProvNum 
+                   AND (f1.ProviderShare < f2.ProviderShare 
+                        OR (f1.ProviderShare = f2.ProviderShare AND f1.Amount <= f2.Amount AND f1.FeeNum > f2.FeeNum))
+    """)
+    conn.commit()
+    cursor.close()
+    print("  [OK] Baseline fees synchronized.")
 
 
 def run_full_verification(conn, target_db):
@@ -958,9 +1665,9 @@ def main():
             src_byl = input("Enter Boyolali source database [helianz_byl]: ").strip() or "helianz_byl"
             src_jog = input("Enter Jogja source database [helianz_jog]: ").strip() or "helianz_jog"
             clinics = [
-                {"ClinicNum": 1, "db": src_klt, "Description": "Klaten 1", "Abbr": "KLT1", "ExternalID": 1},
-                {"ClinicNum": 2, "db": src_byl, "Description": "Boyolali 1", "Abbr": "BYL1", "ExternalID": 2},
-                {"ClinicNum": 3, "db": src_jog, "Description": "Jogja 1", "Abbr": "JOG1", "ExternalID": 3},
+                {"ClinicNum": 1, "db": src_klt, "Description": "Klaten 1", "Abbr": "KLT", "ExternalID": 1},
+                {"ClinicNum": 2, "db": src_byl, "Description": "Boyolali 1", "Abbr": "BYL", "ExternalID": 2},
+                {"ClinicNum": 3, "db": src_jog, "Description": "Jogja 1", "Abbr": "JOG", "ExternalID": 3},
             ]
         except (EOFError, KeyboardInterrupt):
             sys.exit("Aborted by user.")
@@ -1150,14 +1857,7 @@ def main():
         run_shell_cmd(f'"{python_exe}" "{SEGREGATE_SCRIPT}" {base_clinic["ClinicNum"]} --db {target_db} --yes', env_vars=child_env, print_stdout=True)
         print("  [OK] Clinic 1 segregation completed.")
 
-    # Prefix Clinic 1 fee schedules so all clinics are uniformly tagged
-    try:
-        cur_klt_fee = conn.cursor()
-        cur_klt_fee.execute(f"UPDATE `{target_db}`.feesched SET Description = CONCAT('[{base_clinic.get('Abbr', 'KLT1')}] ', Description) WHERE Description NOT LIKE '[%'")
-        cur_klt_fee.close()
-        conn.commit()
-    except Exception as kex:
-        debug_log(f"Clinic 1 fee schedule prefix notice: {kex}")
+    # Clinic 1 fee schedules preserve original descriptions (isolated by clinic_feesched)
 
     # 9. Process Subsequent Clinics Sequentially
     for c in clinics[1:]:
@@ -1214,14 +1914,7 @@ def main():
                 debug_log(f"In-process offset fallback ({ex})...")
                 run_shell_cmd(f'"{python_exe}" "{OFFSET_SCRIPT}" {actual_offset} --db {tmp_db}', env_vars=child_env, print_stdout=True)
 
-            # Prefix clinic abbreviation on fee schedules so they are distinct in target
-            try:
-                cur_feesched = conn.cursor()
-                cur_feesched.execute(f"UPDATE `{tmp_db}`.feesched SET Description = CONCAT('[{c.get('Abbr', f'C{c_num}')}] ', Description)")
-                cur_feesched.close()
-                conn.commit()
-            except Exception as fex:
-                debug_log(f"Fee schedule prefix notice: {fex}")
+            # Subsequent clinic fee schedules preserve original descriptions (isolated by clinic_feesched)
 
             print(f"  Merging `{tmp_db}` into `{target_db}`...")
             try:

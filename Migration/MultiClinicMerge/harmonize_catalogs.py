@@ -69,6 +69,18 @@ DEF_NUM_REFS = [
 ]
 
 
+def get_norm_proc_key(pcode, desc):
+    import re
+    clean = re.sub(r'[\s_]+', '', pcode or '').upper()
+    if clean == 'OS' and 'hect' in (desc or '').lower():
+        return 'OS_HECT'
+    if clean == 'PROM2' and 'behel' in (desc or '').lower():
+        return 'PROM2_BEHEL'
+    if clean == 'EX1' and 'extract' in (desc or '').lower():
+        return 'EX1_EXTRACT'
+    return clean
+
+
 def harmonize_procedurecodes(conn, src_db, target_db):
     """
     Ensures all procedure codes from src_db exist in target_db (matching by ProcCode).
@@ -78,18 +90,20 @@ def harmonize_procedurecodes(conn, src_db, target_db):
     print(f"\n  [PROCEDURECODE] Harmonizing `{src_db}` -> `{target_db}`...")
 
     # 1. Load target procedure codes:
-    # Key 1: (code.upper(), descript.lower()) -> CodeNum
-    # Key 2: code.upper() -> CodeNum
     cursor.execute(f"SELECT CodeNum, ProcCode, Descript FROM `{target_db}`.procedurecode")
     target_by_code_desc = {}
     target_by_code = {}
+    target_by_norm_key = {}
     for r in cursor.fetchall():
         code = (r['ProcCode'] or '').strip().upper()
         desc = (r['Descript'] or '').strip().lower()
+        norm_k = get_norm_proc_key(code, desc)
         if (code, desc) not in target_by_code_desc:
             target_by_code_desc[(code, desc)] = r['CodeNum']
         if code not in target_by_code:
             target_by_code[code] = r['CodeNum']
+        if norm_k not in target_by_norm_key:
+            target_by_norm_key[norm_k] = r['CodeNum']
 
     # 2. Inspect source procedure codes
     cursor.execute(f"SELECT * FROM `{src_db}`.procedurecode")
@@ -113,13 +127,17 @@ def harmonize_procedurecodes(conn, src_db, target_db):
         old_id = r['CodeNum']
         code_str = (r['ProcCode'] or '').strip().upper()
         desc_str = (r['Descript'] or '').strip().lower()
+        norm_k = get_norm_proc_key(code_str, desc_str)
 
         # Match preference:
         # 1. Exact match on (ProcCode, Descript)
-        # 2. Or if ProcCode exists and description is blank / near match
+        # 2. Normalized key match (e.g. 'KN 1' -> 'KN1', ignoring spacing/casing)
+        # 3. ProcCode match
         if (code_str, desc_str) in target_by_code_desc:
             code_map[old_id] = target_by_code_desc[(code_str, desc_str)]
-        elif code_str in target_by_code and not desc_str:
+        elif norm_k in target_by_norm_key:
+            code_map[old_id] = target_by_norm_key[norm_k]
+        elif code_str in target_by_code:
             code_map[old_id] = target_by_code[code_str]
         else:
             # Different procedure description or entirely new code -> insert into target
@@ -132,6 +150,8 @@ def harmonize_procedurecodes(conn, src_db, target_db):
             target_by_code_desc[(code_str, desc_str)] = new_id
             if code_str not in target_by_code:
                 target_by_code[code_str] = new_id
+            if norm_k not in target_by_norm_key:
+                target_by_norm_key[norm_k] = new_id
             code_map[old_id] = new_id
             new_inserted += 1
 
