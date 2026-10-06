@@ -1,4 +1,4 @@
-﻿using CodeBase;
+using CodeBase;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -581,6 +581,22 @@ namespace HelianzBusiness{
 
 		public static void ClearCache() {
 			_feeSchedCache.ClearCache();
+		}
+
+		///<summary>Returns fee schedules allowed for the specified clinic.</summary>
+		public static List<FeeSched> GetFeeSchedsForClinic(long clinicNum) {
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				return Meth.GetObject<List<FeeSched>>(MethodBase.GetCurrentMethod(),clinicNum);
+			}
+			List<long> listAllowed=Db.GetListLong("SELECT FeeSchedNum FROM clinic_feesched WHERE ClinicNum="+POut.Long(clinicNum));
+			if(listAllowed==null || listAllowed.Count==0) {
+				listAllowed=Db.GetListLong("SELECT DISTINCT FeeSched FROM fee WHERE ClinicNum="+POut.Long(clinicNum)+" AND FeeSched > 0");
+			}
+			if(listAllowed!=null && listAllowed.Count>0) {
+				string command="SELECT * FROM feesched WHERE FeeSchedNum IN ("+string.Join(",",listAllowed.Select(x => POut.Long(x)))+") ORDER BY ItemOrder";
+				return Crud.FeeSchedCrud.SelectMany(command);
+			}
+			return Crud.FeeSchedCrud.SelectMany("SELECT * FROM feesched ORDER BY ItemOrder");
 		}
 		#endregion Cache Pattern
 

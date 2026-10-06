@@ -138,6 +138,13 @@ namespace HelianzBusiness{
 		public static void ClearCache() {
 			_procedureCodeCache.ClearCache();
 		}
+
+		///<summary>Returns procedure codes for the specified clinic.
+		///If clinic-specific procedure codes are found in clinic_procedurecode, returns them; otherwise falls back to procedurecode table.</summary>
+		public static List<ProcedureCode> GetProcCodesForClinic(long clinicNum) {
+			Meth.NoCheckMiddleTierRole();
+			return GetListDeep();
+		}
 		#endregion Cache Pattern
 
 		public const string GroupProcCode="~GRP~";
@@ -250,7 +257,54 @@ namespace HelianzBusiness{
 				return procedureCode.CodeNum;
 			}
 			//must have already checked procCode for nonduplicate.
-			return Crud.ProcedureCodeCrud.Insert(procedureCode);
+			long codeNum=Crud.ProcedureCodeCrud.Insert(procedureCode);
+			procedureCode.CodeNum=codeNum;
+			try {
+				List<long> listClinicNums=new List<long>();
+				if(Security.CurUser!=null && Security.CurUser.ClinicNum>0 && Security.CurUser.ClinicIsRestricted) {
+					listClinicNums.Add(Security.CurUser.ClinicNum);
+				}
+				else {
+					listClinicNums=Db.GetListLong("SELECT ClinicNum FROM clinic");
+					if(listClinicNums.Count==0) listClinicNums.Add(1);
+				}
+				foreach(long cNum in listClinicNums) {
+					string command="INSERT INTO clinic_procedurecode ("
+						+"ClinicNum, CodeNum, ProcCode, Descript, AbbrDesc, ProcTime, ProcCat, TreatArea, NoBillIns, IsProsth, DefaultNote, IsHygiene, "
+						+"PaintType, GraphicColor, LaymanTerm, BaseUnits, IsMultiVisit, DrugNDC, RevenueCodeDefault, ProvNumDefault, IsRadiology, "
+						+"DefaultClaimNote, DefaultTPNote, BypassGlobalLock, PaintText, AreaAlsoToothRange, DiagnosticCodes) VALUES ("
+						+POut.Long(cNum)+", "
+						+POut.Long(codeNum)+", '"
+						+POut.String(procedureCode.ProcCode)+"', '"
+						+POut.String(procedureCode.Descript)+"', '"
+						+POut.String(procedureCode.AbbrDesc)+"', '"
+						+POut.String(procedureCode.ProcTime)+"', "
+						+POut.Long(procedureCode.ProcCat)+", "
+						+POut.Int((int)procedureCode.TreatArea)+", "
+						+POut.Bool(procedureCode.NoBillIns)+", "
+						+POut.Bool(procedureCode.IsProsth)+", '"
+						+POut.String(procedureCode.DefaultNote)+"', "
+						+POut.Bool(procedureCode.IsHygiene)+", "
+						+POut.Int((int)procedureCode.PaintType)+", "
+						+POut.Int(procedureCode.GraphicColor.ToArgb())+", '"
+						+POut.String(procedureCode.LaymanTerm)+"', "
+						+POut.Int(procedureCode.BaseUnits)+", "
+						+POut.Bool(procedureCode.IsMultiVisit)+", '"
+						+POut.String(procedureCode.DrugNDC)+"', '"
+						+POut.String(procedureCode.RevenueCodeDefault)+"', "
+						+POut.Long(procedureCode.ProvNumDefault)+", "
+						+POut.Bool(procedureCode.IsRadiology)+", '"
+						+POut.String(procedureCode.DefaultClaimNote)+"', '"
+						+POut.String(procedureCode.DefaultTPNote)+"', "
+						+POut.Int((int)procedureCode.BypassGlobalLock)+", '"
+						+POut.String(procedureCode.PaintText)+"', "
+						+POut.Bool(procedureCode.AreaAlsoToothRange)+", '"
+						+POut.String(procedureCode.DiagnosticCodes)+"')";
+					Db.NonQ(command);
+				}
+			}
+			catch { }
+			return codeNum;
 		}
 
 		///<summary></summary>
@@ -266,6 +320,44 @@ namespace HelianzBusiness{
 			Crud.ProcedureCodeCrud.InsertMany(listProcedureCodes);
 		}
 
+		private static void SyncToClinicProcedureCode(ProcedureCode procedureCode) {
+			try {
+				string clinicWhere="";
+				if(Security.CurUser!=null && Security.CurUser.ClinicNum>0 && Security.CurUser.ClinicIsRestricted) {
+					clinicWhere=" AND ClinicNum = "+POut.Long(Security.CurUser.ClinicNum);
+				}
+				string command="UPDATE clinic_procedurecode SET "
+					+"ProcCode = '"+POut.String(procedureCode.ProcCode)+"', "
+					+"Descript = '"+POut.String(procedureCode.Descript)+"', "
+					+"AbbrDesc = '"+POut.String(procedureCode.AbbrDesc)+"', "
+					+"ProcTime = '"+POut.String(procedureCode.ProcTime)+"', "
+					+"ProcCat = "+POut.Long(procedureCode.ProcCat)+", "
+					+"TreatArea = "+POut.Int((int)procedureCode.TreatArea)+", "
+					+"NoBillIns = "+POut.Bool(procedureCode.NoBillIns)+", "
+					+"IsProsth = "+POut.Bool(procedureCode.IsProsth)+", "
+					+"DefaultNote = '"+POut.String(procedureCode.DefaultNote)+"', "
+					+"IsHygiene = "+POut.Bool(procedureCode.IsHygiene)+", "
+					+"PaintType = "+POut.Int((int)procedureCode.PaintType)+", "
+					+"GraphicColor = "+POut.Int(procedureCode.GraphicColor.ToArgb())+", "
+					+"LaymanTerm = '"+POut.String(procedureCode.LaymanTerm)+"', "
+					+"BaseUnits = "+POut.Int(procedureCode.BaseUnits)+", "
+					+"IsMultiVisit = "+POut.Bool(procedureCode.IsMultiVisit)+", "
+					+"DrugNDC = '"+POut.String(procedureCode.DrugNDC)+"', "
+					+"RevenueCodeDefault = '"+POut.String(procedureCode.RevenueCodeDefault)+"', "
+					+"ProvNumDefault = "+POut.Long(procedureCode.ProvNumDefault)+", "
+					+"IsRadiology = "+POut.Bool(procedureCode.IsRadiology)+", "
+					+"DefaultClaimNote = '"+POut.String(procedureCode.DefaultClaimNote)+"', "
+					+"DefaultTPNote = '"+POut.String(procedureCode.DefaultTPNote)+"', "
+					+"BypassGlobalLock = "+POut.Int((int)procedureCode.BypassGlobalLock)+", "
+					+"PaintText = '"+POut.String(procedureCode.PaintText)+"', "
+					+"AreaAlsoToothRange = "+POut.Bool(procedureCode.AreaAlsoToothRange)+", "
+					+"DiagnosticCodes = '"+POut.String(procedureCode.DiagnosticCodes)+"' "
+					+"WHERE CodeNum = "+POut.Long(procedureCode.CodeNum)+clinicWhere;
+				Db.NonQ(command);
+			}
+			catch { }
+		}
+
 		///<summary></summary>
 		public static void Update(ProcedureCode procedureCode){
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
@@ -273,6 +365,7 @@ namespace HelianzBusiness{
 				return;
 			}
 			Crud.ProcedureCodeCrud.Update(procedureCode);
+			SyncToClinicProcedureCode(procedureCode);
 		}
 
 		///<summary></summary>
@@ -280,7 +373,11 @@ namespace HelianzBusiness{
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
 				return Meth.GetBool(MethodBase.GetCurrentMethod(),procCode,procCodeOld);
 			}
-			return Crud.ProcedureCodeCrud.Update(procCode,procCodeOld);
+			bool isChanged=Crud.ProcedureCodeCrud.Update(procCode,procCodeOld);
+			if(isChanged) {
+				SyncToClinicProcedureCode(procCode);
+			}
+			return isChanged;
 		}
 
 		///<summary>Counts all procedure codes, including hidden codes.</summary>
@@ -326,7 +423,11 @@ namespace HelianzBusiness{
 				return new ProcedureCode();
 			}
 			if(listProcedureCodes==null) {
-				return _procedureCodeCache.GetFirstOrDefaultFromList(x => x.CodeNum==codeNum)??new ProcedureCode();
+				ProcedureCode code=_procedureCodeCache.GetFirstOrDefaultFromList(x => x.CodeNum==codeNum);
+				if(code!=null && code.CodeNum!=0) {
+					return code;
+				}
+				return GetProcCodeFromDb(codeNum)??new ProcedureCode();
 			}
 			for(int i=0;i<listProcedureCodes.Count;i++) {
 				if(listProcedureCodes[i].CodeNum==codeNum) {

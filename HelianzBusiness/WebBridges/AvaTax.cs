@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using HelianzBusiness;
@@ -61,10 +61,10 @@ namespace HelianzBusiness {
 		///we just know we would get an error back from Avalara. This method returning false will result in the procedure being created as before
 		///but without tax, so we need to return true for an invalid zip and let Avalara produce the error. Can execute two queries.</summary>
 		public static bool DoSendProcToAvalara(Procedure procedure,bool isSilent=false) {
-			ProcedureCode procedureCode=ProcedureCodes.GetProcCode(procedure.CodeNum);
 			if(!IsEnabled()) {
 				return false;
 			}
+			ProcedureCode procedureCode=ProcedureCodes.GetProcCode(procedure.CodeNum);
 			if(procedure.ProcFee==0){//repeat charges for prepay use ProcFee=0
 				return false;
 			}

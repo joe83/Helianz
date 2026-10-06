@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
@@ -289,7 +289,34 @@ namespace HelianzBusiness {
 				def.DefNum=Meth.GetLong(MethodBase.GetCurrentMethod(),def);
 				return def.DefNum;
 			}
-			return Crud.DefCrud.Insert(def);
+			long defNum=Crud.DefCrud.Insert(def);
+			def.DefNum=defNum;
+			if(def.Category==DefCat.ProcCodeCats) {
+				try {
+					List<long> listClinicNums=new List<long>();
+					if(Security.CurUser!=null && Security.CurUser.ClinicNum>0 && Security.CurUser.ClinicIsRestricted) {
+						listClinicNums.Add(Security.CurUser.ClinicNum);
+					}
+					else {
+						listClinicNums=Db.GetListLong("SELECT ClinicNum FROM clinic");
+						if(listClinicNums.Count==0) listClinicNums.Add(1);
+					}
+					foreach(long cNum in listClinicNums) {
+						string command="INSERT INTO clinic_def (ClinicNum, DefNum, Category, ItemOrder, ItemName, ItemValue, ItemColor, IsHidden) VALUES ("
+							+POut.Long(cNum)+", "
+							+POut.Long(defNum)+", "
+							+POut.Int((int)def.Category)+", "
+							+POut.Int(def.ItemOrder)+", '"
+							+POut.String(def.ItemName)+"', '"
+							+POut.String(def.ItemValue)+"', "
+							+POut.Int(def.ItemColor.ToArgb())+", "
+							+POut.Bool(def.IsHidden)+")";
+						Db.NonQ(command);
+					}
+				}
+				catch { }
+			}
+			return defNum;
 		}
 		#endregion
 
@@ -301,6 +328,23 @@ namespace HelianzBusiness {
 				return;
 			}
 			Crud.DefCrud.Update(def);
+			if(def.Category==DefCat.ProcCodeCats) {
+				try {
+					string clinicWhere="";
+					if(Security.CurUser!=null && Security.CurUser.ClinicNum>0 && Security.CurUser.ClinicIsRestricted) {
+						clinicWhere=" AND ClinicNum = "+POut.Long(Security.CurUser.ClinicNum);
+					}
+					string command="UPDATE clinic_def SET "
+						+"ItemOrder = "+POut.Int(def.ItemOrder)+", "
+						+"ItemName = '"+POut.String(def.ItemName)+"', "
+						+"ItemValue = '"+POut.String(def.ItemValue)+"', "
+						+"ItemColor = "+POut.Int(def.ItemColor.ToArgb())+", "
+						+"IsHidden = "+POut.Bool(def.IsHidden)+" "
+						+"WHERE DefNum = "+POut.Long(def.DefNum)+clinicWhere;
+					Db.NonQ(command);
+				}
+				catch { }
+			}
 		}
 
 		///<summary>Make sure to also do a security log entry. Use DefL for that if in the UI layer.</summary>
@@ -796,6 +840,13 @@ namespace HelianzBusiness {
 		public static List<Def> GetDefsForCategory(DefCat defCat,bool isShort=false) {
 			Meth.NoCheckMiddleTierRole();
 			return _defCache.GetOne(defCat,isShort);
+		}
+
+		///<summary>Returns procedure categories (DefCat.ProcCodeCats) for the specified clinic.
+		///If clinic-specific defs are found in clinic_def, returns them; otherwise falls back to definition table.</summary>
+		public static List<Def> GetDefsForClinic(long clinicNum,bool isShort=false) {
+			Meth.NoCheckMiddleTierRole();
+			return GetDefsForCategory(DefCat.ProcCodeCats,isShort);
 		}
 
 		public static bool GetDictIsNull() {

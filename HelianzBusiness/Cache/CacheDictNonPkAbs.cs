@@ -1,4 +1,4 @@
-﻿using CodeBase;
+using CodeBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +26,11 @@ namespace HelianzBusiness {
 			base.FillDictIfNull();
 			_lock.EnterReadLock();
 			try {
-				return GetShallowListHelper(isShort).Select(x => Copy(x)).ToList();
+				List<T> list=GetShallowListHelper(isShort);
+				if(list==null || list.Count==0) {
+					return new List<T>();
+				}
+				return list.Select(x => Copy(x)).ToList();
 			}
 			finally {
 				_lock.ExitReadLock();
@@ -54,8 +58,8 @@ namespace HelianzBusiness {
 			if(!_lock.IsReadLockHeld && !_lock.IsWriteLockHeld) {
 				throw new ODException("GetShallowListHelper() requires a lock to be present before invoking the method.");
 			}
-			if(_listAllItems==null) { //Return the exact state of the cache, even it that means null.
-				return null;
+			if(_listAllItems==null) {
+				return new List<T>();
 			}
 			List<T> list=new List<T>();
 			if(isShort) {
@@ -74,7 +78,11 @@ namespace HelianzBusiness {
 			base.FillDictIfNull();
 			_lock.EnterReadLock();
 			try {
-				return GetShallowListHelper(isShort).FindAll(match).Select(x => Copy(x)).ToList();
+				List<T> list=GetShallowListHelper(isShort);
+				if(list==null || list.Count==0) {
+					return new List<T>();
+				}
+				return list.FindAll(match).Select(x => Copy(x)).ToList();
 			}
 			finally {
 				_lock.ExitReadLock();
@@ -87,7 +95,11 @@ namespace HelianzBusiness {
 			base.FillDictIfNull();
 			_lock.EnterReadLock();
 			try {
-				T item=GetShallowListHelper(isShort).FirstOrDefault(match);
+				List<T> list=GetShallowListHelper(isShort);
+				if(list==null || list.Count==0) {
+					return null;
+				}
+				T item=list.FirstOrDefault(match);
 				if(item==null) {
 					return item;
 				}

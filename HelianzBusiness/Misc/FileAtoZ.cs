@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -48,13 +48,27 @@ namespace HelianzBusiness.FileIO {
 				if(!string.IsNullOrEmpty(docPath)) {
 					return GetValidPathFromString(docPath)?.Trim();
 				}
-				// Hybrid mode fallback: use per-user LocalAppData — always writable, no admin needed.
+				// Hybrid mode fallback: use per-user LocalAppData or app base/temp — always writable
 				if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZHybrid) {
-					string defaultPath=Path.Combine(
+					string[] candidateBases=new string[] {
 						Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-						"Helianz","AtoZ");
-					Directory.CreateDirectory(defaultPath);
-					return defaultPath;
+						Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+						AppDomain.CurrentDomain.BaseDirectory,
+						Path.GetTempPath()
+					};
+					foreach(string candidate in candidateBases) {
+						if(string.IsNullOrEmpty(candidate)) {
+							continue;
+						}
+						try {
+							string defaultPath=Path.Combine(candidate,"Helianz","AtoZ");
+							if(!Directory.Exists(defaultPath)) {
+								Directory.CreateDirectory(defaultPath);
+							}
+							return defaultPath;
+						}
+						catch { }
+					}
 				}
 				return null;
 			}

@@ -32,6 +32,9 @@ namespace HelianzBusiness {
 			if(CloudStorage.IsCloudStorage) {
 				AtoZpath=CloudStorage.AtoZPath;
 			}
+			if(string.IsNullOrEmpty(AtoZpath) && !CloudStorage.IsCloudStorage) {
+				AtoZpath=GetPreferredAtoZpath();
+			}
 			Patient PatOld=pat.Copy();
 			if(string.IsNullOrEmpty(pat.ImageFolder)) {//creates new folder for patient if none present
 				pat.ImageFolder=GetImageFolderName(pat);
@@ -50,11 +53,11 @@ namespace HelianzBusiness {
 						Patients.Update(pat,PatOld);
 					}
 				}
+				if(string.IsNullOrEmpty(AtoZpath)) {
+					throw new ApplicationException("AtoZpath was null or empty");
+				}
 				retVal=ODFileUtils.CombinePaths(AtoZpath,bucket.ToString(),pat.ImageFolder);
 				try {
-					if(string.IsNullOrEmpty(AtoZpath)) {
-						throw new ApplicationException("AtoZpath was null or empty");
-					}
 					if(!Directory.Exists(retVal)) {
 						Directory.CreateDirectory(retVal);
 					}
@@ -67,16 +70,13 @@ namespace HelianzBusiness {
 				object[] objectArray={pat,AtoZpath};
 				Plugins.HookAddCode(null,"ImageStore.GetPatientFolder_LocalAtoZ",objectArray);
 				AtoZpath=(string)objectArray[1];
+				if(string.IsNullOrEmpty(AtoZpath)) {
+					throw new ApplicationException("AtoZpath was null or empty");
+				}
 				retVal=ODFileUtils.CombinePaths(AtoZpath,
 					pat.ImageFolder.Substring(0,1).ToUpper(),
 					pat.ImageFolder);//use Path.DirectorySeparatorChar
 				try {
-					if(string.IsNullOrEmpty(AtoZpath)) {
-						//If AtoZpath parameter was null or empty string and DataStorageType is LocalAtoZ, don't create a directory since retVal would then be
-						//considered a relative path. Example: If AtoZpath is null, retVal will be like "P\PatientAustin1" after ODFileUtils.CombinePaths.
-						//CreateDirectory treats this as a relative path and the full path would be "C:\Program Files (x86)\Helianz\P\PatientAustin1".
-						throw new ApplicationException("AtoZpath was null or empty");
-					}
 					if(!Directory.Exists(retVal)) {
 						Directory.CreateDirectory(retVal);
 					}

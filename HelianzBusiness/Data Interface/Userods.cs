@@ -834,6 +834,16 @@ namespace HelianzBusiness {
 			Db.NonQ(command);
 		}
 
+		///<summary>Sets the ClinicNum for the specified user in the database. Used when an unrestricted admin switches active clinic.</summary>
+		public static void SetClinicNumForUser(long userNum,long clinicNum) {
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				Meth.GetVoid(MethodBase.GetCurrentMethod(),userNum,clinicNum);
+				return;
+			}
+			string command="UPDATE userod SET ClinicNum="+POut.Long(clinicNum)+" WHERE UserNum="+POut.Long(userNum);
+			Db.NonQ(command);
+		}
+
 		///<summary>A user must always have at least one associated userGroupAttach. Pass in the usergroup(s) that should be attached.
 		///Surround with try/catch because it can throw exceptions.</summary>
 		public static long Insert(Userod userod,List<long> listUserGroupNums,bool isForCEMT = false){

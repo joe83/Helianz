@@ -460,11 +460,31 @@ namespace HelianzBusiness {
 				//Per Nathan the image should not be deleted if the user does not have the Image Delete permission.  The statement can still be deleted.
 				if(listStatements[i].DocNum!=0 && (forceImageDelete || Security.IsAuthorized(EnumPermType.ImageDelete,listStatements[i].DateSent,true))) {
 					//deleted the pdf
-					Patient patient=Patients.GetPat(listStatements[i].PatNum);
-					string patFolder=ImageStore.GetPatientFolder(patient,ImageStore.GetPreferredAtoZpath());
-					List<Document> listDocuments=new List<Document>();
-					listDocuments.Add(Documents.GetByNum(listStatements[i].DocNum,true));
-					ImageStore.DeleteDocuments(listDocuments,patFolder);//May throw if document is in use.
+					try {
+						Patient patient=Patients.GetPat(listStatements[i].PatNum);
+						string atozPath=ImageStore.GetPreferredAtoZpath();
+						string patFolder="";
+						if(patient!=null && !string.IsNullOrEmpty(atozPath)) {
+							try {
+								patFolder=ImageStore.GetPatientFolder(patient,atozPath);
+							}
+							catch { }
+						}
+						Document doc=Documents.GetByNum(listStatements[i].DocNum,true);
+						if(doc!=null) {
+							ImageStore.DeleteDocuments(new List<Document> { doc },patFolder);
+						}
+					}
+					catch(Exception ex) {
+						ex.DoNothing();
+						try {
+							Document doc=Documents.GetByNum(listStatements[i].DocNum,true);
+							if(doc!=null) {
+								Documents.Delete(doc);
+							}
+						}
+						catch { }
+					}
 				}
 				Delete(listStatements[i]);
 			}
