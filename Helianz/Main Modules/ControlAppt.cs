@@ -3697,6 +3697,18 @@ namespace Helianz {
 			SyncWaitingSelectionToAppointment();
 		}
 
+		///<summary>Handles double-click on a waiting room row — opens the queue calling, status, and print dialog.</summary>
+		private void gridWaiting_CellDoubleClick(object sender,UI.ODGridClickEventArgs e) {
+			if(e.Row<0 || e.Row>=gridWaiting.ListGridRows.Count) {
+				return;
+			}
+			long aptNum=(long)gridWaiting.ListGridRows[e.Row].Tag;
+			if(aptNum==0) {
+				return;
+			}
+			OpenQueueActionPopupForApt(aptNum);
+		}
+
 		///<summary>Handles column header click on the waiting room grid — saves sort preference.</summary>
 		private void gridWaiting_ColumnSortClick(object sender,EventArgs e) {
 			int sortedCol=gridWaiting.GetSortedByColumnIdx();
@@ -3710,7 +3722,7 @@ namespace Helianz {
 			}
 		}
 
-		///<summary>Prints the queue slip for the selected patient to the default printer.</summary>
+		///<summary>Opens the queue action popup (call patient on TV, set in-room status, or re-print queue ticket).</summary>
 		private void butPrintQueue_Click(object sender,EventArgs e) {
 			int idx=gridWaiting.GetSelectedIndex();
 			if(idx<0 || idx>=gridWaiting.ListGridRows.Count) {
@@ -3718,71 +3730,69 @@ namespace Helianz {
 				return;
 			}
 			GridRow row=gridWaiting.ListGridRows[idx];
-			string patientName=row.Cells[0].Text;
-			string queueLabel=row.Cells.Count>2 ? row.Cells[1].Text : "";
 			long aptNum=(long)row.Tag;
-			string roomName="";
+			if(aptNum==0) {
+				return;
+			}
+			OpenQueueActionPopupForApt(aptNum);
+		}
+
+		///<summary>Opens the interactive queue popup dialog for a patient.</summary>
+		private void OpenQueueActionPopupForApt(long aptNum) {
+			Appointment appt=Appointments.GetOneApt(aptNum);
+			if(appt==null) {
+				MsgBox.Show(this,"Data appointment tidak ditemukan.");
+				return;
+			}
+			Patient pat=Patients.GetPat(appt.PatNum);
+			string patName=pat!=null ? $"{pat.LName}, {pat.FName}" : "Pasien";
+			string queueLabel=!string.IsNullOrWhiteSpace(appt.QueueLabel) ? appt.QueueLabel : $"#{aptNum}";
+
+			long opNum=appt.Op;
+			Operatory operatory=Operatories.GetOperatory(opNum);
+			string roomName=operatory?.OpName ?? (opNum>0 ? $"Ruang {opNum}" : "");
+
 			string clinicName=PrefC.GetString(PrefName.PracticeTitle);
-			if(aptNum!=0 && contrApptPanel.TableWaitingRoom!=null) {
-				foreach(DataRow dr in contrApptPanel.TableWaitingRoom.Rows) {
-					if(PIn.Long(dr["AptNum"].ToString())==aptNum) {
-						long opNum=PIn.Long(dr["OpNum"].ToString());
-						Operatory operatory=Operatories.GetOperatory(opNum);
-						roomName=operatory?.OpName ?? opNum.ToString();
-						if(PrefC.HasClinicsEnabled && operatory!=null && operatory.ClinicNum!=0) {
-							Clinic clinic=Clinics.GetClinic(operatory.ClinicNum);
-							clinicName=clinic?.Description ?? clinicName;
-						}
-						break;
-					}
+			if(PrefC.HasClinicsEnabled && appt.ClinicNum!=0) {
+				Clinic clinic=Clinics.GetClinic(appt.ClinicNum);
+				if(clinic!=null && !string.IsNullOrWhiteSpace(clinic.Description)) {
+					clinicName=clinic.Description;
 				}
 			}
-			string note="";
-			if(aptNum!=0) {
-				Appointment appt=Appointments.GetOneApt(aptNum);
-				if(appt!=null) {
-					note=appt.Note;
-				}
+
+			Provider prov=Providers.GetProv(appt.ProvNum);
+			string doctorName=prov!=null ? (!string.IsNullOrWhiteSpace(prov.Abbr) ? prov.Abbr : $"{prov.FName} {prov.LName}".Trim()) : "Dokter Gigi";
+
+			string waitedTime="00:00:00";
+			if(appt.DateTimeArrived.Year>1880) {
+				TimeSpan elapsed=DateTime.Now-appt.DateTimeArrived;
+				waitedTime=string.Format("{0}:{1:D2}:{2:D2}",(int)elapsed.TotalHours,elapsed.Minutes,elapsed.Seconds);
 			}
-			PrintQueueTicket(queueLabel,patientName,roomName,clinicName,note,"");
+
+			string note=appt.Note;
+
+			using FormQueueTicketPopup popup=new FormQueueTicketPopup();
+			popup.SetInfo(aptNum,queueLabel,patName,roomName,doctorName,clinicName,waitedTime,note,appt.Confirmed,opNum,appt.ClinicNum,appt.ProvNum);
+			popup.ShowDialog();
+
+			if(popup.PrintRequested) {
+				PrintQueueTicket(popup.QueueLabel,patName,roomName,clinicName,note,popup.SelectedColor);
+			}
+
+			if(popup.StatusChangeRequested && popup.NewConfirmedDefNum!=0 && popup.NewConfirmedDefNum!=appt.Confirmed) {
+				Appointment apptOld=appt.Copy();
+				Appointments.SetConfirmed(appt,popup.NewConfirmedDefNum);
+				SecurityLogs.MakeLogEntry(EnumPermType.ApptConfirmStatusEdit,appt.PatNum,Lan.g(this,"Appointment confirmation status changed from")+" "
+					+Defs.GetName(DefCat.ApptConfirmed,apptOld.Confirmed)+" "+Lan.g(this,"to")+" "+Defs.GetName(DefCat.ApptConfirmed,popup.NewConfirmedDefNum)
+					+" "+Lans.g(this,"from Queue Action Popup")+".",appt.AptNum,apptOld.DateTStamp);
+				RefreshPeriod();
+				AppointmentL.ShowKioskManagerIfNeeded(apptOld,popup.NewConfirmedDefNum);
+			}
 		}
 
 		///<summary>Shows a popup for a single newly arrived patient with queue number, clinic info, and an option to print.</summary>
 		private void ShowQueuePopupForPatient(long aptNum,List<DataRow> listFilteredRows) {
-			DataRow dataRow=listFilteredRows.FirstOrDefault(r => PIn.Long(r["AptNum"].ToString())==aptNum);
-			if(dataRow==null) return;
-			_setNotifiedAptNums.Add(aptNum);
-			string queueLabel=dataRow["QueueLabel"].ToString();
-			string patName=$"{dataRow["FName"]} {dataRow["LName"]}";
-			//Get clinic/operatory info.
-			long opNum=PIn.Long(dataRow["OpNum"].ToString());
-			Operatory operatory=Operatories.GetOperatory(opNum);
-			string roomName=operatory?.OpName ?? opNum.ToString();
-			string clinicName="";
-			if(PrefC.HasClinicsEnabled && operatory!=null && operatory.ClinicNum!=0) {
-				Clinic clinic=Clinics.GetClinic(operatory.ClinicNum);
-				clinicName=clinic?.Description ?? "";
-			}
-			if(string.IsNullOrEmpty(clinicName)) {
-				clinicName=PrefC.GetString(PrefName.PracticeTitle);
-			}
-			//Get appointment note – try DataRow column first, fall back to direct DB query for MT compatibility.
-			string note="";
-			if(dataRow.Table.Columns.Contains("Note")) {
-				note=dataRow["Note"].ToString();
-			}
-			if(string.IsNullOrEmpty(note)) {
-				Appointment appt=Appointments.GetOneApt(aptNum);
-				if(appt!=null) {
-					note=appt.Note;
-				}
-			}
-			using FormQueueTicketPopup popup=new FormQueueTicketPopup();
-			popup.SetInfo(queueLabel,patName,roomName,clinicName,note);
-			popup.ShowDialog();
-			if(popup.PrintRequested) {
-				PrintQueueTicket(queueLabel,patName,roomName,clinicName,note,popup.SelectedColor);
-			}
+			OpenQueueActionPopupForApt(aptNum);
 		}
 
 		///<summary>Prints a queue ticket for a patient using the configured Queue Ticket printer.</summary>

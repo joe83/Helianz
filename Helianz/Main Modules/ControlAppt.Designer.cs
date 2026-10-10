@@ -1,4 +1,4 @@
-﻿namespace Helianz {
+namespace Helianz {
 	partial class ControlAppt {
 		/// <summary> 
 		/// Required designer variable.
@@ -291,6 +291,7 @@
 			this.gridWaiting.TranslationName = "TableApptWaiting";
 			this.gridWaiting.AllowSortingByColumn = true;
 			this.gridWaiting.CellClick += new Helianz.UI.ODGridClickEventHandler(this.gridWaiting_CellClick);
+			this.gridWaiting.CellDoubleClick += new Helianz.UI.ODGridClickEventHandler(this.gridWaiting_CellDoubleClick);
 			this.gridWaiting.ColumnSortClick += new System.EventHandler(this.gridWaiting_ColumnSortClick);
 			// 
 			// panelWaitingButtons

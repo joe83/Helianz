@@ -1739,6 +1739,92 @@ namespace HelianzBusiness{
 			Db.NonQ(command);
 		}
 
+		///<summary>Broadcasts a patient queue calling event across all TV monitors for the clinic.</summary>
+		public static bool CallQueuePatient(long aptNum,long opNum=0,long clinicNum=0,string customOpName="") {
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				return Meth.GetBool(MethodBase.GetCurrentMethod(),aptNum,opNum,clinicNum,customOpName);
+			}
+			Appointment appt=GetOneApt(aptNum);
+			if(appt==null) {
+				return false;
+			}
+			Patient pat=Patients.GetPat(appt.PatNum);
+			string patName=pat!=null ? $"{pat.FName} {pat.LName}".Trim() : "Pasien";
+			string queueLabel=!string.IsNullOrWhiteSpace(appt.QueueLabel) ? appt.QueueLabel : $"#{aptNum}";
+			if(opNum==0 && appt.Op!=0) {
+				opNum=appt.Op;
+			}
+			if(clinicNum==0 && appt.ClinicNum!=0) {
+				clinicNum=appt.ClinicNum;
+			}
+			Operatory op=Operatories.GetOperatory(opNum);
+			string opName=!string.IsNullOrWhiteSpace(customOpName) ? customOpName : (op?.OpName ?? (opNum>0 ? $"Ruang {opNum}" : "Poli Gigi"));
+			Provider prov=Providers.GetProv(appt.ProvNum);
+			string provName=prov!=null ? (!string.IsNullOrWhiteSpace(prov.Abbr) ? prov.Abbr : $"{prov.FName} {prov.LName}".Trim()) : "Dokter Gigi";
+
+			EnsureQueueCallTable();
+			string command="INSERT INTO queue_call (AptNum, PatNum, ClinicNum, OpNum, ProvNum, QueueLabel, PatientName, OpName, ProvName, DateTimeCalled, CallCount) "
+				+"VALUES ("
+				+POut.Long(aptNum)+", "
+				+POut.Long(appt.PatNum)+", "
+				+POut.Long(clinicNum)+", "
+				+POut.Long(opNum)+", "
+				+POut.Long(appt.ProvNum)+", '"
+				+POut.String(queueLabel)+"', '"
+				+POut.String(patName)+"', '"
+				+POut.String(opName)+"', '"
+				+POut.String(provName)+"', "
+				+POut.DateT(DateTime.Now)+", 1)";
+			Db.NonQ(command);
+			Signalods.SetInvalidAppt(appt);
+			TryPostQueueCallHttp(aptNum,opNum,clinicNum);
+			return true;
+		}
+
+		private static void EnsureQueueCallTable() {
+			try {
+				string cmd="CREATE TABLE IF NOT EXISTS queue_call ("
+					+"QueueCallNum BIGINT AUTO_INCREMENT PRIMARY KEY, "
+					+"AptNum BIGINT NOT NULL, "
+					+"PatNum BIGINT NOT NULL, "
+					+"ClinicNum BIGINT NOT NULL DEFAULT 0, "
+					+"OpNum BIGINT NOT NULL DEFAULT 0, "
+					+"ProvNum BIGINT NOT NULL DEFAULT 0, "
+					+"QueueLabel VARCHAR(50) NOT NULL DEFAULT '', "
+					+"PatientName VARCHAR(150) NOT NULL DEFAULT '', "
+					+"OpName VARCHAR(100) NOT NULL DEFAULT '', "
+					+"ProvName VARCHAR(100) NOT NULL DEFAULT '', "
+					+"DateTimeCalled DATETIME NOT NULL, "
+					+"CallCount INT NOT NULL DEFAULT 1, "
+					+"INDEX idx_clinic_time (ClinicNum, DateTimeCalled), "
+					+"INDEX idx_apt (AptNum)"
+					+") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+				Db.NonQ(cmd);
+			} catch {}
+		}
+
+		private static void TryPostQueueCallHttp(long aptNum,long opNum,long clinicNum) {
+			try {
+				System.Threading.ThreadPool.QueueUserWorkItem(_ => {
+					try {
+						string serverUrl="";
+						if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT && !string.IsNullOrWhiteSpace(RemotingClient.ServerURI)) {
+							Uri uri=new Uri(RemotingClient.ServerURI);
+							serverUrl=$"{uri.Scheme}://{uri.Authority}/api/queue/call";
+						}
+						else {
+							serverUrl="http://localhost:8080/api/queue/call";
+						}
+						using System.Net.WebClient wc=new System.Net.WebClient();
+						wc.Headers[System.Net.HttpRequestHeader.ContentType]="application/json";
+						string json=$"{{\"aptNum\":{aptNum},\"opNum\":{opNum},\"clinicNum\":{clinicNum}}}";
+						wc.UploadString(serverUrl,"POST",json);
+					}
+					catch {}
+				});
+			} catch {}
+		}
+
 		///<summary>Clears and recomputes queue labels for all today's arrived appointments, sorted by arrival time.</summary>
 		public static void ResetQueueLabels() {
 			ResetQueueLabels(DateTime.Today);
